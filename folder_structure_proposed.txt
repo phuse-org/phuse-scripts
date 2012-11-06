@@ -1,0 +1,29 @@
+We need to establish a folder structure so that we can organize the files in a meaningful way. Here is what I am proposing:
+
+
+./trunk/{type}/{lang}/{cat}/{prg|sub-cat}/
+
+where 
+  {type}     - docs|lang|etc
+  {lang}     - SAS|R|plsql|SPSS|JAVA|C|perl|etc
+  {cat}      - report|graph|...
+  {prg}      - program name; for large program with multiple source files, it can have the following sub-folders:
+    ./baks   - backups of milestone versions
+    ./data   - testing data
+    ./docs   - stores the documents for the requirements, proposed solutions, etc. 
+    ./src    - stores the source programs
+    ./result - expected output result 
+    ./valid  - validation process and steps
+
+trunk
+  ./docs - documnets for describing a procedure, report, program or anything related to the repository.
+  ./lang - languages such as SAS, R, PL/SQL, etc
+      ./SAS
+      ./R
+      ./plsql
+      ./SPSS
+      ./JAVA
+      ./C
+      ./perl
+      ./etc
+  ./etc
