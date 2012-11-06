@@ -1,0 +1,13 @@
+#summary This page is designed to serve as the Welcome page for this GoogleCode site.
+
+= Introduction =
+
+We should add some real content here.
+
+= Details =
+
+And here go the details.
+
+It would be a good idea to *bold* some text and put other text in _italic_s.
+
+We could also link to other wiki pages, and likely back to the main PhUSE Wiki.
