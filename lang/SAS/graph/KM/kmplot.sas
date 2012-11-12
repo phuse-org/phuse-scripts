@@ -1,3 +1,6 @@
+/*
+This is a comment area. 
+*/
 data one ;
   length group $8 ;
   censor = 0 ;
