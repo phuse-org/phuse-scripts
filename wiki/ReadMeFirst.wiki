@@ -2,12 +2,10 @@
 
 = Introduction =
 
-We should add some real content here.
+Welcome to the phuse-scripts GoogleCode site. 
 
 = Details =
 
-And here go the details.
+This site provides a collaborative development environment for scripts  for analysis and programming of clinical trials data. It was started by members of the Phuse/FDA Working Group 5. For more about this group see http://www.phusewiki.org/wiki/index.php?title=Development_of_Standard_Scripts_for_Analysis_and_Programming.
 
-It would be a good idea to *bold* some text and put other text in _italics_.
-
-We could also link to other wiki pages, and likely back to the main PhUSE Wiki.
+*Note:* Code on this site is by definition 'under development'.
