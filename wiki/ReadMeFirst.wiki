@@ -1,8 +1,8 @@
-#summary This page is designed to serve as the Welcome page for this GoogleCode site.
+#summary This page is designed to serve as the Welcome page for this Google Code site.
 
 = Introduction =
 
-Welcome to the phuse-scripts GoogleCode site. 
+Welcome to the phuse-scripts Google Code site. 
 
 = Details =
 
