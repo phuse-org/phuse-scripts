@@ -14,3 +14,5 @@ This site provides a collaborative development environment for scripts  for anal
 = Useful Links =
 
  * [http://code.google.com/p/support/wiki/GettingStarted Getting Started with Google Code]
+ * [http://code.google.com/p/support/wiki/FAQ Google Code FAQ]
+ * [http://tortoisesvn.net/ TortoiseSVN]
