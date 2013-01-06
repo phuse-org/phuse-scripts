@@ -13,6 +13,12 @@ This site provides a collaborative development environment for scripts  for anal
 
 = Useful Links =
 
- * [http://code.google.com/p/support/wiki/GettingStarted Getting Started with Google Code]
- * [http://code.google.com/p/support/wiki/FAQ Google Code FAQ]
+ * [http://code.google.com/  Google Code]
+   * [http://code.google.com/p/support/wiki/GettingStarted Getting Started with Google Code]
+   * [http://code.google.com/p/support/wiki/FAQ Google Code FAQ]
  * [http://tortoisesvn.net/ TortoiseSVN]
+   * [http://www.prosvn.org/download/TortoiseSVN%20-%20Installation%20EN.pdf  How to install TortoiseSVN on Windows Platform]
+   * [http://www.shokhirev.com/nikolai/programs/SVN/svn.html Practical guide to subversion on Windows with TortoiseSVN]
+   * [http://blogs.wandisco.com/2011/10/17/how-to-install-tortoisesvn-and-make-your-first-repository-change/ How to Install TortoiseSVN and Make Your First Repository Change]
+   * [http://wpcandy.com/teaches/how-to-install-and-get-started-with-subversion-on-windows/#.UOkAneSOm8A How to install and get started with SVN (Subversion) on Windows]
+   * [http://tortoisesvn.tigris.org/faq.html TortoiseSVN FAQ]
