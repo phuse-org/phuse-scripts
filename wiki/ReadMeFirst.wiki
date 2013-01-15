@@ -22,3 +22,4 @@ This site provides a collaborative development environment for scripts  for anal
    * [http://blogs.wandisco.com/2011/10/17/how-to-install-tortoisesvn-and-make-your-first-repository-change/ How to Install TortoiseSVN and Make Your First Repository Change]
    * [http://wpcandy.com/teaches/how-to-install-and-get-started-with-subversion-on-windows/#.UOkAneSOm8A How to install and get started with SVN (Subversion) on Windows]
    * [http://tortoisesvn.tigris.org/faq.html TortoiseSVN FAQ]
+   * [http://tortoisesvn.net/docs/release/TortoiseSVN_en/index.html TortoiseSVN A Subversion client for Windows]
