@@ -1,1 +1,5 @@
 This is a fake document, designed to test checkout and checkin.
+
+Apparently, you have to checkout using a plugin, etc. On the web, you just edit, and I suppose copy/paste/replace.
+
+We'll see.
