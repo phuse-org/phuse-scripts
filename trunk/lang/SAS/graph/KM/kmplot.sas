@@ -1,6 +1,10 @@
 /*
 This is a comment area. 
 Test editing
+Testing by adding a comment. Also, tested by doing a Windows CTRL-A/CTRL-C to select all and copy
+into buffer. Then, paste into local SAS for execution.
+Idea: at the risk of big file sizes - better off using a separate which only generates source data
+- good for SAS and R???
 */
 data one ;
   length group $8 ;
@@ -28,7 +32,7 @@ ods pdf file = "/bdm/myfolder/mcarniel/kmplot.pdf" ;
 ods listing close ;
 ods graphics on ;
 
-proc lifetest data=one plots=survival (atrisk=0 to to 330 by 30) ;
+proc lifetest data=one plots=survival (atrisk=0 to 330 by 30) ;
   time day*censor(1) ;
   srata arm ;
   title1 "Example K-M Plot" ;
