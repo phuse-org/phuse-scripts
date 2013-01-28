@@ -7,7 +7,7 @@ Idea: at the risk of big file sizes - better off using a separate which only gen
 - good for SAS and R???
 */
 data one ;
-  length group $8 ;
+  length arm $8 ;
   censor = 0 ;
   arm = "Arm 1" ;
   do day = 143,164,188,188,190,192,206,213,216,220,227.230,
