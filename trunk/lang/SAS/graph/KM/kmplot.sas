@@ -1,6 +1,7 @@
 /*
 This is a comment area. 
 Test editing
+Adding some more text for editing.
 Testing by adding a comment. Also, tested by doing a Windows CTRL-A/CTRL-C to select all and copy
 into buffer. Then, paste into local SAS for execution.
 Idea: at the risk of big file sizes - better off using a separate which only generates source data
