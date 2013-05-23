@@ -1,3 +1,5 @@
+/* a test comment */
+
  options ps=60 ls=80 nodate;
  goptions ftext=none htext=1 cell;
  
