@@ -1,6 +1,6 @@
 # boxplot.R script
 # copied verbatim from
-# https://www.ctspedia.org/do/view/CTSpedia/StatGraphTopic000
+# www.ctspedia.org/do/view/CTSpedia/StatGraphTopic000
 # on July 28 2013
 # by Mike Carniello
 
