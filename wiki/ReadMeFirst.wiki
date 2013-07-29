@@ -18,6 +18,7 @@ We are following the MIT license with contributors accepting [http://www.phusewi
  * [http://code.google.com/  Google Code]
    * [http://code.google.com/p/support/wiki/GettingStarted Getting Started with Google Code]
    * [http://code.google.com/p/support/wiki/FAQ Google Code FAQ]
+   * [http://www.phusewiki.org/wiki/images/9/93/How_to_apply_a_path_in_Google_Code.pdf How to apply a patch in Google Code]
  * [http://tortoisesvn.net/ TortoiseSVN]
    * [http://www.prosvn.org/download/TortoiseSVN%20-%20Installation%20EN.pdf  How to install TortoiseSVN on Windows Platform]
    * [http://www.shokhirev.com/nikolai/programs/SVN/svn.html Practical guide to subversion on Windows with TortoiseSVN]
