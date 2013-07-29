@@ -1,5 +1,6 @@
+# test summary of subject level dataset
 mcsl <- read.table(
-  file="http://dl.dropboxusercontent.com/u/7039138/mcsl.csv",
+  file="http://phuse-scripts.googlecode.com/svn/trunk/lang/R/report/test/data/mcsl.csv",
   header=TRUE,
   sep=",")
 summary(mcsl)
