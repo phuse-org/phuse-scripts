@@ -14,3 +14,5 @@ proc freq data=adsl ;
   tables dcdecod dcreascd ;
   title1 "Summary Statistics of Key Discrete Variables" ;
   run ;
+
+/* added a comment on September 27 2013 - Carniello */
