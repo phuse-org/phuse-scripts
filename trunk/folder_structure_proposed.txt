@@ -9,7 +9,7 @@ where
   {cat}      - script category: report|graph|...
   {prg}      - program name or sub-category; for large program with multiple source files, it can have the following sub-folders:
     ./baks   - backups of milestone versions
-    ./data   - sampel or testing data
+    ./data   - sample or testing data
     ./docs   - stores the documents for the requirements, proposed solutions, etc. 
     ./src    - stores the source programs and scripts
     ./result - expected output result 
