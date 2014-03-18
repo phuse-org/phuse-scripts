@@ -1,0 +1,36 @@
+KeyWords: {PK, Dual Box}
+Script: 
+  - Desc: Script description
+  - name: Script name following name conension standard xxxx.
+  - GCR : Google Code Revision number such as r101
+  - SRV : Script Release Version such as v1.02
+
+Inputs:
+  - datasets: dat1, dat2, dat3 
+  - P1: String - dataset name
+  - P2: Number - depart id
+  - P3: String - subject id
+
+Outputs:
+  - datasets: out1, out2, out3
+  - O1:
+  - O2: 
+
+Language: 
+  - name   : SAS
+  - version: 9.2.1
+
+Authors: 
+  - name   : Jon Doo
+    email  : jon.doo@phuse.com
+    company: PhUSE
+  - name   : Jim Boo
+    email  : jim.boo@phuse.com
+    company: PhUSE
+ 
+Validation:
+  - ValidDate
+  - ValidatedBy:
+    
+
+Rating:   

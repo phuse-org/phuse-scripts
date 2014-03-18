@@ -1,3 +1,15 @@
+/*
+
+MM/DD/YYYY (developer) - Description
+------------------------------------
+11/05/2012 (htu) - initial draft
+03/16/2013 (grp) - updated during PhUSE 2013
+03/18/2014 (grp) - 
+  1. added ./released, ./builds, and changed valid to qual during PhUSE 2014
+  2. updated the name convention
+
+*/
+
 We need to establish a folder structure so that we can organize the files in a meaningful way. Here is what I am proposing:
 
 
@@ -6,14 +18,16 @@ We need to establish a folder structure so that we can organize the files in a m
 where 
   {type}     - folder type: docs|lang|etc
   {lang}     - language folder: SAS|R|plsql|SPSS|JAVA|C|perl|etc
-  {cat}      - script category: report|graph|...
+  {cat}      - script category: report|graph|released|...
   {prg}      - program name or sub-category; for large program with multiple source files, it can have the following sub-folders:
     ./baks   - backups of milestone versions
+    ./released - final milestones
+    ./builds - testing for packing the scripts
     ./data   - sample or testing data
     ./docs   - stores the documents for the requirements, proposed solutions, etc. 
     ./src    - stores the source programs and scripts
     ./result - expected output result 
-    ./valid  - validation process and steps
+    ./qual   - qualification process and steps
 
 Here is an example of the folder structure:
 trunk
@@ -31,8 +45,12 @@ trunk
 
 Name convention of a script or program file:
 
-{prg|sub-cat}[_{term}].{ext}
-where
-  {prg|sub-cat} - program name or sub-cat
-  [_{term}]     - (optional) meaningful term
-  {ext}         - language extension such as sas, sql, java, etc.
+Proposal: {prg|sub-cat}[_{term}].{ext}
+  where
+    {prg|sub-cat} - program name or sub-cat such as PK
+    [_{term}]     - (optional) meaningful term
+    {ext}         - language extension such as sas, sql, java, etc.
+  For instance: PK_dual_box.sas
+
+For metadata file: {prg|sub-cat}[_{term}]_{ext}.yml  
+For instance: PK_dual_box_sas.yml
