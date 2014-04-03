@@ -1,0 +1,135 @@
+%  PhUSE Scriptathon 2014
+%  Target01: Box Plot - Observed Values of xxx Over Time
+%  Author: Ippei AKIYA (ippei.aki@gmail.com)
+%
+
+\documentclass[landscape, letterpaper, 10pt]{article}
+\pagestyle{empty}
+\usepackage[nohead,tmargin=0.75in, bmargin=0.375in, lmargin=0.375in, rmargin=0.375in]{geometry}
+\setlength{\textwidth}{10in}
+\setlength{\tabcolsep}{1mm}
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+\SweaveOpts{width=9.75, height=5,echo=FALSE}
+\setkeys{Gin}{width=9.75in, height=5in}
+
+\begin{center}
+{\large Box Plot - Diastolic Blood Pressure Over Time (Weeks Since Randomized)/Treatment Emergent Change }
+\end{center}
+
+%%load package and data
+<<echo=FALSE, results=hide>>=
+library(SASxport)
+library(ggplot2)
+library(plyr)
+require(grid)
+
+advs <- read.xport("http://phuse-scripts.googlecode.com/svn/trunk/scriptathon2014/data/advs.xpt", as.is = TRUE)
+
+DIABP <- advs[advs$PARAMCD == 'DIABP' & 
+              advs$ATPTN == 815 &
+              advs$ANL01FL == 'Y' &
+              is.na(advs$AVISITN) == FALSE &
+              advs$AVISITN < 99 &
+              advs$SAFFL == 'Y',]
+DIABP$AVISIT <- factor(x = c("Baseline", "Week 2",  "Week 4",  "Week 6",
+                             "Week 8",   "Week 12", "Week 16", "Week 20",
+                             "Week 24",  "Week 26"), 
+                      level = c("Baseline", "Week 2",  "Week 4",  "Week 6",
+                                "Week 8",   "Week 12", "Week 16", "Week 20",
+                                "Week 24",  "Week 26")
+                      )
+DIABP$TRTP <- factor(x = c("Placebo", "Xanomeline Low Dose", "Xanomeline High Dose"),
+                     level = c("Placebo", "Xanomeline Low Dose", "Xanomeline High Dose"))
+@
+
+<<box_plot, fig=TRUE, echo=FALSE>>=
+ggplot(DIABP, aes(x=factor(AVISIT), y=AVAL, fill=factor(TRTP) ), asp=0.2) + 
+    geom_boxplot(notch=TRUE) + 
+    facet_grid(. ~ AVISIT, scales="free_x") +
+    guides(fill=guide_legend(title=NULL)) +
+    stat_summary(fun.y = "mean", 
+                 aes(x=AVISIT, group=TRTP),
+                 position=position_dodge(width=0.75, height=0),
+                 geom = "point", 
+                 shape = 23, 
+                 size = 3,
+                 fill = "white") +
+    labs(y = "Diastolic Blood Pressure (mmHg)") + 
+    theme(axis.text.x=element_blank(),
+          axis.ticks.x=element_blank(),
+          axis.title.x=element_blank(),
+          legend.position = c(0.5, -0.05),
+          legend.direction="horizontal",
+          panel.margin = unit(0.175, "lines"))
+ 
+@
+
+\begin{center}
+<<summary_table, echo=FALSE, results=tex>>=
+diasum <- ddply(DIABP, .(AVISIT, TRTP), summarize,
+      N = length(AVAL),
+      Mean = format(round(mean(AVAL), 1), nsmall = 1),
+      Std = format(round(sd(AVAL), 1), nsmall = 1),
+      Min = min(AVAL),
+      Q1 = format(round(quantile(AVAL)[2], 1), nsmall = 1),
+      Median = format(median(AVAL), nsmall = 1),
+      Q3 = format(round(quantile(AVAL)[4], 1), nsmall = 1),
+      Max = max(AVAL)
+      )
+
+for ( i in 1:nrow(diasum)){
+  if ( as.character(diasum[i,"TRTP"]) == "Placebo" ){
+    diasum[i,"Treatment"] <- "P"
+  }else if ( as.character(diasum[i,"TRTP"]) == "Xanomeline Low Dose" ){
+    diasum[i,"Treatment"] <- "L"
+  }else if ( as.character(diasum[i,"TRTP"]) == "Xanomeline High Dose" ){
+    diasum[i,"Treatment"] <- "H"
+  }
+}
+  
+diasum$Treatment <- diasum$Treatment <- factor(x = c("P", "L", "H"),
+                           level = c("P", "L", "H")) 
+
+
+m1 <- reshape2::melt(diasum, id.vars=c("AVISIT", "TRTP"), 
+                      na.rm=FALSE)
+res2 <- as.data.frame(reshape2::acast(m1, variable ~ AVISIT + TRTP))
+res2$Item <- rownames(res2)
+
+item_oder <- data.frame(Item = c("Treatment", "N", "Mean", 
+                                 "Std", "Min", "Q1", 
+                                 "Median", "Q3","Max"),
+                        seq = c(1:9))
+res3 <- merge(res2, item_oder, by = "Item")
+res3 <- res3[order(res3$seq),]
+res3$seq <- NULL
+row.names(res3) <- NULL
+
+library(xtable)
+res3.table <- xtable(res3)
+
+align_v <- c("p{0.001in}", "p{0.5in}", rep("p{0.22in}", 30))
+align_v[grep("\\Placebo$", names(res3))+1] <- "|p{0.22in}"
+align(res3.table) <- align_v
+
+footnote          <- list()
+footnote$pos      <- list()
+footnote$pos[[1]] <- c(nrow(res3))
+footnote$command  <- c(paste("\\hline \n",  
+                            "\\multicolumn{30}{l}{Treatment: P=Placebo, L=Xanomeline Low Dose, and H=Xanomeline High Dose}\\\n",
+                            sep = ""))
+
+print(res3.table,
+      type = "latex",
+      add.to.row = footnote,
+      hline.after = c(-1, 0),
+      floating=FALSE,
+      table.placement="",
+      size="\\scriptsize",
+      include.colnames=FALSE, 
+      include.rownames=FALSE
+      )
+@
+\end{center}
+\end{document}
