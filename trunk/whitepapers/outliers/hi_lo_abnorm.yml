@@ -1,0 +1,9 @@
+languge: SAS
+source : whitepaper
+  - topic : Outliers and Shifts
+title  : High Low and Abnormal Values
+type   : table
+  - subtype : none
+comments:
+  Please edit this file.
+  To provide more and better information.

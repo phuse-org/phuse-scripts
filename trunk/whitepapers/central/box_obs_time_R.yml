@@ -1,0 +1,9 @@
+languge: R
+source : whitepaper
+  - topic : Measures of Central Tendency
+title  : Boxplot of observations vs time
+type   : figure
+  - subtype : boxplot
+comments:
+  Please edit this file.
+  To provide more and better information.
