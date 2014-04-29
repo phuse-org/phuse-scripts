@@ -1,9 +1,18 @@
-languge: R
-source : whitepaper
-  - topic : Demographics
-title  : Table of Demographics
-type   : table
-  - subtype : none
-comments:
+KeyWords: Central, Boxplot
+Script: 
+  Desc   : Script description
+  name   : Script name following name conension standard xxxx.
+  GCR    : Google Code Revision number such as r101
+  SRV    : Script Release Version such as v1.02
+  Source : White paper
+  Topic  : Demographics
+  Title  : Table of Demographics
+  Type   : table
+  Subtype  : none
+Language: 
+  name   : R
+  version: x.x.x
+Comments : > 
   Please edit this file.
   To provide more and better information.
+
