@@ -1,6 +1,6 @@
-{{RightTOC}}
-== Index Page Description ==
-== Standard Script List ==
+#sidebar TableOfContents
+
+#summary Standard Script List
 
 || *Name* || *Title* || *Type* || *Language* || *Keywords* || 
 || MetaData_template.sas ||  || SAS (9.2.1) || PK, Dual Box ||
@@ -11,6 +11,5 @@
 
 ----
 Last revision by {{REVISIONUSER}},{{REVISIONMONTH}}/{{REVISIONDAY}}/{{REVISIONYEAR}}
-[[Category:Index]]
-[[Category:Metadata]]
-[[Category:Standard Script]]
+
+#labels Index, Metadata, Standard Script
