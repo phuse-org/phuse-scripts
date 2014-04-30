@@ -7,7 +7,7 @@
 || [https://code.google.com/p/phuse-scripts/source/browse/trunk/whitepapers/central/box_obs_time.sas box_obs_time.sas] || Boxplot of observations vs time || figure || SAS (9.2.1) || Central, Boxplot ||
 ||[https://code.google.com/p/phuse-scripts/source/browse/trunk/whitepapers/central/box_obs_time.R box_obs_time.R] ||Boxplot of observations vs time || figure || R (x.x.x) || Central, Boxplot ||
 || [https://code.google.com/p/phuse-scripts/source/browse/trunk/whitepapers/central/mean_time.sas mean_time.sas] || Mean time plot || figure || SAS (9.2.1) || Central, Mean Time Plot ||
-|| [https://code.google.com/p/phuse-scripts/source/browse/trunk/whitepapers/central/demo_summary.R demo_summary.R] ||  Table of Demographics || table || R (x.x.x) || Central, Boxplot||
+|| [https://code.google.com/p/phuse-scripts/source/browse/trunk/whitepapers/demographics/demo_summary.R demo_summary.R] ||  Table of Demographics || table || R (x.x.x) || Central, Boxplot||
 
 ----
 Last revision by {{REVISIONUSER}},{{REVISIONMONTH}}/{{REVISIONDAY}}/{{REVISIONYEAR}}
