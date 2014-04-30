@@ -1,0 +1,46 @@
+{{RightTOC}}
+== Index Page Description ==
+== Standard Script List ==
+{| border="1" class="wikitable"
+|+ Standard Script Index Page
+! Name 
+! Title 
+! Type 
+! Language 
+! Keywords 
+|-
+! MetaData_template.sas
+| ||  || SAS (9.2.1) || PK, Dual Box
+|-
+! box_obs_time.sas
+| Boxplot of observations vs time || figure || SAS (9.2.1) || Central, Boxplot
+|-
+! box_obs_time.R
+| Boxplot of observations vs time || figure || R (x.x.x) || Central, Boxplot
+|-
+! mean_time.sas
+| Mean time plot || figure || SAS (9.2.1) || Central, Mean Time Plot
+|-
+! demo_summary.R
+|  Table of Demographics || table || R (x.x.x) || Central, Boxplot
+|-
+! hi_lo_abnorm.sas
+|  ||  ||  () || 
+|-
+! shift_table.sas
+|  ||  ||  () || 
+|-
+! param_summary.sas
+|  ||  ||  () || 
+|-
+! plot_mean_conc.sas
+|  ||  ||  () || 
+|-
+! plot_subj_conc.sas
+|   ||  ||  () || 
+|}
+----
+Last revision by {{REVISIONUSER}},{{REVISIONMONTH}}/{{REVISIONDAY}}/{{REVISIONYEAR}}
+[[Category:Index]]
+[[Category:Metadata]]
+[[Category:Standard Script]]
