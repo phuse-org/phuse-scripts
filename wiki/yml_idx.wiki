@@ -1,6 +1,7 @@
+#summary Standard Script List
 #sidebar TableOfContents
 
-#summary Standard Script List
+= Standard Script List =
 
 || *Name* || *Title* || *Type* || *Language* || *Keywords* || 
 || [https://code.google.com/p/phuse-scripts/source/browse/trunk/MetaData_template.yml MetaData_template.yml] || _N/A_ || SAS (9.2.1) || PK, Dual Box ||
@@ -9,7 +10,4 @@
 || [https://code.google.com/p/phuse-scripts/source/browse/trunk/whitepapers/central/mean_time.sas mean_time.sas] || Mean time plot || figure || SAS (9.2.1) || Central, Mean Time Plot ||
 || [https://code.google.com/p/phuse-scripts/source/browse/trunk/whitepapers/demographics/demo_summary.R demo_summary.R] ||  Table of Demographics || table || R (x.x.x) || Central, Boxplot||
 
-----
-Last revision by {{REVISIONUSER}},{{REVISIONMONTH}}/{{REVISIONDAY}}/{{REVISIONYEAR}}
 
-#labels Index, Metadata, Standard Script
