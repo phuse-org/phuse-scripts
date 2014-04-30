@@ -4,7 +4,7 @@
 = Standard Script List =
 
 || *Name* || *Title* || *Type* || *Language* || *Keywords* || 
-|| [https://code.google.com/p/phuse-scripts/source/browse/trunk/MetaData_template.yml MetaData_template.yml] || _metadata_ || YML || example, metadata ||
+|| [https://code.google.com/p/phuse-scripts/source/browse/trunk/MetaData_template.yml MetaData_template.yml] || Metadata page tags || _metadata_ || YML || example, metadata ||
 || [https://code.google.com/p/phuse-scripts/source/browse/trunk/whitepapers/central/box_obs_time.sas box_obs_time.sas] || Boxplot of observations vs time || figure || SAS (9.2.1) || Central, Boxplot ||
 ||[https://code.google.com/p/phuse-scripts/source/browse/trunk/whitepapers/central/box_obs_time.R box_obs_time.R] ||Boxplot of observations vs time || figure || R (x.x.x) || Central, Boxplot ||
 || [https://code.google.com/p/phuse-scripts/source/browse/trunk/whitepapers/central/mean_time.sas mean_time.sas] || Mean time plot || figure || SAS (9.2.1) || Central, Mean Time Plot ||
