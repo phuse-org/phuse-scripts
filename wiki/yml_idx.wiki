@@ -2,7 +2,7 @@
 #sidebar TableOfContents
 
 || *Name* || *Title* || *Type* || *Language* || *Keywords* || *Qualification* || *Rating* ||
-|| [https://code.google.com/p/phuse-scripts/source/browse/trunk/MetaData_template MetaData_template] || YML meta data page example || metadata(YML) || YML (x.x.x) || PK, Dual Box || D - under-development; T - in tests; Q - Qualified: by Joe Smith on 5/5/2014  || 5 ||
+|| [https://code.google.com/p/phuse-scripts/source/browse/trunk/MetaData_template.yml MetaData_template] || YML meta data page example || metadata(YML) || YML (x.x.x) || PK, Dual Box || D - under-development; T - in tests; Q - Qualified: by Joe Smith on 5/5/2014  || 5 ||
 || [https://code.google.com/p/phuse-scripts/source/browse/trunk/whitepapers/central/box_obs_time.R box_obs_time.R] || Boxplot of observations vs time || figure(boxplot) || R (x.x.x) || Central, Boxplot || :  ||  ||
 || [https://code.google.com/p/phuse-scripts/source/browse/trunk/whitepapers/central/box_obs_time.sas box_obs_time.sas] || Boxplot of observations vs time || figure(boxplot) || SAS (9.2.1) || Central, Boxplot || D: by Joe Smith on 5/5/2014  || 3 ||
 || [https://code.google.com/p/phuse-scripts/source/browse/trunk/whitepapers/central/mean_time.sas mean_time.sas] || Mean time plot || figure(plot) || SAS (9.2.1) || Central, Mean Time Plot || :  ||  ||
