@@ -2,8 +2,8 @@ KeyWords: Central, Boxplot
 Script: 
   Desc   : Script description
   name   : Script name following name conension standard xxxx.
-  GCR    : Google Code Revision number such as r101
-  SRV    : Script Release Version such as v1.02
+  GCR    : r102
+  SRV    : v1.10
   Source : White paper
   Topic  : Measures of Central Tendency
   Title  : Boxplot of observations vs time
