@@ -1,14 +1,18 @@
 KeyWords: PK, Dual Box
 Script: 
   Desc: Script description
-  name: Script name following name conension standard xxxx.
   GCR : Google Code Revision number such as r101
+  Name: Script name following name conension standard xxxx.
   SRV : Script Release Version such as v1.02
-  Source: white paper
-  topic: Measures of Central Tendency
+  Source : white paper
+  Target : a link to the target or whitepaper
+  Title  : YML meta data page example
+  Topic  : Metadata example
+  Type   : metadata
+  Subtype: YML
 Language: 
-  name   : SAS
-  version: 9.2.1
+  name   : YML
+  version: x.x.x
 Comments: >
   Please edit this file.
   To provide more and better information.
@@ -28,9 +32,10 @@ Authors:
   - name   : Jim Boo
     email  : jim.boo@phuse.com
     company: PhUSE
-Validation: 
-  ValidDate: 
-  ValidatedBy: 
+Qualification: 
+  LastQualDate: 5/5/2014 
+  LastQualBy: Joe Smith
+  Stage: D - under-development; T - in tests; Q - Qualified
 Rating:   
   ByUser: 
-  ByValid: 
+  Stars: 5 

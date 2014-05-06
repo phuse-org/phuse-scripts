@@ -1,9 +1,24 @@
-languge: SAS
-source : whitepaper
-  - topic : Outliers and Shifts
-title  : High Low and Abnormal Values
-type   : table
-  - subtype : none
-comments:
+KeyWords: Outliers, table
+Script: 
+  Desc   : Script description
+  name   : Script name following name conension standard xxxx.
+  GCR    : Google Code Revision number such as r101
+  SRV    : Script Release Version such as v1.02
+  Source : White paper
+  Topic  : Outliers and Shifts
+  Title  : High Low and Abnormal Values
+  Type   : table
+  Subtype  : none
+Language: 
+  name   : SAS
+  version: 9.2.1
+Comments : > 
   Please edit this file.
   To provide more and better information.
+Qualification: 
+  LastQualDate: 5/5/2014 
+  LastQualBy: Joe Smith
+  Stage: D
+Rating:   
+  ByUser: 
+  Stars: 3
