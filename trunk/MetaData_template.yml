@@ -1,9 +1,9 @@
 KeyWords: PK, Dual Box
 Script: 
   Desc: Script description
-  GCR : r135
+  GCR : Google Code Revision number such as r128
   Name: Script name following name conension standard xxxx.
-  SRV : 
+  SRV : Script Release Version such as v1.02
   Source : white paper
   Target : a link to the target or whitepaper
   Title  : YML meta data page example
