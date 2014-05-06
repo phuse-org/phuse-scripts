@@ -9,9 +9,17 @@ Script:
   Title  : Boxplot of observations vs time
   Type   : figure
   Subtype  : boxplot
+  Target : http://www.phusewiki.org/wiki/index.php?title=Scriptathon2014_targets
 Language: 
   name   : R
   version: x.x.x
 Comments : > 
   Please edit this file.
   To provide more and better information.
+Qualification: 
+  LastQualDate: 5/5/2014 
+  LastQualBy: Joe Smith
+  Stage: D
+Rating:   
+  ByUser: 
+  Stars: 3
