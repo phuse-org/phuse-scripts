@@ -2,8 +2,8 @@ KeyWords: Central, Boxplot
 Script: 
   Desc   : Script description
   name   : Script name following name conension standard xxxx.
-  GCR    : Google Code Revision number such as r101
-  SRV    : Script Release Version such as v1.02
+  GCR    : r101
+  SRV    : v1.02
   Source : White paper
   Topic  : Demographics
   Title  : Table of Demographics

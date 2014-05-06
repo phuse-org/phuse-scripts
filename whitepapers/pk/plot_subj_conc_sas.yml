@@ -2,8 +2,8 @@ KeyWords: PK, figure
 Script: 
   Desc   : Script description
   name   : Script name following name conension standard xxxx.
-  GCR    : Google Code Revision number such as r101
-  SRV    : Script Release Version such as v1.02
+  GCR    : 
+  SRV    : 
   Source : White paper
   Topic  : PK
   Title  : Plot of Subject Concentrations
