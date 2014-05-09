@@ -7,10 +7,13 @@ MM/DD/YYYY (developer) - Description
 03/18/2014 (grp) - 
   1. added ./released, ./builds, and changed valid to qual during PhUSE 2014
   2. updated the name convention
+05/09/2014 (htu) - update the examples 
 
 */
 
-We need to establish a folder structure so that we can organize the files in a meaningful way. Here is what I am proposing:
+; Folder structure
+We need to establish a folder structure so that we can organize the files in a meaningful way. 
+Here is what I am proposing:
 
 
 ./trunk/{type}/{lang}/{cat}/{prg|sub-cat}/
@@ -43,14 +46,18 @@ trunk
       ./etc
   ./etc
 
-Name convention of a script or program file:
+
+
+; Name convention of a script or program file:
 
 Proposal: {prg|sub-cat}[_{term}].{ext}
   where
     {prg|sub-cat} - program name or sub-cat such as PK
     [_{term}]     - (optional) meaningful term
-    {ext}         - language extension such as sas, sql, java, etc.
-  For instance: PK_dual_box.sas
+    {ext}         - language extension such as sas, sql, java, R, etc.
+  For instance: PK_dual_box.sas, PK_dual_box.R
 
 For metadata file: {prg|sub-cat}[_{term}]_{ext}.yml  
-For instance: PK_dual_box_sas.yml
+For instance: 
+  Program : PK_dual_box.sas, PK_dual_box.R
+  Metafile: PK_dual_box_sas.yml, PK_dual_box_R.yml
