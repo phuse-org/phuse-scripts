@@ -72,3 +72,29 @@ x.add_row(["Sydney", 2058, 4336374, 1214.8])
 x.add_row(["Melbourne", 1566, 3806092, 646.9])
 x.add_row(["Perth", 5386, 1554769, 869.4])
 print x
+
+
+
+=== Example ===
+This is an example of a small ''sortable'' table.
+
+{| class="wikitable sortable" border="1" 
+|-
+! name
+! data
+! more data
+|-
+| cats
+| 273
+| 53
+|-
+| dogs
+| 65
+| 8,492
+|-
+| mice
+| 1,649
+| 548
+|}
+
+
