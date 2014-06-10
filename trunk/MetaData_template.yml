@@ -33,9 +33,9 @@ Authors:
     email  : jim.boo@phuse.com
     company: PhUSE
 Qualification: 
-  LastQualDate: 5/5/2014 
-  LastQualBy: Joe Smith
-  Stage: D - under-development; T - in tests; Q - Qualified
+  LastQualDate: MM/DD/YYYY 
+  LastQualBy: FirstName LastName
+  Stage: D - Under Development; T - In Tests; Q - Qualified
 Rating:   
   ByUser: 
   Stars: 5 
