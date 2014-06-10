@@ -98,3 +98,31 @@ This is an example of a small ''sortable'' table.
 |}
 
 
+=== Tables with complex headers ===
+
+Tables with more complex headers than before now sort correctly. For example:
+
+{| class="wikitable sortable"
+|-
+! rowspan="2" | name
+! colspan="2" | Data columns
+! rowspan="2" | Another column
+|-
+! data
+! more data
+|-
+| cats
+| 273
+| 53
+| 1
+|-
+| dogs
+| 65
+| 8,492
+| 2
+|-
+| mice
+| 1,649
+| 548
+| 3
+|}
