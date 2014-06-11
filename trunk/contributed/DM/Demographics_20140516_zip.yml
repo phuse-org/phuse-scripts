@@ -5,8 +5,8 @@ Script:
     Find subject counts and % per disposition and arm for age group, sex, race, ethnicity, country, and site ID
     Find summary statistics for age 
     Output to Excel template 
-  Name   : Script name following the proposed convention: https://code.google.com/p/phuse-scripts/source/browse/trunk/folder_structure_proposed.txt
-  GCR    : r135
+  Name   : Demographics_20140516_zip
+  GCR    : r153
   SRV    : 
   Source : FDA
   Topic  : Outliers and Shifts
@@ -16,10 +16,9 @@ Script:
   Target : 
 Language: 
   name   : SAS
-  version: 9.2.1
+  version: 9.3
 Comments : > 
-  Please edit this file.
-  To provide more and better information.
+  This is an update to the originally provided code to run on any system.
 Qualification: 
   LastQualDate:
   LastQualBy:
@@ -28,9 +27,16 @@ Rating:
   ByUser: 
   Stars: 5
 Authors: 
-  - name   : Shannon Dennis
+  - name   : Shannon Dennis (original author)
     email  : shannon.dennis@fda.hhs.gov
     company: FDA
-  - name   : David Kretch
+  - name   : David Kretch (original author)
     email  : david.kretch@us.ibm.com
-    company: IBM
+    company: IBM  
+  - name   : Adrienne M Bonwick (updated)
+    email  : adrienne.bonwick@phuse.com
+    company: PhUSE
+  - name   : Aiyu Li (Updated)
+    email  : Aiyu.Li@genzyme.com
+    company: genzyme
+
