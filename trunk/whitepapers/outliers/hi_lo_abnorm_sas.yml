@@ -4,7 +4,7 @@ Script:
   Name   : Script name following the proposed convention: https://code.google.com/p/phuse-scripts/source/browse/trunk/folder_structure_proposed.txt
   GCR    : r135
   SRV    : 
-  Source : White paper
+  Source : White paper 
   Topic  : Outliers and Shifts
   Title  : High Low and Abnormal Values
   Type   : table
