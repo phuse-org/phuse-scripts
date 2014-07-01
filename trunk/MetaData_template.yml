@@ -35,7 +35,8 @@ Authors:
 Qualification: 
   LastQualDate: MM/DD/YYYY 
   LastQualBy: FirstName LastName
-  Stage: D - Under Development; T - In Tests; Q - Qualified
+  Stage: D
+  Note: D - Under Development; T - In Tests; Q - Qualified
 Rating:   
   ByUser: 
   Stars: 5 
