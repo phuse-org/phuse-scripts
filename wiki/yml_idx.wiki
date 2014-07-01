@@ -1,8 +1,6 @@
 #summary Standard Script List
 #sidebar TableOfContents
 
-{| border="1" class="wikitable sortable"
-|+ Standard Script Index Page
 || *Name* || *Title* || *Type* || *Language* || *Keywords* || *Qualification* ||
 || [https://code.google.com/p/phuse-scripts/source/browse/trunk/MetaData_template.yml MetaData_template] || YML meta data page example || metadata(YML) || YML (x.x.x) || PK, Dual Box || D - Under Development; T - In Tests; Q - Qualified by FirstName LastName on MM/DD/YYYY ||
 || [https://code.google.com/p/phuse-scripts/source/browse/trunk/contributed/Demographics/Scripts/demographics.sas demographics.sas] || Demographics Analysis Panel || table(none) || SAS (9.2.1) || DM, table || D ||
@@ -17,5 +15,4 @@
 || [https://code.google.com/p/phuse-scripts/source/browse/trunk/whitepapers/pk/param.summary_sas param.summary_sas] || [http://www.phusewiki.org/wiki/index.php?title=Scriptathon2014_targets PK Parameter Summary] || table(none) || SAS (9.2.1) || PK, table || D ||
 || [https://code.google.com/p/phuse-scripts/source/browse/trunk/whitepapers/pk/plot_mean_conc.sas plot_mean_conc.sas] || [http://www.phusewiki.org/wiki/index.php?title=Scriptathon2014_targets Plot of Mean Concentrations] || figure(scatterplot) || SAS (9.2.1) || PK, figure || D ||
 || [https://code.google.com/p/phuse-scripts/source/browse/trunk/whitepapers/pk/plot.subj_conc_sas plot.subj_conc_sas] || [http://www.phusewiki.org/wiki/index.php?title=Scriptathon2014_targets Plot of Subject Concentrations] || figure(scatterplot) || SAS (9.2.1) || PK, figure || D ||
-|}
 
