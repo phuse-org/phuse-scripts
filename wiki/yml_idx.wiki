@@ -2,7 +2,7 @@
 #sidebar TableOfContents
 
 || *Name* || *Title* || *Source* || *Type* || *Language* || *Keywords* || *Qualification* ||
-|| [https://code.google.com/p/phuse-scripts/source/browse/trunk/MetaData_template.yml MetaData_template] || YML meta data page example || white paper || metadata(YML) || YML (x.x.x) || PK, Dual Box || D by FirstName LastName on MM/DD/YYYY ||
+|| [https://code.google.com/p/phuse-scripts/source/browse/trunk/MetaData_template.yml MetaData_template] || YML meta data page example || white paper || metadata(YML) || YML (x.x.x) || PK, Dual Box || D ||
 || [https://code.google.com/p/phuse-scripts/source/browse/trunk/contributed/Demographics/Scripts/demographics.sas demographics.sas] || Demographics Analysis Panel || FDA || table(none) || SAS (9.2.1) || DM, table || D ||
 || [https://code.google.com/p/phuse-scripts/source/browse/trunk/contributed/DM/Demographics_20140516.zip Demographics_20140516.zip] || Demographics Analysis Panel || FDA || table(none) || SAS (9.3) || DM, table || Available for use ||
 || [https://code.google.com/p/phuse-scripts/source/browse/trunk/whitepapers/central/box_chg_time.Rnw box_chg_time.Rnw] || Boxplot of change from baseline vs time || [http://www.phusewiki.org/wiki/index.php?title=Scriptathon2014_targets White paper] || figure(boxplot) || R (3.0.2) || Central, Boxplot || D ||
