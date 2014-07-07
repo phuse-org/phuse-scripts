@@ -9,7 +9,7 @@ Script:
   Title  : Plot of Mean Concentrations
   Type   : figure
   Subtype: scatterplot
-  Target : http://www.phusewiki.org/wiki/index.php?title=Scriptathon2014_targets
+  Target : http://www.phusewiki.org/wiki/images/e/ed/PhUSE_CSS_WhitePaper_PK_final_25March2014.pdf
 Language: 
   name   : SAS
   version: 9.2.1
