@@ -36,7 +36,7 @@ Qualification:
   LastQualDate: MM/DD/YYYY 
   LastQualBy: FirstName LastName
   Stage: D
-  Note: D - Under Development; T - In Tests; Q - Qualified
+  Note: C - Contributed; D - Development; T - Testing; Q - Qualified
 Rating:   
   ByUser: 
   Stars: 5 
