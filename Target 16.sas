@@ -1,5 +1,4 @@
-*filename source url "http://phuse-scripts.googlecode.com/svn/trunk/scriptathon2014/data/advsmax.xpt" ;
-filename source "C:\Users\schembrim\Documents\My Box Files\Phuse 2014\Scriptathon\advsmax.xpt";
+filename source url "http://phuse-scripts.googlecode.com/svn/trunk/scriptathon2014/data/advsmax.xpt" ;
 libname source xport ;
 data work.advsmax ;
 	set source.advsmax;
