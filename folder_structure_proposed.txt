@@ -22,7 +22,8 @@ where
   {type}     - folder type: docs|lang|etc
   {lang}     - language folder: SAS|R|plsql|SPSS|JAVA|C|perl|etc
   {cat}      - script category: report|graph|released|...
-  {prg}      - program name or sub-category; for large program with multiple source files, it can have the following sub-folders:
+  {prg}      - program name or sub-category; for large program with multiple source files, 
+               it can have the following sub-folders:
     ./baks   - backups of milestone versions
     ./released - final milestones
     ./builds - testing for packing the scripts
@@ -34,7 +35,8 @@ where
 
 Here is an example of the folder structure:
 trunk
-  ./docs - documnets for describing a procedure, report, program or anything related to the repository.
+  ./docs - documnets for describing a procedure, report, program or anything related to 
+           the repository.
   ./lang - languages such as SAS, R, PL/SQL, etc
       ./SAS
       ./R
