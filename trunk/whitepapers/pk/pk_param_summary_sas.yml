@@ -1,14 +1,14 @@
 KeyWords: PK, table
 Script: 
-  Desc   : Script description
-  Name   : Script name following the proposed convention: https://code.google.com/p/phuse-scripts/source/browse/trunk/folder_structure_proposed.txt
+  Desc   : PK White Paper: Table 7.2.4 Summary of PK parameters
+  Name   : pk_param_summary.sas
   GCR    : r135
   SRV    : 
-  Source : White paper
-  Topic  : Outliers and Shifts
+  Source : White Paper
+  Topic  : PK
   Title  : PK Parameter Summary
   Type   : table
-  Subtype  : none
+  Subtype  : descriptive stats
   Target : http://www.phusewiki.org/wiki/images/e/ed/PhUSE_CSS_WhitePaper_PK_final_25March2014.pdf
 Language: 
   name   : SAS
@@ -19,7 +19,7 @@ Comments : >
 Qualification: 
   LastQualDate:
   LastQualBy:
-  Stage: D
+  Stage: Contributed
 Rating:   
   ByUser: 
   Stars: 3

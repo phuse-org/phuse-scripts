@@ -1,14 +1,14 @@
 KeyWords: PK, figure
 Script: 
-  Desc   : Script description
+  Desc   : PK White Paper: Figure 7.6 Individual PK Concentration-Time Profiles
   Name   : Script name following the proposed convention: https://code.google.com/p/phuse-scripts/source/browse/trunk/folder_structure_proposed.txt
   GCR    : r135
   SRV    : 
-  Source : White paper
+  Source : White Paper
   Topic  : PK
-  Title  : Plot of Mean Concentrations
+  Title  : Individual PK Concentration-Time Profiles
   Type   : figure
-  Subtype: scatterplot
+  Subtype  : scatterplot
   Target : http://www.phusewiki.org/wiki/images/e/ed/PhUSE_CSS_WhitePaper_PK_final_25March2014.pdf
 Language: 
   name   : SAS
@@ -19,7 +19,7 @@ Comments : >
 Qualification: 
   LastQualDate:
   LastQualBy:
-  Stage: D
+  Stage: Contributed
 Rating:   
   ByUser: 
   Stars: 3
