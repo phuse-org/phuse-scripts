@@ -3,6 +3,7 @@
 
 || *Name* || *Title* || *Source* || *Type* || *Language* || *Keywords* || *Qualification* ||
 || [https://code.google.com/p/phuse-scripts/source/browse/trunk/MetaData_template.yml MetaData_template] || YML meta data page example || white paper || metadata(YML) || YML (x.x.x) || PK, Dual Box || D ||
+|| [https://code.google.com/p/phuse-scripts/source/browse/trunk/contributed/AE/AE%20Scripts.zip AE Scripts.zip] || Demographics Analysis Panel || Contributed || table(none) || SAS (9.3) || AE, Scripts || C ||
 || [https://code.google.com/p/phuse-scripts/source/browse/trunk/contributed/Demographics/Scripts/demographics.sas demographics.sas] || Demographics Analysis Panel || Contributed || table(none) || SAS (9.2.1) || DM, table || D ||
 || [https://code.google.com/p/phuse-scripts/source/browse/trunk/contributed/DM/Demographics_20140516.zip Demographics_20140516.zip] || Demographics Analysis Panel || Contributed || table(none) || SAS (9.3) || DM, table || C ||
 || [https://code.google.com/p/phuse-scripts/source/browse/trunk/whitepapers/ae/ae_common ae_common] || Table of Common AEs || [http://www.phusewiki.org/wiki/images/4/48/CSS_WhitePaper_CentralTendency_v1.0.pdf White paper] || table(table) || SAS (9.4) || Adverse Events,Common || D ||
