@@ -1,11 +1,11 @@
 KeyWords: Central, Mean Time Plot, labs, vital signs, ECGs 
 Script: 
-  Desc   : Script description
-  Name   : Script name following the proposed convention: https://code.google.com/p/phuse-scripts/source/browse/trunk/folder_structure_proposed.txt
+  Desc   : Mean of xxx Measures Over Time
+  Name   : mean_time.sas
   GCR    : r135
   SRV    : 
   Source : White paper
-  Topic  : Measures of Central Tendency
+  Topic  : Measures of Central Tendency (Figure 7.4)
   Title  : Mean time plot
   Type   : figure
   Subtype  : plot
@@ -13,13 +13,11 @@ Script:
 Language: 
   name   : SAS
   version: 9.2.1
-Comments : > 
-  Please edit this file.
-  To provide more and better information.
+Comments : 
 Qualification: 
   LastQualDate: 
   LastQualBy: 
-  Stage: D
+  Stage: Contributed
 Rating:   
   ByUser: 
   Stars: 3
