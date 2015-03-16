@@ -1,11 +1,11 @@
-KeyWords: Central, Boxplot
+KeyWords: Central, Boxplot, labs, vital signs, ECGs
 Script: 
-  Desc   : Script description
-  Name   : Script name following the proposed convention: https://code.google.com/p/phuse-scripts/source/browse/trunk/folder_structure_proposed.txt
+  Desc   : Box Plot - Observed values of xxx Over Time
+  Name   : box_obs_time.sas
   GCR    : r137
   SRV    : v1.10
   Source : White paper
-  Topic  : Measures of Central Tendency
+  Topic  : Measures of Central Tendency (Figure 7.1)
   Title  : Boxplot of observations vs time
   Type   : figure
   Subtype  : boxplot
@@ -13,13 +13,11 @@ Script:
 Language: 
   name   : SAS
   version: 9.2.1
-Comments : > 
-  Please edit this file.
-  To provide more and better information.
+Comments : 
 Qualification: 
   LastQualDate:
   LastQualBy: 
-  Stage: D
+  Stage: Contributed
 Rating:   
   ByUser: 
   Stars: 3
