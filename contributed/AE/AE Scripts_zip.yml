@@ -1,0 +1,42 @@
+KeyWords: AE, Scripts
+Script: 
+  Desc   : >  
+    Find subject counts and % per arm                
+    Find subject counts and % per disposition and arm for age group, sex, race, ethnicity, country, and site ID
+    Find summary statistics for age 
+    Output to Excel template 
+  Name   : AE Scripts.zip
+  GCR    : r153
+  SRV    : 
+  Source : Contributed
+  Topic  : Outliers and Shifts
+  Title  : AE Script Package
+  Type   : table
+  Subtype  : AE
+  Target : 
+Language: 
+  name   : SAS
+  version: 9.3
+Comments : > 
+  This is an update to the originally provided code to run on any system.
+Qualification: 
+  LastQualDate:
+  LastQualBy:
+  Stage: C
+Rating:   
+  ByUser: 
+  Stars: 5
+Authors: 
+  - name   : Shannon Dennis (original author)
+    email  : shannon.dennis@fda.hhs.gov
+    company: FDA
+  - name   : David Kretch (original author)
+    email  : david.kretch@us.ibm.com
+    company: IBM  
+  - name   : Adrienne M Bonwick (updated)
+    email  : adrienne.bonwick@phuse.com
+    company: PhUSE
+  - name   : Aiyu Li (Updated)
+    email  : Aiyu.Li@genzyme.com
+    company: genzyme
+
