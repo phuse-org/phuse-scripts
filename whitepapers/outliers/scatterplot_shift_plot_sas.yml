@@ -1,15 +1,15 @@
-KeyWords: Central, Mean Time Plot, labs, vital signs, ECGs 
+KeyWords: outliers labs, vital signs, ECGs, Shift, Quantitative
 Script: 
-  Desc   : Script description
-  Name   : Script name following the proposed convention: https://code.google.com/p/phuse-scripts/source/browse/trunk/folder_structure_proposed.txt
+  Desc   : Scatter Plot and Shift Summary for Quantitative Safety Measures 
+  Name   : outliers_Scatter.sas
   GCR    : r135
   SRV    : 
   Source : White paper
-  Topic  : Measures of Central Tendency
+  Topic  : Outliers
   Title  : Mean time plot
   Type   : figure
   Subtype  : plot
-  Target : http://www.phusewiki.org/wiki/images/4/48/CSS_WhitePaper_CentralTendency_v1.0.pdf
+  Target : http://www.phusewiki.org/wiki/images/1/13/PhUSE_WhitePaper_OutliersShifts_DRAFT_BroadReview.docx
 Language: 
   name   : SAS
   version: 9.2.1
@@ -19,7 +19,7 @@ Comments : >
 Qualification: 
   LastQualDate: 
   LastQualBy: 
-  Stage: D
+  Stage: Contributed
 Rating:   
   ByUser: 
   Stars: 3
