@@ -1,36 +1,35 @@
-KeyWords: DM, table
+KeyWords: Demographics, Disposition, DM, table
 Script: 
   Desc   : >  
     Find subject counts and % per arm                
     Find subject counts and % per disposition and arm for age group, sex, race, ethnicity, country, and site ID
     Find summary statistics for age 
     Output to Excel template 
-  Name   : Script name following the proposed convention: https://code.google.com/p/phuse-scripts/source/browse/trunk/folder_structure_proposed.txt
+    Name   : demographics.sas
   GCR    : r135
   SRV    : 
   Source : Contributed
-  Topic  : Outliers and Shifts
+  Topic  : Demographics
   Title  : Demographics Analysis Panel
   Type   : table
   Subtype  : none
-  Target : 
+  Target : https://code.google.com/p/phuse-scripts/source/browse/trunk/contributed/Demographics%20Analysis%20Specifications%20V1.doc
 Language: 
   name   : SAS
   version: 9.2.1
 Comments : > 
-  Please edit this file.
-  To provide more and better information.
+  
 Qualification: 
-  LastQualDate: 
-  LastQualBy: 
-  Stage: D
+  LastQualDate: n/a (original package)
+  LastQualBy: n/a (original package)
+  Stage: Contributed
 Rating:   
   ByUser: 
   Stars: 5
 Authors: 
   - name   : Shannon Dennis
-    email  : shannon.dennis@fda.hhs.gov
-    company: FDA
+    email  : not known
+    company: IBM
   - name   : David Kretch
     email  : david.kretch@us.ibm.com
     company: IBM
