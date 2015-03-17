@@ -1,13 +1,13 @@
-KeyWords: "Central, Boxplot, labs, vital signs, ECGs"
+KeyWords: Central, Boxplot, labs, vital signs, ECGs
 Language: 
   name: SAS
-  version: "9.2.1"
+  version: 9.2.1
 Qualification: 
-  LastQualBy: ~
-  LastQualDate: ~
+  LastQualBy: na
+  LastQualDate: na
   Stage: Contributed
 Rating: 
-  ByUser: ~
+  ByUser: 
   Stars: 3
 Script: 
   Desc: "Box Plot Observed values of xxx Over Time\n"
