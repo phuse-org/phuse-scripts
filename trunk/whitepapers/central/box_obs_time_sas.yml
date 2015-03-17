@@ -5,7 +5,7 @@ Script:
   GCR    : r137
   SRV    : v1.10
   Source : White paper
-  Topic  : Measures of Central Tendency (Figure 7.1)
+  Topic  : Measures of Central Tendency Figure 7.1
   Title  : Boxplot of observations vs time
   Type   : figure
   Subtype  : boxplot
