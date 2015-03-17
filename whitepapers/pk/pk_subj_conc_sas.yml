@@ -1,6 +1,6 @@
 KeyWords : PK, figure
 Script : 
-  Desc   : PK White Paper: Figure 7.6 Individual PK Concentration-Time Profiles
+  Desc   : PK White Paper -Figure 7.6 Individual PK Concentration-Time Profiles
   Name   : pk_subj_conc_sas 
   GCR    : r135
   SRV    :  
