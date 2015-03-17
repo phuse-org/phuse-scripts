@@ -1,14 +1,14 @@
 KeyWords: Central, discontinuation, reason, summary 
 Script: 
-  Desc   : Script description
+  Desc   : summary of discontinuation reasons
   Name   : Script name following the proposed convention: https://code.google.com/p/phuse-scripts/source/browse/trunk/folder_structure_proposed.txt
   GCR    : r135
-  SRV    : 
-  Source : White paper
-  Topic  : Measures of Central Tendency
-  Title  : Mean time plot
-  Type   : figure
-  Subtype  : plot
+  SRV    : Contributed
+  Source : White paper 
+  Topic  : Demographics
+  Title  : summary of discontinuation reasons
+  Type   : table
+  Subtype: summary
   Target : http://www.phusewiki.org/wiki/images/4/48/CSS_WhitePaper_CentralTendency_v1.0.pdf
 Language: 
   name   : SAS
