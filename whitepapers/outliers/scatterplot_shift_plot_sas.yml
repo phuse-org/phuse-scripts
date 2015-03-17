@@ -1,5 +1,5 @@
-KeyWords: outliers labs, vital signs, ECGs, Shift, Quantitative
-Script: 
+KeyWords : outliers labs, vital signs, ECGs, Shift, Quantitative
+Script : 
   Desc   : Scatter Plot and Shift Summary for Quantitative Safety Measures 
   Name   : outliers_Scatter.sas
   GCR    : r135
@@ -10,16 +10,16 @@ Script:
   Type   : figure
   Subtype  : plot
   Target : http://www.phusewiki.org/wiki/images/1/13/PhUSE_WhitePaper_OutliersShifts_DRAFT_BroadReview.docx
-Language: 
+Language : 
   name   : SAS
-  version: 9.2.1
+  version : 9.2.1
 Comments : > 
   Please edit this file.
   To provide more and better information.
-Qualification: 
-  LastQualDate: 
-  LastQualBy: 
-  Stage: Contributed
-Rating:   
-  ByUser: 
-  Stars: 3
+Qualification : 
+  LastQualDate : 
+  LastQualBy : 
+  Stage : Contributed
+Rating :   
+  ByUser : 
+  Stars : 3
