@@ -1,7 +1,7 @@
 KeyWords: Central, Mean Time Plot, labs, vital signs, ECGs 
 Script: 
 Desc   : Reason for Discontinuation
-  Name   : https://code.google.com/p/phuse-scripts/source/browse/trunk/whitepapers/demographics/discontinuation_sas
+  Name   : https://code.google.com/p/phuse-scripts/source/browse/trunk/whitepapers/demographics/discontinuation_sas.sas
   GCR    : r135
   SRV    : Contributed
   Source : White paper
