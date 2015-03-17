@@ -4,11 +4,11 @@ Script:
   Name   : Script name following the proposed convention: https://code.google.com/p/phuse-scripts/source/browse/trunk/folder_structure_proposed.txt
   GCR    : r135
   SRV    : 
-  Source : White paper
-  Topic  : Measures of Central Tendency
+  Source : White paper, Figure 7.1 Summary of Common Treatment-Emergent Adverse Events by Treatment
+  Topic  : Common Treatment-Emergent Adverse Events
   Title  : Table of Common AEs
-  Type   : table
-  Subtype  : table
+  Type   : figure
+  Subtype  : figure
   Target : http://www.phusewiki.org/wiki/images/8/86/CSS_WhitePaper_Adverse_Events_DRAFT1.docx
 Language: 
   name   : SAS
