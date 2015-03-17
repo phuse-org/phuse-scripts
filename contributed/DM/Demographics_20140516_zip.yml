@@ -13,7 +13,7 @@ Script:
   Title  : Demographics Analysis Panel
   Type   : table
   Subtype  : none
-  Target : 
+  Target : https://phuse-scripts.googlecode.com/svn/trunk/contributed/Demographics%20Analysis%20Specifications%20V1.doc
 Language: 
   name   : SAS
   version: 9.3
