@@ -8,7 +8,7 @@ Script:
   Topic  : Measures of Central Tendency
   Title  : Reason for Discontinuation
   Type   : table
-  Subtype: ASCII File
+  Subtype: listing
   Target : https://code.google.com/p/phuse-scripts/source/browse/trunk/whitepapers/demographics/discontinuation_sas.lst
 Language: 
   name   : SAS
