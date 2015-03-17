@@ -1,7 +1,7 @@
 KeyWords: Central, reason, discontinuation
 Script: 
   Desc   : Reason for Discontinuation
-  Name   : https://code.google.com/p/phuse-scripts/source/browse/trunk/whitepapers/demographics/discontinuation_sas_sas
+  Name   : https://code.google.com/p/phuse-scripts/source/browse/trunk/whitepapers/demographics/discontinuation_sas
   GCR    : r135
   SRV    : Contributed
   Source : White paper
