@@ -1,15 +1,15 @@
-KeyWords: Central, Mean Time Plot, labs, vital signs, ECGs 
+KeyWords: Central, discontinuation, reason, count and percent 
 Script: 
-  Desc   : Script description
-  Name   : Script name following the proposed convention: https://code.google.com/p/phuse-scripts/source/browse/trunk/folder_structure_proposed.txt
+  Desc   : discontinuation reason count and percent
+  Name   : https://code.google.com/p/phuse-scripts/source/browse/trunk/whitepapers/demographics/disposition_b1_sas
   GCR    : r135
-  SRV    : 
+  SRV    : Contributed
   Source : White paper
-  Topic  : Measures of Central Tendency
-  Title  : Mean time plot
-  Type   : figure
-  Subtype  : plot
-  Target : http://www.phusewiki.org/wiki/images/4/48/CSS_WhitePaper_CentralTendency_v1.0.pdf
+  Topic  : Demographics
+  Title  : Discontinuation Reason Summary
+  Type   : table
+  Subtype: count and percent
+  Target : 
 Language: 
   name   : SAS
   version: 9.2.1
