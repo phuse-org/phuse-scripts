@@ -1,23 +1,27 @@
 KeyWords: Central, Boxplot, labs, vital signs, ECGs
+Script: 
+  Desc   : >
+    Box Plot Observed values of xxx Over Time
+  Name   : box_obs_time_sas
+  GCR    : r137
+  SRV    : v1.10
+  Source : White paper
+  Topic  : Measures of Central Tendency Figure 7.1
+  Title  : Boxplot of observations vs time
+  Type   : figure
+  Subtype  : boxplot
+  Target : http://www.phusewiki.org/wiki/images/4/48/CSS_WhitePaper_CentralTendency_v1.0.pdf
 Language: 
-  name: SAS
+  name   : SAS
   version: 9.2.1
+Comments : >
 Qualification: 
-  LastQualBy: na
-  LastQualDate: na
+  LastQualDate:
+  LastQualBy: 
   Stage: Contributed
-Rating: 
+Rating:   
   ByUser: 
   Stars: 3
-Script: 
-  Desc: Box Plot Observed values of xxx Over Time
-  GCR: r137
-  Name: box_obs_time_sas
-  SRV: v1.10
-  Source: White paper
-  Subtype: boxplot
-  Target: http://www.phusewiki.org/wiki/images/4/48/CSS_WhitePaper_CentralTendency_v1.0.pdf
-  Title: Boxplot of observations vs time
-  Topic: Measures of Central Tendency Figure 7.1
-  Type: figure
-  
+
+
+
