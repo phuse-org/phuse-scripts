@@ -14,10 +14,10 @@ Script:
   GCR: r137
   Name: box_obs_time_sas
   SRV: v1.10
-  Source: "White paper"
+  Source: White paper
   Subtype: boxplot
-  Target: "http://www.phusewiki.org/wiki/images/4/48/CSS_WhitePaper_CentralTendency_v1.0.pdf"
-  Title: "Boxplot of observations vs time"
-  Topic: "Measures of Central Tendency Figure 7.1"
+  Target: http://www.phusewiki.org/wiki/images/4/48/CSS_WhitePaper_CentralTendency_v1.0.pdf
+  Title: Boxplot of observations vs time
+  Topic: Measures of Central Tendency Figure 7.1
   Type: figure
   
