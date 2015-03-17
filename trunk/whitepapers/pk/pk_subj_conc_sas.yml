@@ -1,9 +1,9 @@
-KeyWords: PK, figure
-Script: 
+KeyWords : PK, figure
+Script : 
   Desc   : PK White Paper: Figure 7.6 Individual PK Concentration-Time Profiles
   Name   : Script name following the proposed convention: https://code.google.com/p/phuse-scripts/source/browse/trunk/folder_structure_proposed.txt
   GCR    : r135
-  SRV    : 
+  SRV    :  
   Source : White Paper
   Topic  : PK
   Title  : Individual PK Concentration-Time Profiles
@@ -16,10 +16,10 @@ Language:
 Comments : > 
   Please edit this file.
   To provide more and better information.
-Qualification: 
-  LastQualDate:
-  LastQualBy:
-  Stage: Contributed
-Rating:   
-  ByUser: 
-  Stars: 3
+Qualification :  
+  LastQualDate : 
+  LastQualBy : 
+  Stage : Contributed
+Rating :   
+  ByUser : 
+  Stars : 3

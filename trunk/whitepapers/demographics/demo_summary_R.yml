@@ -1,5 +1,5 @@
-KeyWords: Demographics, Table
-Script: 
+KeyWords : Demographics, Table
+Script : 
   Desc   : Demographics Table
   Name   : demo_summary.R
   GCR    : r135
@@ -10,14 +10,14 @@ Script:
   Type   : Table
   Subtype  : Summary
   Target : http://www.phusewiki.org/wiki/images/8/8e/CSS_WhitePaper_DemoDispMed_draft3.docx
-Language: 
+Language : 
   name   : R
   version: x.x.x
 Comments : Requires R Libraries rtf and SASxport 
-Qualification: 
-  LastQualDate: 
+Qualification:  
+  LastQualDate:  
   LastQualBy: 
-  Stage: Contributed
-Rating:   
-  ByUser: 
-  Stars: 3
+  Stage : Contributed
+Rating :   
+  ByUser :   
+  Stars : 3
