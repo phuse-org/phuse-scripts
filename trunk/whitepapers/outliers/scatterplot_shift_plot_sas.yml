@@ -1,7 +1,7 @@
 KeyWords : outliers labs, vital signs, ECGs, Shift, Quantitative
 Script : 
   Desc   : Scatter Plot and Shift Summary for Quantitative Safety Measures 
-  Name   : outscatterplot_shift_plot_sas 
+  Name   : scatterplot_shift_plot_sas 
   GCR    : r135
   SRV    : 
   Source : White paper
