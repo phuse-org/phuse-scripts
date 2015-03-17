@@ -5,7 +5,7 @@ Script:
     Provides all risk difference, Relative Risk and Negative log p-values
     Flags designated Medical Events
     Output to Excel template 
-  Name   : MedMedDRA at a Glance Scripts.zip
+  Name   : MedDRA at a Glance Scripts.zip
   GCR    : r153
   SRV    : 
   Source : Contributed
