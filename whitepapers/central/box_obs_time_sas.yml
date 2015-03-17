@@ -10,7 +10,7 @@ Rating:
   ByUser: 
   Stars: 3
 Script: 
-  Desc: "Box Plot Observed values of xxx Over Time\n"
+  Desc: Box Plot Observed values of xxx Over Time
   GCR: r137
   Name: box_obs_time_sas
   SRV: v1.10
