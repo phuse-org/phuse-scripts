@@ -1,9 +1,9 @@
 KeyWords: AE, Scripts
 Script: 
   Desc   : >  
-  Adverse events by ARM at all levels of the MedDRA hierarchy
-  Provides all risk difference, Relative Risk and Negative log p-values
-  Flags designated Medical Events
+    Adverse events by ARM at all levels of the MedDRA hierarchy
+    Provides all risk difference, Relative Risk and Negative log p-values
+    Flags designated Medical Events
     Output to Excel template 
   Name   : AE Scripts.zip
   GCR    : r153
