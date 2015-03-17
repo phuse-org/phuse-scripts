@@ -1,25 +1,23 @@
 KeyWords: Demographics, Table
 Script: 
-  Desc   : Script description
-  Name   : Script name following the proposed convention: https://code.google.com/p/phuse-scripts/source/browse/trunk/folder_structure_proposed.txt
+  Desc   : Demographics Table
+  Name   : demo_summary.sas
   GCR    : r135
   SRV    : 
   Source : White paper
-  Topic  : Measures of Central Tendency
-  Title  : Demographics
-  Type   : figure
-  Subtype  : table
-  Target : http://www.phusewiki.org/wiki/images/4/48/CSS_WhitePaper_CentralTendency_v1.0.pdf
+  Topic  : Analyses and Displays Associated with Demographics, Disposition, and Medication in Phase 2-4 Clinical Trials and Integrated Submission Documents (Table 7.1)
+  Title  : Demographic Summary
+  Type   : Table
+  Subtype  : Summary
+  Target : http://www.phusewiki.org/wiki/images/8/8e/CSS_WhitePaper_DemoDispMed_draft3.docx
 Language: 
   name   : SAS
   version: 9.2.1
-Comments : > 
-  Please edit this file.
-  To provide more and better information.
+Comments : 
 Qualification: 
   LastQualDate: 
   LastQualBy: 
-  Stage: D
+  Stage: Contributed
 Rating:   
   ByUser: 
   Stars: 3
