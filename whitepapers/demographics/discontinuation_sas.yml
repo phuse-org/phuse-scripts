@@ -1,15 +1,15 @@
 KeyWords: Central, Mean Time Plot, labs, vital signs, ECGs 
 Script: 
-Desc   : discontinuation program 
+Desc   : Reason for Discontinuation
   Name   : https://code.google.com/p/phuse-scripts/source/browse/trunk/whitepapers/demographics/discontinuation_sas
   GCR    : r135
-  SRV    : 
+  SRV    : Contributed
   Source : White paper
   Topic  : Measures of Central Tendency
-  Title  : 
+  Title  : Reason for Discontinuation
   Type   : table
-  Subtype: pdf
-  Target : 
+  Subtype: ASCII File
+  Target : https://code.google.com/p/phuse-scripts/source/browse/trunk/whitepapers/demographics/discontinuation_sas.lst
 Language: 
   name   : SAS
   version: 9.2.1
