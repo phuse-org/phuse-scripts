@@ -1,7 +1,7 @@
 # phuse-scripts
 Automatically exported from code.google.com/p/phuse-scripts
 
-A Top-ten list of GitHub for brginners: http://sixrevisions.com/resources/git-tutorials-beginners/
+A Top-ten list of GitHub for beginners: http://sixrevisions.com/resources/git-tutorials-beginners/
 
 LearnCode Academy quick video tutorial: https://www.youtube.com/watch?v=0fKg7e37bQE
 
