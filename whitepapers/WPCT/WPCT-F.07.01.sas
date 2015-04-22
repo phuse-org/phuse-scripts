@@ -24,6 +24,10 @@
       • Move confirmed specifications to a separate document that can be referenced by the Repository Interface
           http://www.phusewiki.org/wiki/index.php?title=Standard_Script_Index
       • Set uniform y-axis scale for all pages of a plot, based on MAX measured value for PARAMCD and ATPTN
+      • Confirm meaning of "N" in summary table
+          - Population size?
+          - Sample size?
+          - Should display distinguish between "N" (pop), "n" (samples), and pop with NO measures?
       • Color outliers RED:
           - Confirm outlier logic as either
               (1) outside normal ranges, 
