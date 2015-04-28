@@ -6,11 +6,8 @@
     page:  http://www.phusewiki.org/wiki/index.php?title=Scriptathon2014_targets
     image: http://www.phusewiki.org/wiki/index.php?title=File:CSS_WhitePaper_CentralTendency_f7_1.jpg
 
-    Description: Boxplot of AVAL by ATPTN, AVISITN and TRTPN. See plot footnote for boxplot details.
-    Dataset:     ADVS
-    Variables:   USUBJID SAFFL TRTP TRTPN PARAM PARAMCD AVAL ANRLO ANRHI ANL: AVISIT AVISITN ATPT ATPTN
-    Filter:      Measurements flagged for analysis within safety population
-                 WHERE SAFFL='Y' and ANL01FL='Y'
+    Specs:       https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/specification/WPCT-F.07.01_specs.yml
+
     Notes:       • Program box plots all visits, ordered by AVISITN, with maximum of 20 boxes on a page
                    + see user option MAX_BOXES_PER_PAGE, below, to change 20 per page
                  • Program separately plots all parameters in PARAMCD
@@ -19,6 +16,7 @@
                    + see macro UTIL_VALUE_FORMAT to adjust this behavior
                  • If your treatment names are too long for the summary table,
                    Change TRTP in the input data, and add a footnote that explains your short Tx codes
+
     TO DO:
       • Complete and confirm specifications (see Outliers & Reference limit discussions, below)
       • Move confirmed specifications to a separate document that can be referenced by the Repository Interface
@@ -28,14 +26,12 @@
           - Population size?
           - Sample size?
           - Should display distinguish between "N" (pop), "n" (samples), and pop with NO measures?
-      • Color outliers RED:
-          - Confirm outlier logic as either
-              (1) outside normal ranges, 
-              (2) outside interquartile ranges, or
-              (3) user option
-          - Indicate measures that are OUTSIDE NORMAL RANGES
-          - Update specifications and dependency checking accordingly
-            EG, to include ANRLO and ANRHI in dependencies and program logic
+      • RED color for values outside pre-defined reference limits
+          - See discussion in section 7.1
+          - See Figure 6.1 Explanation of Box Plot, from SAS/STAT user guide
+          - Symbol for IQR outliers
+          - Apply RED color for values outside pre-defined reference limits
+          - EG, include ANRLO and ANRHI in dependencies and program logic
       • Reference limit lines. Provide options for several scenarios (see explanation in White Paper):
           - NONE:    DEFAULT. no reference lines
           - UNIFORM: reference limits are uniform for entire population

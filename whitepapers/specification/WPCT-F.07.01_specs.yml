@@ -1,26 +1,18 @@
 KeyWords: Central Tendencies, Boxplot, labs, vital signs, ECGs
-Script: 
+Display:
+  Name   : WPCT_F.07.01
   Desc   : Box plot - Measurements by Analysis Timepoint, Visit and Planned Treatment
-  Name   : WPCT_F.07.01_sas
-  GCR    : r137
-  SRV    : v1.10
   Source : White paper
   Topic  : Measures of Central Tendency Figure 7.1
   Title  : Boxplot of analysis timepoint observations by visit and treatment
   Type   : figure
-  Subtype  : boxplot
+  Subtype: boxplot
   Target : http://www.phusewiki.org/wiki/images/4/48/CSS_WhitePaper_CentralTendency_v1.0.pdf
-Language: 
-  name   : SAS
-  version: 9.2
-Comments : >
+  Dataset: ADVS
+  Vars   : USUBJID SAFFL TRTP TRTPN PARAM PARAMCD AVAL ANRLO ANRHI ANL: AVISIT AVISITN ATPT ATPTN
+  Filter : Measurements flagged for analysis within safety population WHERE SAFFL='Y' and ANL01FL='Y'
+Comment: >
 Qualification: 
   LastQualDate:
   LastQualBy: 
   Stage: Develop
-Rating:   
-  ByUser: 
-  Stars: 5
-
-
-
