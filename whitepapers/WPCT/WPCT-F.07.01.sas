@@ -64,15 +64,14 @@
     MAX_BOXES_PER_PAGE: Maximum number of boxes to display per plot page (see specs at top)  
   ***/
 
+    %put WARNING: (WPCT-F.07.01) User must ensure PhUSE/CSS utilities are in the AUTOCALL path.;
 
-    /*** EXECUTE ONE TIME only as needed
+      /*** EXECUTE ONE TIME only as needed
+        NB: The following line is necessary only when PhUSE/CSS utilities are NOT in your default AUTOCALL paths
 
-      Ensure PhUSE/CSS utilities are in the AUTOCALL path
-      NB: This line is not necessary if PhUSE/CSS utilities are in your default AUTOCALL paths
+        OPTIONS sasautos=(%sysfunc(getoption(sasautos)) "C:\_Offline_\CSS\phuse_code\whitepapers\utilities");
 
-      OPTIONS sasautos=(%sysfunc(getoption(sasautos)) "C:\_Offline_\CSS\phuse_code\whitepapers\utilities");
-
-    ***/
+      ***/
 
     %*--- ACCESS PhUSE/CSS test data, and create work copy with prefix "CSS_" ---*;
       %util_access_test_data(advs)
@@ -254,7 +253,7 @@
 
 
           *--- PDF output destination ---*;
-            ods pdf file="Box_plot_&&paramcd_val&pdx.._by_visit_for_timepoint_&&atptn_val&tdx...pdf";
+            ods pdf file="outputs_sas\WPCT-F.07.01_Box_plot_&&paramcd_val&pdx.._by_visit_for_timepoint_&&atptn_val&tdx...pdf";
 
           *--- FINALLY, A Graph - Multiple pages in case of many visits/treatments ---*;
             %local vdx nxtvis;

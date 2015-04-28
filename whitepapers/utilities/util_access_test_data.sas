@@ -31,7 +31,7 @@
 
   %if %length(&xport) = 0 %then %let xport = &ds;
 
-  filename source url "http://phuse-scripts.googlecode.com/svn/trunk/scriptathon2014/data/&xport..xpt";
+  filename source url "https://raw.github.com/phuse-org/phuse-scripts/master/scriptathon2014/data/&xport..xpt";
   libname source xport access=READONLY;
 
   data css_&ds;
