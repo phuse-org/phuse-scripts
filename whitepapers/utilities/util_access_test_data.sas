@@ -7,8 +7,8 @@
   to this interface can be implemented in one place, here, without requiring changes to
   remaining PhUSE/CSS template programs.
 
-  See the PhUSE Repository for a list of available PhUSE/CSS test data sets
-    https://code.google.com/p/phuse-scripts/source/browse/#svn%2Ftrunk%2Fscriptathon2014%2Fdata%253Fstate%253Dclosed
+  See the PhUSE Repository in Github for available PhUSE/CSS test data sets
+    https://github.com/phuse-org/phuse-scripts/tree/master/scriptathon2014/data
 
   INPUT
     DS    name of PhUSE/CSS test data set
