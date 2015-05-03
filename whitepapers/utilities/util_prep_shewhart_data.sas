@@ -6,7 +6,8 @@ PROC SHEWHART creates the summary table of stats from "block" variable (typicall
               and reads "phases" from a special _PHASE_ variable (typically "visits", for us)
 
 TO DO
-  • List of STATS used for summary table "blocks" could be customizable
+  * List of STATS used for summary table "blocks" could be customizable
+  * Option to produce an ANNOTATE data set, based on measured values, to highlight measures outside reference ranges
 
 INPUTS
   DS          Data set including (1) measurements to plot, and (2) vars to be used for "block" labels

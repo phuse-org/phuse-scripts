@@ -24,7 +24,7 @@
     WORK data set with name CSS_&DS
 
   TO DO
-    • Implement some way of warning the user that a specified PhUSE/CSS data set does not exist.
+    * Implement some way of warning the user that a specified PhUSE/CSS data set does not exist.
 ***/
 
 %macro util_access_test_data(ds, xport=);

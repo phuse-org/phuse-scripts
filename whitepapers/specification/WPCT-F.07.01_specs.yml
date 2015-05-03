@@ -8,8 +8,10 @@ Display:
   Type   : figure
   Subtype: boxplot
   Target : http://www.phusewiki.org/wiki/images/4/48/CSS_WhitePaper_CentralTendency_v1.0.pdf
-  Dataset: ADVS
-  Vars   : USUBJID SAFFL TRTP TRTPN PARAM PARAMCD AVAL ANRLO ANRHI ANL: AVISIT AVISITN ATPT ATPTN
+  Dataset-1: ADSL
+  Vars-1   : STUDYID USUBJID SAFFL TRT01P TRT01PN
+  Dataset-2: ADVS
+  Vars-2   : STUDYID USUBJID SAFFL ANL01FL TRTP TRTPN PARAM PARAMCD AVAL ANRLO ANRHI AVISIT AVISITN ATPT ATPTN
   Filter : Measurements flagged for analysis within safety population WHERE SAFFL='Y' and ANL01FL='Y'
 Comment: >
 Qualification: 
