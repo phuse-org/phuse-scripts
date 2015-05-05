@@ -65,6 +65,7 @@
 /*** TEST calls
 
   %put [%util_axis_order(88.2, 20.2)];        *** NB: ERROR condition ***;
+  %put [%util_axis_order(20.2, 20.2)];        *** NB: ERROR condition ***;
   %put [%util_axis_order(87.9999, 88.0001)];
 
   %put [%util_axis_order(0.00009, 202)];
@@ -78,5 +79,7 @@
 
   %put [%util_axis_order(0.000038, 0.00202)];
   %put [%util_axis_order(-0.00202, -0.000038)];
+  %put [%util_axis_order(-0.00202, 0.000038)];
+  %put [%util_axis_order(-0.000038, 0.00202)];
 
 ***/
