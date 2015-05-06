@@ -81,7 +81,7 @@ end HEADER ***/
       EXECUTE ONE TIME only as needed
       NB: The following line is necessary only when PhUSE/CSS utilities are NOT in your default AUTOCALL paths
 
-      OPTIONS sasautos=(%sysfunc(getoption(sasautos)) "C:\_Offline_\CSS\phuse-scripts\whitepapers\utilities");
+      OPTIONS sasautos=(%sysfunc(getoption(sasautos)) "C:\-YOUR-LOCATION-\phuse-scripts\whitepapers\utilities");
 
     ***/
 
@@ -151,7 +151,7 @@ end HEADER ***/
     goptions reset=all;
     ods show;
 
-    %let asl_variables = STUDYID USUBJID SAFFL TRT01P TRT01PN;
+    %let asl_variables = STUDYID USUBJID &p_fl TRT01P TRT01PN;
     %let ana_variables = STUDYID USUBJID &p_fl &a_fl TRTP TRTPN PARAM PARAMCD AVAL ANRLO ANRHI AVISIT AVISITN ATPT ATPTN;
 
     *--- Restrict analysis to SAFETY POP and ANALYSIS RECORDS (&a_fl) ---*;
