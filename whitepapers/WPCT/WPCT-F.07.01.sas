@@ -1,23 +1,26 @@
 /*** HEADER
 
-    White paper: Central Tendencies
     Display:     Figure 7.1 Box plot - Measurements by Analysis Timepoint, Visit and Planned Treatment
-
-    page:  http://www.phusewiki.org/wiki/index.php?title=Scriptathon2014_targets
-    image: http://www.phusewiki.org/wiki/index.php?title=File:CSS_WhitePaper_CentralTendency_f7_1.jpg
+    White paper: Central Tendencies
 
     Specs:       https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/specification/WPCT-F.07.01_specs.yml
+    Output:      https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/WPCT/outputs_sas/WPCT-F.07.01_Box_plot_DIABP_by_visit_for_timepoint_815.pdf
 
-    Notes:       * Program box plots all visits, ordered by AVISITN, with maximum of 20 boxes on a page (default)
-                   + see user option MAX_BOXES_PER_PAGE, below, to change 20 per page
-                 * Program separately plots all parameters in PARAMCD
-                 * Measurements within each PARAMCD and ATPTN determine precision of stats
-                   + MEAN gets 1 extra decimal, STD DEV gets 2 extra decimals
-                   + see macro UTIL_VALUE_FORMAT to adjust this behavior
-                 * If your treatment names are too long for the summary table,
-                   Change TRTP in the input data, and add a footnote that explains your short Tx codes
+    Using this program:
 
-    TO DO (also search code for "TO DO" without quotes, for placeholders):
+      * See USER PROCESSING AND SETTINGS, below, to configure this program for your environment and data
+      * Program plots all visits, ordered by AVISITN, with maximum of 20 boxes on a page (default)
+        + see user option MAX_BOXES_PER_PAGE, below, to change 20 per page
+      * Program separately plots all parameters available in PARAMCD
+      * Measurements within each PARAMCD and ATPTN determine precision of statistical results
+        + MEAN gets 1 extra decimal, STD DEV gets 2 extra decimals
+        + see macro UTIL_VALUE_FORMAT to adjust this behavior
+      * If your treatment names are too long for the summary table, change TRTP 
+        in the input data, and add a footnote that explains your short Tx codes
+
+    TO DO list for program:
+
+      * NB: Search for "TO DO" without quotes, for placeholders in the code
       * Complete and confirm specifications (see Outliers & Reference limit discussions, below)
           https://github.com/phuse-org/phuse-scripts/tree/master/whitepapers/specification
       * RED color for values outside pre-defined reference limits
@@ -81,7 +84,7 @@ end HEADER ***/
       EXECUTE ONE TIME only as needed
       NB: The following line is necessary only when PhUSE/CSS utilities are NOT in your default AUTOCALL paths
 
-      OPTIONS sasautos=(%sysfunc(getoption(sasautos)) "C:\-YOUR-LOCATION-\phuse-scripts\whitepapers\utilities");
+      OPTIONS sasautos=(%sysfunc(getoption(sasautos)) "C:\CSS\phuse-scripts\whitepapers\utilities");
 
     ***/
 
