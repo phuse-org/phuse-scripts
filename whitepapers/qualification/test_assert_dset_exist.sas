@@ -1,15 +1,15 @@
 /***
-  Qualification tests for PhUSE/CSS utility macro ASSERT_DS_EXIST
+  Qualification tests for PhUSE/CSS utility macro ASSERT_DSET_EXIST
 
   SETUP:  Ensure that PhUSE/CSS utilities are in the AUTOCALL path
 
   TEST 1: Detection of data set in WORK library
           Certification & Confirmation: Expected log message that all tests pass
-            NOTE: (TEST_ASSERT_DS_EXIST) PASS all tests, T1-C2-A T1-C2-B T1-C2-C T1-C2-D
+            NOTE: (TEST_ASSERT_DSET_EXIST) PASS all tests, T1-C2-A T1-C2-B T1-C2-C T1-C2-D
 
   TEST 2: Detection of data set in PERMANENT library
           Certification & Confirmation: Expected log message that all tests pass
-            NOTE: (TEST_ASSERT_DS_EXIST) PASS all tests, T2-C1-A T2-C1-B T2-C1-C
+            NOTE: (TEST_ASSERT_DSET_EXIST) PASS all tests, T2-C1-A T2-C1-B T2-C1-C
 
   TEST 3: Test of non-existent data sets produce expected log messages
           Certification: Manual check that log messages are correct, and
@@ -60,7 +60,7 @@
       %if 0 = %assert_dset_exist(work.class) %then %let pass = &pass. &id;
       %else %let fail = &fail. &id;
 
-      %if 0 = %length(&fail) %then %put NOTE: (TEST_ASSERT_DS_EXIST) PASS all tests, &pass;
+      %if 0 = %length(&fail) %then %put NOTE: (TEST_ASSERT_DSET_EXIST) PASS all tests, &pass;
       %else %do;
         %put PASS these tests, &pass;
         %put FAIL these tests, &fail;
@@ -94,7 +94,7 @@
       %if 0 = %assert_dset_exist(work.cLAss) %then %let pass = &pass. &id;
       %else %let fail = &fail. &id;
 
-      %if 0 = %length(&fail) %then %put NOTE: (TEST_ASSERT_DS_EXIST) PASS all tests, &pass;
+      %if 0 = %length(&fail) %then %put NOTE: (TEST_ASSERT_DSET_EXIST) PASS all tests, &pass;
       %else %do;
         %put PASS these tests, &pass;
         %put FAIL these tests, &fail;
@@ -130,7 +130,7 @@
       %if 0 = %assert_dset_exist(sashelp.class_modified) %then %let pass = &pass. &id;
       %else %let fail = &fail. &id;
 
-      %if 0 = %length(&fail) %then %put NOTE: (TEST_ASSERT_DS_EXIST) PASS all tests, &pass;
+      %if 0 = %length(&fail) %then %put NOTE: (TEST_ASSERT_DSET_EXIST) PASS all tests, &pass;
       %else %do;
         %put PASS these tests, &pass;
         %put FAIL these tests, &fail;
