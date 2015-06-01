@@ -25,7 +25,7 @@
     Ensure PhUSE/CSS utilities are in the AUTOCALL path
     NB: This line is not necessary if PhUSE/CSS utilities are in your default AUTOCALL paths
 
-    OPTIONS sasautos=(%sysfunc(getoption(sasautos)) "C:\_Offline_\CSS\phuse_code\whitepapers\utilities");
+    OPTIONS sasautos=(%sysfunc(getoption(sasautos)) "C:\CSS\phuse-scripts\whitepapers\utilities");
 
   ***/
 

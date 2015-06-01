@@ -4,17 +4,24 @@
   SETUP:  Ensure that PhUSE/CSS utilities are in the AUTOCALL path
 
   TEST 1: FAIL when critical macros and symbols are not available
+
   TEST 2: PASS SAS version, macros and symbols available
           Windows test: Warn that UNIX OS is not supported
           Not case sensitive for OS, macros and symbols names
           
-          
 ***/
 
-options sasautos=SASAUTOS MAUTOSOURCE MRECALL LS=MAX PS=MAX;
-options sasautos=(%sysfunc(getoption(sasautos)), 'U:\My Documents\My Sas Files\CSS\sasmacros');
-%put [ %sysfunc(getoption(sasautos)) ];
 
+*--- SETUP ---*;
+
+  /*** EXECUTE ONE TIME only as needed
+
+    Ensure PhUSE/CSS utilities are in the AUTOCALL path
+    NB: This line is not necessary if PhUSE/CSS utilities are in your default AUTOCALL paths
+
+    OPTIONS sasautos=(%sysfunc(getoption(sasautos)) "C:\CSS\phuse-scripts\whitepapers\utilities");
+
+  ***/
 
 
 %macro test(macname);
@@ -23,7 +30,6 @@ options sasautos=(%sysfunc(getoption(sasautos)), 'U:\My Documents\My Sas Files\C
 %mend test;
 
 %test (assert_depends);
-
 
 %let TEST_SYM = I Exist!;
 
