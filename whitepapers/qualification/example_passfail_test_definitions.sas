@@ -11,7 +11,7 @@
   %* return result in-line *;
   %local result;
 
-  %if %length(&pnum) > 0 %then %let result = %sysevalf(&pnum + &knum);
+  %if %length(&knum) > 0 %then %let result = %sysevalf(&pnum + &knum);
   %else %let result = &pnum;
 
   &result
@@ -35,11 +35,13 @@ proc sql;
     values('add2nums', 'a2n_001', 'add 2 positive numbers in-line', 'S', '2', '8', '10', ' ')
     values('add2nums', 'a2n_002', 'add 2 negative numbers in-line', 'S', '-4', '-6', '-10', ' ')
     values('add2nums', 'a2n_003', 'add a pos and a neg num in-line', 'S', '2', '-6', '-4', ' ')
-    values('add2nums', 'a2n_004', 'multiple macro calls, in-line result', 'S', '2|-4|2', '8|-6|-6', '-4',
+    values('add2nums', 'a2n_004', 'provide just one number, PNUM', 'S', '2', ' ', '2', ' ')
+    values('add2nums', 'a2n_005', 'provide just one number, KNUM', 'S', ' ', '-6', '-6', ' ')
+    values('add2nums', 'a2n_006', 'multiple macro calls, in-line result', 'S', '2|-4|2', '8|-6|-6', '-4',
            '%eval(_MACCALL1_ + _MACCALL2_ + _MACCALL3_)')
   ;
 quit;
 
 
-%util_passfail (my_test_definitions, debug=Y);
+%*util_passfail (my_test_definitions, debug=Y);
 %util_passfail (my_test_definitions, debug=N);

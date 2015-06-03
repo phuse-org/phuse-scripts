@@ -1,0 +1,295 @@
+NOTE: Copyright (c) 2002-2008 by SAS Institute Inc., Cary, NC, USA.
+NOTE: SAS (r) Proprietary Software 9.2 (TS2M3)
+      Licensed to F. HOFFMANN LA ROCHE AG, Site 50701490.
+NOTE: This session is executing on the X64_VSPRO  platform.
+
+
+
+NOTE: SAS initialization used:
+      real time           4.92 seconds
+      cpu time            2.79 seconds
+
+1        OPTIONS sasautos=(%sysfunc(getoption(sasautos))
+1  ! "C:\CSS\phuse-scripts\whitepapers\utilities");
+
+2    /***
+3      EXAMPLE of how to create a test-definition data set for UTIL_PASSFAIL to execute
+4      NB: DD published this macro at PhUSE 2011. The paper online provides additional detail
+5        http://www.lexjansen.com/phuse/2011/ad/AD04.pdf
+6    ***/
+7
+8
+9    * TRIVIAL MACRO that simply adds 2 numbers together, returning the result in-line *;
+10
+11   %macro add2nums (pnum, knum=);
+12     %* return result in-line *;
+13     %local result;
+14
+15     %if %length(&knum) > 0 %then %let result = %sysevalf(&pnum + &knum);
+16     %else %let result = &pnum;
+17
+18     &result
+19   %mend add2nums;
+20
+21
+22   proc sql;
+23     create table my_test_definitions
+24       ( test_mac  char(32)  label='Name of macro to test',
+25         test_id   char(12)  label='Test ID for ADD2NUMS',
+26         test_dsc  char(80)  label='Test Description',
+27         test_type char(10)  label='Test Type (Macro var, String-<B|C|L|T>, Data set, In data
+27 ! step)',
+28         pparm_pnam char(8)  label='Test values for the positional parameter PNUM',
+29         kparm_knum char(8)  label='Test values for the keyword parameter KNUM',
+30         test_expect char(8) label='EXPECTED test results for each call to ADD2NUMS',
+31         test_wrap char(50)  label='Wrapper code with _MACCALL<i>_ placeholders'
+32       )
+33     ;
+NOTE: Table WORK.MY_TEST_DEFINITIONS created, with 0 rows and 8 columns.
+34
+35     insert into my_test_definitions
+36       values('add2nums', 'a2n_001', 'add 2 positive numbers in-line', 'S', '2', '8', '10', ' ')
+37       values('add2nums', 'a2n_002', 'add 2 negative numbers in-line', 'S', '-4', '-6', '-10', '
+37 !  ')
+38       values('add2nums', 'a2n_003', 'add a pos and a neg num in-line', 'S', '2', '-6', '-4', '
+38 ! ')
+39       values('add2nums', 'a2n_004', 'provide just one number, PNUM', 'S', '2', ' ', '2', ' ')
+40       values('add2nums', 'a2n_005', 'provide just one number, KNUM', 'S', ' ', '-6', '-6', ' ')
+41       values('add2nums', 'a2n_006', 'multiple macro calls, in-line result', 'S', '2|-4|2',
+41 ! '8|-6|-6', '-4',
+42              '%eval(_MACCALL1_ + _MACCALL2_ + _MACCALL3_)')
+43     ;
+NOTE: 6 rows were inserted into WORK.MY_TEST_DEFINITIONS.
+
+44   quit;
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.09 seconds
+      cpu time            0.09 seconds
+
+
+45
+46
+47   %*util_passfail (my_test_definitions, debug=Y);
+48   %util_passfail (my_test_definitions, debug=N);
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.03 seconds
+
+
+
+NOTE: There were 6 observations read from the data set WORK.MY_TEST_DEFINITIONS.
+NOTE: The data set WORK.CSS_PASSFAIL has 6 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.02 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE (BUILD_MACRO_CALLS): > a2n_001 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %add2nums( 2, knum=8)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > a2n_002 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %add2nums( -4, knum=-6)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > a2n_003 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %add2nums( 2, knum=-6)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > a2n_004 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %add2nums( 2)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > a2n_005 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %add2nums( knum=-6)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > a2n_006 , 3 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %add2nums( 2, knum=8)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 2
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 2 %add2nums( -4, knum=-6)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 3
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 3 %add2nums( 2, knum=-6)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE: There were 6 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 6 observations and 17 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.07 seconds
+      cpu time            0.07 seconds
+
+
+
+NOTE: There were 1 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD3956\#LN00016,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=03Jun2015:16:18:00,
+      Create Time=03Jun2015:16:18:00
+
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 6 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 6 observations and 15 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.06 seconds
+      cpu time            0.04 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD3956\#LN00016,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=03Jun2015:16:18:00,
+      Create Time=03Jun2015:16:18:00
+
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 6 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 6 observations and 15 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.05 seconds
+      cpu time            0.03 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD3956\#LN00016,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=03Jun2015:16:18:00,
+      Create Time=03Jun2015:16:18:00
+
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 6 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 6 observations and 15 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.05 seconds
+      cpu time            0.06 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD3956\#LN00016,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=03Jun2015:16:18:01,
+      Create Time=03Jun2015:16:18:00
+
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 6 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 6 observations and 15 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.05 seconds
+      cpu time            0.06 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD3956\#LN00016,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=03Jun2015:16:18:01,
+      Create Time=03Jun2015:16:18:00
+
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 6 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 6 observations and 15 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.04 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD3956\#LN00016,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=03Jun2015:16:18:01,
+      Create Time=03Jun2015:16:18:00
+
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 6 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 6 observations and 15 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.05 seconds
+      cpu time            0.03 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: 13 lines were written to file PRINT.
+NOTE: There were 6 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 6 observations and 15 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.06 seconds
+      cpu time            0.04 seconds
+
+
+

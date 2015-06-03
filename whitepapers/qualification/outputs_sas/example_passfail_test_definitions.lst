@@ -1,0 +1,14 @@
+                                                                 16:16 Wednesday, June 3, 2015   1
+
+### -----
+###
+### ADD2NUMS Overall: ALL TESTS PASSED - 6
+###
+### -----
+
+   001   a2n_001     add 2 positive numbers in-line
+   002   a2n_002     add 2 negative numbers in-line
+   003   a2n_003     add a pos and a neg num in-line
+   004   a2n_004     provide just one number, PNUM
+   005   a2n_005     provide just one number, KNUM
+   006   a2n_006     multiple macro calls, in-line result
