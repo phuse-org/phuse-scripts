@@ -1,0 +1,12 @@
+                                                                                                                                                                                                                               09:52 Wednesday, June 3, 2015  34
+
+### -----
+###
+### ASSERT_COMPLETE_REFDS Overall: ALL TESTS PASSED - 4
+###
+### -----
+
+   001   refds_01_a_i   single num key, single related dset, extra REF rec allowed
+   002   refds_01_a_ii  single num key, single related dset, extra REL rec NOT allowed
+   003   refds_01_b_i   single char key, single related dset, extra REF rec allowed
+   004   refds_01_b_ii  single char key, single related dset, extra REL rec NOT allowed

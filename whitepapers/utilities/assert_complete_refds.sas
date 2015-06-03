@@ -16,7 +16,7 @@
   Notes:
     * 1st dset is REFERENCE DATA SET, such as ADSL. 
     * Remaining data set should contain only obs, according to KEYS, that are in 1st dset.
-    * IF UNEXPECTED OBS appear in any measurements data set, the macro will put ERRORs to the log
+    * IF UNEXPECTED OBS appear in any measurements data set, the macro creates WORK.FAIL_CRDS and puts log ERRORs
     * NO DEBUGGING - User must ensure that listed DSETS contain KEYS, and both lists are non-missing
 
   Author: Dante Di Tommaso
@@ -46,7 +46,7 @@
       %end;
 
       if not in_ds1 then do;
-        put "ERROR: (ASSERT_COMPLETE_REFDS) Result if FAIL. Obs missing from reference dset %upcase(%scan(&dsets,1,%str( ))): "
+        put "ERROR: (ASSERT_COMPLETE_REFDS) Result is FAIL. Obs missing from reference dset %upcase(%scan(&dsets,1,%str( ))): "
             &keys %do idx = 1 %to &ndsets; in_ds&idx= %end;;
         call symput('OK', '0');
       end;
@@ -55,6 +55,8 @@
     %if &OK %then %put NOTE: (ASSERT_COMPLETE_REFDS) Result is PASS. %upcase(%scan(&dsets,1,%str( ))) includes all subjects.;
 
     proc datasets nolist library=work;
-      delete %do idx = 1 %to &ndsets; crds_dset&idx %end; fail_crds;
+      delete %do idx = 1 %to &ndsets; crds_dset&idx %end;
+             %if &OK %then fail_crds;
+      ;
     quit;
   %mend assert_complete_refds;

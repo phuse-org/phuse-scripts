@@ -21,7 +21,7 @@
 proc sql;
   create table my_test_definitions
     ( test_mac  char(32)  label='Name of macro to test',
-      test_id   char(12)  label='Test ID for <TEST_MAC>',
+      test_id   char(12)  label='Test ID for ADD2NUMS',
       test_dsc  char(80)  label='Test Description',
       test_type char(10)  label='Test Type (Macro var, String-<B|C|L|T>, Data set, In data step)',
       pparm_pnam char(8)  label='Test values for the positional parameter PNUM',

@@ -71,13 +71,15 @@
   NB: TEST_TYPE   < M | S-BCLT | D | I > determines test logic & processing of response
                   String test "S" can include post-processing instructions "-CLT" to
                               compBl(), Compress(), Left(), or Trim() string results in order specified
-  NB: TEST_EXPECT results of test macro calls. For [D] & [I] tests, must be space-delim pairs of =-dlim DSET NAME assertions
-                  that provide the EXPECTED and RESULTING data sets.
-                  EG: "exp1=res1 exp2=res2" indicates that the macro call(s) produce(s) 2 data sets: res1 & res2
-                      RES1 should match EXP1, and RES2 should match EXP2.
+  NB: TEST_EXPECT results of test macro calls. For [D] & [I] tests, must be either
+                    1. space-delim pairs of =-dlim NAMES of EXPECTED and RESULTING data sets, or
+                       EG: "exp1=res1 exp2=res2" asserts that the macro call produces 2 data sets: res1 & res2
+                           RES1 should match EXP1, and RES2 should match EXP2.
+                    2. negated name of a data set that should NOT exist
+                       EG: "-results" or "-work.results" asserts that no RESULTS data set should exist
                !! + NB: Order matters - "EXPECT=RESULT". Macro DELETES all right-hand (RESULT) dsets after each test
                         so that tests are independent.
-                  + Expected dsets must exist in WORK prior to invoking this macro
+                  + Expected dsets must exist in WORK prior to executing the PASS/FAIL tests
                   + Expected dsets can be re-used in multiple tests (this macro does not alter them)
                   + Expected dsets must not be altered by any of the test macro calls (violates test independence)
                   + IE, macro calls and TEST_WRAP code in suite of tests should not alter any Expected dset
@@ -619,7 +621,18 @@
 
         %let good_compare = 0;
 
-        %if %sysfunc(exist(&dset_exp)) & %sysfunc(exist(&dset_res)) %then %do;
+        %if %qsubstr(&dset_exp,1,1) = %quote(-) %then %do;
+          %* This is a data set that should NOT exist after the macro call *;
+          %if not %sysfunc(exist(%substr(&dset_exp,2))) %then %do;
+            %let test_result  = &test_result &dset_exp;
+            %let good_compare = 1;
+          %end;
+          %else %do;
+            %let test_result  = &test_result %substr(&dset_exp,2) EXISTS;
+            %let good_compare = 0;
+          %end;
+        %end;
+        %else %if %sysfunc(exist(&dset_exp)) & %sysfunc(exist(&dset_res)) %then %do;
           proc compare base=&dset_exp compare=&dset_res noprint &compmeth;
           quit;
 
