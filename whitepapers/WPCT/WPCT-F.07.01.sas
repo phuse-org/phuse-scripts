@@ -89,9 +89,15 @@ end HEADER ***/
     ***/
 
 
-    %*--- 2a) ACCESS PhUSE/CSS test data, and create work copy with prefix "CSS_" ---*;
+    %*--- 2a) ACCESS data, by default PhUSE/CSS test data, and create work copy with prefix "CSS_" ---*;
+    %*---     NB: If remote access to test data files does not work, see local override, below.    ---*;
       %util_access_test_data(adsl)
       %util_access_test_data(advs)
+
+      *--- NB: For CSS/PhUSE test data, override remote access with a local path, if needed ---*;
+        %* %util_access_test_data(adsl, local=C:\CSS\phuse-scripts\scriptathon2014\data\);
+        %* %util_access_test_data(advs, local=C:\CSS\phuse-scripts\scriptathon2014\data\);
+
 
     *--- 2b) USER SUBSET of data, to limit number of box plot outputs, and to shorten Tx labels ---*;
       %macro shorten_trt_name(ori_var, new_var);
