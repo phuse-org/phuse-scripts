@@ -12,6 +12,7 @@
 #*red plots for outside normal range 
 #*plot means?
 #*move table closer below plot?
+#*annotations
 
 #TESTING and QUALIFICATION:
 #DEVELOP STAGE
@@ -34,8 +35,8 @@ demofilename <- "dm.csv"
 #test or parameter to be analyzed
 testname <- "CHOL"
 yaxislabel <- "Cholesterol (mg/dL)"
-#number of digits in table
-dignum <- 2
+#number of digits in table, sd = dignum +1
+dignum <- 1
 
 #functions to be called
 buildtable <- function(avalue, dfname, by1, by2, dignum){
@@ -43,6 +44,7 @@ buildtable <- function(avalue, dfname, by1, by2, dignum){
   summary <- eval(dfname)[,list(
     n = .N,
     mean = round(mean(eval(avalue), na.rm = TRUE), digits=dignum),
+    sd = round(sd(eval(avalue), na.rm = TRUE), digits=dignum+1),
     min = round(min(eval(avalue), na.rm = TRUE), digits=dignum),
     q1 = round(quantile(eval(avalue), .25, na.rm = TRUE), digits=dignum),
     mediam = round(median(eval(avalue), na.rm = TRUE), digits=dignum),
@@ -88,12 +90,12 @@ table_summary <- data.frame(t(summary))
 
 t1 <- tableGrob(table_summary, gpar.coretext = gpar(fontsize = 12), show.colnames = FALSE)
 #Output to TIFF
-tiff(file.path(outputdirectory,"plot.TIFF"), width = 1200, height = 600, units = "px", pointsize = 12)
+tiff(file.path(outputdirectory,"plot.TIFF"), width = 1200, height = 1000, units = "px", pointsize = 12)
 grid.arrange(p1, t1, ncol = 1)
 dev.off()
 
 # Optionally, use JPEG
-#jpeg(file.path(outputdirectory,"plot.JPEG"), , width = 720, height = 1280, units = "px", pointsize = 12)
-#grid.arrange(p1, t1, ncol = 1)
-#dev.off()
+jpeg(file.path(outputdirectory,"plot.JPEG"), , width = 1200, height = 1000, units = "px", pointsize = 12)
+grid.arrange(p1, t1, ncol = 1)
+dev.off()
  
