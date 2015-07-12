@@ -2,7 +2,7 @@
 # Display:     Figure 7.1 Box plot - Measurements by Analysis Timepoint, Visit and Planned Treatment
 # White paper: Central Tendency
 # Specs:       https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/specification/    !YML needed!
-# Output:      https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/WPCT/outputs_sas/WPCT-F.07.01_Box_plot_DIABP_by_visit_for_timepoint_815.pdf
+# Output:      https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/WPCT/outputs_r/
 # Contributors: Jeno Pizarro
 
 #TO DO List for program:
