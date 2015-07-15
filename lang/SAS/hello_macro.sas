@@ -1,3 +1,3 @@
-%macro test;
+%macro hello;
   %put hello;
 %mend;
