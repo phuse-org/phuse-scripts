@@ -23,16 +23,8 @@
       * NB: Search for "TO DO" without quotes, for placeholders in the code
       * Complete and confirm specifications (see Outliers & Reference limit discussions, below)
           https://github.com/phuse-org/phuse-scripts/tree/master/whitepapers/specification
-      * RED color for values outside pre-defined reference limits
-          - See discussion in section 7.1
-          - See Figure 6.1 Explanation of Box Plot, from SAS/STAT user guide
-          - Symbol for IQR outliers
-          - Apply RED color for values outside pre-defined reference limits
-          - EG, include ANRLO and ANRHI in dependencies and program logic
-      * Confirm meaning of "N" in summary table
-          - Population size?
-          - Sample size?
-          - Should display distinguish between "N" (pop), "n" (samples), and pop with NO measures?
+      * For annotated RED CIRCLEs outside normal range limits
+          UPDATE the test data so that default outputs have some CIRCLEs that are not also RED.
       * Reference limit lines. Provide options for several scenarios (see explanation in White Paper):
           - NONE:    DEFAULT. no reference lines
           - UNIFORM: reference limits are uniform for entire population
@@ -45,6 +37,7 @@
           - ALL:     reference limits vary across selected population (e.g., based on some demographic or lab)
                      display all reference lines, pairing low/high limits by color and line type
                      NB: discourage, since creates confusion for reviewers
+      * CHECK LOGIC - see TO DO, below. Can temp dsets left over from one loop interfer a subsequent loop?
 
 end HEADER ***/
 
@@ -74,6 +67,9 @@ end HEADER ***/
 
        MAX_BOXES_PER_PAGE:
              Maximum number of boxes to display per plot page (see "Notes", above)
+
+       OUTPUTS_FOLDER:
+             Location to write PDF outputs (WITHOUT final back- or forward-slash)
 
   ***/
 
@@ -140,6 +136,7 @@ end HEADER ***/
       %let a_fl = anl01fl;
 
       %let max_boxes_per_page = 20;
+      %let outputs_folder = C:\CSS\phuse-scripts\whitepapers\WPCT\outputs_sas;
 
   /*** end USER PROCESSING AND SETTINGS
     RELAX.
@@ -216,9 +213,15 @@ end HEADER ***/
     By Visit and Planned Treatment.
 
     In case of many visits and planned treatments, each box plot will use multiple pages.
+
+    CLEANUP = O blocks the macro from deleting temp data sets after the last parameter & timepoint loop
+
+    TO DO: Confirm whether temp data sets should be explicitly deleted after each parameter & timepoint loop.
+           Could a left-over temp data set interfer with a subsequent loop?
+           Or are temp dsets always initialized within each loop?
   ***/
 
-    %macro boxplot_each_param_tp(plotds=css_anadata);
+    %macro boxplot_each_param_tp(plotds=css_anadata, cleanup=1);
       %local pdx tdx;
 
       %do pdx = 1 %to &paramcd_n;
@@ -288,18 +291,23 @@ end HEADER ***/
           /*** Create TIMEPT var, Calculate visit ranges for pages
             TIMEPT variable controls the location of by-treatment boxes along the x-axis
             Create symbol BOXPLOT_TIMEPT_RANGES, a |-delimited string that groups visits onto pages
-              Example of BOXPLOT_TIMEPT_RANGES: 0 <= timept <7|7 <= timept <12|
+              Example of BOXPLOT_TIMEPT_RANGES: 0 <= timept < 7|7 <= timept < 12|
 
-
-            TO DO
-              * Update macro to also return an ANNOTATE data set, to highlight measures outside reference ranges
+            NB: OUTPUT DSET of %util_prep_shewhart_data has _TP suffix.
 
           ***/
 
             %util_prep_shewhart_data(css_plot, 
                                      vvisn=avisitn, vtrtn=trtpn, vtrt=trtp, vval=aval,
-                                     numtrt=&trtn, numvis=&visn)
+                                     numtrt=&trtn, numvis=&visn,
+                                     alsokeep=ANRLO ANRHI)
 
+            %util_annotate_outliers(css_plot_tp, 
+                                    css_annotate,
+                                    x_var    = TIMEPT,
+                                    y_var    = AVAL,
+                                    low_var  = ANRLO,
+                                    high_var = ANRHI )
 
           *--- Graphics Settings ---*;
             options orientation=landscape;
@@ -314,7 +322,7 @@ end HEADER ***/
 
 
           *--- PDF output destination ---*;
-            ods pdf file="outputs_sas\WPCT-F.07.01_Box_plot_&&paramcd_val&pdx.._by_visit_for_timepoint_&&atptn_val&tdx...pdf";
+            ods pdf file="&outputs_folder\WPCT-F.07.01_Box_plot_&&paramcd_val&pdx.._by_visit_for_timepoint_&&atptn_val&tdx...pdf";
 
           *--- FINALLY, A Graph - Multiple pages in case of many visits/treatments ---*;
             %local vdx nxtvis;
@@ -324,7 +332,8 @@ end HEADER ***/
 
               proc shewhart data=css_plot_tp (where=( &nxtvis ));
                 boxchart aval*timept (max q3 median q1 min std mean n trtp) = trtp /
-                         boxstyle=schematic
+                         annotate = css_annotate (where=( %sysfunc(tranwrd(&nxtvis, timept, x)) ))
+                         boxstyle = schematic
                          notches
                          stddeviations
                          nolegend
@@ -335,8 +344,8 @@ end HEADER ***/
                          blockrep
                          haxis=axis1
                          vaxis=axis2
-                         idsymbol=dot
-                         idcolor=red
+                         idsymbol=circle
+                         idcolor=black
                          nolimits
                          readphase = all
                          phaseref
@@ -368,11 +377,13 @@ end HEADER ***/
       %end; %*--- PDX loop ---*;
 
       *--- Clean up temp data sets required to create box plots ---*;
-        proc datasets library=WORK memtype=DATA nolist nodetails;
-          delete css_plot css_plot_tp css_nextparam css_nexttimept css_stats;
-        quit;
-
+        %if &cleanup %then %do;
+          proc datasets library=WORK memtype=DATA nolist nodetails;
+            delete css_plot css_plot_tp css_nextparam css_nexttimept css_stats;
+          quit;
+        %end;
     %mend boxplot_each_param_tp;
+
     %boxplot_each_param_tp;
 
   /*** END boxplotting ***/

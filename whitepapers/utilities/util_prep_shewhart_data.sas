@@ -41,7 +41,7 @@ OUTPUT
                          Example: 0 <= timept <7|7 <= timept <12|
 ***/
 
-%macro util_prep_shewhart_data(ds, vvisn=, vtrtn=, vtrt=, vval=, numtrt=, numvis=);
+%macro util_prep_shewhart_data(ds, vvisn=, vtrtn=, vtrt=, vval=, numtrt=, numvis=, alsokeep=);
   %global BOXPLOT_TIMEPT_RANGES;
   %local OK;
   %let OK = 1;
@@ -55,7 +55,7 @@ OUTPUT
       set &ds end=NoMore;
       by &vvisn &vtrtn;
 
-      keep &vval timept &vtrtn &vtrt max q3 median q1 min std mean n _PHASE_;
+      keep &vval timept &vtrtn &vtrt &alsokeep max q3 median q1 min std mean n _PHASE_;
 
       /*** 
         TIMEPT increments are arbitrary, but nec for SAS to separate trt groups along the x-axis
@@ -81,7 +81,7 @@ OUTPUT
             *--- Current visit is enough for this plot, no more boxes, next visit will be too much ---*;
             boxplot_timept_ranges = strip(boxplot_timept_ranges)
                                     !!strip(compbl(  put(last_timept_end,8.-L)
-                                                     !!' <= timept <'!!
+                                                     !!' <= timept < '!!
                                                      put(ceil(timept),8.-L)  ))
                                     !!'|';
             boxes_on_page = 0;
@@ -90,7 +90,7 @@ OUTPUT
           else if NoMore then do;
             boxplot_timept_ranges = strip(boxplot_timept_ranges)
                                     !!strip(compbl(  put(last_timept_end,8.-L)
-                                    !!' <= timept <'
+                                    !!' <= timept < '
                                     !!put(timept,8.-L)  ))!!'|';
           end;
         end;
