@@ -38,6 +38,10 @@
                      display all reference lines, pairing low/high limits by color and line type
                      NB: discourage, since creates confusion for reviewers
       * CHECK LOGIC - see TO DO, below. Can temp dsets left over from one loop interfer a subsequent loop?
+      * LABS & ECG - ADaM VS/LAB/ECG domains have some different variables and variable naming conventions.
+          - What variables are used for LAB/ECG box plots?
+          - What visits/ time points are relevant to LAB/ECG box plots?
+          - Handle all of these within one template program? Or separate them (and accept some redundancy)?
 
 end HEADER ***/
 
@@ -258,9 +262,7 @@ end HEADER ***/
 
           /*** TO DO
             With just these data selected for analysis and display
-            - REF LIMIT OUTLIERS: Determine outlier values, based on Reference limits
-                                  (could be part of %util_prep_shewhart_data(), below)
-            - REF LIMIT LINES:    Determine whether to include reference lines
+            - REF LIMIT LINES:    Determine whether/which reference lines to include
           ***/
 
 
