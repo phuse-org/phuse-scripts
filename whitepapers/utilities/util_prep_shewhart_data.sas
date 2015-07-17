@@ -1,44 +1,48 @@
 /*** Prep box plot data for PROC SHEWHART
 
-This macro prepares measurement data for SAS/QC PROC SHEWHART, which has several conventions for plotting data.
+  This macro prepares measurement data for SAS/QC PROC SHEWHART, which has several conventions for plotting data.
 
-PROC SHEWHART creates the summary table of stats from "block" variable (typically "stats", for us)
-              and reads "phases" from a special _PHASE_ variable (typically "visits", for us)
+  PROC SHEWHART creates the summary table of stats from "block" variable (typically "stats", for us)
+                and reads "phases" from a special _PHASE_ variable (typically "visits", for us)
 
-TO DO
-  * List of STATS used for summary table "blocks" could be customizable
-  * Option to produce an ANNOTATE data set, based on measured values, to highlight measures outside reference ranges
+  TO DO
+    * List of STATS used for summary table "blocks" could be customizable
+    * Option to produce an ANNOTATE data set, based on measured values, to highlight measures outside reference ranges
 
-INPUTS
-  DS          Data set including (1) measurements to plot, and (2) vars to be used for "block" labels
-    REQUIRED
-    Syntax:   Expecting one-level WORK data set name
-    Example:  PLOT_DATA
-  VVISN
-    REQUIRED
-    Syntax:   Variable on DS containing visit numbers
-    Example:  AVISITN
-  VTRTN
-    REQUIRED
-    Syntax:   Variable on DS containing treatment numbers
-    Example:  TRTPN
-  VTRT
-    REQUIRED
-    Syntax:   Variable on DS containing treatment names (kept in data sets for plotting)
-    Example:  TRTP
-  VVAL
-    REQUIRED
-    Syntax:   Variable on DS containing numeric measurements (kept in data sets for plotting)
-    Example:  AVAL
+  INPUTS
+    DS          Data set including (1) measurements to plot, and (2) vars to be used for "block" labels
+      REQUIRED
+      Syntax:   Expecting one-level WORK data set name
+      Example:  PLOT_DATA
+    VVISN
+      REQUIRED
+      Syntax:   Variable on DS containing visit numbers
+      Example:  AVISITN
+    VTRTN
+      REQUIRED
+      Syntax:   Variable on DS containing treatment numbers
+      Example:  TRTPN
+    VTRT
+      REQUIRED
+      Syntax:   Variable on DS containing treatment names (kept in data sets for plotting)
+      Example:  TRTP
+    VVAL
+      REQUIRED
+      Syntax:   Variable on DS containing numeric measurements (kept in data sets for plotting)
+      Example:  AVAL
 
-  NUMTRT              REQUIRED: Global sym with Number of treatments, e.g., calculate prior with UTIL_LABELS_FROM_VAR
-  NUMVIS              REQUIRED: Global sym with Number of visits, e.g., calculate prior with UTIL_COUNT_UNIQUE_VALUES
-  MAX_BOXES_PER_PAGE  REQUIRED: Global user setting to limit number of boxes plotted per page
+    NUMTRT              REQUIRED: Number of treatments, e.g., calculate prior with UTIL_COUNT_UNIQUE_VALUES
+    NUMVIS              REQUIRED: Number of visits, e.g., calculate prior with UTIL_COUNT_UNIQUE_VALUES
+    MAX_BOXES_PER_PAGE  REQUIRED: Global user setting to limit number of boxes plotted per page
 
-OUTPUT
-  &DS._TP                Updated data set, including TIMEPT var and _PHASE_ var for SHEWHART box plot
-  BOXPLOT_TIMEPT_RANGES  global symbol indicating TIMEPT subsets for each plot page (to limit boxes per page)
-                         Example: 0 <= timept <7|7 <= timept <12|
+  OUTPUT
+    &DS._TP                Updated data set, including TIMEPT var and _PHASE_ var for SHEWHART box plot
+    BOXPLOT_TIMEPT_RANGES  global symbol indicating TIMEPT subsets for each plot page (to limit boxes per page)
+                           Example: 0 <= timept <7|7 <= timept <12|
+                                                                                             
+  NOTES
+    The spacing of TIMEPT values matches the logic to JITTER annotated outliers in UTIL_ANNOTATE_OUTLIERS.
+
 ***/
 
 %macro util_prep_shewhart_data(ds, vvisn=, vtrtn=, vtrt=, vval=, numtrt=, numvis=, alsokeep=);

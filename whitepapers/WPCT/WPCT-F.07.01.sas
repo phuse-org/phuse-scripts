@@ -307,11 +307,15 @@ end HEADER ***/
                                     x_var    = TIMEPT,
                                     y_var    = AVAL,
                                     low_var  = ANRLO,
-                                    high_var = ANRHI )
+                                    high_var = ANRHI
+                                    /* do not jitter by default
+                                      , jitter   = Y
+                                      , numtrt   = &trtn 
+                                    */ )
 
-          *--- Graphics Settings ---*;
+          *--- Graphics Settings - Default HSIZE and VSIZE are suitable for A4 and letter ---*;
             options orientation=landscape;
-            goptions reset=all hsize=14in vsize=7.5in;
+            goptions reset=all hsize=11.5in vsize=7.5in;
 
             title     justify=left height=1.2 "Box Plot - &&paramcd_lab&pdx by Visit, Analysis Timepoint: &&atptn_lab&tdx";
             footnote1 justify=left height=1.0 'Box plot type=schematic, the box shows median, interquartile range (IQR, edge of the bar), min and max';
@@ -344,7 +348,7 @@ end HEADER ***/
                          blockrep
                          haxis=axis1
                          vaxis=axis2
-                         idsymbol=circle
+                         idsymbol=square
                          idcolor=black
                          nolimits
                          readphase = all
@@ -379,7 +383,7 @@ end HEADER ***/
       *--- Clean up temp data sets required to create box plots ---*;
         %if &cleanup %then %do;
           proc datasets library=WORK memtype=DATA nolist nodetails;
-            delete css_plot css_plot_tp css_nextparam css_nexttimept css_stats;
+            delete css_plot css_plot_tp css_nextparam css_nexttimept css_stats css_annotate;
           quit;
         %end;
     %mend boxplot_each_param_tp;

@@ -1,50 +1,61 @@
 /***
   From input data set such as boxplot data, output an annotate data set to plot
   filled circles for outliers according to normal range criteria
-                                                                                           
-  DSET     data set containing the measurement values and normal range values
-           REQUIRED                                                                         
-           Syntax:  (libname.)memname
-           Example: CSS_PLOTDATA
-  ANNOSET  annotate data set to create, to draw filled circles for outliers
-           REQUIRED
-           Syntax:  (libname.)memname
-           Example: CSS_ANNOTATE
-  X_VAR    X-axis variable, expecting a timepoint variable as initiatize in %util_prep_shewhart_data
-           REQUIRED
-           Syntax:  variable name from &DATASET
-           Example: TIMEPT
-  Y_VAR    variable with measurement data, to test against normal range values on same obs
-           REQUIRED
-           Syntax:  variable name from &DATASET
-           Example: AVAL
-  LOW_VAR  variable with low value of normal range, to test measured value (NB: annotate values with Y_VAR < LOW_VAR)
-           optional
-           Syntax:  variable name from &DATASET
-           Example: ANRLO 
-  HIGH_VAR variable with high value of normal range, to test measured value (NB: annotate values with HIGH_VAR < Y_VAR)
-           optional
-           Syntax:  variable name from &DATASET
-           Example: ANRHI
-  COLOR    color of annotated symbols
-           optional
-           Syntax:  color-specification
-           Example: red (Default color)
-  SIZE     size of annotated symbols, as percentage of graphics area (see HSYS annotate variable)
-           optional
-           Syntax:  size-as-percentage-of-graph-area
-           Example: 5 (Default size)
+             
+  INPUTS                                                                              
+    DSET     data set containing the measurement values and normal range values
+             REQUIRED                                                                         
+             Syntax:  (libname.)memname
+             Example: CSS_PLOTDATA
+    ANNOSET  annotate data set to create, to draw filled circles for outliers
+             REQUIRED
+             Syntax:  (libname.)memname
+             Example: CSS_ANNOTATE
+    X_VAR    X-axis variable, expecting a timepoint variable as initiatize in %util_prep_shewhart_data
+             REQUIRED
+             Syntax:  variable name from &DATASET
+             Example: TIMEPT
+    Y_VAR    variable with measurement data, to test against normal range values on same obs
+             REQUIRED
+             Syntax:  variable name from &DATASET
+             Example: AVAL
 
-  Notes:
-    Provide either LOW_VAR, HIGH_VAR or both.
-    If you provide neither, macro returns a null annotate data set.
+    LOW_VAR  variable with low value of normal range, to test measured value (NB: annotate values with Y_VAR < LOW_VAR)
+             optional
+             Syntax:  variable name from &DATASET
+             Example: ANRLO 
+    HIGH_VAR variable with high value of normal range, to test measured value (NB: annotate values with HIGH_VAR < Y_VAR)
+             optional
+             Syntax:  variable name from &DATASET
+             Example: ANRHI
+    JITTER   N/Y to jitter annotations around the X_VAR value
+             optional - but if used, then NUMTRT is REQUIRED
+             Syntax:  y (default is n)
+             Example: n
+    NUMTRT   Number of treatments, e.g., calculate before with UTIL_COUNT_UNIQUE_VALUES. (See NOTES, below.)
+             optional - but REQUIRED if JITTER = Y
+             Syntax:  integer number of treatments, or macro variable that resolves to an integer
+             Example: 3
+    COLOR    color of annotated symbols
+             optional
+             Syntax:  color-specification
+             Example: red (Default is RED)
+    SIZE     size of annotated symbols, as percentage of graphics area (see HSYS annotate variable)
+             optional
+             Syntax:  size-as-percentage-of-graph-area
+             Example: 2 (Default is 2, to match)
+
+  OUTPUT
+    ANNOSET  an annotate data set that draws filled circles on a plot
+                                                                                           
+  NOTES
+    Provide either LOW_VAR, HIGH_VAR or both. If you provide neither, macro returns a null annotate data set.
+    JITTER: Logic based on ±8% of spacing used for PROC SHEWHART boxplot. See UTIL_PREP_SHEWHART_DATA
+
     http://support.sas.com/documentation/cdl/en/graphref/63022/HTML/default/viewer.htm#annodict-var.htm
     http://support.sas.com/documentation/cdl/en/graphref/63022/HTML/default/viewer.htm#annotate_hsys.htm
     http://support.sas.com/documentation/cdl/en/graphref/63022/HTML/default/viewer.htm#annodict-symbol.htm
 
-  -OUTPUT
-    ANNOSET  an annotate data set that draws filled circles on a plot
-                                                                                           
   Author:          Dante Di Tommaso
 ***/
 
@@ -54,8 +65,10 @@
                               y_var=,
                               low_var=,
                               high_var=,
-                              color=red,
-                              size=2);
+                              jitter=N,
+                              numtrt=,
+                              color=RED,
+                              size=1);
 
   %local OK;
 
@@ -77,8 +90,21 @@
 
       function = 'SYMBOL';
 
-      x = &x_var;
-      y = &y_var;
+      * On the horizontal axis (typically TimePT), introduce user-selected jitter *;
+        x = &x_var;
+        y = &y_var;
+
+        %if %upcase(&jitter) = Y %then %do;
+          %if %length(&numtrt) > 0 and %datatyp(&numtrt) = NUMERIC %then %do;
+            * jitter size is based on ±8% of spacing used for PROC SHEWHART boxplot., *;
+              jitter = 0.08 / (1+&numtrt);
+              jitter = ranuni(29507) * jitter;
+              if ranuni(41385) > 0.5 then jitter = -1 * jitter;
+
+              x = x + jitter;
+          %end;
+          %else %put WARNING: (UTIL_ANNOTATE_OUTLIERS) Unable to jitter annotated symbols based on %upcase(&numtrt) treatments.;
+        %end;
 
       * SIZE variable is percentage of graphic space *;
         hsys = '3';
@@ -105,15 +131,11 @@
 
       %end;
 
-      * Draw an outline circle in black, then fill with user-specified colored dot *;
+      * Draw a filled DOT with user-selected COLOR, then outline CIRCLE in BLACK *;
       length color $%sysfunc(max(5, %length(&color))) text $6;
 
       color = "%upcase(&color)";
       text = 'DOT';
-        OUTPUT;
-      color = 'BLACK';
-      text = 'CIRCLE';
-        OUTPUT;
     run;
 
     %put NOTE: (UTIL_ANNOTATE_OUTLIERS) Successfully created annotate data set %upcase(&ANNOSET).;
