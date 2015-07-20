@@ -25,29 +25,21 @@
           https://github.com/phuse-org/phuse-scripts/tree/master/whitepapers/specification
       * For annotated RED CIRCLEs outside normal range limits
           UPDATE the test data so that default outputs have some CIRCLEs that are not also RED.
-      * Reference limit lines. Provide options for several scenarios (see explanation in White Paper):
-          - NONE:    DEFAULT. no reference lines
-          - UNIFORM: reference limits are uniform for entire population
-                     only display uniform ref lines, to match outlier logic, otherwise no lines
-                     NB: preferred alternative to default (NONE)
-          - NARROW:  reference limits vary across selected population (e.g., based on some demographic or lab)
-                     display reference lines for the narrowest interval
-                     EG: highest of the low limits, lowest of the high limits
-                     NB: discourage, since creates confusion for reviewers
-          - ALL:     reference limits vary across selected population (e.g., based on some demographic or lab)
-                     display all reference lines, pairing low/high limits by color and line type
-                     NB: discourage, since creates confusion for reviewers
+      * TEST reference line options
       * CHECK LOGIC - see TO DO, below. Can temp dsets left over from one loop interfer a subsequent loop?
       * LABS & ECG - ADaM VS/LAB/ECG domains have some different variables and variable naming conventions.
           - What variables are used for LAB/ECG box plots?
           - What visits/ time points are relevant to LAB/ECG box plots?
           - Handle all of these within one template program? Or separate them (and accept some redundancy)?
+          - NB: Currently AVAL, ANRLO, ANRHI, ATPT, ATPTN are hard-coded in this program
 
 end HEADER ***/
 
 
 
-  /*** USER PROCESSING AND SETTINGS
+  /************************************
+   *** USER PROCESSING AND SETTINGS ***
+   ************************************
 
     1) REQUIRED - PhUSE/CSS Utilities macro library.
        These templates require the PhUSE/CSS macro utilities:
@@ -71,6 +63,14 @@ end HEADER ***/
 
        MAX_BOXES_PER_PAGE:
              Maximum number of boxes to display per plot page (see "Notes", above)
+
+       REF_LINES:
+             Option to specify which Normal Range reference lines to include in box plots
+             <NONE | UNIFORM | NARROW | ALL> See discussion in Central Tendency White Paper 
+             NONE    - default. no reference lines on box plot
+             UNIFORM - preferred alternative to default. Only plot LOW/HIGH ref lines if uniform for all obs
+             NARROW  - display only the narrow normal limits: max LOW, and min HIGH limits
+             ALL     - discouraged since displaying ALL reference lines confuses review our data display
 
        OUTPUTS_FOLDER:
              Location to write PDF outputs (WITHOUT final back- or forward-slash)
@@ -140,11 +140,14 @@ end HEADER ***/
       %let a_fl = anl01fl;
 
       %let max_boxes_per_page = 20;
+      %let ref_lines = NONE;
+
       %let outputs_folder = C:\CSS\phuse-scripts\whitepapers\WPCT\outputs_sas;
 
-  /*** end USER PROCESSING AND SETTINGS
-    RELAX.
-    The rest should simply work, or alert you to invalid conditions.
+  /*** end USER PROCESSING AND SETTINGS ***********************************
+   *** RELAX.                                                           ***
+   *** The rest should simply work, or alert you to invalid conditions. ***
+   ************************************************************************
   ***/
 
 
@@ -156,8 +159,7 @@ end HEADER ***/
     For details, see specifications at top
   ***/
 
-    options nocenter mautosource mrecall mprint msglevel=I mergenoby=WARN
-            syntaxcheck dmssynchk obs=MAX ls=max ps=max;
+    options nocenter mautosource mrecall mprint msglevel=I mergenoby=WARN ls=max ps=max;
     goptions reset=all;
     ods show;
 
@@ -199,7 +201,6 @@ end HEADER ***/
 
     Number of planned treatments - used for handling treatments categories
       &TRTN
-
   ***/
 
     %*--- Parameters: Number (&PARAMCD_N), Names (&PARAMCD_NAM1 ...) and Labels (&PARAMCD_LAB1 ...) ---*;
@@ -226,10 +227,14 @@ end HEADER ***/
   ***/
 
     %macro boxplot_each_param_tp(plotds=css_anadata, cleanup=1);
+
       %local pdx tdx;
 
       %do pdx = 1 %to &paramcd_n;
-        *--- Work with one PARAMETER, but start with ALL TIMEPOINTS ---*;
+
+        /*** LOOP 1 *****************************************************
+         *** Loop through each PARAMETER, working with ALL TIMEPOINTS ***
+         ****************************************************************/
           data css_nextparam;
             set &plotds (where=(paramcd = "&&paramcd_val&pdx"));
           run;
@@ -240,10 +245,13 @@ end HEADER ***/
         %*--- Analysis Timepoints for this parameter: Num (&ATPTN_N), Names (&ATPTN_NAM1 ...) and Labels (&ATPTN_LAB1 ...) ---*;
           %util_labels_from_var(css_nextparam, atptn, atpt)
 
+
         %do tdx = 1 %to &atptn_n;
 
-          *--- Work with just one TIMEPOINT for this parameter, but ALL VISITS ---*;
-          *--- NB: PROC SORT here is REQUIRED, in order to merge on STAT details, below ---*;
+          /*** LOOP 2 ********************************************************************
+           *** Loop through each TIMEPOINT for this parameter, working with ALL VISITS ***
+           *** NB: PROC SORT here is REQUIRED in order to merge on STAT details, below ***
+           *******************************************************************************/
             proc sort data=css_nextparam (where=(atptn = &&atptn_val&tdx))
                        out=css_nexttimept;
               by avisitn trtpn;
@@ -257,14 +265,6 @@ end HEADER ***/
 
           %*--- Create format string to display MEAN and STDDEV to default sig-digs: &UTIL_VALUE_FORMAT ---*;
             %util_value_format(css_nexttimept, aval)
-
-
-
-          /*** TO DO
-            With just these data selected for analysis and display
-            - REF LIMIT LINES:    Determine whether/which reference lines to include
-          ***/
-
 
 
           *--- Calculate summary statistics, and merge onto measurement data for use as "block" variables ---*;
@@ -290,13 +290,13 @@ end HEADER ***/
                     max    = 'Max';
             run;
 
+
           /*** Create TIMEPT var, Calculate visit ranges for pages
             TIMEPT variable controls the location of by-treatment boxes along the x-axis
             Create symbol BOXPLOT_TIMEPT_RANGES, a |-delimited string that groups visits onto pages
               Example of BOXPLOT_TIMEPT_RANGES: 0 <= timept < 7|7 <= timept < 12|
 
             NB: OUTPUT DSET of %util_prep_shewhart_data has _TP suffix.
-
           ***/
 
             %util_prep_shewhart_data(css_plot, 
@@ -330,11 +330,20 @@ end HEADER ***/
           *--- PDF output destination ---*;
             ods pdf file="&outputs_folder\WPCT-F.07.01_Box_plot_&&paramcd_val&pdx.._by_visit_for_timepoint_&&atptn_val&tdx...pdf";
 
-          *--- FINALLY, A Graph - Multiple pages in case of many visits/treatments ---*;
+
+          /*** LOOP 3 - FINALLY, A Graph ****************************
+           *** - Multiple pages in case of many visits/treatments ***
+           **********************************************************/
             %local vdx nxtvis;
             %let vdx=1;
             %do %while (%qscan(&boxplot_timept_ranges,&vdx,|) ne );
               %let nxtvis = %qscan(&boxplot_timept_ranges,&vdx,|);
+
+              %util_get_reference_lines(css_plot_tp (where=( &nxtvis )),
+                                        nxt_vrefs,
+                                        low_var  =ANRLO,
+                                        high_var =ANRHI,
+                                        ref_lines=&ref_lines)
 
               proc shewhart data=css_plot_tp (where=( &nxtvis ));
                 boxchart aval*timept (max q3 median q1 min std mean n trtp) = trtp /
@@ -350,6 +359,10 @@ end HEADER ***/
                          blockrep
                          haxis=axis1
                          vaxis=axis2
+                         %if %length(&nxt_vrefs) > 0 %then 
+                           vref=&nxt_vrefs
+                           cvref=RED
+                         ;
                          idsymbol=square
                          idcolor=black
                          nolimits
@@ -373,14 +386,15 @@ end HEADER ***/
               run;
 
               %let vdx=%eval(&vdx+1);
-            %end;
+            %end; %* --- LOOP 3 - Pages of box plots, VDX ---*;
 
           *--- Release the PDF output file! ---*;
             ods pdf close;
 
-        %end; %*--- TDX loop ---*;
+        %end; %*--- LOOP 2 - Time Points, TDX ---*;
 
-      %end; %*--- PDX loop ---*;
+      %end; %*--- LOOP 1 - Parameters, PDX ---*;
+
 
       *--- Clean up temp data sets required to create box plots ---*;
         %if &cleanup %then %do;
@@ -388,6 +402,7 @@ end HEADER ***/
             delete css_plot css_plot_tp css_nextparam css_nexttimept css_stats css_annotate;
           quit;
         %end;
+
     %mend boxplot_each_param_tp;
 
     %boxplot_each_param_tp;
