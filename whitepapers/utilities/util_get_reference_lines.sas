@@ -24,8 +24,10 @@
                 (See discussion in Central Tendency white paper.)
               optional
               Syntax:  NONE (default) or UNIFORM (only if LOW & HIGH are uniform) or 
-                       NARROW (max LOW and min HIGH) or ALL (confusing to review)
+                       NARROW (max LOW and min HIGH) or ALL (confusing to review) or
+                       numeric-value(s) to specify reference lines (see second example)
               Example: UNIFORM
+              Example: -5 0 5
 
   OUTPUT
     Global macro var specified in MACVAR with numeric values for reference lines, as required by
@@ -48,7 +50,7 @@
   %if %symexist(&macvar) %then %symdel &macvar;
   %global &macvar;
 
-  %local OK lo_vals hi_vals val_counts range_count;
+  %local OK idx ref_nums lo_vals hi_vals val_counts range_count;
 
   %let OK = %assert_dset_exist( %scan(&dset,1,%str( %()) );
 
@@ -69,14 +71,31 @@
       %let low_var = &high_var;
     %end;
 
-  %if %length(&ref_lines) > 0 and
-      %upcase(&ref_lines) in (UNIFORM NARROW ALL) %then %let ref_lines = %upcase(&ref_lines);
-  %else %let ref_lines = NONE;
+  %*--- REF_LINE must either be a known keyword, or a space-delimited list of numeric values ---*;
+    %let ref_nums = 0;
+
+    %if %upcase(&ref_lines) in (NONE UNIFORM NARROW ALL) %then %let ref_lines = %upcase(&ref_lines);
+    %else %if %length(&ref_lines) > 0 %then %do;
+      %let idx=1;
+      %do %while (%qscan(&ref_lines, &idx, %str( )) ne );
+        %if %datatyp(%qscan(&ref_lines, &idx, %str( ))) ne NUMERIC %then %do;
+          %put ERROR: (UTIL_GET_REFERENCE_LINES) Expecting numeric values only, not "%qscan(&ref_lines, &idx, %str( ))". Suppressing reference lines.;
+          %let ref_lines = NONE;
+          %let ref_nums  = 0;
+        %end;
+        %else %let ref_nums = 1;
+
+        %let idx=%eval(&idx+1);
+      %end;
+    %end;
 
 
-  %if 1 = &OK and 
-      &lhb in (L H B) and 
-      &ref_lines in (UNIFORM NARROW ALL) %then %do;
+  %if 1 = &OK and 1 = &ref_nums %then %do;
+    %let &macvar = &ref_lines;
+  %end;
+  %else %if 1 = &OK and
+            &lhb in (L H B) and 
+            &ref_lines in (UNIFORM NARROW ALL) %then %do;
 
     proc sql noprint;
       select distinct &low_var, &high_var, count(&low_var)+nmiss(&low_var)

@@ -37,6 +37,7 @@
 
       retain max_int 0 max_dec 0;
 
+      length int dec $8;
       valtxt = put(&var, best8.-L);
       int = scan(valtxt, 1, '.');
       dec = scan(valtxt, 2, '.');

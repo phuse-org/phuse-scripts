@@ -20,18 +20,18 @@
 
     TO DO list for program:
 
-      * NB: Search for "TO DO" without quotes, for placeholders in the code
       * Complete and confirm specifications (see Outliers & Reference limit discussions, below)
           https://github.com/phuse-org/phuse-scripts/tree/master/whitepapers/specification
       * For annotated RED CIRCLEs outside normal range limits
           UPDATE the test data so that default outputs have some CIRCLEs that are not also RED.
-      * TEST reference line options
-      * CHECK LOGIC - see TO DO, below. Can temp dsets left over from one loop interfer a subsequent loop?
+      * TEST the reference line options
+      * CHECK LOGIC - see TO DO, below. Can temp dsets left over from one loop interfer with a subsequent loop?
       * LABS & ECG - ADaM VS/LAB/ECG domains have some different variables and variable naming conventions.
           - What variables are used for LAB/ECG box plots?
-          - What visits/ time points are relevant to LAB/ECG box plots?
-          - Handle all of these within one template program? Or separate them (and accept some redundancy)?
-          - NB: Currently AVAL, ANRLO, ANRHI, ATPT, ATPTN are hard-coded in this program
+          - What visits/time-points are relevant to LAB/ECG box plots?
+          - Handle all of these within one template program? 
+            Or separate them (and accept some redundancy)?
+          - NB: Currently vars like AVISIT, AVISITN, ATPT, ATPTN are hard-coded in this program
 
 end HEADER ***/
 
@@ -52,25 +52,35 @@ end HEADER ***/
          - Visits
 
     3) REQUIRED - Key user settings (libraries, data sets, variables and box plot options)
-       S_LB: Libname containing ADaM subject-level data, typically ADSL
-             WORK by default, since step (2) creates the desired WORK subsets.
-       S_DS: Subject-level data set for population counts, typically ADSL.
-       M_LB: Libname containing ADaM measurement data, such as ADVS.
-             WORK by default, since step (2) creates the desired WORK subsets.
-       M_DS: Measuments data set, such as ADVS.
-       P_FL: Population flag variable. 'Y' indicates record is in population of interest.
-       A_FL: Analysis Flag variable.   'Y' indicates that record is selected for analysis.
+       S_LB:   Libname containing ADaM subject-level data, typically ADSL
+               WORK by default, since step (2) creates the desired WORK subsets.
+       S_DS:   Subject-level data set for population counts, typically ADSL.
+
+       M_LB:   Libname containing ADaM measurement data, such as ADVS.
+               WORK by default, since step (2) creates the desired WORK subsets.
+       M_DS:   Measuments data set, such as ADVS.
+       M_VAR:  Variable in M_DS with measurements data, such as AVAL.
+       LO_VAR: Variable in M_DS with LOWER LIMIT of reference range, such as ANRLO.
+               Required to highlight values outside reference range (RED DOT in box plot), and reference lines
+       HI_VAR: Variable in M_DS with UPPER LIMIT of reference range, such as ANRHI.
+               Required to highlight values outside reference range (RED DOT in box plot), and reference lines
+       JITTER: Y (default) or N, to jitter reference range outliers (red dots) in the boxplot.
+               Amount of jitter is based on number of treatment groups (boxes within visit blocks).
+
+       P_FL:  Population flag variable. 'Y' indicates record is in population of interest.
+       A_FL:  Analysis Flag variable.   'Y' indicates that record is selected for analysis.
 
        MAX_BOXES_PER_PAGE:
              Maximum number of boxes to display per plot page (see "Notes", above)
 
        REF_LINES:
              Option to specify which Normal Range reference lines to include in box plots
-             <NONE | UNIFORM | NARROW | ALL> See discussion in Central Tendency White Paper 
+             <NONE | UNIFORM | NARROW | ALL | numeric-value(s)> See discussion in Central Tendency White Paper 
              NONE    - default. no reference lines on box plot
              UNIFORM - preferred alternative to default. Only plot LOW/HIGH ref lines if uniform for all obs
              NARROW  - display only the narrow normal limits: max LOW, and min HIGH limits
              ALL     - discouraged since displaying ALL reference lines confuses review our data display
+             numeric-values - space-delimited list of reference line values, such as a 0 reference line for displays of change.
 
        OUTPUTS_FOLDER:
              Location to write PDF outputs (WITHOUT final back- or forward-slash)
@@ -133,14 +143,18 @@ end HEADER ***/
       %let s_lb = work;
       %let s_ds = adsl_sub;
 
-      %let m_lb = work;
-      %let m_ds = advs_sub;
+      %let m_lb   = work;
+      %let m_ds   = advs_sub;
+      %let m_var  = AVAL;
+      %let lo_var = ANRLO;
+      %let hi_var = ANRHI;
+      %let jitter = Y;
+      %let ref_lines = UNIFORM;
 
       %let p_fl = saffl;
       %let a_fl = anl01fl;
 
       %let max_boxes_per_page = 20;
-      %let ref_lines = NONE;
 
       %let outputs_folder = C:\CSS\phuse-scripts\whitepapers\WPCT\outputs_sas;
 
@@ -164,7 +178,7 @@ end HEADER ***/
     ods show;
 
     %let asl_variables = STUDYID USUBJID &p_fl TRT01P TRT01PN;
-    %let ana_variables = STUDYID USUBJID &p_fl &a_fl TRTP TRTPN PARAM PARAMCD AVAL ANRLO ANRHI AVISIT AVISITN ATPT ATPTN;
+    %let ana_variables = STUDYID USUBJID &p_fl &a_fl TRTP TRTPN PARAM PARAMCD &m_var &lo_var &hi_var AVISIT AVISITN ATPT ATPTN;
 
     *--- Restrict analysis to SAFETY POP and ANALYSIS RECORDS (&a_fl) ---*;
       data css_asldata;
@@ -240,7 +254,7 @@ end HEADER ***/
           run;
 
         %*--- Y-AXIS alternative: Fix Y-Axis MIN/MAX based on all timepoints. See Y-AXIS DEFAULT, below. ---*;
-        %*   %util_get_var_min_max(css_nextparam, aval, aval_min_max)   *;
+        %*   %util_get_var_min_max(css_nextparam, &m_var, aval_min_max)   *;
 
         %*--- Analysis Timepoints for this parameter: Num (&ATPTN_N), Names (&ATPTN_NAM1 ...) and Labels (&ATPTN_LAB1 ...) ---*;
           %util_labels_from_var(css_nextparam, atptn, atpt)
@@ -258,19 +272,19 @@ end HEADER ***/
             run;
 
           %*--- Y-AXIS DEFAULT: Fix Y-Axis MIN/MAX based on this timepoint. See Y-AXIS alternative, above. ---*;
-            %util_get_var_min_max(css_nextparam, aval, aval_min_max)
+            %util_get_var_min_max(css_nextparam, &m_var, aval_min_max)
 
           %*--- Number of visits for this parameter and analysis timepoint: &VISN ---*;
             %util_count_unique_values(css_nexttimept, avisitn, visn)
 
           %*--- Create format string to display MEAN and STDDEV to default sig-digs: &UTIL_VALUE_FORMAT ---*;
-            %util_value_format(css_nexttimept, aval)
+            %util_value_format(css_nexttimept, &m_var)
 
 
           *--- Calculate summary statistics, and merge onto measurement data for use as "block" variables ---*;
             proc summary data=css_nexttimept noprint;
               by avisitn trtpn;
-              var aval;
+              var &m_var;
               output out=css_stats (drop=_type_) 
                      n=n mean=mean std=std median=median min=min max=max q1=q1 q3=q3;
             run;
@@ -300,20 +314,18 @@ end HEADER ***/
           ***/
 
             %util_prep_shewhart_data(css_plot, 
-                                     vvisn=avisitn, vtrtn=trtpn, vtrt=trtp, vval=aval,
+                                     vvisn=avisitn, vtrtn=trtpn, vtrt=trtp, vval=&m_var,
                                      numtrt=&trtn, numvis=&visn,
-                                     alsokeep=ANRLO ANRHI)
+                                     alsokeep=&lo_var &hi_var)
 
             %util_annotate_outliers(css_plot_tp, 
                                     css_annotate,
                                     x_var    = TIMEPT,
-                                    y_var    = AVAL,
-                                    low_var  = ANRLO,
-                                    high_var = ANRHI
-                                    /* do not jitter by default
-                                      , jitter   = Y
-                                      , numtrt   = &trtn 
-                                    */ )
+                                    y_var    = &m_var,
+                                    low_var  = &lo_var,
+                                    high_var = &hi_var,
+                                    jitter   = &jitter,
+                                    numtrt   = &trtn)
 
           *--- Graphics Settings - Default HSIZE and VSIZE are suitable for A4 and letter ---*;
             options orientation=landscape;
@@ -341,12 +353,12 @@ end HEADER ***/
 
               %util_get_reference_lines(css_plot_tp (where=( &nxtvis )),
                                         nxt_vrefs,
-                                        low_var  =ANRLO,
-                                        high_var =ANRHI,
+                                        low_var  =&lo_var,
+                                        high_var =&hi_var,
                                         ref_lines=&ref_lines)
 
               proc shewhart data=css_plot_tp (where=( &nxtvis ));
-                boxchart aval*timept (max q3 median q1 min std mean n trtp) = trtp /
+                boxchart &m_var * timept (max q3 median q1 min std mean n trtp) = trtp /
                          annotate = css_annotate (where=( %sysfunc(tranwrd(&nxtvis, timept, x)) ))
                          boxstyle = schematic
                          notches
@@ -371,7 +383,7 @@ end HEADER ***/
                          phaselabtype=scaled
                          phaselegend;
 
-                label aval    = "&&paramcd_lab&pdx"
+                label &m_var  = "&&paramcd_lab&pdx"
                       timept  = 'Visit'
                       trtp    = 'Treatment'
                       n       = 'n'
