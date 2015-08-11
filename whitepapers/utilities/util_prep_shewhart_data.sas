@@ -43,6 +43,9 @@
   NOTES
     The spacing of TIMEPT values matches the logic to JITTER annotated outliers in UTIL_ANNOTATE_OUTLIERS.
 
+    http://support.sas.com/documentation/cdl/en/qcug/68161/HTML/default/viewer.htm#qcug_shewhart_sect006.htm
+    http://support.sas.com/documentation/cdl/en/qcug/68161/HTML/default/viewer.htm#qcug_shewhart_sect016.htm
+
 ***/
 
 %macro util_prep_shewhart_data(ds, vvisn=, vtrtn=, vtrt=, vval=, numtrt=, numvis=, alsokeep=);

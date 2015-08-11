@@ -1,26 +1,26 @@
 /***
-  Determine format for MEAN and STDDEV based on sig-digs of measured values                            
-                                                                                           
-  DSET  data set containing the measurement values to summarize as MEAN and STDDEV         
-          REQUIRED                                                                         
-          Syntax:  (libname.)memname                                                       
-          Example: ANA.ADVS                                                                
-  VAR   variable on DSET containing numeric result values                                  
-          REQUIRED                                                                         
-          Syntax:  variable-name                                                           
-          Example: AVALN                                                                   
-  WHR   complete data step where statement, quoted as necessary, to restrict data          
-          optional                                                                         
-          Syntax:  %str(where where-expression;)                                           
-          Example: %str(where paramcd = 'DIABP';)                                          
-                                                                                           
-  -OUTPUT                                                                                  
-  UTIL_VALUE_FORMAT, a global symbol containing a space-delim string of exactly 2 parts:   
-                     1. format for MEAN values (one decimal more than most precise value)  
-                     2. format for STDDEV vals (two decimals more than most precise value) 
+  Determine format for MEAN and STDDEV based on sig-digs of measured values
+
+  DSET  data set containing the measurement values to summarize as MEAN and STDDEV
+          REQUIRED
+          Syntax:  (libname.)memname
+          Example: ANA.ADVS
+  VAR   variable on DSET containing numeric result values
+          REQUIRED
+          Syntax:  variable-name
+          Example: AVALN
+  WHR   complete data step where statement, quoted as necessary, to restrict data
+          optional
+          Syntax:  %str(where where-expression;)
+          Example: %str(where paramcd = 'DIABP';)
+
+  -OUTPUT
+  UTIL_VALUE_FORMAT, a global symbol containing a space-delim string of exactly 2 parts:
+                     1. format for MEAN values (one decimal more than most precise value)
+                     2. format for STDDEV vals (two decimals more than most precise value)
           Example: 5.1 6.2
-                                                                                           
-  Author:          Dante Di Tommaso                                                        
+
+  Author:          Dante Di Tommaso
 ***/
 
 %macro util_value_format(ds, var, whr=);
