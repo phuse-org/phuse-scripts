@@ -409,11 +409,7 @@ end HEADER ***/
 
 
       *--- Clean up temp data sets required to create box plots ---*;
-        %if &cleanup %then %do;
-          proc datasets library=WORK memtype=DATA nolist nodetails;
-            delete css_plot css_plot_tp css_nextparam css_nexttimept css_stats css_annotate;
-          quit;
-        %end;
+        %if &cleanup %then %util_delete_dsets(css_plot css_plot_tp css_nextparam css_nexttimept css_stats css_annotate);
 
     %mend boxplot_each_param_tp;
 

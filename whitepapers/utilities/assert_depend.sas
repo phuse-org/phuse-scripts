@@ -40,7 +40,7 @@
 
   Author:          Dante Di Tommaso
   Acknowledgement: Based on FUTS system from Thotwave
-                  http://thotwave.com/resources/futs-framework-unit-testing-sas/
+                   http://thotwave.com/resources/futs-framework-unit-testing-sas/
 ***/
 
   %macro assert_depend(OS=,

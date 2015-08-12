@@ -1,19 +1,22 @@
 /***
 
-This defines the error handling of the PhUSE/CSS template programs.
-In case of error, continue checking syntax, but do not waste time or effort to process data.
+  This defines the error handling of the PhUSE/CSS template programs.
+  In case of error, continue checking syntax, but do not waste time or effort to process data.
 
-The template program creates global symbol CONTINUE, a boolean:
-  1 = &CONTINUE means everything is OK, so do nothing
-  0 = &CONTINUE means some condition failed, so enter syntax-checking mode (set OBS=0)
+  The template program creates global symbol CONTINUE, a boolean:
+    1 = &CONTINUE means everything is OK, so do nothing
+    0 = &CONTINUE means some condition failed, so enter syntax-checking mode (set OBS=0)
 
-This macro checks the value of global symbol &CONTINUE, and forces syntax-checking mode when indicated.
+  This macro checks the value of global symbol &CONTINUE, and forces syntax-checking mode when indicated.
 
-INPUTS
-  CONTINUE  Global symbol created prior to macro invocation in PhUSE/CSS template program
-  MSG       Positional parameter for free-text, quoted as needed, to allow the calling program
-            to indicate the reason for or timing of this check. This message appears in the log.
+  INPUTS
+    CONTINUE  Global symbol created prior to macro invocation in PhUSE/CSS template program
+    MSG       Positional parameter for free-text, quoted as needed, to allow the calling program
+              to indicate the reason for or timing of this check. This message appears in the log.
 
+  Author: Dante Di Tommaso
+  Acknowledgement: Based on FUTS system from Thotwave
+                   http://thotwave.com/resources/futs-framework-unit-testing-sas/
 ***/
 
 %macro assert_continue(msg);

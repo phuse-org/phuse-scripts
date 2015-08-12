@@ -3,8 +3,6 @@
                  and return 0/1 IN-LINE to indicate whether macro exists     
 
   FILENAME:      assert_macro_exist.sas
-  AUTHOR:        D. Di Tommaso
-  PLATFORM:      SAS 8.02 TS Level 02M0 / WIN_PRO / AIX 5.2
 
   INPUT:         Name of macro to look for in the SAS autocall paths.
                  Example of use: paste this block into macro definition
@@ -25,6 +23,10 @@
                  (see also 'NB:' below (without quotes))
                  NB: for windows, SASAUTOS literal pathnames must be in
                      DOUBLE-QUOTEs -- SAS cant handle single quotes
+
+  AUTHOR:        D. Di Tommaso
+  Acknowledgement: Based on FUTS system from Thotwave
+                   http://thotwave.com/resources/futs-framework-unit-testing-sas/
 ***/
 
 %macro assert_macro_exist(macname);
