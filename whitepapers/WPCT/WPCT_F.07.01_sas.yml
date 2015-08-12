@@ -2,7 +2,6 @@ KeyWords: Central Tendencies, Boxplot, labs, vital signs, ECGs
 Script: 
   Desc   : Box plot - Measurements by Analysis Timepoint, Visit and Planned Treatment
   Name   : WPCT_F.07.01_sas
-  GCR    : r137
   SRV    : v1.10
   Source : White paper
   Topic  : Measures of Central Tendency Figure 7.1
