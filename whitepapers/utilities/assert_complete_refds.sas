@@ -49,6 +49,7 @@
       %end;
       %else %do;
         %let OK = 0;
+        %put ERROR: (ASSERT_COMPLETE_REFDS) Result is FAIL. Invalid, non-existant data set %upcase(&nxt).;
       %end;
     %end;
 
