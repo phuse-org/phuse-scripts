@@ -15,6 +15,8 @@
              NB: NO SUPPORT for data sets lists, see references
 
   Outputs:
+    CONTINUE  global symbol indicating PASS (1) or FAIL (0) results.
+              CSS/PhUSE calling program can decide whether or not to continue processing.
     FAIL_CRDS Data set that macro creates only in case on invalid keys.
               It contains a list of keys only in the related, measurement data sets.
               It does not include all unique keys in the reference data set.
@@ -33,6 +35,7 @@
 ***/
 
   %macro assert_complete_refds(dsets, keys);
+    %global continue;
     %local ndsets nkeys OK idx nxt;
 
     %let ndsets = %sysfunc(countw(&dsets, %str( )));
@@ -80,5 +83,8 @@
              %if &OK %then fail_crds;
       ;
     quit;
+
+    %if &OK %then %let continue = 1;
+    %else %let continue = 0;
 
   %mend assert_complete_refds;

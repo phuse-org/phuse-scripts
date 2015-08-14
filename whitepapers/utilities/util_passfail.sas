@@ -716,7 +716,7 @@
     set &dsout nobs=TestTot end=NoMore;
     file print;
 
-    drop overall pass fail result idx;
+    drop overall pass fail idx;
     overall= ' ALL TESTS PASSED - ';
 
     %if &use_te %then %do;

@@ -3,19 +3,15 @@
 
   SETUP:  Ensure that PhUSE/CSS utilities are in the AUTOCALL path
 
-  TEST 1: Single-key checks, 2 data sets
-    a. Check that fractional numeric keys work as expected
-    b. Check that char keys work as expected
-      i.  extra record in REFERENCE is OK
-      ii. extra record in RELATED dset is NOT ok
-
-  TEST 2: Multiple-key checks, multiple related data sets
-    a. Mix of num and char keys
+  TEST PLAN:
+  https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/qualification/testplan_assert_complete_refds.docx
           
 ***/
 
 
 *--- SETUP ---*;
+
+    %put WARNING: (TEST_ASSERT_COMPLETE_REFDS) User must ensure PhUSE/CSS utilities are in the AUTOCALL path.;
 
   /*** EXECUTE ONE TIME only as needed
 
@@ -31,30 +27,26 @@
 
   proc sql;
     create table my_test_definitions
-      ( test_mac    char(32) label='Name of macro to test',
-        test_id     char(15) label='Test ID for ASSERT_COMPLETE_REFDS',
-        test_dsc    char(80) label='Test Description',
-        test_type   char(5)  label='Test Type (Macro var, String-<B|C|L|T>, Data set, In data step)',
-        pparm_dsets char(50) label='Test values for the positional parameter PNUM',
-        pparm_keys  char(50) label='Test values for the keyword parameter KNUM',
-        test_expect char(50) label='EXPECTED test results for each call to ASSERT_COMPLETE_REFDS'
+      (  test_mac        char(32) label='Name of macro to test'
+       , test_id         char(15) label='Test ID for ASSERT_COMPLETE_REFDS'
+       , test_dsc        char(80) label='Test Description'
+       , test_type       char(5)  label='Test Type (Macro var, String-<B|C|L|T>, Data set, In data step)'
+       , pparm_dsets     char(50) label='Test values for the positional parameter PNUM'
+       , pparm_keys      char(50) label='Test values for the keyword parameter KNUM'
+       , test_expect     char(50) label='EXPECTED test results for each call to ASSERT_COMPLETE_REFDS'
+       , test_expect_sym char(15) label='TEST_PDLIM-delim Name=Value pairs of EXPECTED global syms created'
       )
     ;
 
     insert into my_test_definitions
       values('assert_complete_refds', 'refds_01_a_i', 'single num key, single related dset, extra REF rec allowed',
-             'D', 'my_reference my_related', 'my_key', '-fail_crds')
+             'D', 'my_reference my_related', 'my_key', '-fail_crds', 'continue=1')
       values('assert_complete_refds', 'refds_01_a_ii', 'single num key, single related dset, extra REL rec NOT allowed',
-             'D', 'my_reference my_related_extra', 'my_key', 'exp_fail_crds_1aii=fail_crds')
+             'D', 'my_reference my_related_extra', 'my_key', 'exp_fail_crds_1aii=fail_crds', 'continue=0')
       values('assert_complete_refds', 'refds_01_b_i', 'single char key, single related dset, extra REF rec allowed',
-             'D', 'my_reference_c my_related_c', 'my_char_key', '-fail_crds')
+             'D', 'my_reference_c my_related_c', 'my_char_key', '-fail_crds', 'continue=1')
       values('assert_complete_refds', 'refds_01_b_ii', 'single char key, single related dset, extra REL rec NOT allowed',
-             'D', 'my_reference_c my_related_extra_c', 'my_char_key', 'exp_fail_crds_1bii=fail_crds')
-
-      values('assert_complete_refds', 'refds_02_a', 'multiple-key, three related dsets, extra REF rec allowed',
-             'D', 'my_reference my_lb my_vs my_ecg', 'num_key key_char key3', '-fail_crds')
-      values('assert_complete_refds', 'refds_02_b', 'multiple-key, three related dsets, extra REL rec NOT allowed',
-             'D', 'my_reference my_lb my_vs my_ecg', 'num_key key_char key3', 'exp_fail_crds_1aii=fail_crds')
+             'D', 'my_reference_c my_related_extra_c', 'my_char_key', 'exp_fail_crds_1bii=fail_crds', 'continue=0')
 
     ;
   quit;
@@ -114,13 +106,11 @@
 
       data exp_fail_crds_1aii;
         my_key=1.5;   found_ds1=0; found_ds2=1; output;
-        my_key=2.003; found_ds1=1; found_ds2=0; output;
       run;
 
       data exp_fail_crds_1bii;
         length my_char_key $15;
         my_char_key='Record 1.5';   found_ds1=0; found_ds2=1; output;
-        my_char_key='Record 2.003'; found_ds1=1; found_ds2=0; output;
       run;
 
           proc datasets library=WORK memtype=DATA nolist nodetails;
@@ -134,25 +124,27 @@
 *--- Start clean for Test 2, otherwise too many WORK dsets ---*;
   %util_delete_dsets(_ALL_)
 
+
 * Test 2 - Multiple-keys, Three related data sets *;
 
   proc sql;
     create table my_test_definitions
-      ( test_mac    char(32) label='Name of macro to test',
-        test_id     char(15) label='Test ID for ASSERT_COMPLETE_REFDS',
-        test_dsc    char(80) label='Test Description',
-        test_type   char(5)  label='Test Type (Macro var, String-<B|C|L|T>, Data set, In data step)',
-        pparm_dsets char(50) label='Test values for the positional parameter PNUM',
-        pparm_keys  char(50) label='Test values for the keyword parameter KNUM',
-        test_expect char(50) label='EXPECTED test results for each call to ASSERT_COMPLETE_REFDS'
+      (  test_mac    char(32) label='Name of macro to test'
+       , test_id     char(15) label='Test ID for ASSERT_COMPLETE_REFDS'
+       , test_dsc    char(80) label='Test Description'
+       , test_type   char(5)  label='Test Type (Macro var, String-<B|C|L|T>, Data set, In data step)'
+       , pparm_dsets char(50) label='Test values for the positional parameter PNUM'
+       , pparm_keys  char(50) label='Test values for the keyword parameter KNUM'
+       , test_expect char(50) label='EXPECTED test results for each call to ASSERT_COMPLETE_REFDS'
+       , test_expect_sym char(15) label='TEST_PDLIM-delim Name=Value pairs of EXPECTED global syms created'
       )
     ;
 
     insert into my_test_definitions
       values('assert_complete_refds', 'refds_02_a', 'multiple-key, three related dsets, extra REF rec allowed',
-             'D', 'my_reference my_lb my_vs my_ecg', 'num_key key_char key3', '-fail_crds')
+             'D', 'my_reference my_lb my_vs my_ecg', 'num_key key_char key3', '-fail_crds', 'continue=1')
       values('assert_complete_refds', 'refds_02_b', 'multiple-key, three related dsets, extra REL rec NOT allowed',
-             'D', 'my_reference my_lb_ext my_vs_ext my_ecg_ext', 'num_key key_char key3', 'exp_fail_crds_2b=fail_crds')
+             'D', 'my_reference my_lb_ext my_vs_ext my_ecg_ext', 'num_key key_char key3', 'exp_fail_crds_2b=fail_crds', 'continue=0')
 
     ;
   quit;
