@@ -26,7 +26,7 @@
 *--- SAVE TEST RESULTS as XML filename  ---*;
 *--- NB: if this filename is blank, do NOT save xml test results ---*;
 
-  %let XML_FILENAME = testresults_assert_complete_refds.xml;
+  %let XML_FILENAME = .\outputs_sas\testresults_assert_complete_refds.xml;
 
 
 *--- Test 1 - Single key (merge) variable, either NUM or CHAR ---*;
