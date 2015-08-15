@@ -21,8 +21,8 @@
                              This should be used to suppress diffs that STREAM cannot handle.
                          EG: STR_UTIL_CALCDUR does not fix precision since calling program should
                              (so OK to apply CRITERION=1E-13 in STR_UTIL_CALCDUR unit tests)
-
-                 DEBUG     - Y/N flag to write out additional processing details
+                 SAVEXML   - (OPTIONAL) Save test results as XML to this filename
+                 DEBUG     - (OPTIONAL) Y/N flag to write out additional processing details
 
   Notes:
     NB: The following PROC SQL block provides the expected structure of &DSIN data set.
@@ -93,7 +93,7 @@
                   http://www.lexjansen.com/phuse/2011/ad/AD04.pdf
 ***/
 
-%macro util_passfail (dsin, criterion=, debug=N) / minoperator;
+%macro util_passfail (dsin, criterion=, savexml=, debug=N) / minoperator;
 
   %local maxlrecl dslib dsnam dsout compmeth
          pparms kparms allparms
@@ -767,6 +767,17 @@
   %if &debug = Y %then %do;
     proc print data= &dsout;
     run;
+  %end;
+
+  %if %length(&savexml) > 0 %then %do;
+    *--- STORE test results as XML ---*;
+    libname savexml xml "&savexml";
+
+    data savexml.css_passfail;
+      set css_passfail;
+    run;
+
+    libname savexml clear;
   %end;
 
 %mend util_passfail;

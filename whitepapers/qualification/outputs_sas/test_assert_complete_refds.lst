@@ -1,8 +1,8 @@
-                                                                 19:42 Friday, August 14, 2015   1
+                                                            12:38 Saturday, August 15, 2015   1
 
 ### -----
 ###
-### ASSERT_COMPLETE_REFDS Overall: ALL TESTS PASSED - 4
+### ASSERT_COMPLETE_REFDS Overall: ALL TESTS PASSED - 6
 ###
 ### -----
 
@@ -10,13 +10,5 @@
    002   refds_01_a_ii  single num key, single related dset, extra REL rec NOT allowed
    003   refds_01_b_i   single char key, single related dset, extra REF rec allowed
    004   refds_01_b_ii  single char key, single related dset, extra REL rec NOT allowed
-                                                                 19:42 Friday, August 14, 2015   2
-
-### -----
-###
-### ASSERT_COMPLETE_REFDS Overall: ALL TESTS PASSED - 2
-###
-### -----
-
-   001   refds_02_a     multiple-key, three related dsets, extra REF rec allowed
-   002   refds_02_b     multiple-key, three related dsets, extra REL rec NOT allowed
+   005   refds_02_a     multiple-key, three related dsets, extra REF rec allowed
+   006   refds_02_b     multiple-key, three related dsets, extra REL rec NOT allowed

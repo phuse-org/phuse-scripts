@@ -1,291 +1,569 @@
-NOTE: Copyright (c) 2002-2008 by SAS Institute Inc., Cary, NC, USA.
-NOTE: SAS (r) Proprietary Software 9.2 (TS2M3)
+1                                       The SAS System          12:38 Saturday, August 15, 2015
+
+NOTE: Copyright (c) 2002-2008 by SAS Institute Inc., Cary, NC, USA. 
+NOTE: SAS (r) Proprietary Software 9.2 (TS2M3 MBCS3055) 
       Licensed to F. HOFFMANN LA ROCHE AG, Site 50701490.
 NOTE: This session is executing on the X64_VSPRO  platform.
 
 
 
 NOTE: SAS initialization used:
-      real time           2.77 seconds
-      cpu time            1.94 seconds
-
-1        OPTIONS sasautos=(%sysfunc(getoption(sasautos))
-1  ! "C:\CSS\phuse-scripts\whitepapers\utilities");
-
-2    /***
-3      Qualification tests for PhUSE/CSS utility macro ASSERT_COMPLETE_REFDS
-4
-5      SETUP:  Ensure that PhUSE/CSS utilities are in the AUTOCALL path
-6
-7      TEST PLAN:
-8      https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/qualification/testplan_a
-8  ! ssert_complete_refds.docx
-9
-10   ***/
-11
-12
-13   *--- SETUP ---*;
-14
-15       %put WARNING: (TEST_ASSERT_COMPLETE_REFDS) User must ensure PhUSE/CSS utilities are in
-15 ! the AUTOCALL path.;
-WARNING: (TEST_ASSERT_COMPLETE_REFDS) User must ensure PhUSE/CSS utilities are in the AUTOCALL
+      real time           10.70 seconds
+      cpu time            1.13 seconds
+      
+1          /***
+2            Qualification tests for PhUSE/CSS utility macro ASSERT_COMPLETE_REFDS
+3          
+4            SETUP:  Ensure that PhUSE/CSS utilities are in the AUTOCALL path
+5          
+6            TEST PLAN:
+7            https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/qualification/t
+7        ! estplan_assert_complete_refds.docx
+8          
+9          ***/
+10         
+11         
+12         *--- SETUP ---*;
+13         
+14             OPTIONS sasautos=(%sysfunc(getoption(sasautos))
+14       ! "C:\CSS\phuse-scripts\whitepapers\utilities");
+15         
+16             %put WARNING: (TEST_ASSERT_COMPLETE_REFDS) User must ensure PhUSE/CSS utilities
+16       ! are in the AUTOCALL path.;
+WARNING: (TEST_ASSERT_COMPLETE_REFDS) User must ensure PhUSE/CSS utilities are in the AUTOCALL 
 path.
-16
-17     /*** EXECUTE ONE TIME only as needed
-18
-19       Ensure PhUSE/CSS utilities are in the AUTOCALL path
-20       NB: This line is not necessary if PhUSE/CSS utilities are in your default AUTOCALL paths
-21
-22       OPTIONS sasautos=(%sysfunc(getoption(sasautos))
-22 ! "C:\CSS\phuse-scripts\whitepapers\utilities");
-23
-24     ***/
-25
-26
-27   * Test 1 - Single key (merge) variable, either NUM or CHAR *;
-28
-29     proc sql;
-30       create table my_test_definitions
-31         (  test_mac        char(32) label='Name of macro to test'
-32          , test_id         char(15) label='Test ID for ASSERT_COMPLETE_REFDS'
-33          , test_dsc        char(80) label='Test Description'
-34          , test_type       char(5)  label='Test Type (Macro var, String-<B|C|L|T>, Data set, In
-34 !  data step)'
-35          , pparm_dsets     char(50) label='Test values for the positional parameter PNUM'
-36          , pparm_keys      char(50) label='Test values for the keyword parameter KNUM'
-37          , test_expect     char(50) label='EXPECTED test results for each call to
-37 ! ASSERT_COMPLETE_REFDS'
-38          , test_expect_sym char(15) label='TEST_PDLIM-delim Name=Value pairs of EXPECTED global
-38 !  syms created'
-39         )
-40       ;
+17         
+18           /*** EXECUTE ONE TIME only as needed
+19         
+20             Ensure PhUSE/CSS utilities are in the AUTOCALL path
+21             NB: This line is not necessary if PhUSE/CSS utilities are in your default
+21       ! AUTOCALL paths
+22         
+23             OPTIONS sasautos=(%sysfunc(getoption(sasautos))
+23       ! "C:\CSS\phuse-scripts\whitepapers\utilities");
+24         
+25           ***/
+26         
+27         
+28         *--- SAVE TEST RESULTS as XML filename  ---*;
+29         *--- NB: if this filename is blank, do NOT save xml test results ---*;
+30         
+31           %let XML_FILENAME = testresults_assert_complete_refds.xml;
+32         
+33         
+34         *--- Test 1 - Single key (merge) variable, either NUM or CHAR ---*;
+35         
+36           proc sql;
+37             create table my_test_definitions
+38               (  test_mac        char(32) label='Name of macro to test'
+2                                       The SAS System          12:38 Saturday, August 15, 2015
+
+39                , test_id         char(15) label='Test ID for ASSERT_COMPLETE_REFDS'
+40                , test_dsc        char(80) label='Test Description'
+41                , test_type       char(5)  label='Test Type (Macro var, String-<B|C|L|T>,
+41       ! Data set, In data step)'
+42                , pparm_dsets     char(50) label='Test values for the positional parameter
+42       ! PNUM'
+43                , pparm_keys      char(50) label='Test values for the keyword parameter KNUM'
+44                , test_expect     char(50) label='EXPECTED test results for each call to
+44       ! ASSERT_COMPLETE_REFDS'
+45                , test_expect_sym char(15) label='TEST_PDLIM-delim Name=Value pairs of
+45       ! EXPECTED global syms created'
+46               )
+47             ;
 NOTE: Table WORK.MY_TEST_DEFINITIONS created, with 0 rows and 8 columns.
-41
-42       insert into my_test_definitions
-43         values('assert_complete_refds', 'refds_01_a_i', 'single num key, single related dset,
-43 ! extra REF rec allowed',
-44                'D', 'my_reference my_related', 'my_key', '-fail_crds', 'continue=1')
-45         values('assert_complete_refds', 'refds_01_a_ii', 'single num key, single related dset,
-45 ! extra REL rec NOT allowed',
-46                'D', 'my_reference my_related_extra', 'my_key', 'exp_fail_crds_1aii=fail_crds',
-46 ! 'continue=0')
-47         values('assert_complete_refds', 'refds_01_b_i', 'single char key, single related dset,
-47 ! extra REF rec allowed',
-48                'D', 'my_reference_c my_related_c', 'my_char_key', '-fail_crds', 'continue=1')
-49         values('assert_complete_refds', 'refds_01_b_ii', 'single char key, single related dset,
-49 !  extra REL rec NOT allowed',
-50                'D', 'my_reference_c my_related_extra_c', 'my_char_key',
-50 ! 'exp_fail_crds_1bii=fail_crds', 'continue=0')
-51
-52       ;
+48         
+49             insert into my_test_definitions
+50               values('assert_complete_refds', 'refds_01_a_i', 'single num key, single
+50       ! related dset, extra REF rec allowed',
+51                      'D', 'my_reference my_related', 'my_key', '-fail_crds', 'continue=1')
+52               values('assert_complete_refds', 'refds_01_a_ii', 'single num key, single
+52       ! related dset, extra REL rec NOT allowed',
+53                      'D', 'my_reference my_related_extra', 'my_key',
+53       ! 'exp_fail_crds_1aii=fail_crds', 'continue=0')
+54               values('assert_complete_refds', 'refds_01_b_i', 'single char key, single
+54       ! related dset, extra REF rec allowed',
+55                      'D', 'my_reference_c my_related_c', 'my_char_key', '-fail_crds',
+55       ! 'continue=1')
+56               values('assert_complete_refds', 'refds_01_b_ii', 'single char key, single
+56       ! related dset, extra REL rec NOT allowed',
+57                      'D', 'my_reference_c my_related_extra_c', 'my_char_key',
+57       ! 'exp_fail_crds_1bii=fail_crds', 'continue=0')
+58         
+59             ;
 NOTE: 4 rows were inserted into WORK.MY_TEST_DEFINITIONS.
 
-53     quit;
+60           quit;
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.10 seconds
-      cpu time            0.09 seconds
+      real time           0.05 seconds
+      cpu time            0.06 seconds
+      
 
+61         
+62           *-- Test 1 A - Single NUM  key (merge) variable ---*;
+63           *-- Test 1 B - Single CHAR key (merge) variable ---*;
+64         
+65             *-- Test 1.a.i - Reference dset CAN have extra record with NUM key 2.003
+65       !    --*;
+66             *-- Test 1.b.i - Reference dset CAN have extra record with CHAR key "Record
+66       ! 2.003" --*;
+67               data my_reference (keep=my_key extra_ref_info)
+68                    my_reference_c (keep=my_char_key extra_ref_info);
+69                 do my_key = 0.001, 1.002, 2.003, 3.004;
+70                   my_char_key    = 'Record '!!put(my_key, best8.-L);
+71                   extra_ref_info = 'My extra info for key '!!put(my_key, best8.-L);
+72                   output;
+73                 end;
+3                                       The SAS System          12:38 Saturday, August 15, 2015
 
-54
-55     * Test 1 A - Single NUM  key (merge) variable *;
-56     * Test 1 B - Single CHAR key (merge) variable *;
-57
-58       * Test 1.a.i - Reference dset CAN have extra record with NUM key 2.003 *;
-59       * Test 1.b.i - Reference dset CAN have extra record with CHAR key "Record 2.003" *;
-60         data my_reference (keep=my_key extra_ref_info)
-61              my_reference_c (keep=my_char_key extra_ref_info);
-62           do my_key = 0.001, 1.002, 2.003, 3.004;
-63             my_char_key    = 'Record '!!put(my_key, best8.-L);
-64             extra_ref_info = 'My extra info for key '!!put(my_key, best8.-L);
-65             output;
-66           end;
-67         run;
+74               run;
 
 NOTE: The data set WORK.MY_REFERENCE has 4 observations and 2 variables.
 NOTE: The data set WORK.MY_REFERENCE_C has 4 observations and 2 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.04 seconds
-      cpu time            0.04 seconds
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+      
 
-
-68
-69       data my_related (keep=my_key extra_rel_info)
-70            my_related_c (keep=my_char_key extra_rel_info);
-71         do my_key = 0.001, 1.002, 3.004;
-72           my_char_key    = 'Record '!!put(my_key, best8.-L);
-73           extra_rel_info = 'My extra info for key '!!put(my_key, best8.-L);
-74           output;
-75
-76           if ranuni(6743) < 0.5 then do;
-77             extra_rel_info = 'Additional info for key '!!put(my_key, best8.-L);
-78             output;
-79           end;
-80         end;
-81       run;
+75         
+76             data my_related (keep=my_key extra_rel_info)
+77                  my_related_c (keep=my_char_key extra_rel_info);
+78               do my_key = 0.001, 1.002, 3.004;
+79                 my_char_key    = 'Record '!!put(my_key, best8.-L);
+80                 extra_rel_info = 'My extra info for key '!!put(my_key, best8.-L);
+81                 output;
+82         
+83                 if ranuni(6743) < 0.5 then do;
+84                   extra_rel_info = 'Additional info for key '!!put(my_key, best8.-L);
+85                   output;
+86                 end;
+87               end;
+88             run;
 
 NOTE: The data set WORK.MY_RELATED has 6 observations and 2 variables.
 NOTE: The data set WORK.MY_RELATED_C has 6 observations and 2 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.04 seconds
-      cpu time            0.04 seconds
+      real time           0.02 seconds
+      cpu time            0.03 seconds
+      
 
-
-82
-83       * Test 1.a.ii - Related dset CANNOT have extra record with NUM key 1.5 *;
-84       * Test 1.b.ii - Related dset CANNOT have extra record with CHAR key "Record 1.5" *;
-85         data my_related_extra;
-86           set my_related end=NoMore;
-87           output;
-88           if NoMore then do;
-89               my_key = 1.5;
-90               extra_rel_info = 'No reference match!';
-91             output;
-92           end;
-93         run;
+89         
+90             *-- Test 1.a.ii - Related dset CANNOT have extra record with NUM key 1.5
+90       !    --*;
+91             *-- Test 1.b.ii - Related dset CANNOT have extra record with CHAR key "Record
+91       ! 1.5" --*;
+92               data my_related_extra;
+93                 set my_related end=NoMore;
+94                 output;
+95                 if NoMore then do;
+96                     my_key = 1.5;
+97                     extra_rel_info = 'No reference match!';
+98                   output;
+99                 end;
+100              run;
 
 NOTE: There were 6 observations read from the data set WORK.MY_RELATED.
 NOTE: The data set WORK.MY_RELATED_EXTRA has 7 observations and 2 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.03 seconds
-      cpu time            0.03 seconds
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
 
+101        
+102              data my_related_extra_c;
+103                set my_related_c end=NoMore;
+4                                       The SAS System          12:38 Saturday, August 15, 2015
 
-94
-95         data my_related_extra_c;
-96           set my_related_c end=NoMore;
-97           output;
-98           if NoMore then do;
-99               my_char_key = 'Record 1.5';
-100              extra_rel_info = 'No reference match!';
-101            output;
-102          end;
-103        run;
+104                output;
+105                if NoMore then do;
+106                    my_char_key = 'Record 1.5';
+107                    extra_rel_info = 'No reference match!';
+108                  output;
+109                end;
+110              run;
 
 NOTE: There were 6 observations read from the data set WORK.MY_RELATED_C.
 NOTE: The data set WORK.MY_RELATED_EXTRA_C has 7 observations and 2 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.01 seconds
-      cpu time            0.01 seconds
+      cpu time            0.00 seconds
+      
 
-
-104
-105      * EXPECT assert_complete_refds macro to create FAIL_CRDS data sets with this
-105! structure/content *;
-106      * (for successful assertions, Tests 1.a.i and 1.b.i, macro does NOT create dset
-106! FAIL_CRDS)     *;
-107
-108        data exp_fail_crds_1aii;
-109          my_key=1.5;   found_ds1=0; found_ds2=1; output;
-110        run;
+111        
+112          *-- EXPECT assert_complete_refds macro to create FAIL_CRDS data sets with this
+112      ! structure/content --*;
+113          *-- (for successful assertions, Tests 1.a.i and 1.b.i, macro does NOT create dset
+113      ! FAIL_CRDS)     --*;
+114        
+115            data exp_fail_crds_1aii;
+116              my_key=1.5;   found_ds1=0; found_ds2=1; output;
+117            run;
 
 NOTE: The data set WORK.EXP_FAIL_CRDS_1AII has 1 observations and 3 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.00 seconds
-      cpu time            0.00 seconds
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
 
-
-111
-112        data exp_fail_crds_1bii;
-113          length my_char_key $15;
-114          my_char_key='Record 1.5';   found_ds1=0; found_ds2=1; output;
-115        run;
+118        
+119            data exp_fail_crds_1bii;
+120              length my_char_key $15;
+121              my_char_key='Record 1.5';   found_ds1=0; found_ds2=1; output;
+122            run;
 
 NOTE: The data set WORK.EXP_FAIL_CRDS_1BII has 1 observations and 3 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.01 seconds
       cpu time            0.01 seconds
+      
 
-
-116
-117            proc datasets library=WORK memtype=DATA nolist nodetails;
-118              delete _ALL_;
-119            quit;
+123        
+124                proc datasets library=WORK memtype=DATA nolist nodetails;
+125                  delete _ALL_;
+126                quit;
 
 NOTE: The file WORK._ALL_ (memtype=DATA) was not found, but appears on a DELETE statement.
 NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.04 seconds
-      cpu time            0.04 seconds
+      real time           1.11 seconds
+      cpu time            0.14 seconds
+      
 
+127        
+128        
+5                                       The SAS System          12:38 Saturday, August 15, 2015
 
-120
-121
-122  %util_passfail (my_test_definitions, debug=N);
-NOTE: No rows were selected.
+129        *--- Test 2 - Multiple-keys, Three related data sets ---*;
+130        
+131            proc sql;
+132        
+133              insert into my_test_definitions
+134                values('assert_complete_refds', 'refds_02_a', 'multiple-key, three related
+134      ! dsets, extra REF rec allowed',
+135                       'D', 'my_ref_2 my_lb my_vs my_ecg', 'num_key key_char key3',
+135      ! '-fail_crds', 'continue=1')
+136                values('assert_complete_refds', 'refds_02_b', 'multiple-key, three related
+136      ! dsets, extra REL rec NOT allowed',
+137                       'D', 'my_ref_2 my_lb_ext my_vs_ext my_ecg_ext', 'num_key key_char
+137      ! key3', 'exp_fail_crds_2b=fail_crds', 'continue=0')
+138        
+139              ;
+NOTE: 2 rows were inserted into WORK.MY_TEST_DEFINITIONS.
+
+140            quit;
 NOTE: PROCEDURE SQL used (Total process time):
       real time           0.00 seconds
       cpu time            0.00 seconds
+      
 
+141        
+142        
+143          *-- Test 2 A - REFerence dset CAN have extra record with key num_key = 2.003, or
+143      ! key_char = 'Record A', or key3 = 'Subrec 2.003' --*;
+144          *-- Test 2 B - RELated dsets can NOT have extra records num_key = 1.5, or key_char
+144      !  = 'Rec D', or key3 = 'Subrec 400'             --*;
+145        
+146            data my_ref_2;
+147              do num_key = 0.001, 1.002, 2.003, 3.004;
+148                do key_char = 'Record A', 'Record B', 'Record C';
+149                  do key3 = 'Subrec 0.001', 'Subrec 1.002', 'Subrec 2.003';
+150                    detail_a = 'Detail A for '!!trim(put(num_key, best8.-L))!!' and
+150      ! '!!trim(key_char);
+151                    detail_b = 'Detail B for '!!trim(key_char)!!' and '!!trim(key3);
+152                    OUTPUT;
+153                  end;
+154                end;
+155              end;
+156            run;
 
-
+NOTE: The data set WORK.MY_REF_2 has 36 observations and 5 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.01 seconds
       cpu time            0.01 seconds
+      
 
+157        
+158            data my_lb  my_lb_ext
+159                 my_vs  my_vs_ext
+160                 my_ecg my_ecg_ext;
+161              do num_key = 0.001, 1.002, 3.004;
+162                do key_char = 'Record B', 'Record C';
+163                  do key3 = 'Subrec 0.001', 'Subrec 1.002';
+6                                       The SAS System          12:38 Saturday, August 15, 2015
 
+164                    detail_a = 'LAB A for '!!trim(put(num_key, best8.-L))!!' and
+164      ! '!!trim(key_char);
+165                    detail_b = 'LAB B for '!!trim(key_char)!!' and '!!trim(key3);
+166                    if ranuni(61475) < 0.9 then OUTPUT my_lb my_lb_ext;
+167        
+168                    detail_a = 'VS A for '!!trim(put(num_key, best8.-L))!!' and
+168      ! '!!trim(key_char);
+169                    detail_b = 'VS B for '!!trim(key_char)!!' and '!!trim(key3);
+170                    if ranuni(56147) < 0.9 then OUTPUT my_vs my_vs_ext;
+171        
+172                    detail_a = 'ECG A for '!!trim(put(num_key, best8.-L))!!' and
+172      ! '!!trim(key_char);
+173                    detail_b = 'ECG B for '!!trim(key_char)!!' and '!!trim(key3);
+174                    if ranuni(75614) < 0.9 then OUTPUT my_ecg my_ecg_ext;
+175                  end;
+176                end;
+177              end;
+178        
+179              num_key = 1.5;   key_char = 'Record B'; key3 = 'Subrec 0.001';
+180              detail_a = 'INVALID lab for 1.5 and Record B'; detail_b = 'INVALID lab for
+180      ! Record B and Subrec 0.001';
+181              OUTPUT MY_LB_EXT;
+182        
+183              num_key = 1.002; key_char = 'Rec D';    key3 = 'Subrec 1.002';
+184              detail_a = 'INVALID lab for 1.002 and Record D'; detail_b = 'INVALID lab for
+184      ! Record D and Subrec 1.002';
+185              OUTPUT MY_VS_EXT;
+186        
+187              num_key = 2.003; key_char = 'Record C'; key3 = 'Subrec 400';
+188              detail_a = 'INVALID lab for 2.003 and Record C'; detail_b = 'INVALID lab for
+188      ! Record C and Subrec 400';
+189              OUTPUT MY_ECG_EXT;
+190        
+191            run;
 
-NOTE: There were 4 observations read from the data set WORK.MY_TEST_DEFINITIONS.
-NOTE: The data set WORK.CSS_PASSFAIL has 4 observations and 12 variables.
+NOTE: The data set WORK.MY_LB has 11 observations and 5 variables.
+NOTE: The data set WORK.MY_LB_EXT has 12 observations and 5 variables.
+NOTE: The data set WORK.MY_VS has 12 observations and 5 variables.
+NOTE: The data set WORK.MY_VS_EXT has 13 observations and 5 variables.
+NOTE: The data set WORK.MY_ECG has 11 observations and 5 variables.
+NOTE: The data set WORK.MY_ECG_EXT has 12 observations and 5 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.03 seconds
-      cpu time            0.03 seconds
+      real time           0.06 seconds
+      cpu time            0.06 seconds
+      
 
+192        
+193            %assert_unique_keys(my_lb, num_key key_char key3)
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set MY_LB is accessible.
+NOTE: Table WORK.FAIL_AUK created, with 0 rows and 3 columns.
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+7                                       The SAS System          12:38 Saturday, August 15, 2015
+
+NOTE: (ASSERT_UNIQUE_KEYS) MY_LB has unique records for keys NUM_KEY KEY_CHAR KEY3  (SQLOBS = 
+0).
+
+NOTE: Deleting WORK.FAIL_AUK (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+194            %assert_unique_keys(my_vs, num_key key_char key3)
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set MY_VS is accessible.
+NOTE: Table WORK.FAIL_AUK created, with 0 rows and 3 columns.
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+NOTE: (ASSERT_UNIQUE_KEYS) MY_VS has unique records for keys NUM_KEY KEY_CHAR KEY3  (SQLOBS = 
+0).
+
+NOTE: Deleting WORK.FAIL_AUK (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+195            %assert_unique_keys(my_ecg, num_key key_char key3)
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set MY_ECG is accessible.
+NOTE: Table WORK.FAIL_AUK created, with 0 rows and 3 columns.
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.03 seconds
+      
+
+NOTE: (ASSERT_UNIQUE_KEYS) MY_ECG has unique records for keys NUM_KEY KEY_CHAR KEY3  (SQLOBS = 
+0).
+
+NOTE: Deleting WORK.FAIL_AUK (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.00 seconds
+      
+
+196            %assert_unique_keys(my_lb_ext, num_key key_char key3)
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set MY_LB_EXT is accessible.
+NOTE: Table WORK.FAIL_AUK created, with 0 rows and 3 columns.
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+NOTE: (ASSERT_UNIQUE_KEYS) MY_LB_EXT has unique records for keys NUM_KEY KEY_CHAR KEY3  
+(SQLOBS = 0).
+8                                       The SAS System          12:38 Saturday, August 15, 2015
+
+
+NOTE: Deleting WORK.FAIL_AUK (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+197            %assert_unique_keys(my_vs_ext, num_key key_char key3)
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set MY_VS_EXT is accessible.
+NOTE: Table WORK.FAIL_AUK created, with 0 rows and 3 columns.
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+NOTE: (ASSERT_UNIQUE_KEYS) MY_VS_EXT has unique records for keys NUM_KEY KEY_CHAR KEY3  
+(SQLOBS = 0).
+
+NOTE: Deleting WORK.FAIL_AUK (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+198            %assert_unique_keys(my_ecg_ext, num_key key_char key3)
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set MY_ECG_EXT is accessible.
+NOTE: Table WORK.FAIL_AUK created, with 0 rows and 3 columns.
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+NOTE: (ASSERT_UNIQUE_KEYS) MY_ECG_EXT has unique records for keys NUM_KEY KEY_CHAR KEY3  
+(SQLOBS = 0).
+
+NOTE: Deleting WORK.FAIL_AUK (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+199        
+200        
+201          *-- EXPECT assert_complete_refds macro to create FAIL_CRDS data sets with this
+201      ! structure/content --*;
+202          *-- (for successful assertions, Tests 1.a.i and 1.b.i, macro does NOT create dset
+202      ! FAIL_CRDS)     --*;
+203        
+204            data exp_fail_crds_2b;
+205              num_key = 1.002; key_char = 'Rec D   '; key3 = 'Subrec 1.002'; found_ds1=0;
+205      ! found_ds2=0; found_ds3=1; found_ds4=0; output;
+206              num_key = 1.5;   key_char = 'Record B'; key3 = 'Subrec 0.001'; found_ds1=0;
+206      ! found_ds2=1; found_ds3=0; found_ds4=0; output;
+207              num_key = 2.003; key_char = 'Record C'; key3 = 'Subrec 400';   found_ds1=0;
+9                                       The SAS System          12:38 Saturday, August 15, 2015
+
+207      ! found_ds2=0; found_ds3=0; found_ds4=1; output;
+208            run;
+
+NOTE: The data set WORK.EXP_FAIL_CRDS_2B has 3 observations and 7 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.01 seconds
+      
+
+209        
+210        *--- EXECUTE, EVALUATE, REPORT all test definitions ---*;
+211          %util_passfail (my_test_definitions, savexml=&xml_filename, debug=N);
+NOTE: No rows were selected.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: There were 6 observations read from the data set WORK.MY_TEST_DEFINITIONS.
+NOTE: The data set WORK.CSS_PASSFAIL has 6 observations and 12 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
 
 
 NOTE (BUILD_MACRO_CALLS): > refds_01_a_i , 1 call(s)
 NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
-NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 
 %assert_complete_refds( my_reference my_related, my_key)
 NOTE (BUILD_MACRO_CALLS): <
 NOTE (BUILD_MACRO_CALLS): > refds_01_a_ii , 1 call(s)
 NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
-NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 
 %assert_complete_refds( my_reference my_related_extra, my_key)
 NOTE (BUILD_MACRO_CALLS): <
 NOTE (BUILD_MACRO_CALLS): > refds_01_b_i , 1 call(s)
 NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
-NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 
 %assert_complete_refds( my_reference_c my_related_c, my_char_key)
 NOTE (BUILD_MACRO_CALLS): <
 NOTE (BUILD_MACRO_CALLS): > refds_01_b_ii , 1 call(s)
 NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
-NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 
 %assert_complete_refds( my_reference_c my_related_extra_c, my_char_key)
 NOTE (BUILD_MACRO_CALLS): <
-NOTE: There were 4 observations read from the data set WORK.CSS_PASSFAIL.
-NOTE: The data set WORK.CSS_PASSFAIL has 4 observations and 14 variables.
-NOTE: DATA statement used (Total process time):
-      real time           0.04 seconds
-      cpu time            0.04 seconds
+NOTE (BUILD_MACRO_CALLS): > refds_02_a , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 
+10 The SAS System                                               12:38 Saturday, August 15, 2015
 
+%assert_complete_refds( my_ref_2 my_lb my_vs my_ecg, num_key key_char key3)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > refds_02_b , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 
+%assert_complete_refds( my_ref_2 my_lb_ext my_vs_ext my_ecg_ext, num_key key_char key3)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE: There were 6 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 6 observations and 14 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
 
 
 NOTE: There were 1 observations read from the data set WORK.CSS_PASSFAIL.
 NOTE: DATA statement used (Total process time):
       real time           0.00 seconds
       cpu time            0.00 seconds
-
+      
 
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.03 seconds
+      real time           0.02 seconds
       cpu time            0.03 seconds
-
+      
 
 
 NOTE: The file PFEXCODE is:
-      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD5812\#LN00011,
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD8772\#LN00007,
       RECFM=V,LRECL=32767,File Size (bytes)=0,
-      Last Modified=14Aug2015:19:42:26,
-      Create Time=14Aug2015:19:42:26
+      Last Modified=15Aug2015:12:38:18,
+      Create Time=15Aug2015:12:38:18
 
 NOTE: 1 record was written to the file PFEXCODE.
       The minimum record length was 56.
       The maximum record length was 56.
-NOTE: There were 4 observations read from the data set WORK.CSS_PASSFAIL.
-NOTE: The data set WORK.CSS_PASSFAIL has 4 observations and 14 variables.
+NOTE: There were 6 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 6 observations and 14 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.04 seconds
-      cpu time            0.03 seconds
-
+      real time           0.03 seconds
+      cpu time            0.01 seconds
+      
 
 NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set MY_REFERENCE is accessible.
 
@@ -293,28 +571,30 @@ NOTE: There were 4 observations read from the data set WORK.MY_REFERENCE.
 NOTE: 0 observations with duplicate key values were deleted.
 NOTE: The data set WORK.CRDS_DSET1 has 4 observations and 1 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.03 seconds
+      real time           0.02 seconds
       cpu time            0.03 seconds
-
+      
 
 NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set MY_RELATED is accessible.
 
 NOTE: There were 6 observations read from the data set WORK.MY_RELATED.
+11 The SAS System                                               12:38 Saturday, August 15, 2015
+
 NOTE: 3 observations with duplicate key values were deleted.
 NOTE: The data set WORK.CRDS_DSET2 has 3 observations and 1 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.03 seconds
+      real time           0.02 seconds
       cpu time            0.03 seconds
-
+      
 
 
 NOTE: There were 4 observations read from the data set WORK.CRDS_DSET1.
 NOTE: There were 3 observations read from the data set WORK.CRDS_DSET2.
 NOTE: The data set WORK.FAIL_CRDS has 0 observations and 3 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.03 seconds
-      cpu time            0.03 seconds
-
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
 
 NOTE: (ASSERT_COMPLETE_REFDS) Result is PASS. MY_REFERENCE includes all subjects.
 
@@ -322,55 +602,57 @@ NOTE: Deleting WORK.CRDS_DSET1 (memtype=DATA).
 NOTE: Deleting WORK.CRDS_DSET2 (memtype=DATA).
 NOTE: Deleting WORK.FAIL_CRDS (memtype=DATA).
 NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.03 seconds
+      real time           0.02 seconds
       cpu time            0.03 seconds
+      
 
 
-
-NOTE: There were 4 observations read from the data set WORK.CSS_PASSFAIL.
-NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 4 observations rewritten, 0
+NOTE: There were 6 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 6 observations rewritten, 0 
       observations added and 0 observations deleted.
 NOTE: DATA statement used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
-
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
 
 
 NOTE: DATA statement used (Total process time):
       real time           0.00 seconds
-      cpu time            0.00 seconds
-
-NOTE: There were 4 observations read from the data set WORK.CSS_PASSFAIL.
-NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 4 observations rewritten, 0
+      cpu time            0.01 seconds
+      
+NOTE: There were 6 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 6 observations rewritten, 0 
       observations added and 0 observations deleted.
 
 NOTE: CALL EXECUTE routine executed successfully, but no SAS statements were generated.
 NOTE: PROCEDURE SQL used (Total process time):
       real time           0.00 seconds
       cpu time            0.00 seconds
-
+      
 
 NOTE: PROCEDURE SQL used (Total process time):
       real time           0.00 seconds
       cpu time            0.00 seconds
+      
 
 
+12 The SAS System                                               12:38 Saturday, August 15, 2015
 
 NOTE: The file PFEXCODE is:
-      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD5812\#LN00011,
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD8772\#LN00007,
       RECFM=V,LRECL=32767,File Size (bytes)=0,
-      Last Modified=14Aug2015:19:42:26,
-      Create Time=14Aug2015:19:42:26
+      Last Modified=15Aug2015:12:38:18,
+      Create Time=15Aug2015:12:38:18
 
 NOTE: 1 record was written to the file PFEXCODE.
       The minimum record length was 62.
       The maximum record length was 62.
-NOTE: There were 4 observations read from the data set WORK.CSS_PASSFAIL.
-NOTE: The data set WORK.CSS_PASSFAIL has 4 observations and 14 variables.
+NOTE: There were 6 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 6 observations and 14 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.04 seconds
-      cpu time            0.03 seconds
-
+      real time           0.03 seconds
+      cpu time            0.01 seconds
+      
 
 NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set MY_REFERENCE is accessible.
 
@@ -378,9 +660,9 @@ NOTE: There were 4 observations read from the data set WORK.MY_REFERENCE.
 NOTE: 0 observations with duplicate key values were deleted.
 NOTE: The data set WORK.CRDS_DSET1 has 4 observations and 1 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.03 seconds
+      real time           0.02 seconds
       cpu time            0.03 seconds
-
+      
 
 NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set MY_RELATED_EXTRA is accessible.
 
@@ -388,89 +670,93 @@ NOTE: There were 7 observations read from the data set WORK.MY_RELATED_EXTRA.
 NOTE: 3 observations with duplicate key values were deleted.
 NOTE: The data set WORK.CRDS_DSET2 has 4 observations and 1 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
+      real time           0.02 seconds
+      cpu time            0.03 seconds
+      
 
 
-
-ERROR: (ASSERT_COMPLETE_REFDS) Result is FAIL. Obs missing from reference dset MY_REFERENCE: 1.5
-in_ds1=0 in_ds2=1
+ERROR: (ASSERT_COMPLETE_REFDS) Result is FAIL. Obs missing from reference dset MY_REFERENCE: 
+1.5 in_ds1=0 in_ds2=1
 NOTE: There were 4 observations read from the data set WORK.CRDS_DSET1.
 NOTE: There were 4 observations read from the data set WORK.CRDS_DSET2.
 NOTE: The data set WORK.FAIL_CRDS has 1 observations and 3 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.01 seconds
       cpu time            0.01 seconds
-
+      
 
 
 NOTE: Deleting WORK.CRDS_DSET1 (memtype=DATA).
 NOTE: Deleting WORK.CRDS_DSET2 (memtype=DATA).
 NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
+      real time           0.02 seconds
+      cpu time            0.03 seconds
+      
 
 
+13 The SAS System                                               12:38 Saturday, August 15, 2015
 
 NOTE: There were 1 observations read from the data set WORK.EXP_FAIL_CRDS_1AII.
 NOTE: There were 1 observations read from the data set WORK.FAIL_CRDS.
 NOTE: PROCEDURE COMPARE used (Total process time):
-      real time           0.00 seconds
-      cpu time            0.00 seconds
-
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
 
 
 NOTE: Deleting WORK.FAIL_CRDS (memtype=DATA).
 NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.00 seconds
+      real time           0.02 seconds
+      cpu time            0.01 seconds
+      
 
 
-
-NOTE: There were 4 observations read from the data set WORK.CSS_PASSFAIL.
-NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 4 observations rewritten, 0
+NOTE: There were 6 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 6 observations rewritten, 0 
       observations added and 0 observations deleted.
 NOTE: DATA statement used (Total process time):
       real time           0.00 seconds
-      cpu time            0.00 seconds
-
+      cpu time            0.01 seconds
+      
 
 
 NOTE: DATA statement used (Total process time):
       real time           0.00 seconds
       cpu time            0.00 seconds
-
-NOTE: There were 4 observations read from the data set WORK.CSS_PASSFAIL.
-NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 4 observations rewritten, 0
+      
+NOTE: There were 6 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 6 observations rewritten, 0 
       observations added and 0 observations deleted.
 
 NOTE: CALL EXECUTE routine executed successfully, but no SAS statements were generated.
 NOTE: PROCEDURE SQL used (Total process time):
       real time           0.00 seconds
       cpu time            0.00 seconds
-
+      
 
 NOTE: PROCEDURE SQL used (Total process time):
       real time           0.00 seconds
       cpu time            0.00 seconds
-
+      
 
 
 NOTE: The file PFEXCODE is:
-      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD5812\#LN00011,
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD8772\#LN00007,
       RECFM=V,LRECL=32767,File Size (bytes)=0,
-      Last Modified=14Aug2015:19:42:26,
-      Create Time=14Aug2015:19:42:26
+      Last Modified=15Aug2015:12:38:18,
+      Create Time=15Aug2015:12:38:18
 
 NOTE: 1 record was written to the file PFEXCODE.
       The minimum record length was 65.
       The maximum record length was 65.
-NOTE: There were 4 observations read from the data set WORK.CSS_PASSFAIL.
-NOTE: The data set WORK.CSS_PASSFAIL has 4 observations and 14 variables.
+NOTE: There were 6 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 6 observations and 14 variables.
 NOTE: DATA statement used (Total process time):
+14 The SAS System                                               12:38 Saturday, August 15, 2015
+
       real time           0.03 seconds
       cpu time            0.03 seconds
-
+      
 
 NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set MY_REFERENCE_C is accessible.
 
@@ -478,9 +764,9 @@ NOTE: There were 4 observations read from the data set WORK.MY_REFERENCE_C.
 NOTE: 0 observations with duplicate key values were deleted.
 NOTE: The data set WORK.CRDS_DSET1 has 4 observations and 1 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.01 seconds
+      real time           0.02 seconds
       cpu time            0.01 seconds
-
+      
 
 NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set MY_RELATED_C is accessible.
 
@@ -490,7 +776,7 @@ NOTE: The data set WORK.CRDS_DSET2 has 3 observations and 1 variables.
 NOTE: PROCEDURE SORT used (Total process time):
       real time           0.03 seconds
       cpu time            0.03 seconds
-
+      
 
 
 NOTE: There were 4 observations read from the data set WORK.CRDS_DSET1.
@@ -499,7 +785,7 @@ NOTE: The data set WORK.FAIL_CRDS has 0 observations and 3 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.01 seconds
       cpu time            0.01 seconds
-
+      
 
 NOTE: (ASSERT_COMPLETE_REFDS) Result is PASS. MY_REFERENCE_C includes all subjects.
 
@@ -507,55 +793,57 @@ NOTE: Deleting WORK.CRDS_DSET1 (memtype=DATA).
 NOTE: Deleting WORK.CRDS_DSET2 (memtype=DATA).
 NOTE: Deleting WORK.FAIL_CRDS (memtype=DATA).
 NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.03 seconds
+      real time           0.02 seconds
       cpu time            0.03 seconds
+      
 
 
-
-NOTE: There were 4 observations read from the data set WORK.CSS_PASSFAIL.
-NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 4 observations rewritten, 0
+NOTE: There were 6 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 6 observations rewritten, 0 
       observations added and 0 observations deleted.
 NOTE: DATA statement used (Total process time):
       real time           0.00 seconds
       cpu time            0.00 seconds
-
+      
 
 
 NOTE: DATA statement used (Total process time):
       real time           0.00 seconds
-      cpu time            0.00 seconds
+      cpu time            0.01 seconds
+15 The SAS System                                               12:38 Saturday, August 15, 2015
 
-NOTE: There were 4 observations read from the data set WORK.CSS_PASSFAIL.
-NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 4 observations rewritten, 0
+      
+NOTE: There were 6 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 6 observations rewritten, 0 
       observations added and 0 observations deleted.
 
 NOTE: CALL EXECUTE routine executed successfully, but no SAS statements were generated.
 NOTE: PROCEDURE SQL used (Total process time):
       real time           0.00 seconds
       cpu time            0.00 seconds
-
+      
 
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.01 seconds
+      real time           0.00 seconds
       cpu time            0.01 seconds
-
+      
 
 
 NOTE: The file PFEXCODE is:
-      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD5812\#LN00011,
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD8772\#LN00007,
       RECFM=V,LRECL=32767,File Size (bytes)=0,
-      Last Modified=14Aug2015:19:42:26,
-      Create Time=14Aug2015:19:42:26
+      Last Modified=15Aug2015:12:38:18,
+      Create Time=15Aug2015:12:38:18
 
 NOTE: 1 record was written to the file PFEXCODE.
       The minimum record length was 71.
       The maximum record length was 71.
-NOTE: There were 4 observations read from the data set WORK.CSS_PASSFAIL.
-NOTE: The data set WORK.CSS_PASSFAIL has 4 observations and 14 variables.
+NOTE: There were 6 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 6 observations and 14 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.04 seconds
-      cpu time            0.04 seconds
-
+      real time           0.02 seconds
+      cpu time            0.03 seconds
+      
 
 NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set MY_REFERENCE_C is accessible.
 
@@ -563,9 +851,9 @@ NOTE: There were 4 observations read from the data set WORK.MY_REFERENCE_C.
 NOTE: 0 observations with duplicate key values were deleted.
 NOTE: The data set WORK.CRDS_DSET1 has 4 observations and 1 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
-
+      real time           0.02 seconds
+      cpu time            0.03 seconds
+      
 
 NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set MY_RELATED_EXTRA_C is accessible.
 
@@ -573,20 +861,22 @@ NOTE: There were 7 observations read from the data set WORK.MY_RELATED_EXTRA_C.
 NOTE: 3 observations with duplicate key values were deleted.
 NOTE: The data set WORK.CRDS_DSET2 has 4 observations and 1 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.01 seconds
+      real time           0.02 seconds
       cpu time            0.01 seconds
+      
 
 
-
-ERROR: (ASSERT_COMPLETE_REFDS) Result is FAIL. Obs missing from reference dset MY_REFERENCE_C:
+ERROR: (ASSERT_COMPLETE_REFDS) Result is FAIL. Obs missing from reference dset MY_REFERENCE_C: 
 Record 1.5 in_ds1=0 in_ds2=1
+16 The SAS System                                               12:38 Saturday, August 15, 2015
+
 NOTE: There were 4 observations read from the data set WORK.CRDS_DSET1.
 NOTE: There were 4 observations read from the data set WORK.CRDS_DSET2.
 NOTE: The data set WORK.FAIL_CRDS has 1 observations and 3 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.01 seconds
       cpu time            0.01 seconds
-
+      
 
 
 NOTE: Deleting WORK.CRDS_DSET1 (memtype=DATA).
@@ -594,401 +884,80 @@ NOTE: Deleting WORK.CRDS_DSET2 (memtype=DATA).
 NOTE: PROCEDURE DATASETS used (Total process time):
       real time           0.01 seconds
       cpu time            0.01 seconds
-
+      
 
 
 NOTE: There were 1 observations read from the data set WORK.EXP_FAIL_CRDS_1BII.
 NOTE: There were 1 observations read from the data set WORK.FAIL_CRDS.
 NOTE: PROCEDURE COMPARE used (Total process time):
-      real time           0.01 seconds
+      real time           0.00 seconds
       cpu time            0.01 seconds
-
+      
 
 
 NOTE: Deleting WORK.FAIL_CRDS (memtype=DATA).
 NOTE: PROCEDURE DATASETS used (Total process time):
       real time           0.01 seconds
       cpu time            0.01 seconds
+      
 
 
-
-NOTE: There were 4 observations read from the data set WORK.CSS_PASSFAIL.
-NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 4 observations rewritten, 0
+NOTE: There were 6 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 6 observations rewritten, 0 
       observations added and 0 observations deleted.
 NOTE: DATA statement used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
-
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
 
 
 NOTE: DATA statement used (Total process time):
-      real time           0.01 seconds
+      real time           0.00 seconds
       cpu time            0.01 seconds
-
-NOTE: There were 4 observations read from the data set WORK.CSS_PASSFAIL.
-NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 4 observations rewritten, 0
+      
+NOTE: There were 6 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 6 observations rewritten, 0 
       observations added and 0 observations deleted.
 
 NOTE: CALL EXECUTE routine executed successfully, but no SAS statements were generated.
 NOTE: PROCEDURE SQL used (Total process time):
       real time           0.00 seconds
       cpu time            0.00 seconds
-
-
-
-NOTE: 11 lines were written to file PRINT.
-NOTE: There were 4 observations read from the data set WORK.CSS_PASSFAIL.
-NOTE: The data set WORK.CSS_PASSFAIL has 4 observations and 15 variables.
-NOTE: DATA statement used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
-
-
-127
-128
-129   *--- Start clean for Test 2, otherwise too many WORK dsets ---*;
-130     %util_delete_dsets(_ALL_)
-NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
-
-
-
-NOTE: Deleting WORK.CSS_PASSFAIL (memtype=DATA).
-NOTE: Deleting WORK.EXP_FAIL_CRDS_1AII (memtype=DATA).
-NOTE: Deleting WORK.EXP_FAIL_CRDS_1BII (memtype=DATA).
-NOTE: Deleting WORK.MY_REFERENCE (memtype=DATA).
-NOTE: Deleting WORK.MY_REFERENCE_C (memtype=DATA).
-NOTE: Deleting WORK.MY_RELATED (memtype=DATA).
-NOTE: Deleting WORK.MY_RELATED_C (memtype=DATA).
-NOTE: Deleting WORK.MY_RELATED_EXTRA (memtype=DATA).
-NOTE: Deleting WORK.MY_RELATED_EXTRA_C (memtype=DATA).
-NOTE: Deleting WORK.MY_TEST_DEFINITIONS (memtype=DATA).
-NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.06 seconds
-      cpu time            0.06 seconds
-
-
-131
-132
-133   * Test 2 - Multiple-keys, Three related data sets *;
-134
-135     proc sql;
-136       create table my_test_definitions
-137         (  test_mac    char(32) label='Name of macro to test'
-138          , test_id     char(15) label='Test ID for ASSERT_COMPLETE_REFDS'
-139          , test_dsc    char(80) label='Test Description'
-140          , test_type   char(5)  label='Test Type (Macro var, String-<B|C|L|T>, Data set, In
-140 ! data step)'
-141          , pparm_dsets char(50) label='Test values for the positional parameter PNUM'
-142          , pparm_keys  char(50) label='Test values for the keyword parameter KNUM'
-143          , test_expect char(50) label='EXPECTED test results for each call to
-143 ! ASSERT_COMPLETE_REFDS'
-144          , test_expect_sym char(15) label='TEST_PDLIM-delim Name=Value pairs of EXPECTED
-144 ! global syms created'
-145         )
-146       ;
-NOTE: Table WORK.MY_TEST_DEFINITIONS created, with 0 rows and 8 columns.
-147
-148       insert into my_test_definitions
-149         values('assert_complete_refds', 'refds_02_a', 'multiple-key, three related dsets,
-149 ! extra REF rec allowed',
-150                'D', 'my_reference my_lb my_vs my_ecg', 'num_key key_char key3', '-fail_crds',
-150 ! 'continue=1')
-151         values('assert_complete_refds', 'refds_02_b', 'multiple-key, three related dsets,
-151 ! extra REL rec NOT allowed',
-152                'D', 'my_reference my_lb_ext my_vs_ext my_ecg_ext', 'num_key key_char key3',
-152 ! 'exp_fail_crds_2b=fail_crds', 'continue=0')
-153
-154       ;
-NOTE: 2 rows were inserted into WORK.MY_TEST_DEFINITIONS.
-
-155     quit;
-NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.04 seconds
-      cpu time            0.04 seconds
-
-
-156
-157
-158     * Test 2 A - REFerence dset CAN have extra record with key num_key = 2.003, or key_char =
-158 ! 'Record A', or key3 = 'Subrec 2.003'  *;
-159     * Test 2 B - RELated dsets can NOT have extra records num_key = 1.5, or key_char = 'Rec
-159 ! D', or key3 = 'Subrec 400' *;
-160
-161     data my_reference;
-162       do num_key = 0.001, 1.002, 2.003, 3.004;
-163         do key_char = 'Record A', 'Record B', 'Record C';
-164           do key3 = 'Subrec 0.001', 'Subrec 1.002', 'Subrec 2.003';
-165             detail_a = 'Detail A for '!!trim(put(num_key, best8.-L))!!' and '!!trim(key_char);
-166             detail_b = 'Detail B for '!!trim(key_char)!!' and '!!trim(key3);
-167             OUTPUT;
-168           end;
-169         end;
-170       end;
-171     run;
-
-NOTE: The data set WORK.MY_REFERENCE has 36 observations and 5 variables.
-NOTE: DATA statement used (Total process time):
-      real time           0.03 seconds
-      cpu time            0.03 seconds
-
-
-172
-173     data my_lb  my_lb_ext
-174          my_vs  my_vs_ext
-175          my_ecg my_ecg_ext;
-176       do num_key = 0.001, 1.002, 3.004;
-177         do key_char = 'Record B', 'Record C';
-178           do key3 = 'Subrec 0.001', 'Subrec 1.002';
-179             detail_a = 'LAB A for '!!trim(put(num_key, best8.-L))!!' and '!!trim(key_char);
-180             detail_b = 'LAB B for '!!trim(key_char)!!' and '!!trim(key3);
-181             if ranuni(61475) < 0.9 then OUTPUT my_lb my_lb_ext;
-182
-183             detail_a = 'VS A for '!!trim(put(num_key, best8.-L))!!' and '!!trim(key_char);
-184             detail_b = 'VS B for '!!trim(key_char)!!' and '!!trim(key3);
-185             if ranuni(56147) < 0.9 then OUTPUT my_vs my_vs_ext;
-186
-187             detail_a = 'ECG A for '!!trim(put(num_key, best8.-L))!!' and '!!trim(key_char);
-188             detail_b = 'ECG B for '!!trim(key_char)!!' and '!!trim(key3);
-189             if ranuni(75614) < 0.9 then OUTPUT my_ecg my_ecg_ext;
-190           end;
-191         end;
-192       end;
-193
-194       num_key = 1.5;   key_char = 'Record B'; key3 = 'Subrec 0.001';
-195       detail_a = 'INVALID lab for 1.5 and Record B'; detail_b = 'INVALID lab for Record B and
-195 ! Subrec 0.001';
-196       OUTPUT MY_LB_EXT;
-197
-198       num_key = 1.002; key_char = 'Rec D';    key3 = 'Subrec 1.002';
-199       detail_a = 'INVALID lab for 1.002 and Record D'; detail_b = 'INVALID lab for Record D
-199 ! and Subrec 1.002';
-200       OUTPUT MY_VS_EXT;
-201
-202       num_key = 2.003; key_char = 'Record C'; key3 = 'Subrec 400';
-203       detail_a = 'INVALID lab for 2.003 and Record C'; detail_b = 'INVALID lab for Record C
-203 ! and Subrec 400';
-204       OUTPUT MY_ECG_EXT;
-205
-206     run;
-
-NOTE: The data set WORK.MY_LB has 11 observations and 5 variables.
-NOTE: The data set WORK.MY_LB_EXT has 12 observations and 5 variables.
-NOTE: The data set WORK.MY_VS has 12 observations and 5 variables.
-NOTE: The data set WORK.MY_VS_EXT has 13 observations and 5 variables.
-NOTE: The data set WORK.MY_ECG has 11 observations and 5 variables.
-NOTE: The data set WORK.MY_ECG_EXT has 12 observations and 5 variables.
-NOTE: DATA statement used (Total process time):
-      real time           0.07 seconds
-      cpu time            0.07 seconds
-
-
-207
-208     %assert_unique_keys(my_lb, num_key key_char key3)
-NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set MY_LB is accessible.
-NOTE: Table WORK.FAIL_AUK created, with 0 rows and 3 columns.
+      
 
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
+17 The SAS System                                               12:38 Saturday, August 15, 2015
 
-
-NOTE: (ASSERT_UNIQUE_KEYS) MY_LB has unique records for keys NUM_KEY KEY_CHAR KEY3  (SQLOBS = 0).
-
-NOTE: Deleting WORK.FAIL_AUK (memtype=DATA).
-NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
-
-
-209     %assert_unique_keys(my_vs, num_key key_char key3)
-NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set MY_VS is accessible.
-NOTE: Table WORK.FAIL_AUK created, with 0 rows and 3 columns.
-
-NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
-
-
-NOTE: (ASSERT_UNIQUE_KEYS) MY_VS has unique records for keys NUM_KEY KEY_CHAR KEY3  (SQLOBS = 0).
-
-NOTE: Deleting WORK.FAIL_AUK (memtype=DATA).
-NOTE: PROCEDURE DATASETS used (Total process time):
       real time           0.00 seconds
-      cpu time            0.00 seconds
-
-
-210     %assert_unique_keys(my_ecg, num_key key_char key3)
-NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set MY_ECG is accessible.
-NOTE: Table WORK.FAIL_AUK created, with 0 rows and 3 columns.
-
-NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.01 seconds
       cpu time            0.01 seconds
-
-
-NOTE: (ASSERT_UNIQUE_KEYS) MY_ECG has unique records for keys NUM_KEY KEY_CHAR KEY3  (SQLOBS = 0).
-
-NOTE: Deleting WORK.FAIL_AUK (memtype=DATA).
-NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
-
-
-211     %assert_unique_keys(my_lb_ext, num_key key_char key3)
-NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set MY_LB_EXT is accessible.
-NOTE: Table WORK.FAIL_AUK created, with 0 rows and 3 columns.
-
-NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
-
-
-NOTE: (ASSERT_UNIQUE_KEYS) MY_LB_EXT has unique records for keys NUM_KEY KEY_CHAR KEY3  (SQLOBS =
-0).
-
-NOTE: Deleting WORK.FAIL_AUK (memtype=DATA).
-NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
-
-
-212     %assert_unique_keys(my_vs_ext, num_key key_char key3)
-NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set MY_VS_EXT is accessible.
-NOTE: Table WORK.FAIL_AUK created, with 0 rows and 3 columns.
-
-NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
-
-
-NOTE: (ASSERT_UNIQUE_KEYS) MY_VS_EXT has unique records for keys NUM_KEY KEY_CHAR KEY3  (SQLOBS =
-0).
-
-NOTE: Deleting WORK.FAIL_AUK (memtype=DATA).
-NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
-
-
-213     %assert_unique_keys(my_ecg_ext, num_key key_char key3)
-NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set MY_ECG_EXT is accessible.
-NOTE: Table WORK.FAIL_AUK created, with 0 rows and 3 columns.
-
-NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
-
-
-NOTE: (ASSERT_UNIQUE_KEYS) MY_ECG_EXT has unique records for keys NUM_KEY KEY_CHAR KEY3  (SQLOBS
-= 0).
-
-NOTE: Deleting WORK.FAIL_AUK (memtype=DATA).
-NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
-
-
-214
-215     * EXPECT assert_complete_refds macro to create FAIL_CRDS data sets with this
-215 ! structure/content *;
-216     * (for successful assertions, Tests 1.a.i and 1.b.i, macro does NOT create dset FAIL_CRDS)
-216 !      *;
-217
-218       data exp_fail_crds_2b;
-219         num_key = 1.002; key_char = 'Rec D   '; key3 = 'Subrec 1.002'; found_ds1=0;
-219 ! found_ds2=0; found_ds3=1; found_ds4=0; output;
-220         num_key = 1.5;   key_char = 'Record B'; key3 = 'Subrec 0.001'; found_ds1=0;
-220 ! found_ds2=1; found_ds3=0; found_ds4=0; output;
-221         num_key = 2.003; key_char = 'Record C'; key3 = 'Subrec 400';   found_ds1=0;
-221 ! found_ds2=0; found_ds3=0; found_ds4=1; output;
-222       run;
-
-NOTE: The data set WORK.EXP_FAIL_CRDS_2B has 3 observations and 7 variables.
-NOTE: DATA statement used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
-
-
-223
-224   %util_passfail (my_test_definitions, debug=N);
-NOTE: No rows were selected.
-NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.00 seconds
-      cpu time            0.00 seconds
-
-
-
-NOTE: DATA statement used (Total process time):
-      real time           0.00 seconds
-      cpu time            0.00 seconds
-
-
-
-NOTE: There were 2 observations read from the data set WORK.MY_TEST_DEFINITIONS.
-NOTE: The data set WORK.CSS_PASSFAIL has 2 observations and 12 variables.
-NOTE: DATA statement used (Total process time):
-      real time           0.03 seconds
-      cpu time            0.03 seconds
-
-
-
-NOTE (BUILD_MACRO_CALLS): > refds_02_a , 1 call(s)
-NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
-NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1
-%assert_complete_refds( my_reference my_lb my_vs my_ecg, num_key key_char key3)
-NOTE (BUILD_MACRO_CALLS): <
-NOTE (BUILD_MACRO_CALLS): > refds_02_b , 1 call(s)
-NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
-NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1
-%assert_complete_refds( my_reference my_lb_ext my_vs_ext my_ecg_ext, num_key key_char key3)
-NOTE (BUILD_MACRO_CALLS): <
-NOTE: There were 2 observations read from the data set WORK.CSS_PASSFAIL.
-NOTE: The data set WORK.CSS_PASSFAIL has 2 observations and 14 variables.
-NOTE: DATA statement used (Total process time):
-      real time           0.03 seconds
-      cpu time            0.03 seconds
-
-
-
-NOTE: There were 1 observations read from the data set WORK.CSS_PASSFAIL.
-NOTE: DATA statement used (Total process time):
-      real time           0.00 seconds
-      cpu time            0.00 seconds
-
-
-NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.00 seconds
-      cpu time            0.00 seconds
-
+      
 
 
 NOTE: The file PFEXCODE is:
-      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD5812\#LN00011,
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD8772\#LN00007,
       RECFM=V,LRECL=32767,File Size (bytes)=0,
-      Last Modified=14Aug2015:19:42:27,
-      Create Time=14Aug2015:19:42:26
+      Last Modified=15Aug2015:12:38:18,
+      Create Time=15Aug2015:12:38:18
 
 NOTE: 1 record was written to the file PFEXCODE.
-      The minimum record length was 79.
-      The maximum record length was 79.
-NOTE: There were 2 observations read from the data set WORK.CSS_PASSFAIL.
-NOTE: The data set WORK.CSS_PASSFAIL has 2 observations and 14 variables.
+      The minimum record length was 75.
+      The maximum record length was 75.
+NOTE: There were 6 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 6 observations and 14 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.03 seconds
-      cpu time            0.03 seconds
+      real time           0.02 seconds
+      cpu time            0.01 seconds
+      
 
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set MY_REF_2 is accessible.
 
-NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set MY_REFERENCE is accessible.
-
-NOTE: There were 36 observations read from the data set WORK.MY_REFERENCE.
+NOTE: There were 36 observations read from the data set WORK.MY_REF_2.
 NOTE: 0 observations with duplicate key values were deleted.
 NOTE: The data set WORK.CRDS_DSET1 has 36 observations and 3 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.01 seconds
+      real time           0.02 seconds
       cpu time            0.01 seconds
-
+      
 
 NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set MY_LB is accessible.
 
@@ -996,9 +965,9 @@ NOTE: There were 11 observations read from the data set WORK.MY_LB.
 NOTE: 0 observations with duplicate key values were deleted.
 NOTE: The data set WORK.CRDS_DSET2 has 11 observations and 3 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.03 seconds
-      cpu time            0.03 seconds
-
+      real time           0.02 seconds
+      cpu time            0.01 seconds
+      
 
 NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set MY_VS is accessible.
 
@@ -1006,19 +975,21 @@ NOTE: There were 12 observations read from the data set WORK.MY_VS.
 NOTE: 0 observations with duplicate key values were deleted.
 NOTE: The data set WORK.CRDS_DSET3 has 12 observations and 3 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.03 seconds
-      cpu time            0.03 seconds
-
+      real time           0.02 seconds
+      cpu time            0.01 seconds
+      
 
 NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set MY_ECG is accessible.
 
 NOTE: There were 11 observations read from the data set WORK.MY_ECG.
 NOTE: 0 observations with duplicate key values were deleted.
 NOTE: The data set WORK.CRDS_DSET4 has 11 observations and 3 variables.
-NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.03 seconds
-      cpu time            0.03 seconds
+18 The SAS System                                               12:38 Saturday, August 15, 2015
 
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.02 seconds
+      cpu time            0.01 seconds
+      
 
 
 NOTE: There were 36 observations read from the data set WORK.CRDS_DSET1.
@@ -1027,11 +998,11 @@ NOTE: There were 12 observations read from the data set WORK.CRDS_DSET3.
 NOTE: There were 11 observations read from the data set WORK.CRDS_DSET4.
 NOTE: The data set WORK.FAIL_CRDS has 0 observations and 7 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.03 seconds
-      cpu time            0.03 seconds
+      real time           0.02 seconds
+      cpu time            0.01 seconds
+      
 
-
-NOTE: (ASSERT_COMPLETE_REFDS) Result is PASS. MY_REFERENCE includes all subjects.
+NOTE: (ASSERT_COMPLETE_REFDS) Result is PASS. MY_REF_2 includes all subjects.
 
 NOTE: Deleting WORK.CRDS_DSET1 (memtype=DATA).
 NOTE: Deleting WORK.CRDS_DSET2 (memtype=DATA).
@@ -1039,65 +1010,67 @@ NOTE: Deleting WORK.CRDS_DSET3 (memtype=DATA).
 NOTE: Deleting WORK.CRDS_DSET4 (memtype=DATA).
 NOTE: Deleting WORK.FAIL_CRDS (memtype=DATA).
 NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.04 seconds
-      cpu time            0.04 seconds
+      real time           0.02 seconds
+      cpu time            0.03 seconds
+      
 
 
-
-NOTE: There were 2 observations read from the data set WORK.CSS_PASSFAIL.
-NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 2 observations rewritten, 0
+NOTE: There were 6 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 6 observations rewritten, 0 
       observations added and 0 observations deleted.
 NOTE: DATA statement used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
-
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
 
 
 NOTE: DATA statement used (Total process time):
       real time           0.00 seconds
-      cpu time            0.00 seconds
-
-NOTE: There were 2 observations read from the data set WORK.CSS_PASSFAIL.
-NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 2 observations rewritten, 0
+      cpu time            0.01 seconds
+      
+NOTE: There were 6 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 6 observations rewritten, 0 
       observations added and 0 observations deleted.
 
 NOTE: CALL EXECUTE routine executed successfully, but no SAS statements were generated.
 NOTE: PROCEDURE SQL used (Total process time):
       real time           0.00 seconds
       cpu time            0.00 seconds
-
+      
 
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+19 The SAS System                                               12:38 Saturday, August 15, 2015
 
 
 
 NOTE: The file PFEXCODE is:
-      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD5812\#LN00011,
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD8772\#LN00007,
       RECFM=V,LRECL=32767,File Size (bytes)=0,
-      Last Modified=14Aug2015:19:42:28,
-      Create Time=14Aug2015:19:42:26
+      Last Modified=15Aug2015:12:38:19,
+      Create Time=15Aug2015:12:38:18
 
 NOTE: 1 record was written to the file PFEXCODE.
-      The minimum record length was 91.
-      The maximum record length was 91.
-NOTE: There were 2 observations read from the data set WORK.CSS_PASSFAIL.
-NOTE: The data set WORK.CSS_PASSFAIL has 2 observations and 14 variables.
+      The minimum record length was 87.
+      The maximum record length was 87.
+NOTE: There were 6 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 6 observations and 14 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.03 seconds
+      real time           0.02 seconds
       cpu time            0.01 seconds
+      
 
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set MY_REF_2 is accessible.
 
-NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set MY_REFERENCE is accessible.
-
-NOTE: There were 36 observations read from the data set WORK.MY_REFERENCE.
+NOTE: There were 36 observations read from the data set WORK.MY_REF_2.
 NOTE: 0 observations with duplicate key values were deleted.
 NOTE: The data set WORK.CRDS_DSET1 has 36 observations and 3 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.03 seconds
-      cpu time            0.03 seconds
-
+      real time           0.02 seconds
+      cpu time            0.01 seconds
+      
 
 NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set MY_LB_EXT is accessible.
 
@@ -1105,9 +1078,9 @@ NOTE: There were 12 observations read from the data set WORK.MY_LB_EXT.
 NOTE: 0 observations with duplicate key values were deleted.
 NOTE: The data set WORK.CRDS_DSET2 has 12 observations and 3 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.03 seconds
+      real time           0.02 seconds
       cpu time            0.03 seconds
-
+      
 
 NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set MY_VS_EXT is accessible.
 
@@ -1115,9 +1088,9 @@ NOTE: There were 13 observations read from the data set WORK.MY_VS_EXT.
 NOTE: 0 observations with duplicate key values were deleted.
 NOTE: The data set WORK.CRDS_DSET3 has 13 observations and 3 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.03 seconds
+      real time           0.02 seconds
       cpu time            0.01 seconds
-
+      
 
 NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set MY_ECG_EXT is accessible.
 
@@ -1125,16 +1098,18 @@ NOTE: There were 12 observations read from the data set WORK.MY_ECG_EXT.
 NOTE: 0 observations with duplicate key values were deleted.
 NOTE: The data set WORK.CRDS_DSET4 has 12 observations and 3 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.03 seconds
+      real time           0.02 seconds
       cpu time            0.03 seconds
+20 The SAS System                                               12:38 Saturday, August 15, 2015
+
+      
 
 
-
-ERROR: (ASSERT_COMPLETE_REFDS) Result is FAIL. Obs missing from reference dset MY_REFERENCE: 1.002
+ERROR: (ASSERT_COMPLETE_REFDS) Result is FAIL. Obs missing from reference dset MY_REF_2: 1.002
 Rec D Subrec 1.002 in_ds1=0 in_ds2=0 in_ds3=1 in_ds4=0
-ERROR: (ASSERT_COMPLETE_REFDS) Result is FAIL. Obs missing from reference dset MY_REFERENCE: 1.5
+ERROR: (ASSERT_COMPLETE_REFDS) Result is FAIL. Obs missing from reference dset MY_REF_2: 1.5
 Record B Subrec 0.001 in_ds1=0 in_ds2=1 in_ds3=0 in_ds4=0
-ERROR: (ASSERT_COMPLETE_REFDS) Result is FAIL. Obs missing from reference dset MY_REFERENCE: 2.003
+ERROR: (ASSERT_COMPLETE_REFDS) Result is FAIL. Obs missing from reference dset MY_REF_2: 2.003
 Record C Subrec 400 in_ds1=0 in_ds2=0 in_ds3=0 in_ds4=1
 NOTE: There were 36 observations read from the data set WORK.CRDS_DSET1.
 NOTE: There were 12 observations read from the data set WORK.CRDS_DSET2.
@@ -1142,9 +1117,9 @@ NOTE: There were 13 observations read from the data set WORK.CRDS_DSET3.
 NOTE: There were 12 observations read from the data set WORK.CRDS_DSET4.
 NOTE: The data set WORK.FAIL_CRDS has 3 observations and 7 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.03 seconds
-      cpu time            0.03 seconds
-
+      real time           0.02 seconds
+      cpu time            0.01 seconds
+      
 
 
 NOTE: Deleting WORK.CRDS_DSET1 (memtype=DATA).
@@ -1152,56 +1127,79 @@ NOTE: Deleting WORK.CRDS_DSET2 (memtype=DATA).
 NOTE: Deleting WORK.CRDS_DSET3 (memtype=DATA).
 NOTE: Deleting WORK.CRDS_DSET4 (memtype=DATA).
 NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.03 seconds
+      real time           0.02 seconds
       cpu time            0.03 seconds
-
+      
 
 
 NOTE: There were 3 observations read from the data set WORK.EXP_FAIL_CRDS_2B.
 NOTE: There were 3 observations read from the data set WORK.FAIL_CRDS.
 NOTE: PROCEDURE COMPARE used (Total process time):
       real time           0.00 seconds
-      cpu time            0.00 seconds
-
+      cpu time            0.01 seconds
+      
 
 
 NOTE: Deleting WORK.FAIL_CRDS (memtype=DATA).
 NOTE: PROCEDURE DATASETS used (Total process time):
       real time           0.01 seconds
       cpu time            0.01 seconds
+      
 
 
-
-NOTE: There were 2 observations read from the data set WORK.CSS_PASSFAIL.
-NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 2 observations rewritten, 0
+NOTE: There were 6 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 6 observations rewritten, 0 
       observations added and 0 observations deleted.
 NOTE: DATA statement used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
-
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
 
 
 NOTE: DATA statement used (Total process time):
       real time           0.00 seconds
-      cpu time            0.00 seconds
+21 The SAS System                                               12:38 Saturday, August 15, 2015
 
-NOTE: There were 2 observations read from the data set WORK.CSS_PASSFAIL.
-NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 2 observations rewritten, 0
+      cpu time            0.00 seconds
+      
+NOTE: There were 6 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 6 observations rewritten, 0 
       observations added and 0 observations deleted.
 
 NOTE: CALL EXECUTE routine executed successfully, but no SAS statements were generated.
 NOTE: PROCEDURE SQL used (Total process time):
       real time           0.00 seconds
-      cpu time            0.00 seconds
+      cpu time            0.01 seconds
+      
 
 
-
-NOTE: 9 lines were written to file PRINT.
-NOTE: There were 2 observations read from the data set WORK.CSS_PASSFAIL.
-NOTE: The data set WORK.CSS_PASSFAIL has 2 observations and 15 variables.
+NOTE: 11 lines were written to file PRINT.
+NOTE: There were 6 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 6 observations and 15 variables.
+NOTE: The DATA step printed page 1.
 NOTE: DATA statement used (Total process time):
-      real time           0.03 seconds
-      cpu time            0.03 seconds
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
 
+NOTE: Libref SAVEXML was successfully assigned as follows: 
+      Engine:        XML 
+      Physical Name: testresults_assert_complete_refds.xml
 
+NOTE: SAS variable labels, formats, and lengths are not written to DBMS tables.
+NOTE: There were 6 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set SAVEXML.CSS_PASSFAIL has 6 observations and 15 variables.
+NOTE: DATA statement used (Total process time):
+      real time           11.13 seconds
+      cpu time            0.95 seconds
+      
 
+NOTE: Libref SAVEXML has been deassigned.
+
+ERROR: Errors printed on pages 12,15,20.
+
+NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC USA 27513-2414
+NOTE: The SAS System used:
+      real time           24.86 seconds
+      cpu time            4.05 seconds
+      

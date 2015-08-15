@@ -85,7 +85,10 @@ end HEADER ***/
        OUTPUTS_FOLDER:
              Location to write PDF outputs (WITHOUT final back- or forward-slash)
 
-  ***/
+  ****************************************
+  *** END user processing and settings ***
+  ****************************************/
+
 
     %put WARNING: (WPCT-F.07.01) User must ensure PhUSE/CSS utilities are in the AUTOCALL path.;
 
@@ -99,8 +102,8 @@ end HEADER ***/
     ***/
 
 
-    %*--- 2a) ACCESS data, by default PhUSE/CSS test data, and create work copy with prefix "CSS_" ---*;
-    %*---     NB: If remote access to test data files does not work, see local override, below.    ---*;
+    /*** 2a) ACCESS data, by default PhUSE/CSS test data, and create work copy with prefix "CSS_"  ***/
+    /***     NB: If remote access to test data files does not work, see local override, below.     ***/
       %util_access_test_data(adsl)
       %util_access_test_data(advs)
 
@@ -109,7 +112,7 @@ end HEADER ***/
         %* %util_access_test_data(advs, local=C:\CSS\phuse-scripts\scriptathon2014\data\);
 
 
-    *--- 2b) USER SUBSET of data, to limit number of box plot outputs, and to shorten Tx labels ---*;
+    /*** 2b) USER SUBSET of data, to limit number of box plot outputs, and to shorten Tx labels ***/
       %macro shorten_trt_name(ori_var, new_var);
         length &new_var $6;
         select (&ori_var);
@@ -139,7 +142,8 @@ end HEADER ***/
       run;
 
 
-    *--- 3) Key user settings ---*;
+    %*--- 3) Key user settings ---*;
+
       %let s_lb = work;
       %let s_ds = adsl_sub;
 

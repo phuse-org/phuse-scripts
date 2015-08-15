@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<TABLE>
+   <CSS_PASSFAIL>
+      <test_mac> assert_complete_refds </test_mac>
+      <test_id> refds_01_a_i </test_id>
+      <test_dsc> single num key, single related dset, extra REF rec allowed </test_dsc>
+      <pparm_dsets> my_reference my_related </pparm_dsets>
+      <pparm_keys> my_key </pparm_keys>
+      <test_expect> -fail_crds </test_expect>
+      <test_expect_sym> continue=1 </test_expect_sym>
+      <test_result> -fail_crds </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_result_sym> continue=1 </test_result_sym>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_complete_refds( my_reference my_related, my_key) </macro_call_1>
+      <test_type> D </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_complete_refds </test_mac>
+      <test_id> refds_01_a_ii </test_id>
+      <test_dsc> single num key, single related dset, extra REL rec NOT allowed </test_dsc>
+      <pparm_dsets> my_reference my_related_extra </pparm_dsets>
+      <pparm_keys> my_key </pparm_keys>
+      <test_expect> exp_fail_crds_1aii=fail_crds </test_expect>
+      <test_expect_sym> continue=0 </test_expect_sym>
+      <test_result> exp_fail_crds_1aii=fail_crds </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_result_sym> continue=0 </test_result_sym>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_complete_refds( my_reference my_related_extra, my_key) </macro_call_1>
+      <test_type> D </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_complete_refds </test_mac>
+      <test_id> refds_01_b_i </test_id>
+      <test_dsc> single char key, single related dset, extra REF rec allowed </test_dsc>
+      <pparm_dsets> my_reference_c my_related_c </pparm_dsets>
+      <pparm_keys> my_char_key </pparm_keys>
+      <test_expect> -fail_crds </test_expect>
+      <test_expect_sym> continue=1 </test_expect_sym>
+      <test_result> -fail_crds </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_result_sym> continue=1 </test_result_sym>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_complete_refds( my_reference_c my_related_c, my_char_key) </macro_call_1>
+      <test_type> D </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_complete_refds </test_mac>
+      <test_id> refds_01_b_ii </test_id>
+      <test_dsc> single char key, single related dset, extra REL rec NOT allowed </test_dsc>
+      <pparm_dsets> my_reference_c my_related_extra_c </pparm_dsets>
+      <pparm_keys> my_char_key </pparm_keys>
+      <test_expect> exp_fail_crds_1bii=fail_crds </test_expect>
+      <test_expect_sym> continue=0 </test_expect_sym>
+      <test_result> exp_fail_crds_1bii=fail_crds </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_result_sym> continue=0 </test_result_sym>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_complete_refds( my_reference_c my_related_extra_c, my_char_key) </macro_call_1>
+      <test_type> D </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_complete_refds </test_mac>
+      <test_id> refds_02_a </test_id>
+      <test_dsc> multiple-key, three related dsets, extra REF rec allowed </test_dsc>
+      <pparm_dsets> my_ref_2 my_lb my_vs my_ecg </pparm_dsets>
+      <pparm_keys> num_key key_char key3 </pparm_keys>
+      <test_expect> -fail_crds </test_expect>
+      <test_expect_sym> continue=1 </test_expect_sym>
+      <test_result> -fail_crds </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_result_sym> continue=1 </test_result_sym>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_complete_refds( my_ref_2 my_lb my_vs my_ecg, num_key key_char key3) </macro_call_1>
+      <test_type> D </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_complete_refds </test_mac>
+      <test_id> refds_02_b </test_id>
+      <test_dsc> multiple-key, three related dsets, extra REL rec NOT allowed </test_dsc>
+      <pparm_dsets> my_ref_2 my_lb_ext my_vs_ext my_ecg_ext </pparm_dsets>
+      <pparm_keys> num_key key_char key3 </pparm_keys>
+      <test_expect> exp_fail_crds_2b=fail_crds </test_expect>
+      <test_expect_sym> continue=0 </test_expect_sym>
+      <test_result> exp_fail_crds_2b=fail_crds </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_result_sym> continue=0 </test_result_sym>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_complete_refds( my_ref_2 my_lb_ext my_vs_ext my_ecg_ext, num_key key_char key3) </macro_call_1>
+      <test_type> D </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+</TABLE>
