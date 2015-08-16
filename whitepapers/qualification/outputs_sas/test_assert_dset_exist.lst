@@ -1,0 +1,19 @@
+                                                              17:20 Sunday, August 16, 2015   1
+
+### -----
+###
+### ASSERT_DSET_EXIST Overall: ALL TESTS PASSED - 11
+###
+### -----
+
+   001   dse.1          Null data set list returns FAIL
+   002   dse.2.a.1      Existing one-level WORK dset found
+   003   dse.2.a.2      Existing two-level WORK dset found
+   004   dse.2.b.1      Non-existent one-level WORK dset NOT found
+   005   dse.2.b.2      Non-existent two-level WORK dset NOT found
+   006   dse.2.c.1      Existing two-level Permanent dset found
+   007   dse.2.d.1      Non-existent Permanent dset NOT found
+   008   dse.3.a        Multiple work and permanent data sets found
+   009   dse.3.b.1      1st missing data sets results in overall FAIL
+   010   dse.3.b.2      last missing data sets results in overall FAIL
+   011   dse.3.b.3      in between missing data sets results in overall FAIL

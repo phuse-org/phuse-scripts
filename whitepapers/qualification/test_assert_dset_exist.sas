@@ -41,142 +41,73 @@
        , test_dsc        char(80) label='Test Description'
 
        , test_type       char(5)  label='Test Type (Macro var, String-<B|C|L|T>, Data set, In data step)'
-       , Pparm_<..>      char(50) label='Test values for the Positional parameter <..>'
-       , Kparm_<..>      char(50) label='Test values for the Keyword parameter <..>'
+       , Pparm_ds        char(80) label='Test values for the Positional parameter DS'
 
        , test_expect     char(50) label="EXPECTED test results for each call to %upcase(&macroname)"
-       , test_expect_sym char(20) label='TEST_PDLIM-delim Name=Value pairs of EXPECTED global syms created'
       )
     ;
 
     insert into my_test_definitions
-      values("%lowcase(&macroname)", '', '',   '', '', '',   '', '')
-      values("%lowcase(&macroname)", '', '',   '', '', '',   '', '')
-      values("%lowcase(&macroname)", '', '',   '', '', '',   '', '')
-      values("%lowcase(&macroname)", '', '',   '', '', '',   '', '')
-      values("%lowcase(&macroname)", '', '',   '', '', '',   '', '')
+      values("%lowcase(&macroname)", 'dse.1', 'Null data set list returns FAIL',   
+             'S', '_NULLPARM_',   '0')
 
+      values("%lowcase(&macroname)", 'dse.2.a.1', 'Existing one-level WORK dset found',   
+             'S', 'Not',                   '1')
+      values("%lowcase(&macroname)", 'dse.2.a.2', 'Existing two-level WORK dset found',   
+             'S', 'Work.Class_Modified',   '1')
+
+      values("%lowcase(&macroname)", 'dse.2.b.1', 'Non-existent one-level WORK dset NOT found',   
+             'S', 'NotInWork',             '0')
+      values("%lowcase(&macroname)", 'dse.2.b.2', 'Non-existent two-level WORK dset NOT found',   
+             'S', 'Work.Class_Mod_DNE',    '0')
+
+      values("%lowcase(&macroname)", 'dse.2.c.1', 'Existing two-level Permanent dset found',   
+             'S', 'And.Or',                '1')
+      values("%lowcase(&macroname)", 'dse.2.d.1', 'Non-existent Permanent dset NOT found',   
+             'S', 'Sashelp.Classics',      '0')
+
+      values("%lowcase(&macroname)", 'dse.3.a',    'Multiple work and permanent data sets found',   
+             'S', 'SasHelp.Class WORK.Not And.OR', '1')
+
+      values("%lowcase(&macroname)", 'dse.3.b.1', '1st missing data sets results in overall FAIL',   
+             'S', 'Work.If Sashelp.Class Work.NOT AND.or',           '0')
+      values("%lowcase(&macroname)", 'dse.3.b.2', 'last missing data sets results in overall FAIL',   
+             'S', 'Sashelp.Class Work.NOT AND.or Work.For',          '0')
+      values("%lowcase(&macroname)", 'dse.3.b.3', 'in between missing data sets results in overall FAIL',   
+             'S', 'Sashelp.Class Work.NOT SAShelp.Classics AND.or',  '0')
+
+      /***
+      values("%lowcase(&macroname)", '', '',   
+             'S', '',   '')
+      ***/
     ;
   quit;
 
 
 *--- Setup test environment here (dsets, macro vars, etc) ---*;
 
-
-*--- Create EXPECTED test results ---*;
-
-
-
-*--- Test 1: Detection of vars in WORK library ---*;
-
   data class_modified;
+    set sashelp.class;
+  data not;
     set sashelp.class;
   run;
 
-  *--- Check 1: 1- and 2-level names work for temporary data sets ---*;
-    %macro null;
-      %local id pass fail;
+  libname AND '.';
 
-      %*--- Correctly found CLASS_MODIFIED (defaulting to WORK lib) ---*;
-      %let id = T1-C1-A;
-      %if 1 = %assert_dset_exist(class_modified) %then %let pass = &pass. &id;
-      %else %let fail = &fail. &id;
-
-      %*--- Correctly found WORK.CLASS_MODIFIED as specified ---*;
-      %let id = T1-C1-B;
-      %if 1 = %assert_dset_exist(work.class_modified) %then %let pass = &pass. &id;
-      %else %let fail = &fail. &id;
-
-      %*--- Correctly fail to find non-existent class (defaulting to WORK lib) ---*;
-      %let id = T1-C1-C;
-      %if 0 = %assert_dset_exist(class) %then %let pass = &pass. &id;
-      %else %let fail = &fail. &id;
-
-      %*--- Correctly fail to find non-existent WORK.CLASS as specified ---*;
-      %let id = T1-C1-D;
-      %if 0 = %assert_dset_exist(work.class) %then %let pass = &pass. &id;
-      %else %let fail = &fail. &id;
-
-      %if 0 = %length(&fail) %then %put NOTE: (TEST_ASSERT_DSET_EXIST) PASS all tests, &pass;
-      %else %do;
-        %put PASS these tests, &pass;
-        %put FAIL these tests, &fail;
-      %end;
-
-    %mend null;
-    %null;
-
-
-  *--- Check 2: Case of data set name does not change results from Check 1 ---*;
-    %macro null;
-      %local id pass fail;
-
-      %*--- Correctly found CLASS_MODIFIED (defaulting to WORK lib) ---*;
-      %let id = T1-C2-A;
-      %if 1 = %assert_dset_exist(Class_Modified) %then %let pass = &pass. &id;
-      %else %let fail = &fail. &id;
-
-      %*--- Correctly found WORK.CLASS_MODIFIED as specified ---*;
-      %let id = T1-C2-B;
-      %if 1 = %assert_dset_exist(work.CLASS_modified) %then %let pass = &pass. &id;
-      %else %let fail = &fail. &id;
-
-      %*--- Correctly fail to find non-existent class (defaulting to WORK lib) ---*;
-      %let id = T1-C2-C;
-      %if 0 = %assert_dset_exist(claSS) %then %let pass = &pass. &id;
-      %else %let fail = &fail. &id;
-
-      %*--- Correctly fail to find non-existent WORK.CLASS as specified ---*;
-      %let id = T1-C2-D;
-      %if 0 = %assert_dset_exist(work.cLAss) %then %let pass = &pass. &id;
-      %else %let fail = &fail. &id;
-
-      %if 0 = %length(&fail) %then %put NOTE: (TEST_ASSERT_DSET_EXIST) PASS all tests, &pass;
-      %else %do;
-        %put PASS these tests, &pass;
-        %put FAIL these tests, &fail;
-      %end;
-
-    %mend null;
-    %null;
-
-  *--- CLEAN UP temp test data set ---*;
-    proc datasets memtype=DATA library=WORK nolist nodetails;
-      delete class_modified;
-    quit;
-
-
-*--- Test 2: Detection of vars in PERMANENT library ---*;
-
-  *--- Check 1: 2-level names work for permanent data sets, regardless of case ---*;
-    %macro null;
-      %local id pass fail;
-
-      %*--- Correctly found SASHELP.CLASS ---*;
-      %let id = T2-C1-A;
-      %if 1 = %assert_dset_exist(sashelp.class) %then %let pass = &pass. &id;
-      %else %let fail = &fail. &id;
-
-      %*--- Correctly found SASHELP.CLASS, case does not matter ---*;
-      %let id = T2-C1-B;
-      %if 1 = %assert_dset_exist(sashelp.cLAss) %then %let pass = &pass. &id;
-      %else %let fail = &fail. &id;
-
-      %*--- Correctly fail to find non-existent SASHELP.CLASS_MODIFIED ---*;
-      %let id = T2-C1-C;
-      %if 0 = %assert_dset_exist(sashelp.class_modified) %then %let pass = &pass. &id;
-      %else %let fail = &fail. &id;
-
-      %if 0 = %length(&fail) %then %put NOTE: (TEST_ASSERT_DSET_EXIST) PASS all tests, &pass;
-      %else %do;
-        %put PASS these tests, &pass;
-        %put FAIL these tests, &fail;
-      %end;
-
-    %mend null;
-    %null;
+  data and.or;
+    set sashelp.class;
+  run;
 
 
 
 *--- Execute & evaluate tests, and report & store test results ---*;
   %util_passfail (my_test_definitions, savexml=&xml_filename, debug=N);
+
+
+
+*--- CLEAN UP Permanent test data set ---*;
+  proc datasets memtype=DATA library=AND nolist nodetails;
+    delete OR;
+  quit;
+
+  libname AND clear;

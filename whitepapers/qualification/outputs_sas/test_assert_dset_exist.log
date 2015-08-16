@@ -1,0 +1,637 @@
+1                                                          The SAS System                              17:20 Sunday, August 16, 2015
+
+NOTE: Unable to open SASUSER.REGSTRY. WORK.REGSTRY will be opened instead.
+NOTE: All registry changes will be lost at the end of the session.
+
+WARNING: Unable to copy SASUSER registry to WORK registry. Because of this, you will not see registry customizations during this 
+         session.
+NOTE: Unable to open SASUSER.PROFILE. WORK.PROFILE will be opened instead.
+NOTE: All profile changes will be lost at the end of the session.
+NOTE: Copyright (c) 2002-2008 by SAS Institute Inc., Cary, NC, USA. 
+NOTE: SAS (r) Proprietary Software 9.2 (TS2M3 MBCS3055) 
+      Licensed to F. HOFFMANN LA ROCHE AG, Site 50701490.
+NOTE: This session is executing on the X64_VSPRO  platform.
+
+
+
+NOTE: SAS initialization used:
+      real time           1.84 seconds
+      cpu time            0.98 seconds
+      
+1          /***
+2            Qualification tests for PhUSE/CSS utility macro ASSERT_DSET_EXIST
+3          
+4            SETUP:  Ensure that PhUSE/CSS utilities are in the AUTOCALL path
+5          
+6            TEST PLAN:
+7            https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/qualification/t
+7        ! estplan_assert_dset_exist.docx
+8          
+9          ***/
+10         
+11             OPTIONS mrecall sasautos=(%sysfunc(getoption(sasautos))
+11       ! "C:\CSS\phuse-scripts\whitepapers\utilities");
+12         
+13         
+14         *--- SETUP ---*;
+15         
+16           %let macroname = ASSERT_DSET_EXIST;
+17         
+18           %put WARNING: (TEST_%upcase(&macroname)) User must ensure PhUSE/CSS utilities are
+18       ! in the AUTOCALL path.;
+WARNING: (TEST_ASSERT_DSET_EXIST) User must ensure PhUSE/CSS utilities are in the AUTOCALL 
+path.
+19         
+20           /*** EXECUTE ONE TIME only as needed
+21         
+22             Ensure PhUSE/CSS utilities are in the AUTOCALL path
+23             NB: This line is not necessary if PhUSE/CSS utilities are in your default
+23       ! AUTOCALL paths
+24         
+25             OPTIONS mrecall sasautos=(%sysfunc(getoption(sasautos))
+25       ! "C:\CSS\phuse-scripts\whitepapers\utilities");
+26         
+27           ***/
+28         
+29         
+30           *--- SAVE TEST RESULTS as XML filename  ---*;
+31           *--- NB: if this filename is blank, do NOT save xml test results ---*;
+2                                       The SAS System            17:20 Sunday, August 16, 2015
+
+32         
+33             %let XML_FILENAME = .\outputs_sas\testresults_%lowcase(&macroname).xml;
+34         
+35         
+36         *--- Test Definitions  ---*;
+37           *--- Full Specs for test definitions:
+37       ! https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/utilities/util_pa
+37       ! ssfail.sas ---*;
+38         
+39           proc sql;
+40             create table my_test_definitions
+41               (  test_mac        char(32) label='Name of macro to test'
+42                , test_id         char(15) label="Test ID for %upcase(&macroname)"
+43                , test_dsc        char(80) label='Test Description'
+44         
+45                , test_type       char(5)  label='Test Type (Macro var, String-<B|C|L|T>,
+45       ! Data set, In data step)'
+46                , Pparm_ds        char(80) label='Test values for the Positional parameter
+46       ! DS'
+47         
+48                , test_expect     char(50) label="EXPECTED test results for each call to
+48       ! %upcase(&macroname)"
+49               )
+50             ;
+NOTE: Table WORK.MY_TEST_DEFINITIONS created, with 0 rows and 6 columns.
+51         
+52             insert into my_test_definitions
+53               values("%lowcase(&macroname)", 'dse.1', 'Null data set list returns FAIL',
+54                      'S', '_NULLPARM_',   '0')
+55         
+56               values("%lowcase(&macroname)", 'dse.2.a.1', 'Existing one-level WORK dset
+56       ! found',
+57                      'S', 'Not',                   '1')
+58               values("%lowcase(&macroname)", 'dse.2.a.2', 'Existing two-level WORK dset
+58       ! found',
+59                      'S', 'Work.Class_Modified',   '1')
+60         
+61               values("%lowcase(&macroname)", 'dse.2.b.1', 'Non-existent one-level WORK dset
+61       ! NOT found',
+62                      'S', 'NotInWork',             '0')
+63               values("%lowcase(&macroname)", 'dse.2.b.2', 'Non-existent two-level WORK dset
+63       ! NOT found',
+64                      'S', 'Work.Class_Mod_DNE',    '0')
+65         
+66               values("%lowcase(&macroname)", 'dse.2.c.1', 'Existing two-level Permanent dset
+66       !  found',
+67                      'S', 'And.Or',                '1')
+68               values("%lowcase(&macroname)", 'dse.2.d.1', 'Non-existent Permanent dset NOT
+68       ! found',
+69                      'S', 'Sashelp.Classics',      '0')
+70         
+71               values("%lowcase(&macroname)", 'dse.3.a',    'Multiple work and permanent data
+71       !  sets found',
+72                      'S', 'SasHelp.Class WORK.Not And.OR', '1')
+73         
+74               values("%lowcase(&macroname)", 'dse.3.b.1', '1st missing data sets results in
+3                                       The SAS System            17:20 Sunday, August 16, 2015
+
+74       ! overall FAIL',
+75                      'S', 'Work.If Sashelp.Class Work.NOT AND.or',           '0')
+76               values("%lowcase(&macroname)", 'dse.3.b.2', 'last missing data sets results in
+76       !  overall FAIL',
+77                      'S', 'Sashelp.Class Work.NOT AND.or Work.For',          '0')
+78               values("%lowcase(&macroname)", 'dse.3.b.3', 'in between missing data sets
+78       ! results in overall FAIL',
+79                      'S', 'Sashelp.Class Work.NOT SAShelp.Classics AND.or',  '0')
+80         
+81               /***
+82               values("%lowcase(&macroname)", '', '',
+83                      'S', '',   '')
+84               ***/
+85             ;
+NOTE: 11 rows were inserted into WORK.MY_TEST_DEFINITIONS.
+
+86           quit;
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.04 seconds
+      
+
+87         
+88         
+89         *--- Setup test environment here (dsets, macro vars, etc) ---*;
+90         
+91           data class_modified;
+92             set sashelp.class;
+
+NOTE: There were 19 observations read from the data set SASHELP.CLASS.
+NOTE: The data set WORK.CLASS_MODIFIED has 19 observations and 5 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+      
+
+93           data not;
+94             set sashelp.class;
+95           run;
+
+NOTE: There were 19 observations read from the data set SASHELP.CLASS.
+NOTE: The data set WORK.NOT has 19 observations and 5 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+96         
+97           libname AND '.';
+NOTE: Libref AND was successfully assigned as follows: 
+      Engine:        V9 
+      Physical Name: C:\CSS\phuse-scripts\whitepapers\qualification
+98         
+99           data and.or;
+100            set sashelp.class;
+101          run;
+4                                       The SAS System            17:20 Sunday, August 16, 2015
+
+
+NOTE: There were 19 observations read from the data set SASHELP.CLASS.
+NOTE: The data set AND.OR has 19 observations and 5 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+102        
+103        
+104        
+105        *--- Execute & evaluate tests, and report & store test results ---*;
+106          %util_passfail (my_test_definitions, savexml=&xml_filename, debug=N);
+NOTE: No rows were selected.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: There were 11 observations read from the data set WORK.MY_TEST_DEFINITIONS.
+NOTE: The data set WORK.CSS_PASSFAIL has 11 observations and 9 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+      
+
+
+NOTE (BUILD_MACRO_CALLS): > dse.1 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %assert_dset_exist(  )
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > dse.2.a.1 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %assert_dset_exist( Not)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > dse.2.a.2 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %assert_dset_exist( Work.Class_Modified)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > dse.2.b.1 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %assert_dset_exist( NotInWork)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > dse.2.b.2 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %assert_dset_exist( Work.Class_Mod_DNE)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > dse.2.c.1 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+5 The SAS System                                                  17:20 Sunday, August 16, 2015
+
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %assert_dset_exist( And.Or)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > dse.2.d.1 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %assert_dset_exist( Sashelp.Classics)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > dse.3.a , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 
+%assert_dset_exist( SasHelp.Class WORK.Not And.OR)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > dse.3.b.1 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 
+%assert_dset_exist( Work.If Sashelp.Class Work.NOT AND.or)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > dse.3.b.2 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 
+%assert_dset_exist( Sashelp.Class Work.NOT AND.or Work.For)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > dse.3.b.3 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 
+%assert_dset_exist( Sashelp.Class Work.NOT SAShelp.Classics AND.or)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE: There were 11 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 11 observations and 11 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: There were 1 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+      
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD5932\#LN00007,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=16Aug2015:17:20:07,
+      Create Time=16Aug2015:17:20:07
+
+ERROR: (ASSERT_DSET_EXIST) Result is FAIL. Please specify a data set name.
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 11 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 11 observations and 11 variables.
+6 The SAS System                                                  17:20 Sunday, August 16, 2015
+
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD5932\#LN00007,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=16Aug2015:17:20:07,
+      Create Time=16Aug2015:17:20:07
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set NOT is accessible.
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 11 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 11 observations and 11 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD5932\#LN00007,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=16Aug2015:17:20:07,
+      Create Time=16Aug2015:17:20:07
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set WORK.CLASS_MODIFIED is accessible.
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 11 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 11 observations and 11 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+7 The SAS System                                                  17:20 Sunday, August 16, 2015
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD5932\#LN00007,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=16Aug2015:17:20:07,
+      Create Time=16Aug2015:17:20:07
+
+ERROR: (ASSERT_DSET_EXIST) Result is FAIL. Data set NOTINWORK is NOT accessible. Try another 
+data set.
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 11 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 11 observations and 11 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD5932\#LN00007,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=16Aug2015:17:20:07,
+      Create Time=16Aug2015:17:20:07
+
+ERROR: (ASSERT_DSET_EXIST) Result is FAIL. Data set WORK.CLASS_MOD_DNE is NOT accessible. Try 
+another data set.
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 11 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 11 observations and 11 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+8 The SAS System                                                  17:20 Sunday, August 16, 2015
+
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD5932\#LN00007,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=16Aug2015:17:20:07,
+      Create Time=16Aug2015:17:20:07
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set AND.OR is accessible.
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 11 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 11 observations and 11 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD5932\#LN00007,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=16Aug2015:17:20:07,
+      Create Time=16Aug2015:17:20:07
+
+ERROR: (ASSERT_DSET_EXIST) Result is FAIL. Data set SASHELP.CLASSICS is NOT accessible. Try 
+another data set.
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 11 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 11 observations and 11 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+9 The SAS System                                                  17:20 Sunday, August 16, 2015
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD5932\#LN00007,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=16Aug2015:17:20:07,
+      Create Time=16Aug2015:17:20:07
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set SASHELP.CLASS is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set WORK.NOT is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set AND.OR is accessible.
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 11 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 11 observations and 11 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD5932\#LN00007,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=16Aug2015:17:20:07,
+      Create Time=16Aug2015:17:20:07
+
+ERROR: (ASSERT_DSET_EXIST) Result is FAIL. Data set WORK.IF is NOT accessible. Try another 
+data set.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set SASHELP.CLASS is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set WORK.NOT is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set AND.OR is accessible.
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 11 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 11 observations and 11 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.01 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+10 The SAS System                                                 17:20 Sunday, August 16, 2015
+
+      cpu time            0.00 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD5932\#LN00007,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=16Aug2015:17:20:08,
+      Create Time=16Aug2015:17:20:07
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set SASHELP.CLASS is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set WORK.NOT is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set AND.OR is accessible.
+ERROR: (ASSERT_DSET_EXIST) Result is FAIL. Data set WORK.FOR is NOT accessible. Try another 
+data set.
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 11 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 11 observations and 11 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.01 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD5932\#LN00007,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=16Aug2015:17:20:08,
+      Create Time=16Aug2015:17:20:07
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set SASHELP.CLASS is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set WORK.NOT is accessible.
+ERROR: (ASSERT_DSET_EXIST) Result is FAIL. Data set SASHELP.CLASSICS is NOT accessible. Try 
+another data set.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set AND.OR is accessible.
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 11 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 11 observations and 11 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.04 seconds
+11 The SAS System                                                 17:20 Sunday, August 16, 2015
+
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: 16 lines were written to file PRINT.
+NOTE: There were 11 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 11 observations and 12 variables.
+NOTE: The DATA step printed page 1.
+NOTE: DATA statement used (Total process time):
+      real time           0.12 seconds
+      cpu time            0.12 seconds
+      
+
+NOTE: Libref SAVEXML was successfully assigned as follows: 
+      Engine:        XML 
+      Physical Name: .\outputs_sas\testresults_assert_dset_exist.xml
+
+NOTE: SAS variable labels, formats, and lengths are not written to DBMS tables.
+NOTE: There were 11 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set SAVEXML.CSS_PASSFAIL has 11 observations and 12 variables.
+NOTE: DATA statement used (Total process time):
+      real time           2.07 seconds
+      cpu time            0.73 seconds
+      
+
+NOTE: Libref SAVEXML has been deassigned.
+107        
+108        
+109        
+110        *--- CLEAN UP Permanent test data set ---*;
+111          proc datasets memtype=DATA library=AND nolist nodetails;
+112            delete OR;
+113          quit;
+
+NOTE: Deleting AND.OR (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+114        
+115          libname AND clear;
+NOTE: Libref AND has been deassigned.
+
+ERROR: Errors printed on pages 5,7,8,9,10.
+
+NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC USA 27513-2414
+NOTE: The SAS System used:
+      real time           4.91 seconds
+      cpu time            2.69 seconds
+      

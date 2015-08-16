@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="windows-1252" ?>
+<TABLE>
+   <CSS_PASSFAIL>
+      <test_mac> assert_dset_exist </test_mac>
+      <test_id> dse.1 </test_id>
+      <test_dsc> Null data set list returns FAIL </test_dsc>
+      <Pparm_ds> _NULLPARM_ </Pparm_ds>
+      <test_expect> 0 </test_expect>
+      <test_result> 0 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_dset_exist(  ) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_dset_exist </test_mac>
+      <test_id> dse.2.a.1 </test_id>
+      <test_dsc> Existing one-level WORK dset found </test_dsc>
+      <Pparm_ds> Not </Pparm_ds>
+      <test_expect> 1 </test_expect>
+      <test_result> 1 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_dset_exist( Not) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_dset_exist </test_mac>
+      <test_id> dse.2.a.2 </test_id>
+      <test_dsc> Existing two-level WORK dset found </test_dsc>
+      <Pparm_ds> Work.Class_Modified </Pparm_ds>
+      <test_expect> 1 </test_expect>
+      <test_result> 1 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_dset_exist( Work.Class_Modified) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_dset_exist </test_mac>
+      <test_id> dse.2.b.1 </test_id>
+      <test_dsc> Non-existent one-level WORK dset NOT found </test_dsc>
+      <Pparm_ds> NotInWork </Pparm_ds>
+      <test_expect> 0 </test_expect>
+      <test_result> 0 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_dset_exist( NotInWork) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_dset_exist </test_mac>
+      <test_id> dse.2.b.2 </test_id>
+      <test_dsc> Non-existent two-level WORK dset NOT found </test_dsc>
+      <Pparm_ds> Work.Class_Mod_DNE </Pparm_ds>
+      <test_expect> 0 </test_expect>
+      <test_result> 0 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_dset_exist( Work.Class_Mod_DNE) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_dset_exist </test_mac>
+      <test_id> dse.2.c.1 </test_id>
+      <test_dsc> Existing two-level Permanent dset found </test_dsc>
+      <Pparm_ds> And.Or </Pparm_ds>
+      <test_expect> 1 </test_expect>
+      <test_result> 1 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_dset_exist( And.Or) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_dset_exist </test_mac>
+      <test_id> dse.2.d.1 </test_id>
+      <test_dsc> Non-existent Permanent dset NOT found </test_dsc>
+      <Pparm_ds> Sashelp.Classics </Pparm_ds>
+      <test_expect> 0 </test_expect>
+      <test_result> 0 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_dset_exist( Sashelp.Classics) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_dset_exist </test_mac>
+      <test_id> dse.3.a </test_id>
+      <test_dsc> Multiple work and permanent data sets found </test_dsc>
+      <Pparm_ds> SasHelp.Class WORK.Not And.OR </Pparm_ds>
+      <test_expect> 1 </test_expect>
+      <test_result> 1 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_dset_exist( SasHelp.Class WORK.Not And.OR) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_dset_exist </test_mac>
+      <test_id> dse.3.b.1 </test_id>
+      <test_dsc> 1st missing data sets results in overall FAIL </test_dsc>
+      <Pparm_ds> Work.If Sashelp.Class Work.NOT AND.or </Pparm_ds>
+      <test_expect> 0 </test_expect>
+      <test_result> 0 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_dset_exist( Work.If Sashelp.Class Work.NOT AND.or) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_dset_exist </test_mac>
+      <test_id> dse.3.b.2 </test_id>
+      <test_dsc> last missing data sets results in overall FAIL </test_dsc>
+      <Pparm_ds> Sashelp.Class Work.NOT AND.or Work.For </Pparm_ds>
+      <test_expect> 0 </test_expect>
+      <test_result> 0 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_dset_exist( Sashelp.Class Work.NOT AND.or Work.For) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_dset_exist </test_mac>
+      <test_id> dse.3.b.3 </test_id>
+      <test_dsc> in between missing data sets results in overall FAIL </test_dsc>
+      <Pparm_ds> Sashelp.Class Work.NOT SAShelp.Classics AND.or </Pparm_ds>
+      <test_expect> 0 </test_expect>
+      <test_result> 0 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_dset_exist( Sashelp.Class Work.NOT SAShelp.Classics AND.or) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+</TABLE>
