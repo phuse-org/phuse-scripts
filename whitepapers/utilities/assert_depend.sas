@@ -55,8 +55,8 @@
 
     %*--- Current OS should be in dependency list ---*;
       %if %length(&os) > 0 %then %do;
-        %if not %sysfunc(indexw(&OS, &SYSSCP, %str(,))) %then %do;
-          %put WARNING: (ASSERT_DEPEND) Program not qualified for this OS based on %str(&)SYSSCP, &SYSSCP.. But let us see what happens.;
+        %if not %sysfunc(indexw(%qupcase(&OS), %qupcase(&SYSSCP), %str(,))) %then %do;
+          %put WARNING: (ASSERT_DEPEND) Program requires OS like (&OS), but this %str(&)SYSSCP is &SYSSCP.. Let us see what happens.;
         %end;
       %end;
 
@@ -69,7 +69,7 @@
         %end;
         %else %let cmp = EQ;
 
-        %if not %eval(&SYSVER &CMP &SASV) %then %do;
+        %if not %sysevalf(&SYSVER &CMP &SASV) %then %do;
           %let OK = 0;
           %put ERROR: (ASSERT_DEPEND) Program can only run with SAS version based on %str(&)SYSVER &cmp &SASV..;
         %end;

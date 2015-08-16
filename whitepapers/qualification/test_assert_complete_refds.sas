@@ -18,15 +18,15 @@
     Ensure PhUSE/CSS utilities are in the AUTOCALL path
     NB: This line is not necessary if PhUSE/CSS utilities are in your default AUTOCALL paths
 
-    OPTIONS sasautos=(%sysfunc(getoption(sasautos)) "C:\CSS\phuse-scripts\whitepapers\utilities");
+    OPTIONS mrecall sasautos=(%sysfunc(getoption(sasautos)) "C:\CSS\phuse-scripts\whitepapers\utilities");
 
   ***/
 
 
-*--- SAVE TEST RESULTS as XML filename  ---*;
-*--- NB: if this filename is blank, do NOT save xml test results ---*;
+  *--- SAVE TEST RESULTS as XML filename  ---*;
+  *--- NB: if this filename is blank, do NOT save xml test results ---*;
 
-  %let XML_FILENAME = .\outputs_sas\testresults_assert_complete_refds.xml;
+    %let XML_FILENAME = .\outputs_sas\testresults_assert_complete_refds.xml;
 
 
 *--- Test 1 - Single key (merge) variable, either NUM or CHAR ---*;
@@ -205,5 +205,5 @@
       num_key = 2.003; key_char = 'Record C'; key3 = 'Subrec 400';   found_ds1=0; found_ds2=0; found_ds3=0; found_ds4=1; output;
     run;
 
-*--- EXECUTE, EVALUATE, REPORT all test definitions ---*;
+*--- Execute & evaluate tests, and report & store test results ---*;
   %util_passfail (my_test_definitions, savexml=&xml_filename, debug=N);

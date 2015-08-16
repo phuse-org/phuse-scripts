@@ -97,7 +97,7 @@ end HEADER ***/
       EXECUTE ONE TIME only as needed
       NB: The following line is necessary only when PhUSE/CSS utilities are NOT in your default AUTOCALL paths
 
-      OPTIONS sasautos=(%sysfunc(getoption(sasautos)) "C:\CSS\phuse-scripts\whitepapers\utilities");
+      OPTIONS mrecall sasautos=(%sysfunc(getoption(sasautos)) "C:\CSS\phuse-scripts\whitepapers\utilities");
 
     ***/
 
