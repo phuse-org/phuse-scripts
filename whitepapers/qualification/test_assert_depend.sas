@@ -8,8 +8,6 @@
           
 ***/
 
-    OPTIONS mrecall sasautos=(%sysfunc(getoption(sasautos)) "C:\CSS\phuse-scripts\whitepapers\utilities");
-
 
 *--- SETUP ---*;
 
