@@ -4,22 +4,27 @@
   Create a corresponding sequence of symbols that contain labels from a secondary var 
          for those primary values
                                                                                            
-  DS    data set containing the variable with discrete value-label pairs
-          REQUIRED                                                                         
-          Syntax:  (libname.)memname                                                       
-          Example: ANA.ADVS                                                                
-  VAR   primary variable on DS containing discrete values to label with values from a secondary var
-          REQUIRED                                                                         
-          Syntax:  variable-name                                                           
-          Example: AVISITN
-  LAB   secondary variable on DS containing discrete values used to label values in primary VAR
-          REQUIRED                                                                         
-          Syntax:  variable-name                                                           
-          Example: AVISIT
-  WHR   complete where statement, quoted as necessary, to to subset DS data
-          optional                                                                         
-          Syntax:  %str(where where-expression;)
-          Example: %str(where studyid = 'STUDY01';)
+  DS      Data set containing the variable with discrete value-label pairs
+            REQUIRED                                                                         
+            Syntax:  (libname.)memname                                                       
+            Example: ANA.ADVS                                                                
+  VAR     Primary variable on DS containing discrete values to label with values from a secondary var
+          By default, macro uses VAR name as the prefix to create macro variables
+            REQUIRED                                                                         
+            Syntax:  variable-name                                                           
+            Example: AVISITN
+  LAB     Secondary variable on DS containing discrete values used to label values in primary VAR
+            REQUIRED                                                                         
+            Syntax:  variable-name                                                           
+            Example: AVISIT
+  PREFIX  Prefix to use instead of VAR name, for sequences of macro variables for values and labels
+            optional
+            Syntax:  prefix text, LETTERS ONLY
+            Example: PARAMUNIT
+  WHR     Complete where statement, quoted as necessary, to to subset DS data
+            optional                                                                         
+            Syntax:  %str(where where-expression;)
+            Example: %str(where studyid = 'STUDY01';)
 
   -OUTPUT                                                                                  
     &VAR._N    a global symbol containing the number of distinct values in VAR (and typically LAB)
@@ -30,12 +35,16 @@
     &VAR._LAB1 to &VAR._VAL&&&VAR.N
                a sequence of global symbols with the labels for VAR, taken from LAB
       Example: AVISITN_LAB1, AVISITN_LAB2, ... AVISITN_LAB8
+
+    NB: If &PREFIX is non-missing, then replace &VAR, above, with &PREFIX
                                                                                            
   Author:          Dante Di Tommaso                                                        
 ***/
 
-%macro util_labels_from_var(ds, var, lab, whr=);
-  %global &var._n;
+%macro util_labels_from_var(ds, var, lab, prefix=, whr=);
+  %if %length(&prefix) = 0 %then %let prefix = &var;
+
+  %global &prefix._n;
   %local OK idx;
 
   %let OK = %assert_dset_exist(&ds);
@@ -44,11 +53,11 @@
 
   %if &OK %then %do;
 
-    %util_count_unique_values(&ds, &var, &var._n)
+    %util_count_unique_values(&ds, &var, &prefix._n)
 
     *--- Create paired sequences of symbols containing values and labels ---*;
       %do idx = 1 %to &&&var._n;
-        %global &var._val&idx &var._lab&idx;
+        %global &prefix._val&idx &prefix._lab&idx;
       %end;
 
       proc sort data=&ds
@@ -65,8 +74,8 @@
           put "ERROR: (UTIL_LABELS_FROM_VAR) Most likely you are missing some global symbols.";
         end;
 
-        call symput(strip("&var._val"!!put(_n_, 8.-L)), strip(&var));
-        call symput(strip("&var._lab"!!put(_n_, 8.-L)), strip(&lab));
+        call symput(strip("&prefix._val"!!put(_n_, 8.-L)), strip(&var));
+        call symput(strip("&prefix._lab"!!put(_n_, 8.-L)), strip(&lab));
       run;
 
       proc datasets library=WORK memtype=DATA nolist nodetails;

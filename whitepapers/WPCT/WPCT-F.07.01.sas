@@ -20,6 +20,7 @@
 
     TO DO list for program:
 
+      * Q for Reviewer: Should we use ADSL data to report patients, not just obs in stats table?
       * Complete and confirm specifications (see Outliers & Reference limit discussions, below)
           https://github.com/phuse-org/phuse-scripts/tree/master/whitepapers/specification
       * For annotated RED CIRCLEs outside normal range limits
@@ -257,7 +258,7 @@ end HEADER ***/
             set &plotds (where=(paramcd = "&&paramcd_val&pdx"));
           run;
 
-        %*--- Y-AXIS alternative: Fix Y-Axis MIN/MAX based on all timepoints. See Y-AXIS DEFAULT, below. ---*;
+        %*--- Y-AXIS alternative: Fix Y-Axis MIN/MAX based on all timepoints for PARAM. See Y-AXIS DEFAULT, below. ---*;
         %*   %util_get_var_min_max(css_nextparam, &m_var, aval_min_max)   *;
 
         %*--- Analysis Timepoints for this parameter: Num (&ATPTN_N), Names (&ATPTN_NAM1 ...) and Labels (&ATPTN_LAB1 ...) ---*;
@@ -276,7 +277,7 @@ end HEADER ***/
             run;
 
           %*--- Y-AXIS DEFAULT: Fix Y-Axis MIN/MAX based on this timepoint. See Y-AXIS alternative, above. ---*;
-            %util_get_var_min_max(css_nextparam, &m_var, aval_min_max)
+            %util_get_var_min_max(css_nexttimept, &m_var, aval_min_max)
 
           %*--- Number of visits for this parameter and analysis timepoint: &VISN ---*;
             %util_count_unique_values(css_nexttimept, avisitn, visn)
