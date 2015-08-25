@@ -9,8 +9,6 @@
 #*Test using ADaM, TRT01A / AVAL instead of ACTARM / LBSTRESN
 #*SDTM based off LB, make more generic for use in any results domain
 #*Tested with only 5 visits, functionality to move to next page when there are more, etc
-#*red plots for outside normal range 
-#*plot means?
 #*move table closer below plot?
 #*annotations
 
@@ -25,7 +23,6 @@ library(gridExtra)
 
 #SDTM or ADaM?
 datastandard <- "SDTM"
-
 #set input and output file directories
 inputdirectory <- "path/"
 outputdirectory <- "path/"
@@ -37,10 +34,12 @@ testname <- "CHOL"
 yaxislabel <- "Cholesterol (mg/dL)"
 #number of digits in table, sd = dignum +1
 dignum <- 1
-#normal range lower limit
-ANRLO = 200
-#normal range upper limit
-ANRHI = 240
+###limits configuration
+    #lower limit(s) - ANRLO <- c(l1, l2, ...) -
+    ANRLO <- c(200)
+    #upper limit(s) - ANRHI <- c(l1, l2, ...) -
+    ANRHI <- c(240)
+
 
 #functions to be called
 buildtable <- function(avalue, dfname, by1, by2, dignum){
@@ -64,19 +63,19 @@ testresults_read <-read.csv(file.path(inputdirectory,testfilename))
 
 
 if(datastandard == "SDTM") {
-dm_read <-read.csv(file.path(inputdirectory,demofilename))
-dm <- subset(dm_read, ACTARM != "Screen Failure")
-testresults <- subset(testresults_read, LBTESTCD == testname)
-testresults_dm <- merge(x=testresults, y=dm, by = "USUBJID")
-testresults_dm <- data.table(testresults_dm)
-#setkey for speed gains when summarizing
-setkey(testresults_dm, USUBJID, ACTARM, VISITNUM)
-#create a variable for the out of limits data
-i <- 1
-testresults_dm$OUT <- NA
-for (i in 1:length(testresults_dm$LBSTRESN)){
-  if (testresults_dm$LBSTRESN[i] < ANRLO | testresults_dm$LBSTRESN[i] > ANRHI){
-    testresults_dm$OUT[i] <- testresults_dm$LBSTRESN[i]
+  dm_read <-read.csv(file.path(inputdirectory,demofilename))
+  dm <- subset(dm_read, ACTARM != "Screen Failure")
+  testresults <- subset(testresults_read, LBTESTCD == testname)
+  testresults_dm <- merge(x=testresults, y=dm, by = "USUBJID")
+  testresults_dm <- data.table(testresults_dm)
+  #setkey for speed gains when summarizing
+  setkey(testresults_dm, USUBJID, ACTARM, VISITNUM)
+  #create a variable for the out of limits data
+  i <- 1
+  testresults_dm$OUT <- NA
+  for (i in 1:length(testresults_dm$LBSTRESN)){
+    if (testresults_dm$LBSTRESN[i] < ANRLO | testresults_dm$LBSTRESN[i] > ANRHI){
+      testresults_dm$OUT[i] <- testresults_dm$LBSTRESN[i]
   }
 }
 #specify plot
@@ -93,7 +92,7 @@ p4 <- p3 + geom_jitter(data = testresults_dm, aes(factor(VISITNUM), testresults_
 summary <- buildtable(avalue = quote(LBSTRESN), dfname= quote(testresults_dm), by1 = "VISITNUM", by2 = "ACTARM", dignum)[order(VISITNUM, ACTARM)]
 table_summary <- data.frame(t(summary))           
 } else {
-testresults <- subset(testresults_read, PARAMCD == testname & TRT01A != "Screen Failure")
+  testresults <- subset(testresults_read, PARAMCD == testname & TRT01A != "Screen Failure")
 
 #setkey for speed gains when summarizing
 testresults <- data.table(testresults)
