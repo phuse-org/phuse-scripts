@@ -1,0 +1,17 @@
+                                                                17:26 Tuesday, August 25, 2015   1
+
+### -----
+###
+### ASSERT_MACRO_EXIST Overall: ALL TESTS PASSED - 9
+###
+### -----
+
+   001   me.1.a.1       Find SAS AUTOCALL macro CMPRES
+   002   me.1.a.2       Find SAS AUTOCALL macro QLEFT
+   003   me.1.a.3       Find SAS AUTOCALL macro LOWCASE
+   004   me.1.b.1       Do not find macro CMPRE
+   005   me.1.b.2       Do not find SAS AUTOCALL macro QLEF
+   006   me.1.b.3       Do not find SAS AUTOCALL macro CSS_LOWERCASING
+   007   me.2.a.1       Find CSS/PhUSE macro ASSERT_CONTINUE
+   008   me.2.a.2       Find CSS/PhUSE macro UTIL_DELETE_DSETS
+   009   me.3.a         Find macro written on the fly: CSS_ONTHEFLY

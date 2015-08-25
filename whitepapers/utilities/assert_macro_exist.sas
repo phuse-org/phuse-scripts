@@ -35,29 +35,32 @@
   %* WE havent found the source file yet *;
   %let OK = 0;
 
-  %* GET current list of SASAUTOS filerefs (no quotes) & quoted pathnames *;
-  %let paths = %util_resolve_sasautos;
+  %if %length(&macname) > 0 %then %do;
+    %* GET current list of SASAUTOS filerefs (no quotes) & quoted pathnames *;
+    %let paths = %util_resolve_sasautos;
 
-  %* SET os-specific directory delimiter *;
-  %if %index(&sysscp, WIN) %then %let sep = \;
-  %else %let sep = /;
+    %* SET os-specific directory delimiter *;
+    %if %index(&sysscp, WIN) %then %let sep = \;
+    %else %let sep = /;
 
-  %* FOR each path collected from sasautos, search for macro file *;
-  %let idx = 1;
-  %do %while (not &OK & %qscan(&paths,&idx,|) ne );
-    %let current = %qscan(&paths,&idx,|);
+    %* FOR each path collected from sasautos, search for macro file *;
+    %let idx = 1;
+    %do %while (not &OK & %qscan(&paths,&idx,|) ne );
+      %let current = %qscan(&paths,&idx,|);
 
-    %if %sysfunc(fileexist( %quote(&current&sep&macname..sas) )) %then %do;
-      %let OK = 1;
-      %put NOTE: (ASSERT_MACRO_EXIST) PASS, found macro %upcase(&macname) in "&current&sep&macname..sas".;
+      %if %sysfunc(fileexist( %quote(&current&sep&macname..sas) )) %then %do;
+        %let OK = 1;
+        %put NOTE: (ASSERT_MACRO_EXIST) PASS, found macro %upcase(&macname) in "&current&sep&macname..sas".;
+      %end;
+
+      %let idx = %eval(&idx+1);
     %end;
 
-    %let idx = %eval(&idx+1);
+    %if not &OK %then %do;
+      %put ERROR: (ASSERT_MACRO_EXIST) FAIL, unable to find macro %upcase(&macname).;
+    %end;
   %end;
-
-  %if not &OK %then %do;
-    %put ERROR: (ASSERT_MACRO_EXIST) FAIL, unable to find macro %upcase(&macname).;
-  %end;
+  %else %put ERROR: (ASSERT_MACRO_EXIST) FAIL, please provide a non-missing macro name.;
 
   &OK
 

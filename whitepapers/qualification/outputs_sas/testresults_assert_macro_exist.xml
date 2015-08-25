@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="windows-1252" ?>
+<TABLE>
+   <CSS_PASSFAIL>
+      <test_mac> assert_macro_exist </test_mac>
+      <test_id> me.1.a.1 </test_id>
+      <test_dsc> Find SAS AUTOCALL macro CMPRES </test_dsc>
+      <Pparm_macname> CMPres </Pparm_macname>
+      <test_expect> 1 </test_expect>
+      <test_result> 1 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_macro_exist( CMPres) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_macro_exist </test_mac>
+      <test_id> me.1.a.2 </test_id>
+      <test_dsc> Find SAS AUTOCALL macro QLEFT </test_dsc>
+      <Pparm_macname> qleFT </Pparm_macname>
+      <test_expect> 1 </test_expect>
+      <test_result> 1 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_macro_exist( qleFT) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_macro_exist </test_mac>
+      <test_id> me.1.a.3 </test_id>
+      <test_dsc> Find SAS AUTOCALL macro LOWCASE </test_dsc>
+      <Pparm_macname> LoWcAsE </Pparm_macname>
+      <test_expect> 1 </test_expect>
+      <test_result> 1 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_macro_exist( LoWcAsE) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_macro_exist </test_mac>
+      <test_id> me.1.b.1 </test_id>
+      <test_dsc> Do not find macro CMPRE </test_dsc>
+      <Pparm_macname> CMPre </Pparm_macname>
+      <test_expect> 0 </test_expect>
+      <test_result> 0 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_macro_exist( CMPre) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_macro_exist </test_mac>
+      <test_id> me.1.b.2 </test_id>
+      <test_dsc> Do not find SAS AUTOCALL macro QLEF </test_dsc>
+      <Pparm_macname> qleF </Pparm_macname>
+      <test_expect> 0 </test_expect>
+      <test_result> 0 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_macro_exist( qleF) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_macro_exist </test_mac>
+      <test_id> me.1.b.3 </test_id>
+      <test_dsc> Do not find SAS AUTOCALL macro CSS_LOWERCASING </test_dsc>
+      <Pparm_macname> CsS_LoWeRcAsInG </Pparm_macname>
+      <test_expect> 0 </test_expect>
+      <test_result> 0 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_macro_exist( CsS_LoWeRcAsInG) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_macro_exist </test_mac>
+      <test_id> me.2.a.1 </test_id>
+      <test_dsc> Find CSS/PhUSE macro ASSERT_CONTINUE </test_dsc>
+      <Pparm_macname> Assert_CONTINUE </Pparm_macname>
+      <test_expect> 1 </test_expect>
+      <test_result> 1 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_macro_exist( Assert_CONTINUE) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_macro_exist </test_mac>
+      <test_id> me.2.a.2 </test_id>
+      <test_dsc> Find CSS/PhUSE macro UTIL_DELETE_DSETS </test_dsc>
+      <Pparm_macname> UTIL_delete_DSETS </Pparm_macname>
+      <test_expect> 1 </test_expect>
+      <test_result> 1 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_macro_exist( UTIL_delete_DSETS) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_macro_exist </test_mac>
+      <test_id> me.3.a </test_id>
+      <test_dsc> Find macro written on the fly: CSS_ONTHEFLY </test_dsc>
+      <Pparm_macname> CSS_ONTHEFLY </Pparm_macname>
+      <test_expect> 1 </test_expect>
+      <test_result> 1 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_macro_exist( CSS_ONTHEFLY) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+</TABLE>
