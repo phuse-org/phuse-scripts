@@ -86,6 +86,20 @@
    </CSS_PASSFAIL>
    <CSS_PASSFAIL>
       <test_mac> assert_macro_exist </test_mac>
+      <test_id> me.1.c </test_id>
+      <test_dsc> Controlled fail given NULL macro name </test_dsc>
+      <Pparm_macname> _NULLPARM_ </Pparm_macname>
+      <test_expect> 0 </test_expect>
+      <test_result> 0 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_macro_exist(  ) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_macro_exist </test_mac>
       <test_id> me.2.a.1 </test_id>
       <test_dsc> Find CSS/PhUSE macro ASSERT_CONTINUE </test_dsc>
       <Pparm_macname> Assert_CONTINUE </Pparm_macname>

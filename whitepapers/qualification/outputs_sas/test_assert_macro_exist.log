@@ -6,8 +6,8 @@ NOTE: This session is executing on the X64_VSPRO  platform.
 
 
 NOTE: SAS initialization used:
-      real time           4.13 seconds
-      cpu time            2.66 seconds
+      real time           4.41 seconds
+      cpu time            1.98 seconds
 
 1      %let macroname = ASSERT_MACRO_EXIST;
 2
@@ -19,121 +19,125 @@ WARNING: (TEST_ASSERT_MACRO_EXIST) User must ensure PhUSE/CSS utilities are in t
 
 5        %let XML_FILENAME = .\outputs_sas\testresults_%lowcase(&macroname).xml;
 6
-7    *--- Test Definitions  ---*;
-8      *--- Full Specs for test definitions:
-8  ! https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/utilities/util_passfail.sa
-8  ! s ---*;
-9
-10     proc sql;
-11       create table my_test_definitions
-12         (  test_mac        char(32) label='Name of macro to test'
-13          , test_id         char(15) label="Test ID for %upcase(&macroname)"
-14          , test_dsc        char(80) label='Test Description'
-15
-16          , test_type       char(5)  label='Test Type (Macro var, String-<B|C|L|T>, Data set, In
-16 !  data step)'
-17          , Pparm_macname   char(50) label='Test values for the Positional parameter MACNAME'
-18
-19          , test_expect     char(50) label="EXPECTED test results for each call to
-19 ! %upcase(&macroname)"
-20         )
-21       ;
+7
+8    *--- Test Definitions  ---*;
+9      *--- Full Specs for test definitions:
+9  ! https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/utilities/util_passfail.sa
+9  ! s ---*;
+10
+11     proc sql;
+12       create table my_test_definitions
+13         (  test_mac        char(32) label='Name of macro to test'
+14          , test_id         char(15) label="Test ID for %upcase(&macroname)"
+15          , test_dsc        char(80) label='Test Description'
+16
+17          , test_type       char(5)  label='Test Type (Macro var, String-<B|C|L|T>, Data set, In
+17 !  data step)'
+18          , Pparm_macname   char(50) label='Test values for the Positional parameter MACNAME'
+19
+20          , test_expect     char(50) label="EXPECTED test results for each call to
+20 ! %upcase(&macroname)"
+21         )
+22       ;
 NOTE: Table WORK.MY_TEST_DEFINITIONS created, with 0 rows and 6 columns.
-22
-23       insert into my_test_definitions
-24         values("%lowcase(&macroname)", 'me.1.a.1', 'Find SAS AUTOCALL macro CMPRES',
-25                'S', 'CMPres',   '1')
-26         values("%lowcase(&macroname)", 'me.1.a.2', 'Find SAS AUTOCALL macro QLEFT',
-27                'S', 'qleFT',    '1')
-28         values("%lowcase(&macroname)", 'me.1.a.3', 'Find SAS AUTOCALL macro LOWCASE',
-29                'S', 'LoWcAsE',  '1')
-30         values("%lowcase(&macroname)", 'me.1.b.1', 'Do not find macro CMPRE',
-31                'S', 'CMPre',    '0')
-32         values("%lowcase(&macroname)", 'me.1.b.2', 'Do not find SAS AUTOCALL macro QLEF',
-33                'S', 'qleF',     '0')
-34         values("%lowcase(&macroname)", 'me.1.b.3', 'Do not find SAS AUTOCALL macro
-34 ! CSS_LOWERCASING',
-35                'S', 'CsS_LoWeRcAsInG',  '0')
-36
-37         values("%lowcase(&macroname)", 'me.2.a.1', 'Find CSS/PhUSE macro ASSERT_CONTINUE',
-38                'S', 'Assert_CONTINUE',   '1')
-39         values("%lowcase(&macroname)", 'me.2.a.2', 'Find CSS/PhUSE macro UTIL_DELETE_DSETS',
-40                'S', 'UTIL_delete_DSETS', '1')
-41
-42         values("%lowcase(&macroname)", 'me.3.a', 'Find macro written on the fly: CSS_ONTHEFLY',
-43                'S', 'CSS_ONTHEFLY',   '1')
-44
-45         /***
-46         values("%lowcase(&macroname)", '', '',
-47                'S', '',   '')
-48         ***/
-49       ;
-NOTE: 9 rows were inserted into WORK.MY_TEST_DEFINITIONS.
+23
+24       insert into my_test_definitions
+25         values("%lowcase(&macroname)", 'me.1.a.1', 'Find SAS AUTOCALL macro CMPRES',
+26                'S', 'CMPres',   '1')
+27         values("%lowcase(&macroname)", 'me.1.a.2', 'Find SAS AUTOCALL macro QLEFT',
+28                'S', 'qleFT',    '1')
+29         values("%lowcase(&macroname)", 'me.1.a.3', 'Find SAS AUTOCALL macro LOWCASE',
+30                'S', 'LoWcAsE',  '1')
+31         values("%lowcase(&macroname)", 'me.1.b.1', 'Do not find macro CMPRE',
+32                'S', 'CMPre',    '0')
+33         values("%lowcase(&macroname)", 'me.1.b.2', 'Do not find SAS AUTOCALL macro QLEF',
+34                'S', 'qleF',     '0')
+35         values("%lowcase(&macroname)", 'me.1.b.3', 'Do not find SAS AUTOCALL macro
+35 ! CSS_LOWERCASING',
+36                'S', 'CsS_LoWeRcAsInG',  '0')
+37         values("%lowcase(&macroname)", 'me.1.c',   'Controlled fail given NULL macro name',
+38                'S', '_NULLPARM_',       '0')
+39
+40
+41         values("%lowcase(&macroname)", 'me.2.a.1', 'Find CSS/PhUSE macro ASSERT_CONTINUE',
+42                'S', 'Assert_CONTINUE',   '1')
+43         values("%lowcase(&macroname)", 'me.2.a.2', 'Find CSS/PhUSE macro UTIL_DELETE_DSETS',
+44                'S', 'UTIL_delete_DSETS', '1')
+45
+46         values("%lowcase(&macroname)", 'me.3.a', 'Find macro written on the fly: CSS_ONTHEFLY',
+47                'S', 'CSS_ONTHEFLY',   '1')
+48
+49         /***
+50         values("%lowcase(&macroname)", '', '',
+51                'S', '',   '')
+52         ***/
+53       ;
+NOTE: 10 rows were inserted into WORK.MY_TEST_DEFINITIONS.
 
-50     quit;
+54     quit;
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.12 seconds
-      cpu time            0.12 seconds
+      real time           0.20 seconds
+      cpu time            0.18 seconds
 
 
-51
-52
-53   *--- Setup test environment here WRITE temp macro, and force path into SASAUTO paths ---*;
-54
-55     filename tempmac "%sysfunc(pathname(WORK))/css_onthefly.sas";
-56     data _null_;
-57       file tempmac;
-58       put '%macro css_onthefly; %put NOTE: (TEST_ASSERT_MACRO_EXIST) PASS, on-the-fly macro
-58 ! found and executed.; %mend css_onthefly;';
-59     run;
+55
+56
+57   *--- Setup test environment here WRITE temp macro, and force path into SASAUTO paths ---*;
+58
+59     filename tempmac "%sysfunc(pathname(WORK))/css_onthefly.sas";
+60     data _null_;
+61       file tempmac;
+62       put '%macro css_onthefly; %put NOTE: (CSS_ONTHEFLY) PASS, on-the-fly macro found and
+62 ! executed.; %mend css_onthefly;';
+63     run;
 
 NOTE: The file TEMPMAC is:
-      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD7424\css_onthefly.sas,
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD5260\css_onthefly.sas,
       RECFM=V,LRECL=256,File Size (bytes)=0,
-      Last Modified=25Aug2015:17:27:47,
-      Create Time=25Aug2015:17:27:47
+      Last Modified=26Aug2015:09:37:44,
+      Create Time=26Aug2015:09:37:44
 
 NOTE: 1 record was written to the file TEMPMAC.
-      The minimum record length was 121.
-      The maximum record length was 121.
+      The minimum record length was 110.
+      The maximum record length was 110.
 NOTE: DATA statement used (Total process time):
+      real time           0.06 seconds
+      cpu time            0.03 seconds
+
+
+64
+65     %macro update_sasautos;
+66       %local currautos;
+67
+68       %let currautos = %sysfunc(getoption(sasautos));
+69       %if %qsubstr(&currautos,1,1) = %str(%() %then %let currautos =
+69 ! %qsubstr(&currautos,2,%eval(%length(&currautos)-2));
+70
+71       OPTIONS mrecall sasautos=(&currautos "%sysfunc(pathname(WORK))");
+72     %mend update_sasautos;
+73     %update_sasautos;
+74
+75
+76   *--- Execute & evaluate tests, and report & store test results ---*;
+77     %util_passfail (my_test_definitions, savexml=&xml_filename, debug=N);
+NOTE: No rows were selected.
+NOTE: PROCEDURE SQL used (Total process time):
       real time           0.03 seconds
       cpu time            0.01 seconds
 
 
-60
-61     %macro update_sasautos;
-62       %local currautos;
-63
-64       %let currautos = %sysfunc(getoption(sasautos));
-65       %if %qsubstr(&currautos,1,1) = %str(%() %then %let currautos =
-65 ! %qsubstr(&currautos,2,%eval(%length(&currautos)-2));
-66
-67       OPTIONS mrecall sasautos=(&currautos "%sysfunc(pathname(WORK))");
-68     %mend update_sasautos;
-69     %update_sasautos;
-70
-71
-72   *--- Execute & evaluate tests, and report & store test results ---*;
-73     %util_passfail (my_test_definitions, savexml=&xml_filename, debug=N);
-NOTE: No rows were selected.
-NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.00 seconds
 
-
-
-NOTE: DATA statement used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
-
-
-
-NOTE: There were 9 observations read from the data set WORK.MY_TEST_DEFINITIONS.
-NOTE: The data set WORK.CSS_PASSFAIL has 9 observations and 9 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.03 seconds
       cpu time            0.03 seconds
+
+
+
+NOTE: There were 10 observations read from the data set WORK.MY_TEST_DEFINITIONS.
+NOTE: The data set WORK.CSS_PASSFAIL has 10 observations and 9 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.04 seconds
 
 
 
@@ -161,6 +165,10 @@ NOTE (BUILD_MACRO_CALLS): > me.1.b.3 , 1 call(s)
 NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
 NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %assert_macro_exist( CsS_LoWeRcAsInG)
 NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > me.1.c , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %assert_macro_exist(  )
+NOTE (BUILD_MACRO_CALLS): <
 NOTE (BUILD_MACRO_CALLS): > me.2.a.1 , 1 call(s)
 NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
 NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %assert_macro_exist( Assert_CONTINUE)
@@ -173,40 +181,40 @@ NOTE (BUILD_MACRO_CALLS): > me.3.a , 1 call(s)
 NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
 NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %assert_macro_exist( CSS_ONTHEFLY)
 NOTE (BUILD_MACRO_CALLS): <
-NOTE: There were 9 observations read from the data set WORK.CSS_PASSFAIL.
-NOTE: The data set WORK.CSS_PASSFAIL has 9 observations and 11 variables.
+NOTE: There were 10 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 10 observations and 11 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.04 seconds
-      cpu time            0.04 seconds
+      real time           0.06 seconds
+      cpu time            0.06 seconds
 
 
 
 NOTE: There were 1 observations read from the data set WORK.CSS_PASSFAIL.
 NOTE: DATA statement used (Total process time):
-      real time           0.00 seconds
-      cpu time            0.00 seconds
+      real time           0.01 seconds
+      cpu time            0.01 seconds
 
 
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.03 seconds
+      real time           0.04 seconds
       cpu time            0.03 seconds
 
 
 
 NOTE: The file PFEXCODE is:
-      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD7424\#LN00013,
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD5260\#LN00015,
       RECFM=V,LRECL=32767,File Size (bytes)=0,
-      Last Modified=25Aug2015:17:27:48,
-      Create Time=25Aug2015:17:27:48
+      Last Modified=26Aug2015:09:37:44,
+      Create Time=26Aug2015:09:37:44
 
 NOTE: (ASSERT_MACRO_EXIST) PASS, found macro CMPRES in "C:\Program Files\SAS
 92TS2M3\SASFoundation\9.2\core\sasmacro\CMPres.sas".
 NOTE: 0 records were written to the file PFEXCODE.
-NOTE: There were 9 observations read from the data set WORK.CSS_PASSFAIL.
-NOTE: The data set WORK.CSS_PASSFAIL has 9 observations and 11 variables.
+NOTE: There were 10 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 10 observations and 11 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.95 seconds
-      cpu time            0.93 seconds
+      real time           1.03 seconds
+      cpu time            1.02 seconds
 
 
 NOTE: PROCEDURE SQL used (Total process time):
@@ -215,181 +223,49 @@ NOTE: PROCEDURE SQL used (Total process time):
 
 
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.00 seconds
-      cpu time            0.00 seconds
+      real time           0.01 seconds
+      cpu time            0.01 seconds
 
 
 
 NOTE: The file PFEXCODE is:
-      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD7424\#LN00013,
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD5260\#LN00015,
       RECFM=V,LRECL=32767,File Size (bytes)=0,
-      Last Modified=25Aug2015:17:27:49,
-      Create Time=25Aug2015:17:27:48
+      Last Modified=26Aug2015:09:37:45,
+      Create Time=26Aug2015:09:37:44
 
 NOTE: (ASSERT_MACRO_EXIST) PASS, found macro QLEFT in "C:\Program Files\SAS
 92TS2M3\SASFoundation\9.2\core\sasmacro\qleFT.sas".
 NOTE: 0 records were written to the file PFEXCODE.
-NOTE: There were 9 observations read from the data set WORK.CSS_PASSFAIL.
-NOTE: The data set WORK.CSS_PASSFAIL has 9 observations and 11 variables.
+NOTE: There were 10 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 10 observations and 11 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.96 seconds
-      cpu time            0.96 seconds
+      real time           0.82 seconds
+      cpu time            0.85 seconds
 
 
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
+      real time           0.00 seconds
+      cpu time            0.00 seconds
 
 
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
+      real time           0.00 seconds
+      cpu time            0.00 seconds
 
 
 
 NOTE: The file PFEXCODE is:
-      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD7424\#LN00013,
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD5260\#LN00015,
       RECFM=V,LRECL=32767,File Size (bytes)=0,
-      Last Modified=25Aug2015:17:27:50,
-      Create Time=25Aug2015:17:27:48
+      Last Modified=26Aug2015:09:37:46,
+      Create Time=26Aug2015:09:37:44
 
 NOTE: (ASSERT_MACRO_EXIST) PASS, found macro LOWCASE in "C:\Program Files\SAS
 92TS2M3\SASFoundation\9.2\core\sasmacro\LoWcAsE.sas".
 NOTE: 0 records were written to the file PFEXCODE.
-NOTE: There were 9 observations read from the data set WORK.CSS_PASSFAIL.
-NOTE: The data set WORK.CSS_PASSFAIL has 9 observations and 11 variables.
-NOTE: DATA statement used (Total process time):
-      real time           0.90 seconds
-      cpu time            0.87 seconds
-
-
-NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.00 seconds
-      cpu time            0.00 seconds
-
-
-NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.00 seconds
-      cpu time            0.00 seconds
-
-
-
-NOTE: The file PFEXCODE is:
-      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD7424\#LN00013,
-      RECFM=V,LRECL=32767,File Size (bytes)=0,
-      Last Modified=25Aug2015:17:27:50,
-      Create Time=25Aug2015:17:27:48
-
-ERROR: (ASSERT_MACRO_EXIST) FAIL, unable to find macro CMPRE.
-NOTE: 0 records were written to the file PFEXCODE.
-NOTE: There were 9 observations read from the data set WORK.CSS_PASSFAIL.
-NOTE: The data set WORK.CSS_PASSFAIL has 9 observations and 11 variables.
-NOTE: DATA statement used (Total process time):
-      real time           0.73 seconds
-      cpu time            0.70 seconds
-
-
-NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.00 seconds
-      cpu time            0.00 seconds
-
-
-NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.00 seconds
-      cpu time            0.00 seconds
-
-
-
-NOTE: The file PFEXCODE is:
-      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD7424\#LN00013,
-      RECFM=V,LRECL=32767,File Size (bytes)=0,
-      Last Modified=25Aug2015:17:27:51,
-      Create Time=25Aug2015:17:27:48
-
-ERROR: (ASSERT_MACRO_EXIST) FAIL, unable to find macro QLEF.
-NOTE: 0 records were written to the file PFEXCODE.
-NOTE: There were 9 observations read from the data set WORK.CSS_PASSFAIL.
-NOTE: The data set WORK.CSS_PASSFAIL has 9 observations and 11 variables.
-NOTE: DATA statement used (Total process time):
-      real time           0.57 seconds
-      cpu time            0.54 seconds
-
-
-NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.00 seconds
-      cpu time            0.00 seconds
-
-
-NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.00 seconds
-      cpu time            0.00 seconds
-
-
-
-NOTE: The file PFEXCODE is:
-      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD7424\#LN00013,
-      RECFM=V,LRECL=32767,File Size (bytes)=0,
-      Last Modified=25Aug2015:17:27:52,
-      Create Time=25Aug2015:17:27:48
-
-ERROR: (ASSERT_MACRO_EXIST) FAIL, unable to find macro CSS_LOWERCASING.
-NOTE: 0 records were written to the file PFEXCODE.
-NOTE: There were 9 observations read from the data set WORK.CSS_PASSFAIL.
-NOTE: The data set WORK.CSS_PASSFAIL has 9 observations and 11 variables.
-NOTE: DATA statement used (Total process time):
-      real time           0.71 seconds
-      cpu time            0.70 seconds
-
-
-NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.00 seconds
-      cpu time            0.00 seconds
-
-
-NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
-
-
-
-NOTE: The file PFEXCODE is:
-      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD7424\#LN00013,
-      RECFM=V,LRECL=32767,File Size (bytes)=0,
-      Last Modified=25Aug2015:17:27:53,
-      Create Time=25Aug2015:17:27:48
-
-NOTE: (ASSERT_MACRO_EXIST) PASS, found macro ASSERT_CONTINUE in
-"C:\CSS\phuse-scripts\whitepapers\utilities\Assert_CONTINUE.sas".
-NOTE: 0 records were written to the file PFEXCODE.
-NOTE: There were 9 observations read from the data set WORK.CSS_PASSFAIL.
-NOTE: The data set WORK.CSS_PASSFAIL has 9 observations and 11 variables.
-NOTE: DATA statement used (Total process time):
-      real time           0.87 seconds
-      cpu time            0.84 seconds
-
-
-NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
-
-
-NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.00 seconds
-      cpu time            0.00 seconds
-
-
-
-NOTE: The file PFEXCODE is:
-      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD7424\#LN00013,
-      RECFM=V,LRECL=32767,File Size (bytes)=0,
-      Last Modified=25Aug2015:17:27:54,
-      Create Time=25Aug2015:17:27:48
-
-NOTE: (ASSERT_MACRO_EXIST) PASS, found macro UTIL_DELETE_DSETS in
-"C:\CSS\phuse-scripts\whitepapers\utilities\UTIL_delete_DSETS.sas".
-NOTE: 0 records were written to the file PFEXCODE.
-NOTE: There were 9 observations read from the data set WORK.CSS_PASSFAIL.
-NOTE: The data set WORK.CSS_PASSFAIL has 9 observations and 11 variables.
+NOTE: There were 10 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 10 observations and 11 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.96 seconds
       cpu time            0.95 seconds
@@ -407,19 +283,23 @@ NOTE: PROCEDURE SQL used (Total process time):
 
 
 NOTE: The file PFEXCODE is:
-      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD7424\#LN00013,
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD5260\#LN00015,
       RECFM=V,LRECL=32767,File Size (bytes)=0,
-      Last Modified=25Aug2015:17:27:55,
-      Create Time=25Aug2015:17:27:48
+      Last Modified=26Aug2015:09:37:47,
+      Create Time=26Aug2015:09:37:44
 
-NOTE: (ASSERT_MACRO_EXIST) PASS, found macro CSS_ONTHEFLY in
-"C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD7424\CSS_ONTHEFLY.sas".
+ERROR: (ASSERT_MACRO_EXIST) FAIL, unable to find macro CMPRE.
 NOTE: 0 records were written to the file PFEXCODE.
-NOTE: There were 9 observations read from the data set WORK.CSS_PASSFAIL.
-NOTE: The data set WORK.CSS_PASSFAIL has 9 observations and 11 variables.
+NOTE: There were 10 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 10 observations and 11 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.81 seconds
-      cpu time            0.79 seconds
+      real time           0.96 seconds
+      cpu time            0.93 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
 
 
 NOTE: PROCEDURE SQL used (Total process time):
@@ -428,12 +308,166 @@ NOTE: PROCEDURE SQL used (Total process time):
 
 
 
-NOTE: 16 lines were written to file PRINT.
-NOTE: There were 9 observations read from the data set WORK.CSS_PASSFAIL.
-NOTE: The data set WORK.CSS_PASSFAIL has 9 observations and 12 variables.
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD5260\#LN00015,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=26Aug2015:09:37:48,
+      Create Time=26Aug2015:09:37:44
+
+ERROR: (ASSERT_MACRO_EXIST) FAIL, unable to find macro QLEF.
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 10 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 10 observations and 11 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.06 seconds
-      cpu time            0.04 seconds
+      real time           0.76 seconds
+      cpu time            0.76 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD5260\#LN00015,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=26Aug2015:09:37:49,
+      Create Time=26Aug2015:09:37:44
+
+ERROR: (ASSERT_MACRO_EXIST) FAIL, unable to find macro CSS_LOWERCASING.
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 10 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 10 observations and 11 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.74 seconds
+      cpu time            0.73 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD5260\#LN00015,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=26Aug2015:09:37:50,
+      Create Time=26Aug2015:09:37:44
+
+ERROR: (ASSERT_MACRO_EXIST) FAIL, please provide a non-missing macro name.
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 10 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 10 observations and 11 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD5260\#LN00015,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=26Aug2015:09:37:50,
+      Create Time=26Aug2015:09:37:44
+
+NOTE: (ASSERT_MACRO_EXIST) PASS, found macro ASSERT_CONTINUE in
+"C:\CSS\phuse-scripts\whitepapers\utilities\Assert_CONTINUE.sas".
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 10 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 10 observations and 11 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.82 seconds
+      cpu time            0.81 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD5260\#LN00015,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=26Aug2015:09:37:51,
+      Create Time=26Aug2015:09:37:44
+
+NOTE: (ASSERT_MACRO_EXIST) PASS, found macro UTIL_DELETE_DSETS in
+"C:\CSS\phuse-scripts\whitepapers\utilities\UTIL_delete_DSETS.sas".
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 10 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 10 observations and 11 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.71 seconds
+      cpu time            0.67 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD5260\#LN00015,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=26Aug2015:09:37:52,
+      Create Time=26Aug2015:09:37:44
+
+NOTE: (ASSERT_MACRO_EXIST) PASS, found macro CSS_ONTHEFLY in
+"C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD5260\CSS_ONTHEFLY.sas".
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 10 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 10 observations and 11 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.60 seconds
+      cpu time            0.59 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: 17 lines were written to file PRINT.
+NOTE: There were 10 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 10 observations and 12 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.07 seconds
+      cpu time            0.06 seconds
 
 
 NOTE: Libref SAVEXML was successfully assigned as follows:
@@ -441,18 +475,18 @@ NOTE: Libref SAVEXML was successfully assigned as follows:
       Physical Name: .\outputs_sas\testresults_assert_macro_exist.xml
 
 NOTE: SAS variable labels, formats, and lengths are not written to DBMS tables.
-NOTE: There were 9 observations read from the data set WORK.CSS_PASSFAIL.
-NOTE: The data set SAVEXML.CSS_PASSFAIL has 9 observations and 12 variables.
+NOTE: There were 10 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set SAVEXML.CSS_PASSFAIL has 10 observations and 12 variables.
 NOTE: DATA statement used (Total process time):
-      real time           3.21 seconds
-      cpu time            0.96 seconds
+      real time           3.13 seconds
+      cpu time            0.90 seconds
 
 
 NOTE: Libref SAVEXML has been deassigned.
-74
-75
-76    *--- CLEAN UP test environment as needed ---*;
-77
-78      filename tempmac clear;
+78
+79
+80    *--- CLEAN UP test environment as needed ---*;
+81
+82      filename tempmac clear;
 NOTE: Fileref TEMPMAC has been deassigned.
 

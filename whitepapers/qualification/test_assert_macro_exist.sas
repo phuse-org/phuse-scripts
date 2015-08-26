@@ -60,6 +60,9 @@
              'S', 'qleF',     '0')
       values("%lowcase(&macroname)", 'me.1.b.3', 'Do not find SAS AUTOCALL macro CSS_LOWERCASING',
              'S', 'CsS_LoWeRcAsInG',  '0')
+      values("%lowcase(&macroname)", 'me.1.c',   'Controlled fail given NULL macro name',
+             'S', '_NULLPARM_',       '0')
+
 
       values("%lowcase(&macroname)", 'me.2.a.1', 'Find CSS/PhUSE macro ASSERT_CONTINUE',
              'S', 'Assert_CONTINUE',   '1')
@@ -82,7 +85,7 @@
   filename tempmac "%sysfunc(pathname(WORK))/css_onthefly.sas";
   data _null_;
     file tempmac;
-    put '%macro css_onthefly; %put NOTE: (TEST_ASSERT_MACRO_EXIST) PASS, on-the-fly macro found and executed.; %mend css_onthefly;';
+    put '%macro css_onthefly; %put NOTE: (CSS_ONTHEFLY) PASS, on-the-fly macro found and executed.; %mend css_onthefly;';
   run;
 
   %macro update_sasautos;
