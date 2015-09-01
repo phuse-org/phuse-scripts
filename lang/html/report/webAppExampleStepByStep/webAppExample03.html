@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<!-- creating the "HOME" area -->
+	<meta charset="ISO-8859-1">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
+	<script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+	<script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+
+</head>
+<body>
+
+<div data-role="page" id="home">
+  <div data-role="header">
+    <h1>WebApp Example</h1>
+  </div>
+
+  <div data-role="main" class="ui-content">
+  	<p align="justify">
+    <img src="../sas_output/01_sample_52468.png" width="50%" align="left" hspace="20">
+    This is an example WebApp which can be used as basis for developing further apps. This WebApp
+    is described in detail in the PhUSE Paper "How to create a mobile WebApp? Walkthrough example including SAS output"
+    by Katja Glaß which can be accessed through this <b>link</b>.<br>
+    Feel free to work in the PhUSE Repository to share related WebApps and also to get feedback and development support.</p>
+  </div>
+
+  <div data-role="footer" data-position="fixed" data-tap-toggle="false">
+    <div data-role="navbar">
+      <ul>
+        <li><a href="#home" data-icon="home" class="ui-btn-active ui-state-persist">Home</a></li>
+        <li><a href="#graphics" data-icon="star">Graphics</a></li>
+        <li><a href="#tables" data-icon="grid">Tables</a></li>
+      </ul>
+    </div>
+  </div>
+</div> 
+
+<div data-role="page" id="graphics">
+  <div data-role="header">
+    <h1>Graphics</h1>
+  </div>
+
+  <div data-role="main" class="ui-content">
+  	<ul data-role="listview" data-inset="true">
+      <li data-role="list-divider">SAS Example Graphics</li>
+      <li><a href="#example1">Survay Results</a></li>
+      <li><a href="#example2">Height of Students</a></li>
+      <li><a href="#example3">Centered Subgroup Labels</a></li>
+      <li><a href="#example4">Default Graph of Sales Totals</a></li>
+      <li><a href="#example5">Annotate standard error bars</a></li>
+      <li><a href="#example6">Overlay a line on top of GCHART output using Annotate</a></li>
+    </ul>
+  </div>
+
+  <div data-role="footer" data-position="fixed" data-tap-toggle="false">
+    <div data-role="navbar">
+      <ul>
+        <li><a href="#home" data-icon="home">Home</a></li>
+        <li><a href="#graphics" data-icon="star" class="ui-btn-active ui-state-persist">Graphics</a></li>
+        <li><a href="#tables" data-icon="grid">Tables</a></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div data-role="page" id="example1">
+  <div data-role="header">
+    <h1>Graphics</h1>
+  </div>
+
+  <div data-role="main" class="ui-content">
+  	<img src="../sas_output/01_sample_52468.png" width="100%"></img>
+  </div>
+
+  <div data-role="footer" data-position="fixed" data-tap-toggle="false">
+    <div data-role="navbar">
+      <ul>
+        <li><a href="#home" data-icon="home">Home</a></li>
+        <li><a href="#graphics" data-icon="star" class="ui-btn-active ui-state-persist">Graphics</a></li>
+        <li><a href="#tables" data-icon="grid">Tables</a></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div data-role="page" id="example2">
+  <div data-role="header">
+    <h1>Graphics</h1>
+  </div>
+
+  <div data-role="main" class="ui-content">
+  	<img src="../sas_output/02_sample_51732.gif" width="100%"></img>
+  </div>
+
+  <div data-role="footer" data-position="fixed" data-tap-toggle="false">
+    <div data-role="navbar">
+      <ul>
+        <li><a href="#home" data-icon="home">Home</a></li>
+        <li><a href="#graphics" data-icon="star" class="ui-btn-active ui-state-persist">Graphics</a></li>
+        <li><a href="#tables" data-icon="grid">Tables</a></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div data-role="page" id="example3">
+  <div data-role="header">
+    <h1>Graphics</h1>
+  </div>
+
+  <div data-role="main" class="ui-content">
+  	<img src="../sas_output/03_sample_48451.png" width="100%"></img>
+  </div>
+
+  <div data-role="footer" data-position="fixed" data-tap-toggle="false">
+    <div data-role="navbar">
+      <ul>
+        <li><a href="#home" data-icon="home">Home</a></li>
+        <li><a href="#graphics" data-icon="star" class="ui-btn-active ui-state-persist">Graphics</a></li>
+        <li><a href="#tables" data-icon="grid">Tables</a></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div data-role="page" id="example4">
+  <div data-role="header">
+    <h1>Graphics</h1>
+  </div>
+
+  <div data-role="main" class="ui-content">
+  	<img src="../sas_output/04_sample_41603.gif" width="100%"></img>
+  </div>
+
+  <div data-role="footer" data-position="fixed" data-tap-toggle="false">
+    <div data-role="navbar">
+      <ul>
+        <li><a href="#home" data-icon="home">Home</a></li>
+        <li><a href="#graphics" data-icon="star" class="ui-btn-active ui-state-persist">Graphics</a></li>
+        <li><a href="#tables" data-icon="grid">Tables</a></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div data-role="page" id="example5">
+  <div data-role="header">
+    <h1>Graphics</h1>
+  </div>
+
+  <div data-role="main" class="ui-content">
+  	<img src="../sas_output/05_sample_24871.gif" width="100%"></img>
+  </div>
+
+  <div data-role="footer" data-position="fixed" data-tap-toggle="false">
+    <div data-role="navbar">
+      <ul>
+        <li><a href="#home" data-icon="home">Home</a></li>
+        <li><a href="#graphics" data-icon="star" class="ui-btn-active ui-state-persist">Graphics</a></li>
+        <li><a href="#tables" data-icon="grid">Tables</a></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div data-role="page" id="example6">
+  <div data-role="header">
+    <h1>Graphics</h1>
+  </div>
+
+  <div data-role="main" class="ui-content">
+  	<img src="../sas_output/06_sample_24865.gif" width="100%"></img>
+  </div>
+
+  <div data-role="footer" data-position="fixed" data-tap-toggle="false">
+    <div data-role="navbar">
+      <ul>
+        <li><a href="#home" data-icon="home">Home</a></li>
+        <li><a href="#graphics" data-icon="star" class="ui-btn-active ui-state-persist">Graphics</a></li>
+        <li><a href="#tables" data-icon="grid">Tables</a></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div data-role="page" id="tables">
+  <div data-role="header">
+    <h1>Tables</h1>
+  </div>
+
+  <div data-role="main" class="ui-content">
+  	<ul data-role="listview" data-inset="true">
+      <li data-role="list-divider">SAS Example Tables</li>
+      <li><a href="#t_example1">Sales for the Southeast Sector</a></li>
+      <li><a href="#t_example2">Sales for the Southeast Sector (2)</a></li>
+      <li><a href="#t_example3">Sales Statistics for All Sectors</a></li>
+      <li><a href="#t_example4">Individual Store Sales</a></li>
+      <li><a href="#t_example5">Sales for the Western Sectors</a></li>
+    </ul>
+  </div>
+
+  <div data-role="footer" data-position="fixed" data-tap-toggle="false">
+    <div data-role="navbar">
+      <ul>
+        <li><a href="#home" data-icon="home">Home</a></li>
+        <li><a href="#graphics" data-icon="star">Graphics</a></li>
+        <li><a href="#tables" data-icon="grid" class="ui-btn-active ui-state-persist">Tables</a></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div data-role="page" id="t_example1">
+  <div data-role="header">
+    <h1>Tables</h1>
+  </div>
+
+  <div data-role="main" class="ui-content">
+    <iframe id="iframe_1" src="../sas_output/example1.html" width="100%" frameborder="0"></iframe>
+  </div>
+
+  <div data-role="footer" data-position="fixed" data-tap-toggle="false">
+    <div data-role="navbar">
+      <ul>
+        <li><a href="#home" data-icon="home">Home</a></li>
+        <li><a href="#graphics" data-icon="star">Graphics</a></li>
+        <li><a href="#tables" data-icon="grid" class="ui-btn-active ui-state-persist">Tables</a></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div data-role="page" id="t_example2">
+  <div data-role="header">
+    <h1>Tables</h1>
+  </div>
+
+  <div data-role="main" class="ui-content">
+    <iframe id="iframe_2" src="../sas_output/example2.html" width="100%" frameborder="0"></iframe>
+  </div>
+
+  <div data-role="footer" data-position="fixed" data-tap-toggle="false">
+    <div data-role="navbar">
+      <ul>
+        <li><a href="#home" data-icon="home">Home</a></li>
+        <li><a href="#graphics" data-icon="star">Graphics</a></li>
+        <li><a href="#tables" data-icon="grid" class="ui-btn-active ui-state-persist">Tables</a></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div data-role="page" id="t_example3">
+  <div data-role="header">
+    <h1>Tables</h1>
+  </div>
+
+  <div data-role="main" class="ui-content">
+    <iframe id="iframe_3" src="../sas_output/example3.html" width="100%" frameborder="0"></iframe>
+  </div>
+
+  <div data-role="footer" data-position="fixed" data-tap-toggle="false">
+    <div data-role="navbar">
+      <ul>
+        <li><a href="#home" data-icon="home">Home</a></li>
+        <li><a href="#graphics" data-icon="star">Graphics</a></li>
+        <li><a href="#tables" data-icon="grid" class="ui-btn-active ui-state-persist">Tables</a></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div data-role="page" id="t_example4">
+  <div data-role="header">
+    <h1>Tables</h1>
+  </div>
+
+  <div data-role="main" class="ui-content">
+    <iframe id="iframe_4" src="../sas_output/example4.html" width="100%" frameborder="0"></iframe>
+  </div>
+
+  <div data-role="footer" data-position="fixed" data-tap-toggle="false">
+    <div data-role="navbar">
+      <ul>
+        <li><a href="#home" data-icon="home">Home</a></li>
+        <li><a href="#graphics" data-icon="star">Graphics</a></li>
+        <li><a href="#tables" data-icon="grid" class="ui-btn-active ui-state-persist">Tables</a></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div data-role="page" id="t_example5">
+  <div data-role="header">
+    <h1>Tables</h1>
+  </div>
+
+  <div data-role="main" class="ui-content">
+    <iframe id="iframe_5" src="../sas_output/example5.html" width="100%" frameborder="0"></iframe>
+  </div>
+
+  <div data-role="footer" data-position="fixed" data-tap-toggle="false">
+    <div data-role="navbar">
+      <ul>
+        <li><a href="#home" data-icon="home">Home</a></li>
+        <li><a href="#graphics" data-icon="star">Graphics</a></li>
+        <li><a href="#tables" data-icon="grid" class="ui-btn-active ui-state-persist">Tables</a></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+	$('#t_example1').on("pageshow", function () {
+		document.getElementById("iframe_1").height = ($(window).height()) - 140;
+	});
+	$('#t_example2').on("pageshow", function () {
+		document.getElementById("iframe_2").height = ($(window).height()) - 140;
+	});
+	$('#t_example3').on("pageshow", function () {
+		document.getElementById("iframe_3").height = ($(window).height()) - 140;
+	});
+	$('#t_example4').on("pageshow", function () {
+		document.getElementById("iframe_4").height = ($(window).height()) - 140;
+	});
+	$('#t_example5').on("pageshow", function () {
+		document.getElementById("iframe_5").height = ($(window).height()) - 140;
+	});
+</script>
+
+
+</body>
+</html>
