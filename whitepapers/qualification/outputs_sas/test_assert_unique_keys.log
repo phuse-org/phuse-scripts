@@ -1,0 +1,1551 @@
+1                                         The SAS System        12:11 Saturday, September 19, 2015
+
+NOTE: Copyright (c) 2002-2008 by SAS Institute Inc., Cary, NC, USA. 
+NOTE: SAS (r) Proprietary Software 9.2 (TS2M3) 
+      Licensed to F. HOFFMANN LA ROCHE AG, Site 50701490.
+NOTE: This session is executing on the X64_VSPRO  platform.
+
+
+
+NOTE: SAS initialization used:
+      real time           1.63 seconds
+      cpu time            0.85 seconds
+      
+1          /***
+2            Qualification tests for PhUSE/CSS utility macro ASSERT_UNIQUE_KEYS
+3          
+4            SETUP:  Ensure that PhUSE/CSS utilities are in the AUTOCALL path
+5          
+6            TEST PLAN:
+7            https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/qualification/test
+7        ! plan_assert_unique_keys.docx
+8          
+9          ***/
+10         
+11         
+12         *--- SETUP ---*;
+13         
+14           %let macroname = ASSERT_UNIQUE_KEYS;
+15         
+16           %put WARNING: (TEST_%upcase(&macroname)) User must ensure PhUSE/CSS utilities are in
+16       ! the AUTOCALL path.;
+WARNING: (TEST_ASSERT_UNIQUE_KEYS) User must ensure PhUSE/CSS utilities are in the AUTOCALL path.
+17         
+18               OPTIONS mrecall sasautos=(%sysfunc(getoption(sasautos)) "C:\CSS\phuse-scripts\whitepapers\utilities") ls=max ps=max;
+19         /*** EXECUTE ONE TIME only as needed
+20         
+21             Ensure PhUSE/CSS utilities are in the AUTOCALL path
+22             NB: This line is not necessary if PhUSE/CSS utilities are in your default AUTOCALL paths
+23         
+24             OPTIONS mrecall sasautos=(%sysfunc(getoption(sasautos)) "C:\CSS\phuse-scripts\whitepapers\utilities") ls=max ps=max;
+25         
+26           ***/
+27         
+28         
+29           *--- SAVE TEST RESULTS as XML filename  ---*;
+30           *--- NB: if this filename is blank, do NOT save xml test results ---*;
+31         
+32             %let XML_FILENAME = .\outputs_sas\testresults_%lowcase(&macroname).xml;
+33         
+34         
+35         *--- Test Definitions  ---*;
+36           *--- Full Specs for test definitions: https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/utilities/util_passfail.sas ---*;
+37         
+38           proc sql;
+39             create table my_test_definitions
+40               (  test_mac        char(32) label='Name of macro to test'
+41                , test_id         char(15) label="Test ID for %upcase(&macroname)"
+42                , test_dsc        char(60) label='Test Description'
+43         
+44                , test_type       char(5)  label='Test Type (Macro var, String-<B|C|L|T>, Data set, In data step)'
+45                , Pparm_DS        char(40) label='Test values for the Positional parameter DS'
+46                , Pparm_KEYS      char(30) label='Test values for the Positional parameter KEYS'
+47                , Kparm_INCL      char(30) label='Test values for the Keyword parameter INCL'
+48                , Kparm_SQLWHR    char(60) label='Test values for the Keyword parameter SQLWHR'
+49         
+50                , test_expect     char(30) label="EXPECTED test results for each call to %upcase(&macroname)"
+51                , test_expect_sym char(30) label='TEST_PDLIM-delim Name=Value pairs of EXPECTED global syms created'
+52               )
+53             ;
+NOTE: Table WORK.MY_TEST_DEFINITIONS created, with 0 rows and 10 columns.
+54         
+55             * test type "I", in data step, in order to wrap each test with code to create global macro var CONTINUE *;
+56         
+57             insert into my_test_definitions
+58               values("%lowcase(&macroname)", 'auk1.a.1', 'NULL dset name',
+59                      'I', '_NULLPARM_', 'var1 var2', 'var3', '',   '-work.fail_auk', 'CONTINUE=0')
+60               values("%lowcase(&macroname)", 'auk1.a.2', 'Invalid dset name',
+61                      'I', 'Work.Dne', 'var1 var2', '', '',   '-work.fail_auk', 'CONTINUE=0')
+62               values("%lowcase(&macroname)", 'auk1.a.3.i', 'Invalid truncated dset name',
+63                      'I', 'SAShelp.CLAS', 'name', 'sex age', '',   '-work.fail_auk', 'CONTINUE=0')
+64               values("%lowcase(&macroname)", 'auk1.a.3.ii', 'Invalid dset name with partial match',
+65                      'I', 'WORK.CSS_CLASSes', 'name sex', 'age', '',   '-work.fail_auk', 'CONTINUE=0')
+66               values("%lowcase(&macroname)", 'auk1.b.1', 'NULL keys',
+67                      'I', 'ClassES', '_NULLPARM_', '', '',   '-work.fail_auk', 'CONTINUE=0')
+68               values("%lowcase(&macroname)", 'auk1.b.2', 'Invalid single key',
+69                      'I', 'sasHelp.Class', 'nam', 'sex age', '',   '-work.fail_auk', 'CONTINUE=0')
+70               values("%lowcase(&macroname)", 'auk1.b.3', 'Invalid multiple keys',
+71                      'I', 'Work.CLASSes', 'nam gender', 'age', '',   '-work.fail_auk', 'CONTINUE=0')
+72               values("%lowcase(&macroname)", 'auk1.c.1', 'Invalid single INCL var',
+73                      'I', 'worK.ClassES', 'name sex', 'ag', '',   '-work.fail_auk', 'CONTINUE=0')
+74               values("%lowcase(&macroname)", 'auk1.c.2', 'Invalid multiple INCL vars',
+75                      'I', 'sasHelp.Class', 'name', 'gender aged', '',   '-work.fail_auk', 'CONTINUE=0')
+76         
+77               values("%lowcase(&macroname)", 'auk2.a', 'Unique single key',
+78                      'I', 'SasHelp.Class', 'name', '', ''   '-fail_auk', 'CONTINUE=1')
+79               values("%lowcase(&macroname)", 'auk2.b', 'Non-unique single key FAILS',
+80                      'I', 'classes', 'name', '', ''   'fail_auk2_b=fail_auk', 'CONTINUE=0')
+81         
+82               values("%lowcase(&macroname)", 'auk3.a', 'Unique set of keys',
+83                      'I', 'Classes', 'name sex', '', ''   '-fail_auk', 'CONTINUE=1')
+84               values("%lowcase(&macroname)", 'auk3.b', 'Non-unique set of keys FAILS',
+85                      'I', 'Work.Classes', 'name age', '', ''   'fail_auk3_b=fail_auk', 'CONTINUE=0')
+86         
+87               values("%lowcase(&macroname)", 'auk4.a', 'Non-unique single key FAILS & returns extra INCL vars',
+88                      'I', 'classes', 'name', 'sex source', ''   'fail_auk4_a=fail_auk', 'CONTINUE=0')
+89               values("%lowcase(&macroname)", 'auk4.b', 'Non-unique set of keys FAILS & returns extra INCL vars',
+90                      'I', 'Work.Classes', 'name age', 'source', ''   'fail_auk4_b=fail_auk', 'CONTINUE=0')
+91         
+92               values("%lowcase(&macroname)", 'auk5.a', 'Valid single key after SQLWHR subsetting',
+93                      'I', 'Work.Classes', 'name', '', 'where source="SASHELP"'   '-work.fail_auk', 'CONTINUE=1')
+94               values("%lowcase(&macroname)", 'auk5.b', 'Invalid single key after SQLWHR subsetting',
+95                      'I', 'Work.Classes', 'name', '', 'where height < 64'   'fail_auk5_b=work.fail_auk', 'CONTINUE=0')
+96               values("%lowcase(&macroname)", 'auk5.c', 'Valid set of keys after SQLWHR subsetting',
+97                      'I', 'classes_dup', 'name sex', '', 'where copy = 1'   '-FAIL_AUK', 'continue=1')
+98               values("%lowcase(&macroname)", 'auk5.d', 'Invalid set of keys after SQLWHR subsetting',
+99                      'I', 'classes_DUP', 'name sex', '', 'where age < 13'   'fail_auk5_d=work.fail_auk', 'continue=0')
+100        
+101        /*
+102              values("%lowcase(&macroname)", '', '',   '', '', '', '', ''   '', '')
+103        */
+104            ;
+NOTE: 19 rows were inserted into WORK.MY_TEST_DEFINITIONS.
+
+105          quit;
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.05 seconds
+      cpu time            0.06 seconds
+      
+
+106        
+107          data my_test_definitions;
+108            set my_test_definitions;
+109            retain test_wrap '%global continue; _maccall1_;';
+110          run;
+
+NOTE: There were 19 observations read from the data set WORK.MY_TEST_DEFINITIONS.
+NOTE: The data set WORK.MY_TEST_DEFINITIONS has 19 observations and 11 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.00 seconds
+      
+
+111        
+112        
+113        *--- Setup test environment here (dsets, macro vars, etc) ---*;
+114          data classes;
+115            * Duplicate SASHELP.CLASS records, but with SEX ('M', 'F') reversed *;
+116            * Result: NAME is a valid unique key in SASHELP.CLASS, but not in WORK.CLASS, with valid keys NAME, SEX *;
+117            set sashelp.class(in=in_orig) sashelp.class(in=in_rep);
+118        
+119            if in_orig then source = 'SASHELP';
+120            else do;
+121              source = 'FLIPPED';
+122              if sex = 'M' then sex = 'F';
+123              else sex = 'M';
+124            end;
+125          run;
+
+NOTE: There were 19 observations read from the data set SASHELP.CLASS.
+NOTE: There were 19 observations read from the data set SASHELP.CLASS.
+NOTE: The data set WORK.CLASSES has 38 observations and 6 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+126        
+127          data classes_dup;
+128            set classes (in=in_one) classes;
+129            if in_one then copy = 1;
+130            else copy = 2;
+131          run;
+
+NOTE: There were 38 observations read from the data set WORK.CLASSES.
+NOTE: There were 38 observations read from the data set WORK.CLASSES.
+NOTE: The data set WORK.CLASSES_DUP has 76 observations and 7 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+132        
+133          data fail_auk2_b (keep=name)
+134               fail_auk3_b (keep=name age)
+135               fail_auk4_a (keep=name sex source)
+136               fail_auk4_b (keep=name age source);
+137            set classes;
+138          run;
+
+NOTE: There were 38 observations read from the data set WORK.CLASSES.
+NOTE: The data set WORK.FAIL_AUK2_B has 38 observations and 1 variables.
+NOTE: The data set WORK.FAIL_AUK3_B has 38 observations and 2 variables.
+NOTE: The data set WORK.FAIL_AUK4_A has 38 observations and 3 variables.
+NOTE: The data set WORK.FAIL_AUK4_B has 38 observations and 3 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+      
+
+139        
+140          proc sort data=fail_auk2_b nodupkey;
+141            by name;
+
+NOTE: There were 38 observations read from the data set WORK.FAIL_AUK2_B.
+NOTE: 19 observations with duplicate key values were deleted.
+NOTE: The data set WORK.FAIL_AUK2_B has 19 observations and 1 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+142          proc sort data=fail_auk3_b nodupkey;
+143            by name age;
+
+NOTE: There were 38 observations read from the data set WORK.FAIL_AUK3_B.
+NOTE: 19 observations with duplicate key values were deleted.
+NOTE: The data set WORK.FAIL_AUK3_B has 19 observations and 2 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+144          proc sort data=fail_auk4_a nodupkey;
+145            by name sex source;
+
+NOTE: There were 38 observations read from the data set WORK.FAIL_AUK4_A.
+NOTE: 0 observations with duplicate key values were deleted.
+NOTE: The data set WORK.FAIL_AUK4_A has 38 observations and 3 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+146          proc sort data=fail_auk4_b nodupkey;
+147            by name age source;
+148          run;
+
+NOTE: There were 38 observations read from the data set WORK.FAIL_AUK4_B.
+NOTE: 0 observations with duplicate key values were deleted.
+NOTE: The data set WORK.FAIL_AUK4_B has 38 observations and 3 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+149        
+150          proc sort data=classes (keep=name height where=(height < 64))
+151                     out=fail_auk5_b (keep=name) nodupkey;
+152            by name;
+
+NOTE: There were 22 observations read from the data set WORK.CLASSES.
+      WHERE height<64;
+NOTE: 11 observations with duplicate key values were deleted.
+NOTE: The data set WORK.FAIL_AUK5_B has 11 observations and 1 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+153          proc sort data=classes (keep=name sex age where=(age < 13))
+154                     out=fail_auk5_d (keep=name sex) nodupkey;
+155            by name sex;
+156          run;
+
+NOTE: There were 14 observations read from the data set WORK.CLASSES.
+      WHERE age<13;
+NOTE: 0 observations with duplicate key values were deleted.
+NOTE: The data set WORK.FAIL_AUK5_D has 14 observations and 2 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+157        
+158        *--- Create EXPECTED test results ---*;
+159        
+160        
+161        *--- Execute & evaluate tests, and report & store test results ---*;
+162          %util_passfail (my_test_definitions, savexml=&xml_filename, debug=N);
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: There were 19 observations read from the data set WORK.MY_TEST_DEFINITIONS.
+NOTE: The data set WORK.CSS_PASSFAIL has 19 observations and 17 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE (BUILD_MACRO_CALLS): > auk1.a.1 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %assert_unique_keys(  , var1 var2, INCL=var3)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > auk1.a.2 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %assert_unique_keys( Work.Dne, var1 var2)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > auk1.a.3.i , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %assert_unique_keys( SAShelp.CLAS, name, INCL=sex age)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > auk1.a.3.ii , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %assert_unique_keys( WORK.CSS_CLASSes, name sex, INCL=age)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > auk1.b.1 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %assert_unique_keys( ClassES,  )
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > auk1.b.2 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %assert_unique_keys( sasHelp.Class, nam, INCL=sex age)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > auk1.b.3 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %assert_unique_keys( Work.CLASSes, nam gender, INCL=age)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > auk1.c.1 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %assert_unique_keys( worK.ClassES, name sex, INCL=ag)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > auk1.c.2 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %assert_unique_keys( sasHelp.Class, name, INCL=gender aged)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > auk2.a , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %assert_unique_keys( SasHelp.Class, name)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > auk2.b , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %assert_unique_keys( classes, name)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > auk3.a , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %assert_unique_keys( Classes, name sex)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > auk3.b , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %assert_unique_keys( Work.Classes, name age)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > auk4.a , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %assert_unique_keys( classes, name, INCL=sex source)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > auk4.b , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %assert_unique_keys( Work.Classes, name age, INCL=source)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > auk5.a , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %assert_unique_keys( Work.Classes, name, SQLWHR=where source="SASHELP")
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > auk5.b , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %assert_unique_keys( Work.Classes, name, SQLWHR=where height < 64)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > auk5.c , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %assert_unique_keys( classes_dup, name sex, SQLWHR=where copy = 1)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > auk5.d , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %assert_unique_keys( classes_DUP, name sex, SQLWHR=where age < 13)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE: There were 19 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 19 observations and 19 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: There were 1 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+      
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD6748\#LN00007,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=19Sep2015:12:11:10,
+      Create Time=19Sep2015:12:11:10
+
+NOTE: 2 records were written to the file PFEXCODE.
+      The minimum record length was 17.
+      The maximum record length was 45.
+NOTE: There were 19 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 19 observations and 17 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.01 seconds
+      
+
+ERROR: (ASSERT_DSET_EXIST) Result is FAIL. Please specify a data set name.
+
+NOTE: There were 19 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 19 observations rewritten, 0 observations added and 0 observations deleted.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+NOTE: There were 19 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 19 observations rewritten, 0 observations added and 0 observations deleted.
+
+NOTE: CALL EXECUTE routine executed successfully, but no SAS statements were generated.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD6748\#LN00007,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=19Sep2015:12:11:11,
+      Create Time=19Sep2015:12:11:10
+
+NOTE: 2 records were written to the file PFEXCODE.
+      The minimum record length was 17.
+      The maximum record length was 41.
+NOTE: There were 19 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 19 observations and 17 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+      
+
+ERROR: (ASSERT_DSET_EXIST) Result is FAIL. Data set WORK.DNE is NOT accessible. Try another data set.
+
+NOTE: There were 19 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 19 observations rewritten, 0 observations added and 0 observations deleted.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+NOTE: There were 19 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 19 observations rewritten, 0 observations added and 0 observations deleted.
+
+NOTE: CALL EXECUTE routine executed successfully, but no SAS statements were generated.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD6748\#LN00007,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=19Sep2015:12:11:11,
+      Create Time=19Sep2015:12:11:10
+
+NOTE: 2 records were written to the file PFEXCODE.
+      The minimum record length was 17.
+      The maximum record length was 54.
+NOTE: There were 19 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 19 observations and 17 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.01 seconds
+      
+
+ERROR: (ASSERT_DSET_EXIST) Result is FAIL. Data set SASHELP.CLAS is NOT accessible. Try another data set.
+
+NOTE: There were 19 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 19 observations rewritten, 0 observations added and 0 observations deleted.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+NOTE: There were 19 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 19 observations rewritten, 0 observations added and 0 observations deleted.
+
+NOTE: CALL EXECUTE routine executed successfully, but no SAS statements were generated.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD6748\#LN00007,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=19Sep2015:12:11:11,
+      Create Time=19Sep2015:12:11:10
+
+NOTE: 2 records were written to the file PFEXCODE.
+      The minimum record length was 17.
+      The maximum record length was 58.
+NOTE: There were 19 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 19 observations and 17 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+ERROR: (ASSERT_DSET_EXIST) Result is FAIL. Data set WORK.CSS_CLASSES is NOT accessible. Try another data set.
+
+NOTE: There were 19 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 19 observations rewritten, 0 observations added and 0 observations deleted.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+NOTE: There were 19 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 19 observations rewritten, 0 observations added and 0 observations deleted.
+
+NOTE: CALL EXECUTE routine executed successfully, but no SAS statements were generated.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD6748\#LN00007,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=19Sep2015:12:11:11,
+      Create Time=19Sep2015:12:11:10
+
+NOTE: 2 records were written to the file PFEXCODE.
+      The minimum record length was 17.
+      The maximum record length was 32.
+NOTE: There were 19 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 19 observations and 17 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CLASSES is accessible.
+ERROR: (ASSERT_UNIQUE_KEYS) Result is FAIL. Please specify a variable name.
+
+NOTE: There were 19 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 19 observations rewritten, 0 observations added and 0 observations deleted.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+NOTE: There were 19 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 19 observations rewritten, 0 observations added and 0 observations deleted.
+
+NOTE: CALL EXECUTE routine executed successfully, but no SAS statements were generated.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD6748\#LN00007,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=19Sep2015:12:11:11,
+      Create Time=19Sep2015:12:11:10
+
+NOTE: 2 records were written to the file PFEXCODE.
+      The minimum record length was 17.
+      The maximum record length was 54.
+NOTE: There were 19 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 19 observations and 17 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set SASHELP.CLASS is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set SASHELP.CLASS is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set SASHELP.CLASS, try closing data set ID 1
+ERROR: (ASSERT_VAR_EXIST) Result is FAIL. "NAM" is NOT a variable on data set SASHELP.CLASS.
+
+NOTE: There were 19 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 19 observations rewritten, 0 observations added and 0 observations deleted.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+NOTE: There were 19 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 19 observations rewritten, 0 observations added and 0 observations deleted.
+
+NOTE: CALL EXECUTE routine executed successfully, but no SAS statements were generated.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD6748\#LN00007,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=19Sep2015:12:11:11,
+      Create Time=19Sep2015:12:11:10
+
+NOTE: 2 records were written to the file PFEXCODE.
+      The minimum record length was 17.
+      The maximum record length was 56.
+NOTE: There were 19 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 19 observations and 17 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set WORK.CLASSES is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set WORK.CLASSES is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set WORK.CLASSES, try closing data set ID 1
+ERROR: (ASSERT_VAR_EXIST) Result is FAIL. "NAM" is NOT a variable on data set WORK.CLASSES.
+
+NOTE: There were 19 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 19 observations rewritten, 0 observations added and 0 observations deleted.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+NOTE: There were 19 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 19 observations rewritten, 0 observations added and 0 observations deleted.
+
+NOTE: CALL EXECUTE routine executed successfully, but no SAS statements were generated.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD6748\#LN00007,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=19Sep2015:12:11:11,
+      Create Time=19Sep2015:12:11:10
+
+NOTE: 2 records were written to the file PFEXCODE.
+      The minimum record length was 17.
+      The maximum record length was 53.
+NOTE: There were 19 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 19 observations and 17 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+      
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set WORK.CLASSES is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set WORK.CLASSES is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set WORK.CLASSES, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. NAME is a variable on data set WORK.CLASSES.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set WORK.CLASSES is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set WORK.CLASSES, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. SEX is a variable on data set WORK.CLASSES.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set WORK.CLASSES is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set WORK.CLASSES, try closing data set ID 1
+ERROR: (ASSERT_VAR_EXIST) Result is FAIL. "AG" is NOT a variable on data set WORK.CLASSES.
+
+NOTE: There were 19 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 19 observations rewritten, 0 observations added and 0 observations deleted.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+NOTE: There were 19 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 19 observations rewritten, 0 observations added and 0 observations deleted.
+
+NOTE: CALL EXECUTE routine executed successfully, but no SAS statements were generated.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD6748\#LN00007,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=19Sep2015:12:11:11,
+      Create Time=19Sep2015:12:11:10
+
+NOTE: 2 records were written to the file PFEXCODE.
+      The minimum record length was 17.
+      The maximum record length was 59.
+NOTE: There were 19 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 19 observations and 17 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set SASHELP.CLASS is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set SASHELP.CLASS is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set SASHELP.CLASS, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. NAME is a variable on data set SASHELP.CLASS.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set SASHELP.CLASS is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set SASHELP.CLASS, try closing data set ID 1
+ERROR: (ASSERT_VAR_EXIST) Result is FAIL. "GENDER" is NOT a variable on data set SASHELP.CLASS.
+
+NOTE: There were 19 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 19 observations rewritten, 0 observations added and 0 observations deleted.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+NOTE: There were 19 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 19 observations rewritten, 0 observations added and 0 observations deleted.
+
+NOTE: CALL EXECUTE routine executed successfully, but no SAS statements were generated.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD6748\#LN00007,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=19Sep2015:12:11:11,
+      Create Time=19Sep2015:12:11:10
+
+NOTE: 2 records were written to the file PFEXCODE.
+      The minimum record length was 17.
+      The maximum record length was 41.
+NOTE: There were 19 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 19 observations and 17 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set SASHELP.CLASS is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set SASHELP.CLASS is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set SASHELP.CLASS, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. NAME is a variable on data set SASHELP.CLASS.
+NOTE: Table WORK.FAIL_AUK created, with 0 rows and 1 columns.
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: (ASSERT_UNIQUE_KEYS) SASHELP.CLASS has unique records for keys NAME  (SQLOBS = 0).
+
+NOTE: Deleting WORK.FAIL_AUK (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.03 seconds
+      
+
+
+NOTE: There were 19 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 19 observations rewritten, 0 observations added and 0 observations deleted.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+NOTE: There were 19 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 19 observations rewritten, 0 observations added and 0 observations deleted.
+
+NOTE: CALL EXECUTE routine executed successfully, but no SAS statements were generated.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD6748\#LN00007,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=19Sep2015:12:11:11,
+      Create Time=19Sep2015:12:11:10
+
+NOTE: 2 records were written to the file PFEXCODE.
+      The minimum record length was 17.
+      The maximum record length was 35.
+NOTE: There were 19 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 19 observations and 17 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+      
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CLASSES is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CLASSES is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set CLASSES, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. NAME is a variable on data set CLASSES.
+NOTE: Table WORK.FAIL_AUK created, with 19 rows and 1 columns.
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+ERROR: (ASSERT_UNIQUE_KEYS) Unexpected duplicates in CLASSES with unique keys NAME  (SQLOBS = 19). See WORK.FAIL_AUK.
+
+NOTE: There were 19 observations read from the data set WORK.FAIL_AUK2_B.
+NOTE: There were 19 observations read from the data set WORK.FAIL_AUK.
+NOTE: PROCEDURE COMPARE used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: Deleting WORK.FAIL_AUK (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: There were 19 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 19 observations rewritten, 0 observations added and 0 observations deleted.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+NOTE: There were 19 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 19 observations rewritten, 0 observations added and 0 observations deleted.
+
+NOTE: CALL EXECUTE routine executed successfully, but no SAS statements were generated.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD6748\#LN00007,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=19Sep2015:12:11:11,
+      Create Time=19Sep2015:12:11:10
+
+NOTE: 2 records were written to the file PFEXCODE.
+      The minimum record length was 17.
+      The maximum record length was 39.
+NOTE: There were 19 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 19 observations and 17 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CLASSES is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CLASSES is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set CLASSES, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. NAME is a variable on data set CLASSES.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CLASSES is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set CLASSES, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. SEX is a variable on data set CLASSES.
+NOTE: Table WORK.FAIL_AUK created, with 0 rows and 2 columns.
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+NOTE: (ASSERT_UNIQUE_KEYS) CLASSES has unique records for keys NAME SEX  (SQLOBS = 0).
+
+NOTE: Deleting WORK.FAIL_AUK (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: There were 19 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 19 observations rewritten, 0 observations added and 0 observations deleted.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+NOTE: There were 19 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 19 observations rewritten, 0 observations added and 0 observations deleted.
+
+NOTE: CALL EXECUTE routine executed successfully, but no SAS statements were generated.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD6748\#LN00007,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=19Sep2015:12:11:11,
+      Create Time=19Sep2015:12:11:10
+
+NOTE: 2 records were written to the file PFEXCODE.
+      The minimum record length was 17.
+      The maximum record length was 44.
+NOTE: There were 19 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 19 observations and 17 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set WORK.CLASSES is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set WORK.CLASSES is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set WORK.CLASSES, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. NAME is a variable on data set WORK.CLASSES.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set WORK.CLASSES is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set WORK.CLASSES, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. AGE is a variable on data set WORK.CLASSES.
+NOTE: Table WORK.FAIL_AUK created, with 19 rows and 2 columns.
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+ERROR: (ASSERT_UNIQUE_KEYS) Unexpected duplicates in WORK.CLASSES with unique keys NAME AGE  (SQLOBS = 19). See WORK.FAIL_AUK.
+
+NOTE: There were 19 observations read from the data set WORK.FAIL_AUK3_B.
+NOTE: There were 19 observations read from the data set WORK.FAIL_AUK.
+NOTE: PROCEDURE COMPARE used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: Deleting WORK.FAIL_AUK (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: There were 19 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 19 observations rewritten, 0 observations added and 0 observations deleted.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+NOTE: There were 19 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 19 observations rewritten, 0 observations added and 0 observations deleted.
+
+NOTE: CALL EXECUTE routine executed successfully, but no SAS statements were generated.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD6748\#LN00007,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=19Sep2015:12:11:11,
+      Create Time=19Sep2015:12:11:10
+
+NOTE: 2 records were written to the file PFEXCODE.
+      The minimum record length was 17.
+      The maximum record length was 52.
+NOTE: There were 19 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 19 observations and 17 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.01 seconds
+      
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CLASSES is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CLASSES is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set CLASSES, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. NAME is a variable on data set CLASSES.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CLASSES is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set CLASSES, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. SEX is a variable on data set CLASSES.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CLASSES is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set CLASSES, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. SOURCE is a variable on data set CLASSES.
+NOTE: The query requires remerging summary statistics back with the original data.
+NOTE: Table WORK.FAIL_AUK created, with 38 rows and 3 columns.
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+      
+
+ERROR: (ASSERT_UNIQUE_KEYS) Unexpected duplicates in CLASSES with unique keys NAME  (SQLOBS = 38). See WORK.FAIL_AUK.
+
+NOTE: There were 38 observations read from the data set WORK.FAIL_AUK4_A.
+NOTE: There were 38 observations read from the data set WORK.FAIL_AUK.
+NOTE: PROCEDURE COMPARE used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: Deleting WORK.FAIL_AUK (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: There were 19 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 19 observations rewritten, 0 observations added and 0 observations deleted.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+NOTE: There were 19 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 19 observations rewritten, 0 observations added and 0 observations deleted.
+
+NOTE: CALL EXECUTE routine executed successfully, but no SAS statements were generated.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD6748\#LN00007,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=19Sep2015:12:11:11,
+      Create Time=19Sep2015:12:11:10
+
+NOTE: 2 records were written to the file PFEXCODE.
+      The minimum record length was 17.
+      The maximum record length was 57.
+NOTE: There were 19 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 19 observations and 17 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+      
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set WORK.CLASSES is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set WORK.CLASSES is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set WORK.CLASSES, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. NAME is a variable on data set WORK.CLASSES.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set WORK.CLASSES is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set WORK.CLASSES, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. AGE is a variable on data set WORK.CLASSES.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set WORK.CLASSES is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set WORK.CLASSES, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. SOURCE is a variable on data set WORK.CLASSES.
+NOTE: The query requires remerging summary statistics back with the original data.
+NOTE: Table WORK.FAIL_AUK created, with 38 rows and 3 columns.
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.04 seconds
+      
+
+ERROR: (ASSERT_UNIQUE_KEYS) Unexpected duplicates in WORK.CLASSES with unique keys NAME AGE  (SQLOBS = 38). See WORK.FAIL_AUK.
+
+NOTE: There were 38 observations read from the data set WORK.FAIL_AUK4_B.
+NOTE: There were 38 observations read from the data set WORK.FAIL_AUK.
+NOTE: PROCEDURE COMPARE used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: Deleting WORK.FAIL_AUK (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: There were 19 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 19 observations rewritten, 0 observations added and 0 observations deleted.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+NOTE: There were 19 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 19 observations rewritten, 0 observations added and 0 observations deleted.
+
+NOTE: CALL EXECUTE routine executed successfully, but no SAS statements were generated.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD6748\#LN00007,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=19Sep2015:12:11:11,
+      Create Time=19Sep2015:12:11:10
+
+NOTE: 2 records were written to the file PFEXCODE.
+      The minimum record length was 17.
+      The maximum record length was 71.
+NOTE: There were 19 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 19 observations and 17 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set WORK.CLASSES is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set WORK.CLASSES is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set WORK.CLASSES, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. NAME is a variable on data set WORK.CLASSES.
+NOTE: Table WORK.FAIL_AUK created, with 0 rows and 1 columns.
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: (ASSERT_UNIQUE_KEYS) WORK.CLASSES has unique records for keys NAME where source="SASHELP" (SQLOBS = 0).
+
+NOTE: Deleting WORK.FAIL_AUK (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: There were 19 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 19 observations rewritten, 0 observations added and 0 observations deleted.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+NOTE: There were 19 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 19 observations rewritten, 0 observations added and 0 observations deleted.
+
+NOTE: CALL EXECUTE routine executed successfully, but no SAS statements were generated.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD6748\#LN00007,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=19Sep2015:12:11:12,
+      Create Time=19Sep2015:12:11:10
+
+NOTE: 2 records were written to the file PFEXCODE.
+      The minimum record length was 17.
+      The maximum record length was 66.
+NOTE: There were 19 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 19 observations and 17 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+      
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set WORK.CLASSES is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set WORK.CLASSES is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set WORK.CLASSES, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. NAME is a variable on data set WORK.CLASSES.
+NOTE: Table WORK.FAIL_AUK created, with 11 rows and 1 columns.
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+ERROR: (ASSERT_UNIQUE_KEYS) Unexpected duplicates in WORK.CLASSES with unique keys NAME where height < 64 (SQLOBS = 11). See WORK.FAIL_AUK.
+
+NOTE: There were 11 observations read from the data set WORK.FAIL_AUK5_B.
+NOTE: There were 11 observations read from the data set WORK.FAIL_AUK.
+NOTE: PROCEDURE COMPARE used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: Deleting WORK.FAIL_AUK (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: There were 19 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 19 observations rewritten, 0 observations added and 0 observations deleted.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+NOTE: There were 19 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 19 observations rewritten, 0 observations added and 0 observations deleted.
+
+NOTE: CALL EXECUTE routine executed successfully, but no SAS statements were generated.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD6748\#LN00007,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=19Sep2015:12:11:12,
+      Create Time=19Sep2015:12:11:10
+
+NOTE: 2 records were written to the file PFEXCODE.
+      The minimum record length was 17.
+      The maximum record length was 66.
+NOTE: There were 19 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 19 observations and 17 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.01 seconds
+      
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CLASSES_DUP is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CLASSES_DUP is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set CLASSES_DUP, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. NAME is a variable on data set CLASSES_DUP.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CLASSES_DUP is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set CLASSES_DUP, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. SEX is a variable on data set CLASSES_DUP.
+NOTE: Table WORK.FAIL_AUK created, with 0 rows and 2 columns.
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+NOTE: (ASSERT_UNIQUE_KEYS) CLASSES_DUP has unique records for keys NAME SEX where copy = 1 (SQLOBS = 0).
+
+NOTE: Deleting WORK.FAIL_AUK (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: There were 19 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 19 observations rewritten, 0 observations added and 0 observations deleted.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+NOTE: There were 19 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 19 observations rewritten, 0 observations added and 0 observations deleted.
+
+NOTE: CALL EXECUTE routine executed successfully, but no SAS statements were generated.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD6748\#LN00007,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=19Sep2015:12:11:12,
+      Create Time=19Sep2015:12:11:10
+
+NOTE: 2 records were written to the file PFEXCODE.
+      The minimum record length was 17.
+      The maximum record length was 66.
+NOTE: There were 19 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 19 observations and 17 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CLASSES_DUP is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CLASSES_DUP is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set CLASSES_DUP, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. NAME is a variable on data set CLASSES_DUP.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CLASSES_DUP is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set CLASSES_DUP, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. SEX is a variable on data set CLASSES_DUP.
+NOTE: Table WORK.FAIL_AUK created, with 14 rows and 2 columns.
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+ERROR: (ASSERT_UNIQUE_KEYS) Unexpected duplicates in CLASSES_DUP with unique keys NAME SEX where age < 13 (SQLOBS = 14). See WORK.FAIL_AUK.
+
+NOTE: There were 14 observations read from the data set WORK.FAIL_AUK5_D.
+NOTE: There were 14 observations read from the data set WORK.FAIL_AUK.
+NOTE: PROCEDURE COMPARE used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: Deleting WORK.FAIL_AUK (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: There were 19 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 19 observations rewritten, 0 observations added and 0 observations deleted.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+NOTE: There were 19 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 19 observations rewritten, 0 observations added and 0 observations deleted.
+
+NOTE: CALL EXECUTE routine executed successfully, but no SAS statements were generated.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: 24 lines were written to file PRINT.
+NOTE: There were 19 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 19 observations and 18 variables.
+NOTE: The DATA step printed page 1.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+NOTE: Libref SAVEXML was successfully assigned as follows: 
+      Engine:        XML 
+      Physical Name: .\outputs_sas\testresults_assert_unique_keys.xml
+
+NOTE: SAS variable labels, formats, and lengths are not written to DBMS tables.
+NOTE: There were 19 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set SAVEXML.CSS_PASSFAIL has 19 observations and 18 variables.
+NOTE: DATA statement used (Total process time):
+      real time           1.84 seconds
+      cpu time            0.64 seconds
+      
+
+NOTE: Libref SAVEXML has been deassigned.
+
+ERROR: Errors printed on page 1.
+
+NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC USA 27513-2414
+NOTE: The SAS System used:
+      real time           5.09 seconds
+      cpu time            3.02 seconds
+      

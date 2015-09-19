@@ -20,7 +20,7 @@
     Ensure PhUSE/CSS utilities are in the AUTOCALL path
     NB: This line is not necessary if PhUSE/CSS utilities are in your default AUTOCALL paths
 
-    OPTIONS mrecall sasautos=(%sysfunc(getoption(sasautos)) "C:\CSS\phuse-scripts\whitepapers\utilities");
+    OPTIONS mrecall sasautos=(%sysfunc(getoption(sasautos)) "C:\CSS\phuse-scripts\whitepapers\utilities") ls=max ps=max;
 
   ***/
 

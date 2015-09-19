@@ -2,7 +2,8 @@
   Assertion that records in DS are unique according to KEYS
 
   INPUTS
-    CONTINUE  Global symbol created prior to macro invocation in PhUSE/CSS template program
+    CONTINUE  Global symbol created prior to macro invocation in PhUSE/CSS template program.
+              NB: The calling program ensures that this global macro var exists.
 
   Usage:
     DS     Data set containing the unique id variables, KEYS
@@ -42,44 +43,67 @@
 ***/
 
   %macro assert_unique_keys (ds, keys, incl=, sqlwhr=);
-    %local idx sqlkeys sqlvars;
+    %local idx nxt sqlkeys sqlvars;
 
     %let continue = %assert_dset_exist(&ds);
 
+    %if %length(&keys) < 1 %then %do;
+      %let continue = 0;
+      %put ERROR: (ASSERT_UNIQUE_KEYS) Result is FAIL. Please specify a variable name.;
+    %end;
+
     %if &continue %then %do;
       %let sqlkeys = %scan(&keys, 1, %str( ));
-      %do idx = 2 %to %sysfunc(countw(&keys));
-        %let sqlkeys = &sqlkeys., %scan(&keys, &idx, %str( ));
+      %let continue = %assert_var_exist(&ds, &sqlkeys);
+
+      %if %sysfunc(countw(&keys)) > 1 %then %do idx = 2 %to %sysfunc(countw(&keys));
+        %let nxt = %scan(&keys, &idx, %str( ));
+        %if &continue %then %let continue = %assert_var_exist(&ds, &nxt);
+
+        %let sqlkeys = &sqlkeys., &nxt;
       %end;
 
-      %if %length(&incl) > 0 %then %do;
-        %let sqlvars = %scan(&incl, 1, %str( ));
-        %if %sysfunc(countw(&incl)) > 1 %then %do idx = 2 %to %sysfunc(countw(&incl));
-          %let sqlvars = &sqlvars., %scan(&incl, &idx, %str( ));
+      %if &continue %then %do;
+        %if %length(&incl) > 0 %then %do;
+          %let sqlvars = %scan(&incl, 1, %str( ));
+          %let continue = %assert_var_exist(&ds, &sqlvars);
+
+          %if %sysfunc(countw(&incl)) > 1 %then %do idx = 2 %to %sysfunc(countw(&incl));
+            %let nxt = %scan(&incl, &idx, %str( ));
+            %if &continue %then %let continue = %assert_var_exist(&ds, &nxt);
+
+            %let sqlvars = &sqlvars., &nxt;
+          %end;
         %end;
-      %end;
 
-      proc sql noprint;
-        create table fail_auk as
-        select &sqlkeys %if %length(&sqlvars) > 0 %then , &sqlvars ;
-        from &ds
+        %if &continue %then %do;
 
-        %if %length(&sqlwhr) > 0 %then %do;
-          &sqlwhr
-        %end;
+          proc sql noprint;
+            create table fail_auk as
+            select &sqlkeys %if %length(&sqlvars) > 0 %then , &sqlvars ;
+            from &ds
 
-        group by &sqlkeys
-        having count(%scan(&keys, -1, %str( ))) > 1;
-      quit;
+            %if %length(&sqlwhr) > 0 %then %do;
+              &sqlwhr
+            %end;
 
-      %if &sqlobs NE 0 %then %do;
-        %put ERROR: (ASSERT_UNIQUE_KEYS) Unexpected duplicates in %upcase(&DS) with unique keys %upcase(&keys) &sqlwhr (SQLOBS = &sqlobs). See WORK.FAIL_AUK.;
-        %let continue = 0;
-      %end;
-      %else %do;
-        %put NOTE: (ASSERT_UNIQUE_KEYS) %upcase(&DS) has unique records for keys %upcase(&keys) &sqlwhr (SQLOBS = &sqlobs).;
-        %util_delete_dsets(fail_auk);
-      %end;
-    %end;
+            group by &sqlkeys
+            having count(%scan(&keys, -1, %str( ))) > 1
+            order by &sqlkeys %if %length(&sqlvars) > 0 %then , &sqlvars ;
+            ;
+          quit;
+
+          %if &sqlobs NE 0 %then %do;
+            %put ERROR: (ASSERT_UNIQUE_KEYS) Unexpected duplicates in %upcase(&DS) with unique keys %upcase(&keys) &sqlwhr (SQLOBS = &sqlobs). See WORK.FAIL_AUK.;
+            %let continue = 0;
+          %end;
+          %else %do;
+            %put NOTE: (ASSERT_UNIQUE_KEYS) %upcase(&DS) has unique records for keys %upcase(&keys) &sqlwhr (SQLOBS = &sqlobs).;
+            %util_delete_dsets(fail_auk);
+          %end;
+
+        %end; %*--- Valid (or null) INCL vars ---*;
+      %end; %*--- Valid KEYS vars ---*;
+    %end; %*--- Valid DS ---*;
 
   %mend assert_unique_keys;
