@@ -1,0 +1,21 @@
+                                                                                                                                                                                                                            14:55 Monday, September 21, 2015   1
+
+### -----
+###
+### ASSERT_VAR_EXIST Overall: ALL TESTS PASSED - 13
+###
+### -----
+
+   001   ave.1.a.1      NULL data set
+   002   ave.1.a.2      Non-existent one-level data set, but name matches start of a valid name
+   003   ave.1.a.3      Non-existent one-level data set, but name appears within a valid name
+   004   ave.1.a.4      Non-existent two-level data set, but name matches end of a valid name
+   005   ave.1.b.1      NULL variable
+   006   ave.1.b.2      Non-existent variable in one-level data set, but name is prefix of a valid variable
+   007   ave.1.b.3      Non-existent variable in one-level data set, but name appears within a valid variable
+   008   ave.1.b.4      Non-existent variable in one-level data set, but name is suffix of a valid variable
+   009   ave.1.b.5      Non-existent variable in two-level data set, but a valid variable matches start of this variable
+   010   ave.1.b.6      Non-existent variable in two-level data set, but a valid variable appears within this variable
+   011   ave.1.b.7      Non-existent variable in two-level data set, but a valid variable matches end of this variable
+   012   ave.2.a.1      Valid variable in one-level data set
+   013   ave.2.a.2      Valid variable in two-level data set

@@ -43,6 +43,9 @@
 ***/
 
   %macro assert_unique_keys (ds, keys, incl=, sqlwhr=);
+    %*--- If CONTINUE already exists, no hard done. But it must exist to receive return code. ---*;
+    %global continue;
+
     %local idx nxt sqlkeys sqlvars;
 
     %let continue = %assert_dset_exist(&ds);

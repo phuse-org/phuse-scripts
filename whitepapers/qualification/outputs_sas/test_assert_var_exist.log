@@ -1,0 +1,633 @@
+1                                         The SAS System          14:55 Monday, September 21, 2015
+
+NOTE: Copyright (c) 2002-2008 by SAS Institute Inc., Cary, NC, USA. 
+NOTE: SAS (r) Proprietary Software 9.2 (TS2M3) 
+      Licensed to F. HOFFMANN LA ROCHE AG, Site 50701490.
+NOTE: This session is executing on the X64_VSPRO  platform.
+
+
+
+NOTE: SAS initialization used:
+      real time           2.58 seconds
+      cpu time            0.92 seconds
+      
+1          /***
+2            Qualification tests for PhUSE/CSS utility macro ASSERT_VAR_EXIST
+3          
+4            SETUP:  Ensure that PhUSE/CSS utilities are in the AUTOCALL path
+5          
+6            TEST PLAN:
+7            https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/qualification/test
+7        ! plan_assert_var_exist.docx
+8          
+9          ***/
+10         
+11         
+12         *--- SETUP ---*;
+13         
+14           %let macroname = ASSERT_VAR_EXIST;
+15         
+16           %put WARNING: (TEST_%upcase(&macroname)) User must ensure PhUSE/CSS utilities are in
+16       ! the AUTOCALL path.;
+WARNING: (TEST_ASSERT_VAR_EXIST) User must ensure PhUSE/CSS utilities are in the AUTOCALL path.
+17         
+18               OPTIONS mrecall sasautos=(%sysfunc(getoption(sasautos)) "C:\CSS\phuse-scripts\whitepapers\utilities") ls=max ps=max;
+19         /*** EXECUTE ONE TIME only as needed
+20         
+21             Ensure PhUSE/CSS utilities are in the AUTOCALL path
+22             NB: This line is not necessary if PhUSE/CSS utilities are in your default AUTOCALL paths
+23         
+24             OPTIONS mrecall sasautos=(%sysfunc(getoption(sasautos)) "C:\CSS\phuse-scripts\whitepapers\utilities") ls=max ps=max;
+25         
+26           ***/
+27         
+28         
+29           *--- SAVE TEST RESULTS as XML filename  ---*;
+30           *--- NB: if this filename is blank, do NOT save xml test results ---*;
+31         
+32             %let XML_FILENAME = .\outputs_sas\testresults_%lowcase(&macroname).xml;
+33         
+34         
+35         *--- Test Definitions  ---*;
+36           *--- Full Specs for test definitions: https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/utilities/util_passfail.sas ---*;
+37         
+38           proc sql;
+39             create table my_test_definitions
+40               (  test_mac        char(32) label='Name of macro to test'
+41                , test_id         char(15) label="Test ID for %upcase(&macroname)"
+42                , test_dsc        char(99) label='Test Description'
+43         
+44                , test_type       char(5)  label='Test Type (Macro var, String-<B|C|L|T>, Data set, In data step)'
+45                , Pparm_DS        char(50) label='Test values for the Positional parameter DS'
+46                , Pparm_VAR       char(50) label='Test values for the Keyword parameter VAR'
+47         
+48                , test_expect     char(50) label="EXPECTED test results for each call to %upcase(&macroname)"
+49               )
+50             ;
+NOTE: Table WORK.MY_TEST_DEFINITIONS created, with 0 rows and 7 columns.
+51         
+52             insert into my_test_definitions
+53               values("%lowcase(&macroname)", 'ave.1.a.1', 'NULL data set',
+54                      'S', '', '',                  '0')
+55               values("%lowcase(&macroname)", 'ave.1.a.2', 'Non-existent one-level data set, but name matches start of a valid name',
+56                      'S', 'longdata', '',          '0')
+57               values("%lowcase(&macroname)", 'ave.1.a.3', 'Non-existent one-level data set, but name appears within a valid name',
+58                      'S', 'dataset', '',           '0')
+59               values("%lowcase(&macroname)", 'ave.1.a.4', 'Non-existent two-level data set, but name matches end of a valid name',
+60                      'S', 'sasuser.setname', '',   '0')
+61         
+62               values("%lowcase(&macroname)", 'ave.1.b.1', 'NULL variable',   'S', 'longdatasetname', '',   '0')
+63               values("%lowcase(&macroname)", 'ave.1.b.2', 'Non-existent variable in one-level data set, but name is prefix of a valid variable',
+64                      'S', 'longdatasetname', 'longnam',   '0')
+65               values("%lowcase(&macroname)", 'ave.1.b.3', 'Non-existent variable in one-level data set, but name appears within a valid variable',
+66                      'S', 'longdatasetname', 'ongvar',    '0')
+67               values("%lowcase(&macroname)", 'ave.1.b.4', 'Non-existent variable in one-level data set, but name is suffix of a valid variable',
+68                      'S', 'longdatasetname', 'ablename',  '0')
+69               values("%lowcase(&macroname)", 'ave.1.b.5', 'Non-existent variable in two-level data set, but a valid variable matches start of this variable',
+70                      'S', 'sasuser.longdsetname', 'longname',               '0')
+71               values("%lowcase(&macroname)", 'ave.1.b.6', 'Non-existent variable in two-level data set, but a valid variable appears within this variable',
+72                      'S', 'sasuser.longdsetname', 'newvariablestr',         '0')
+73               values("%lowcase(&macroname)", 'ave.1.b.7', 'Non-existent variable in two-level data set, but a valid variable matches end of this variable',
+74                      'S', 'sasuser.longdsetname', 'ratherlongvariablestr',  '0')
+75         
+76               values("%lowcase(&macroname)", 'ave.2.a.1', 'Valid variable in one-level data set',
+77                      'S', 'longdatasetname', 'longvariablename',   '1')
+78               values("%lowcase(&macroname)", 'ave.2.a.2', 'Valid variable in two-level data set',
+79                      'S', 'sasuser.longdsetname', 'long',          '1')
+80         
+81         /*
+82               values("%lowcase(&macroname)", 'ave.', '',   'S', '', '',   '')
+83         */
+84         
+85             ;
+NOTE: 13 rows were inserted into WORK.MY_TEST_DEFINITIONS.
+
+86           quit;
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.06 seconds
+      cpu time            0.06 seconds
+      
+
+87         
+88         
+89         *--- Setup test environment here (dsets, macro vars, etc) ---*;
+90           data longdatasetname;
+91             longvariablename = 'full name';
+92             long             = 'prefix name';
+93             variable         = 'contained name';
+94             name             = 'suffix name';
+95             OUTPUT;
+96           run;
+
+NOTE: The data set WORK.LONGDATASETNAME has 1 observations and 4 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+97         
+98           data sasuser.longdsetname;
+99             set longdatasetname;
+100          run;
+
+NOTE: There were 1 observations read from the data set WORK.LONGDATASETNAME.
+NOTE: The data set SASUSER.LONGDSETNAME has 1 observations and 4 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.17 seconds
+      cpu time            0.06 seconds
+      
+
+101        
+102        
+103        
+104        *--- Execute & evaluate tests, and report & store test results ---*;
+105          %util_passfail (my_test_definitions, savexml=&xml_filename, debug=N);
+NOTE: No rows were selected.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: There were 13 observations read from the data set WORK.MY_TEST_DEFINITIONS.
+NOTE: The data set WORK.CSS_PASSFAIL has 13 observations and 10 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE (BUILD_MACRO_CALLS): > ave.1.a.1 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %assert_var_exist
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > ave.1.a.2 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %assert_var_exist( longdata)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > ave.1.a.3 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %assert_var_exist( dataset)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > ave.1.a.4 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %assert_var_exist( sasuser.setname)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > ave.1.b.1 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %assert_var_exist( longdatasetname)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > ave.1.b.2 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %assert_var_exist( longdatasetname, longnam)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > ave.1.b.3 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %assert_var_exist( longdatasetname, ongvar)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > ave.1.b.4 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %assert_var_exist( longdatasetname, ablename)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > ave.1.b.5 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %assert_var_exist( sasuser.longdsetname, longname)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > ave.1.b.6 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %assert_var_exist( sasuser.longdsetname, newvariablestr)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > ave.1.b.7 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %assert_var_exist( sasuser.longdsetname, ratherlongvariablestr)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > ave.2.a.1 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %assert_var_exist( longdatasetname, longvariablename)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > ave.2.a.2 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %assert_var_exist( sasuser.longdsetname, long)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE: There were 13 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 13 observations and 12 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+      
+
+
+NOTE: There were 1 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+      
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD9120\#LN00007,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=21Sep2015:14:55:39,
+      Create Time=21Sep2015:14:55:39
+
+ERROR: (ASSERT_DSET_EXIST) Result is FAIL. Please specify a data set name.
+ERROR: (ASSERT_VAR_EXIST) Result is FAIL. "" is NOT a variable on data set .
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 13 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 13 observations and 12 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD9120\#LN00007,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=21Sep2015:14:55:39,
+      Create Time=21Sep2015:14:55:39
+
+ERROR: (ASSERT_DSET_EXIST) Result is FAIL. Data set LONGDATA is NOT accessible. Try another data set.
+ERROR: (ASSERT_VAR_EXIST) Result is FAIL. "" is NOT a variable on data set LONGDATA.
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 13 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 13 observations and 12 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD9120\#LN00007,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=21Sep2015:14:55:39,
+      Create Time=21Sep2015:14:55:39
+
+ERROR: (ASSERT_DSET_EXIST) Result is FAIL. Data set DATASET is NOT accessible. Try another data set.
+ERROR: (ASSERT_VAR_EXIST) Result is FAIL. "" is NOT a variable on data set DATASET.
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 13 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 13 observations and 12 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD9120\#LN00007,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=21Sep2015:14:55:39,
+      Create Time=21Sep2015:14:55:39
+
+ERROR: (ASSERT_DSET_EXIST) Result is FAIL. Data set SASUSER.SETNAME is NOT accessible. Try another data set.
+ERROR: (ASSERT_VAR_EXIST) Result is FAIL. "" is NOT a variable on data set SASUSER.SETNAME.
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 13 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 13 observations and 12 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.04 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD9120\#LN00007,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=21Sep2015:14:55:39,
+      Create Time=21Sep2015:14:55:39
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set LONGDATASETNAME is accessible.
+ERROR: (ASSERT_VAR_EXIST) Result is FAIL. "" is NOT a variable on data set LONGDATASETNAME.
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 13 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 13 observations and 12 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD9120\#LN00007,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=21Sep2015:14:55:39,
+      Create Time=21Sep2015:14:55:39
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set LONGDATASETNAME is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set LONGDATASETNAME, try closing data set ID 1
+ERROR: (ASSERT_VAR_EXIST) Result is FAIL. "LONGNAM" is NOT a variable on data set LONGDATASETNAME.
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 13 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 13 observations and 12 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD9120\#LN00007,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=21Sep2015:14:55:39,
+      Create Time=21Sep2015:14:55:39
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set LONGDATASETNAME is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set LONGDATASETNAME, try closing data set ID 1
+ERROR: (ASSERT_VAR_EXIST) Result is FAIL. "ONGVAR" is NOT a variable on data set LONGDATASETNAME.
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 13 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 13 observations and 12 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD9120\#LN00007,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=21Sep2015:14:55:39,
+      Create Time=21Sep2015:14:55:39
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set LONGDATASETNAME is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set LONGDATASETNAME, try closing data set ID 1
+ERROR: (ASSERT_VAR_EXIST) Result is FAIL. "ABLENAME" is NOT a variable on data set LONGDATASETNAME.
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 13 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 13 observations and 12 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.03 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD9120\#LN00007,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=21Sep2015:14:55:39,
+      Create Time=21Sep2015:14:55:39
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set SASUSER.LONGDSETNAME is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set SASUSER.LONGDSETNAME, try closing data set ID 1
+ERROR: (ASSERT_VAR_EXIST) Result is FAIL. "LONGNAME" is NOT a variable on data set SASUSER.LONGDSETNAME.
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 13 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 13 observations and 12 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.06 seconds
+      cpu time            0.03 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD9120\#LN00007,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=21Sep2015:14:55:39,
+      Create Time=21Sep2015:14:55:39
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set SASUSER.LONGDSETNAME is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set SASUSER.LONGDSETNAME, try closing data set ID 1
+ERROR: (ASSERT_VAR_EXIST) Result is FAIL. "NEWVARIABLESTR" is NOT a variable on data set SASUSER.LONGDSETNAME.
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 13 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 13 observations and 12 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.06 seconds
+      cpu time            0.03 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD9120\#LN00007,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=21Sep2015:14:55:40,
+      Create Time=21Sep2015:14:55:39
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set SASUSER.LONGDSETNAME is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set SASUSER.LONGDSETNAME, try closing data set ID 1
+ERROR: (ASSERT_VAR_EXIST) Result is FAIL. "RATHERLONGVARIABLESTR" is NOT a variable on data set SASUSER.LONGDSETNAME.
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 13 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 13 observations and 12 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.03 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD9120\#LN00007,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=21Sep2015:14:55:40,
+      Create Time=21Sep2015:14:55:39
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set LONGDATASETNAME is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set LONGDATASETNAME, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. LONGVARIABLENAME is a variable on data set LONGDATASETNAME.
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 13 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 13 observations and 12 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.03 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD9120\#LN00007,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=21Sep2015:14:55:40,
+      Create Time=21Sep2015:14:55:39
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set SASUSER.LONGDSETNAME is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set SASUSER.LONGDSETNAME, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. LONG is a variable on data set SASUSER.LONGDSETNAME.
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 13 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 13 observations and 12 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.01 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: 18 lines were written to file PRINT.
+NOTE: There were 13 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 13 observations and 13 variables.
+NOTE: The DATA step printed page 1.
+NOTE: DATA statement used (Total process time):
+      real time           0.07 seconds
+      cpu time            0.07 seconds
+      
+
+NOTE: Libref SAVEXML was successfully assigned as follows: 
+      Engine:        XML 
+      Physical Name: .\outputs_sas\testresults_assert_var_exist.xml
+
+NOTE: SAS variable labels, formats, and lengths are not written to DBMS tables.
+NOTE: There were 13 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set SAVEXML.CSS_PASSFAIL has 13 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           3.02 seconds
+      cpu time            0.93 seconds
+      
+
+NOTE: Libref SAVEXML has been deassigned.
+106        
+107        
+108        *--- Cleanup ---*;
+109          proc datasets library=SASUSER memtype=DATA nolist nodetails;
+110            delete longdatasetname;
+111          quit;
+
+NOTE: The file SASUSER.LONGDATASETNAME (memtype=DATA) was not found, but appears on a DELETE statement.
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.09 seconds
+      cpu time            0.03 seconds
+      
+
+ERROR: Errors printed on page 1.
+
+NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC USA 27513-2414
+NOTE: The SAS System used:
+      real time           6.98 seconds
+      cpu time            2.90 seconds
+      

@@ -15,6 +15,7 @@
 
   %put WARNING: (TEST_%upcase(&macroname)) User must ensure PhUSE/CSS utilities are in the AUTOCALL path.;
 
+    OPTIONS mrecall sasautos=(%sysfunc(getoption(sasautos)) "C:\CSS\phuse-scripts\whitepapers\utilities") ls=max ps=max;
 /*** EXECUTE ONE TIME only as needed
 
     Ensure PhUSE/CSS utilities are in the AUTOCALL path
@@ -55,61 +56,53 @@
 
     insert into my_test_definitions
       values("%lowcase(&macroname)", 'auk1.a.1', 'NULL dset name',
-             'I', '_NULLPARM_', 'var1 var2', 'var3', '',   '-work.fail_auk', 'CONTINUE=0')
+             'D', '_NULLPARM_', 'var1 var2', 'var3', '',   '-work.fail_auk', 'CONTINUE=0')
       values("%lowcase(&macroname)", 'auk1.a.2', 'Invalid dset name',
-             'I', 'Work.Dne', 'var1 var2', '', '',   '-work.fail_auk', 'CONTINUE=0')
+             'D', 'Work.Dne', 'var1 var2', '', '',   '-work.fail_auk', 'CONTINUE=0')
       values("%lowcase(&macroname)", 'auk1.a.3.i', 'Invalid truncated dset name',
-             'I', 'SAShelp.CLAS', 'name', 'sex age', '',   '-work.fail_auk', 'CONTINUE=0')
+             'D', 'SAShelp.CLAS', 'name', 'sex age', '',   '-work.fail_auk', 'CONTINUE=0')
       values("%lowcase(&macroname)", 'auk1.a.3.ii', 'Invalid dset name with partial match',
-             'I', 'WORK.CSS_CLASSes', 'name sex', 'age', '',   '-work.fail_auk', 'CONTINUE=0')
+             'D', 'WORK.CSS_CLASSes', 'name sex', 'age', '',   '-work.fail_auk', 'CONTINUE=0')
       values("%lowcase(&macroname)", 'auk1.b.1', 'NULL keys',              
-             'I', 'ClassES', '_NULLPARM_', '', '',   '-work.fail_auk', 'CONTINUE=0')
+             'D', 'ClassES', '_NULLPARM_', '', '',   '-work.fail_auk', 'CONTINUE=0')
       values("%lowcase(&macroname)", 'auk1.b.2', 'Invalid single key',
-             'I', 'sasHelp.Class', 'nam', 'sex age', '',   '-work.fail_auk', 'CONTINUE=0')
+             'D', 'sasHelp.Class', 'nam', 'sex age', '',   '-work.fail_auk', 'CONTINUE=0')
       values("%lowcase(&macroname)", 'auk1.b.3', 'Invalid multiple keys',
-             'I', 'Work.CLASSes', 'nam gender', 'age', '',   '-work.fail_auk', 'CONTINUE=0')
+             'D', 'Work.CLASSes', 'nam gender', 'age', '',   '-work.fail_auk', 'CONTINUE=0')
       values("%lowcase(&macroname)", 'auk1.c.1', 'Invalid single INCL var',
-             'I', 'worK.ClassES', 'name sex', 'ag', '',   '-work.fail_auk', 'CONTINUE=0')
+             'D', 'worK.ClassES', 'name sex', 'ag', '',   '-work.fail_auk', 'CONTINUE=0')
       values("%lowcase(&macroname)", 'auk1.c.2', 'Invalid multiple INCL vars',
-             'I', 'sasHelp.Class', 'name', 'gender aged', '',   '-work.fail_auk', 'CONTINUE=0')
+             'D', 'sasHelp.Class', 'name', 'gender aged', '',   '-work.fail_auk', 'CONTINUE=0')
 
       values("%lowcase(&macroname)", 'auk2.a', 'Unique single key',
-             'I', 'SasHelp.Class', 'name', '', ''   '-fail_auk', 'CONTINUE=1')
+             'D', 'SasHelp.Class', 'name', '', ''   '-fail_auk', 'CONTINUE=1')
       values("%lowcase(&macroname)", 'auk2.b', 'Non-unique single key FAILS',
-             'I', 'classes', 'name', '', ''   'fail_auk2_b=fail_auk', 'CONTINUE=0')
+             'D', 'classes', 'name', '', ''   'fail_auk2_b=fail_auk', 'CONTINUE=0')
 
       values("%lowcase(&macroname)", 'auk3.a', 'Unique set of keys',
-             'I', 'Classes', 'name sex', '', ''   '-fail_auk', 'CONTINUE=1')
+             'D', 'Classes', 'name sex', '', ''   '-fail_auk', 'CONTINUE=1')
       values("%lowcase(&macroname)", 'auk3.b', 'Non-unique set of keys FAILS',
-             'I', 'Work.Classes', 'name age', '', ''   'fail_auk3_b=fail_auk', 'CONTINUE=0')
+             'D', 'Work.Classes', 'name age', '', ''   'fail_auk3_b=fail_auk', 'CONTINUE=0')
 
       values("%lowcase(&macroname)", 'auk4.a', 'Non-unique single key FAILS & returns extra INCL vars',
-             'I', 'classes', 'name', 'sex source', ''   'fail_auk4_a=fail_auk', 'CONTINUE=0')
+             'D', 'classes', 'name', 'sex source', ''   'fail_auk4_a=fail_auk', 'CONTINUE=0')
       values("%lowcase(&macroname)", 'auk4.b', 'Non-unique set of keys FAILS & returns extra INCL vars',
-             'I', 'Work.Classes', 'name age', 'source', ''   'fail_auk4_b=fail_auk', 'CONTINUE=0')
+             'D', 'Work.Classes', 'name age', 'source', ''   'fail_auk4_b=fail_auk', 'CONTINUE=0')
 
       values("%lowcase(&macroname)", 'auk5.a', 'Valid single key after SQLWHR subsetting',   
-             'I', 'Work.Classes', 'name', '', 'where source="SASHELP"'   '-work.fail_auk', 'CONTINUE=1')
+             'D', 'Work.Classes', 'name', '', 'where source="SASHELP"'   '-work.fail_auk', 'CONTINUE=1')
       values("%lowcase(&macroname)", 'auk5.b', 'Invalid single key after SQLWHR subsetting',   
-             'I', 'Work.Classes', 'name', '', 'where height < 64'   'fail_auk5_b=work.fail_auk', 'CONTINUE=0')
+             'D', 'Work.Classes', 'name', '', 'where height < 64'   'fail_auk5_b=work.fail_auk', 'CONTINUE=0')
       values("%lowcase(&macroname)", 'auk5.c', 'Valid set of keys after SQLWHR subsetting',   
-             'I', 'classes_dup', 'name sex', '', 'where copy = 1'   '-FAIL_AUK', 'continue=1')
+             'D', 'classes_dup', 'name sex', '', 'where copy = 1'   '-FAIL_AUK', 'continue=1')
       values("%lowcase(&macroname)", 'auk5.d', 'Invalid set of keys after SQLWHR subsetting',   
-             'I', 'classes_DUP', 'name sex', '', 'where age < 13'   'fail_auk5_d=work.fail_auk', 'continue=0')
+             'D', 'classes_DUP', 'name sex', '', 'where age < 13'   'fail_auk5_d=work.fail_auk', 'continue=0')
 
 /*
       values("%lowcase(&macroname)", '', '',   '', '', '', '', ''   '', '')
 */
     ;
   quit;
-
-  data my_test_definitions;
-    set my_test_definitions;
-
-    * test type "I" (In data step) in order to wrap each test with code to create global macro var CONTINUE *;
-
-    retain test_wrap '%global continue; _maccall1_;';
-  run;
 
 
 *--- Setup test environment here (dsets, macro vars, etc) ---*;
