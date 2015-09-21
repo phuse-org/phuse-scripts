@@ -15,7 +15,7 @@
 
   %put WARNING: (TEST_%upcase(&macroname)) User must ensure PhUSE/CSS utilities are in the AUTOCALL path.;
 
-/*** EXECUTE ONE TIME only as needed
+  /*** EXECUTE ONE TIME only as needed
 
     Ensure PhUSE/CSS utilities are in the AUTOCALL path
     NB: This line is not necessary if PhUSE/CSS utilities are in your default AUTOCALL paths
