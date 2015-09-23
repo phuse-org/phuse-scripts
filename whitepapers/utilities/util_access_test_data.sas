@@ -60,6 +60,11 @@
     set source.&ds;
   run;
 
+  %if &SYSERR ne 0 %then %do;
+    %put ERROR: (UTIL_ACCESS_TEST_DATA) Please confirm that data set %upcase(&DS) exists in transport file %upcase(&XPORT).;
+    %util_delete_dsets(css_&ds)
+  %end;
+
   filename source clear;
   libname source clear;
 
