@@ -32,6 +32,7 @@
 
 
 *--- Test Definitions  ---*;
+  *--- Full Specs for test definitions: https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/utilities/util_passfail.sas ---*;
 
   proc sql;
     create table my_test_definitions

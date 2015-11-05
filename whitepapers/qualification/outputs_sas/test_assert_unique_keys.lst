@@ -1,0 +1,27 @@
+                                                                                                                                                                                                                            12:57 Monday, September 21, 2015   1
+
+### -----
+###
+### ASSERT_UNIQUE_KEYS Overall: ALL TESTS PASSED - 19
+###
+### -----
+
+   001   auk1.a.1       NULL dset name
+   002   auk1.a.2       Invalid dset name
+   003   auk1.a.3.i     Invalid truncated dset name
+   004   auk1.a.3.ii    Invalid dset name with partial match
+   005   auk1.b.1       NULL keys
+   006   auk1.b.2       Invalid single key
+   007   auk1.b.3       Invalid multiple keys
+   008   auk1.c.1       Invalid single INCL var
+   009   auk1.c.2       Invalid multiple INCL vars
+   010   auk2.a         Unique single key
+   011   auk2.b         Non-unique single key FAILS
+   012   auk3.a         Unique set of keys
+   013   auk3.b         Non-unique set of keys FAILS
+   014   auk4.a         Non-unique single key FAILS & returns extra INCL vars
+   015   auk4.b         Non-unique set of keys FAILS & returns extra INCL vars
+   016   auk5.a         Valid single key after SQLWHR subsetting
+   017   auk5.b         Invalid single key after SQLWHR subsetting
+   018   auk5.c         Valid set of keys after SQLWHR subsetting
+   019   auk5.d         Invalid set of keys after SQLWHR subsetting

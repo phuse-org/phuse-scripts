@@ -1,0 +1,16 @@
+                                                                                                                                                                                                                         18:33 Wednesday, September 23, 2015   1
+
+### -----
+###
+### UTIL_ACCESS_TEST_DATA Overall: ALL TESTS PASSED - 8
+###
+### -----
+
+   001   atd.1.a.1      Error: Valid XPORT,  Invalid DS, remote XPT
+   002   atd.1.a.2      Error: Valid XPORT,  Invalid DS, local XPT
+   003   atd.1.b.1      Error: Invalid XPORT, remote XPT
+   004   atd.1.b.2      Error: Invalid XPORT, local XPT
+   005   atd.2.a.1      Access same-named data set
+   006   atd.2.a.2      Access local same-named data set
+   007   atd.2.b.1      Access other-named data set
+   008   atd.2.b.2      Access local other-named data set

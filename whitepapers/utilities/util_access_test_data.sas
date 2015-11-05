@@ -1,7 +1,7 @@
 /*** Access PhUSE/CSS test data
 
   See explaination in the PhUSE Wiki of this FILENAME/LIBNAME access to XPORT files
-    http://www.phusewiki.org/wiki/index.php?title=Scriptathon_2014_Code_for_Retreiving_Inputs
+    http://www.phusewiki.org/wiki/index.php?title=WG5_Code_to_Retrieve_CSS/PhUSE_Test_Data
 
   Some users are not able to access these xport archives directly, but are still able to
   download data sets to a local folder. These users can specify a local folder, to override
@@ -59,6 +59,11 @@
   data css_&ds;
     set source.&ds;
   run;
+
+  %if &SYSERR ne 0 %then %do;
+    %put ERROR: (UTIL_ACCESS_TEST_DATA) Please confirm that data set %upcase(&DS) exists in transport file %upcase(&XPORT).;
+    %util_delete_dsets(css_&ds)
+  %end;
 
   filename source clear;
   libname source clear;

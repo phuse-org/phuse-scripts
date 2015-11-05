@@ -11,7 +11,9 @@
 
 *--- SETUP ---*;
 
-  %put WARNING: (TEST_ASSERT_COMPLETE_REFDS) User must ensure PhUSE/CSS utilities are in the AUTOCALL path.;
+  %let macroname = ASSERT_COMPLETE_REFDS;
+
+  %put WARNING: (TEST_%upcase(&macroname)) User must ensure PhUSE/CSS utilities are in the AUTOCALL path.;
 
   /*** EXECUTE ONE TIME only as needed
 
@@ -26,32 +28,35 @@
   *--- SAVE TEST RESULTS as XML filename  ---*;
   *--- NB: if this filename is blank, do NOT save xml test results ---*;
 
-    %let XML_FILENAME = .\outputs_sas\testresults_assert_complete_refds.xml;
+    %let XML_FILENAME = .\outputs_sas\testresults_%lowcase(&macroname).xml;
 
+
+*--- Test Definitions  ---*;
+  *--- Full Specs for test definitions: https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/utilities/util_passfail.sas ---*;
 
 *--- Test 1 - Single key (merge) variable, either NUM or CHAR ---*;
 
   proc sql;
     create table my_test_definitions
       (  test_mac        char(32) label='Name of macro to test'
-       , test_id         char(15) label='Test ID for ASSERT_COMPLETE_REFDS'
+       , test_id         char(15) label='Test ID for %upcase(&macroname)'
        , test_dsc        char(80) label='Test Description'
        , test_type       char(5)  label='Test Type (Macro var, String-<B|C|L|T>, Data set, In data step)'
-       , pparm_dsets     char(50) label='Test values for the positional parameter PNUM'
-       , pparm_keys      char(50) label='Test values for the keyword parameter KNUM'
-       , test_expect     char(50) label='EXPECTED test results for each call to ASSERT_COMPLETE_REFDS'
+       , pparm_dsets     char(50) label='Test values for the positional parameter DSETS'
+       , pparm_keys      char(50) label='Test values for the keyword parameter KEYS'
+       , test_expect     char(50) label='EXPECTED test results for each call to %upcase(&macroname)'
        , test_expect_sym char(15) label='TEST_PDLIM-delim Name=Value pairs of EXPECTED global syms created'
       )
     ;
 
     insert into my_test_definitions
-      values('assert_complete_refds', 'refds_01_a_i', 'single num key, single related dset, extra REF rec allowed',
+      values("%lowcase(&macroname)", 'refds_01_a_i', 'single num key, single related dset, extra REF rec allowed',
              'D', 'my_reference my_related', 'my_key', '-fail_crds', 'continue=1')
-      values('assert_complete_refds', 'refds_01_a_ii', 'single num key, single related dset, extra REL rec NOT allowed',
+      values("%lowcase(&macroname)", 'refds_01_a_ii', 'single num key, single related dset, extra REL rec NOT allowed',
              'D', 'my_reference my_related_extra', 'my_key', 'exp_fail_crds_1aii=fail_crds', 'continue=0')
-      values('assert_complete_refds', 'refds_01_b_i', 'single char key, single related dset, extra REF rec allowed',
+      values("%lowcase(&macroname)", 'refds_01_b_i', 'single char key, single related dset, extra REF rec allowed',
              'D', 'my_reference_c my_related_c', 'my_char_key', '-fail_crds', 'continue=1')
-      values('assert_complete_refds', 'refds_01_b_ii', 'single char key, single related dset, extra REL rec NOT allowed',
+      values("%lowcase(&macroname)", 'refds_01_b_ii', 'single char key, single related dset, extra REL rec NOT allowed',
              'D', 'my_reference_c my_related_extra_c', 'my_char_key', 'exp_fail_crds_1bii=fail_crds', 'continue=0')
 
     ;
@@ -129,9 +134,9 @@
     proc sql;
 
       insert into my_test_definitions
-        values('assert_complete_refds', 'refds_02_a', 'multiple-key, three related dsets, extra REF rec allowed',
+        values("%lowcase(&macroname)", 'refds_02_a', 'multiple-key, three related dsets, extra REF rec allowed',
                'D', 'my_ref_2 my_lb my_vs my_ecg', 'num_key key_char key3', '-fail_crds', 'continue=1')
-        values('assert_complete_refds', 'refds_02_b', 'multiple-key, three related dsets, extra REL rec NOT allowed',
+        values("%lowcase(&macroname)", 'refds_02_b', 'multiple-key, three related dsets, extra REL rec NOT allowed',
                'D', 'my_ref_2 my_lb_ext my_vs_ext my_ecg_ext', 'num_key key_char key3', 'exp_fail_crds_2b=fail_crds', 'continue=0')
 
       ;

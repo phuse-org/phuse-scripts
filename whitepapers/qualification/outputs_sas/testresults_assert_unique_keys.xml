@@ -1,0 +1,364 @@
+<?xml version="1.0" encoding="windows-1252" ?>
+<TABLE>
+   <CSS_PASSFAIL>
+      <test_mac> assert_unique_keys </test_mac>
+      <test_id> auk1.a.1 </test_id>
+      <test_dsc> NULL dset name </test_dsc>
+      <Pparm_DS> _NULLPARM_ </Pparm_DS>
+      <Pparm_KEYS> var1 var2 </Pparm_KEYS>
+      <Kparm_INCL> var3 </Kparm_INCL>
+      <Kparm_SQLWHR missing=" " />
+      <test_expect> -work.fail_auk </test_expect>
+      <test_expect_sym> CONTINUE=0 </test_expect_sym>
+      <test_result> -work.fail_auk </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_result_sym> CONTINUE=0 </test_result_sym>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_unique_keys(  , var1 var2, INCL=var3) </macro_call_1>
+      <test_type> D </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_unique_keys </test_mac>
+      <test_id> auk1.a.2 </test_id>
+      <test_dsc> Invalid dset name </test_dsc>
+      <Pparm_DS> Work.Dne </Pparm_DS>
+      <Pparm_KEYS> var1 var2 </Pparm_KEYS>
+      <Kparm_INCL missing=" " />
+      <Kparm_SQLWHR missing=" " />
+      <test_expect> -work.fail_auk </test_expect>
+      <test_expect_sym> CONTINUE=0 </test_expect_sym>
+      <test_result> -work.fail_auk </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_result_sym> CONTINUE=0 </test_result_sym>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_unique_keys( Work.Dne, var1 var2) </macro_call_1>
+      <test_type> D </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_unique_keys </test_mac>
+      <test_id> auk1.a.3.i </test_id>
+      <test_dsc> Invalid truncated dset name </test_dsc>
+      <Pparm_DS> SAShelp.CLAS </Pparm_DS>
+      <Pparm_KEYS> name </Pparm_KEYS>
+      <Kparm_INCL> sex age </Kparm_INCL>
+      <Kparm_SQLWHR missing=" " />
+      <test_expect> -work.fail_auk </test_expect>
+      <test_expect_sym> CONTINUE=0 </test_expect_sym>
+      <test_result> -work.fail_auk </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_result_sym> CONTINUE=0 </test_result_sym>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_unique_keys( SAShelp.CLAS, name, INCL=sex age) </macro_call_1>
+      <test_type> D </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_unique_keys </test_mac>
+      <test_id> auk1.a.3.ii </test_id>
+      <test_dsc> Invalid dset name with partial match </test_dsc>
+      <Pparm_DS> WORK.CSS_CLASSes </Pparm_DS>
+      <Pparm_KEYS> name sex </Pparm_KEYS>
+      <Kparm_INCL> age </Kparm_INCL>
+      <Kparm_SQLWHR missing=" " />
+      <test_expect> -work.fail_auk </test_expect>
+      <test_expect_sym> CONTINUE=0 </test_expect_sym>
+      <test_result> -work.fail_auk </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_result_sym> CONTINUE=0 </test_result_sym>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_unique_keys( WORK.CSS_CLASSes, name sex, INCL=age) </macro_call_1>
+      <test_type> D </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_unique_keys </test_mac>
+      <test_id> auk1.b.1 </test_id>
+      <test_dsc> NULL keys </test_dsc>
+      <Pparm_DS> ClassES </Pparm_DS>
+      <Pparm_KEYS> _NULLPARM_ </Pparm_KEYS>
+      <Kparm_INCL missing=" " />
+      <Kparm_SQLWHR missing=" " />
+      <test_expect> -work.fail_auk </test_expect>
+      <test_expect_sym> CONTINUE=0 </test_expect_sym>
+      <test_result> -work.fail_auk </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_result_sym> CONTINUE=0 </test_result_sym>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_unique_keys( ClassES,  ) </macro_call_1>
+      <test_type> D </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_unique_keys </test_mac>
+      <test_id> auk1.b.2 </test_id>
+      <test_dsc> Invalid single key </test_dsc>
+      <Pparm_DS> sasHelp.Class </Pparm_DS>
+      <Pparm_KEYS> nam </Pparm_KEYS>
+      <Kparm_INCL> sex age </Kparm_INCL>
+      <Kparm_SQLWHR missing=" " />
+      <test_expect> -work.fail_auk </test_expect>
+      <test_expect_sym> CONTINUE=0 </test_expect_sym>
+      <test_result> -work.fail_auk </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_result_sym> CONTINUE=0 </test_result_sym>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_unique_keys( sasHelp.Class, nam, INCL=sex age) </macro_call_1>
+      <test_type> D </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_unique_keys </test_mac>
+      <test_id> auk1.b.3 </test_id>
+      <test_dsc> Invalid multiple keys </test_dsc>
+      <Pparm_DS> Work.CLASSes </Pparm_DS>
+      <Pparm_KEYS> nam gender </Pparm_KEYS>
+      <Kparm_INCL> age </Kparm_INCL>
+      <Kparm_SQLWHR missing=" " />
+      <test_expect> -work.fail_auk </test_expect>
+      <test_expect_sym> CONTINUE=0 </test_expect_sym>
+      <test_result> -work.fail_auk </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_result_sym> CONTINUE=0 </test_result_sym>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_unique_keys( Work.CLASSes, nam gender, INCL=age) </macro_call_1>
+      <test_type> D </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_unique_keys </test_mac>
+      <test_id> auk1.c.1 </test_id>
+      <test_dsc> Invalid single INCL var </test_dsc>
+      <Pparm_DS> worK.ClassES </Pparm_DS>
+      <Pparm_KEYS> name sex </Pparm_KEYS>
+      <Kparm_INCL> ag </Kparm_INCL>
+      <Kparm_SQLWHR missing=" " />
+      <test_expect> -work.fail_auk </test_expect>
+      <test_expect_sym> CONTINUE=0 </test_expect_sym>
+      <test_result> -work.fail_auk </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_result_sym> CONTINUE=0 </test_result_sym>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_unique_keys( worK.ClassES, name sex, INCL=ag) </macro_call_1>
+      <test_type> D </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_unique_keys </test_mac>
+      <test_id> auk1.c.2 </test_id>
+      <test_dsc> Invalid multiple INCL vars </test_dsc>
+      <Pparm_DS> sasHelp.Class </Pparm_DS>
+      <Pparm_KEYS> name </Pparm_KEYS>
+      <Kparm_INCL> gender aged </Kparm_INCL>
+      <Kparm_SQLWHR missing=" " />
+      <test_expect> -work.fail_auk </test_expect>
+      <test_expect_sym> CONTINUE=0 </test_expect_sym>
+      <test_result> -work.fail_auk </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_result_sym> CONTINUE=0 </test_result_sym>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_unique_keys( sasHelp.Class, name, INCL=gender aged) </macro_call_1>
+      <test_type> D </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_unique_keys </test_mac>
+      <test_id> auk2.a </test_id>
+      <test_dsc> Unique single key </test_dsc>
+      <Pparm_DS> SasHelp.Class </Pparm_DS>
+      <Pparm_KEYS> name </Pparm_KEYS>
+      <Kparm_INCL missing=" " />
+      <Kparm_SQLWHR missing=" " />
+      <test_expect> -fail_auk </test_expect>
+      <test_expect_sym> CONTINUE=1 </test_expect_sym>
+      <test_result> -fail_auk </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_result_sym> CONTINUE=1 </test_result_sym>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_unique_keys( SasHelp.Class, name) </macro_call_1>
+      <test_type> D </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_unique_keys </test_mac>
+      <test_id> auk2.b </test_id>
+      <test_dsc> Non-unique single key FAILS </test_dsc>
+      <Pparm_DS> classes </Pparm_DS>
+      <Pparm_KEYS> name </Pparm_KEYS>
+      <Kparm_INCL missing=" " />
+      <Kparm_SQLWHR missing=" " />
+      <test_expect> fail_auk2_b=fail_auk </test_expect>
+      <test_expect_sym> CONTINUE=0 </test_expect_sym>
+      <test_result> fail_auk2_b=fail_auk </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_result_sym> CONTINUE=0 </test_result_sym>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_unique_keys( classes, name) </macro_call_1>
+      <test_type> D </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_unique_keys </test_mac>
+      <test_id> auk3.a </test_id>
+      <test_dsc> Unique set of keys </test_dsc>
+      <Pparm_DS> Classes </Pparm_DS>
+      <Pparm_KEYS> name sex </Pparm_KEYS>
+      <Kparm_INCL missing=" " />
+      <Kparm_SQLWHR missing=" " />
+      <test_expect> -fail_auk </test_expect>
+      <test_expect_sym> CONTINUE=1 </test_expect_sym>
+      <test_result> -fail_auk </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_result_sym> CONTINUE=1 </test_result_sym>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_unique_keys( Classes, name sex) </macro_call_1>
+      <test_type> D </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_unique_keys </test_mac>
+      <test_id> auk3.b </test_id>
+      <test_dsc> Non-unique set of keys FAILS </test_dsc>
+      <Pparm_DS> Work.Classes </Pparm_DS>
+      <Pparm_KEYS> name age </Pparm_KEYS>
+      <Kparm_INCL missing=" " />
+      <Kparm_SQLWHR missing=" " />
+      <test_expect> fail_auk3_b=fail_auk </test_expect>
+      <test_expect_sym> CONTINUE=0 </test_expect_sym>
+      <test_result> fail_auk3_b=fail_auk </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_result_sym> CONTINUE=0 </test_result_sym>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_unique_keys( Work.Classes, name age) </macro_call_1>
+      <test_type> D </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_unique_keys </test_mac>
+      <test_id> auk4.a </test_id>
+      <test_dsc> &#x4E;&#x6F;&#x6E;&#x2D;&#x75;&#x6E;&#x69;&#x71;&#x75;&#x65;&#x20;&#x73;&#x69;&#x6E;&#x67;&#x6C;&#x65;&#x20;&#x6B;&#x65;&#x79;&#x20;&#x46;&#x41;&#x49;&#x4C;&#x53;&#x20;&#x26;&#x20;&#x72;&#x65;&#x74;&#x75;&#x72;&#x6E;&#x73;&#x20;&#x65;&#x78;&#x74;&#x72;&#x61;&#x20;&#x49;&#x4E;&#x43;&#x4C;&#x20;&#x76;&#x61;&#x72;&#x73; </test_dsc>
+      <Pparm_DS> classes </Pparm_DS>
+      <Pparm_KEYS> name </Pparm_KEYS>
+      <Kparm_INCL> sex source </Kparm_INCL>
+      <Kparm_SQLWHR missing=" " />
+      <test_expect> fail_auk4_a=fail_auk </test_expect>
+      <test_expect_sym> CONTINUE=0 </test_expect_sym>
+      <test_result> fail_auk4_a=fail_auk </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_result_sym> CONTINUE=0 </test_result_sym>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_unique_keys( classes, name, INCL=sex source) </macro_call_1>
+      <test_type> D </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_unique_keys </test_mac>
+      <test_id> auk4.b </test_id>
+      <test_dsc> &#x4E;&#x6F;&#x6E;&#x2D;&#x75;&#x6E;&#x69;&#x71;&#x75;&#x65;&#x20;&#x73;&#x65;&#x74;&#x20;&#x6F;&#x66;&#x20;&#x6B;&#x65;&#x79;&#x73;&#x20;&#x46;&#x41;&#x49;&#x4C;&#x53;&#x20;&#x26;&#x20;&#x72;&#x65;&#x74;&#x75;&#x72;&#x6E;&#x73;&#x20;&#x65;&#x78;&#x74;&#x72;&#x61;&#x20;&#x49;&#x4E;&#x43;&#x4C;&#x20;&#x76;&#x61;&#x72;&#x73; </test_dsc>
+      <Pparm_DS> Work.Classes </Pparm_DS>
+      <Pparm_KEYS> name age </Pparm_KEYS>
+      <Kparm_INCL> source </Kparm_INCL>
+      <Kparm_SQLWHR missing=" " />
+      <test_expect> fail_auk4_b=fail_auk </test_expect>
+      <test_expect_sym> CONTINUE=0 </test_expect_sym>
+      <test_result> fail_auk4_b=fail_auk </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_result_sym> CONTINUE=0 </test_result_sym>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_unique_keys( Work.Classes, name age, INCL=source) </macro_call_1>
+      <test_type> D </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_unique_keys </test_mac>
+      <test_id> auk5.a </test_id>
+      <test_dsc> Valid single key after SQLWHR subsetting </test_dsc>
+      <Pparm_DS> Work.Classes </Pparm_DS>
+      <Pparm_KEYS> name </Pparm_KEYS>
+      <Kparm_INCL missing=" " />
+      <Kparm_SQLWHR> &#x77;&#x68;&#x65;&#x72;&#x65;&#x20;&#x73;&#x6F;&#x75;&#x72;&#x63;&#x65;&#x3D;&#x22;&#x53;&#x41;&#x53;&#x48;&#x45;&#x4C;&#x50;&#x22; </Kparm_SQLWHR>
+      <test_expect> -work.fail_auk </test_expect>
+      <test_expect_sym> CONTINUE=1 </test_expect_sym>
+      <test_result> -work.fail_auk </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_result_sym> CONTINUE=1 </test_result_sym>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> &#x25;&#x61;&#x73;&#x73;&#x65;&#x72;&#x74;&#x5F;&#x75;&#x6E;&#x69;&#x71;&#x75;&#x65;&#x5F;&#x6B;&#x65;&#x79;&#x73;&#x28;&#x20;&#x57;&#x6F;&#x72;&#x6B;&#x2E;&#x43;&#x6C;&#x61;&#x73;&#x73;&#x65;&#x73;&#x2C;&#x20;&#x6E;&#x61;&#x6D;&#x65;&#x2C;&#x20;&#x53;&#x51;&#x4C;&#x57;&#x48;&#x52;&#x3D;&#x77;&#x68;&#x65;&#x72;&#x65;&#x20;&#x73;&#x6F;&#x75;&#x72;&#x63;&#x65;&#x3D;&#x22;&#x53;&#x41;&#x53;&#x48;&#x45;&#x4C;&#x50;&#x22;&#x29; </macro_call_1>
+      <test_type> D </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_unique_keys </test_mac>
+      <test_id> auk5.b </test_id>
+      <test_dsc> Invalid single key after SQLWHR subsetting </test_dsc>
+      <Pparm_DS> Work.Classes </Pparm_DS>
+      <Pparm_KEYS> name </Pparm_KEYS>
+      <Kparm_INCL missing=" " />
+      <Kparm_SQLWHR> &#x77;&#x68;&#x65;&#x72;&#x65;&#x20;&#x68;&#x65;&#x69;&#x67;&#x68;&#x74;&#x20;&#x3C;&#x20;&#x36;&#x34; </Kparm_SQLWHR>
+      <test_expect> fail_auk5_b=work.fail_auk </test_expect>
+      <test_expect_sym> CONTINUE=0 </test_expect_sym>
+      <test_result> fail_auk5_b=work.fail_auk </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_result_sym> CONTINUE=0 </test_result_sym>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> &#x25;&#x61;&#x73;&#x73;&#x65;&#x72;&#x74;&#x5F;&#x75;&#x6E;&#x69;&#x71;&#x75;&#x65;&#x5F;&#x6B;&#x65;&#x79;&#x73;&#x28;&#x20;&#x57;&#x6F;&#x72;&#x6B;&#x2E;&#x43;&#x6C;&#x61;&#x73;&#x73;&#x65;&#x73;&#x2C;&#x20;&#x6E;&#x61;&#x6D;&#x65;&#x2C;&#x20;&#x53;&#x51;&#x4C;&#x57;&#x48;&#x52;&#x3D;&#x77;&#x68;&#x65;&#x72;&#x65;&#x20;&#x68;&#x65;&#x69;&#x67;&#x68;&#x74;&#x20;&#x3C;&#x20;&#x36;&#x34;&#x29; </macro_call_1>
+      <test_type> D </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_unique_keys </test_mac>
+      <test_id> auk5.c </test_id>
+      <test_dsc> Valid set of keys after SQLWHR subsetting </test_dsc>
+      <Pparm_DS> classes_dup </Pparm_DS>
+      <Pparm_KEYS> name sex </Pparm_KEYS>
+      <Kparm_INCL missing=" " />
+      <Kparm_SQLWHR> where copy = 1 </Kparm_SQLWHR>
+      <test_expect> -FAIL_AUK </test_expect>
+      <test_expect_sym> continue=1 </test_expect_sym>
+      <test_result> -FAIL_AUK </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_result_sym> continue=1 </test_result_sym>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_unique_keys( classes_dup, name sex, SQLWHR=where copy = 1) </macro_call_1>
+      <test_type> D </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_unique_keys </test_mac>
+      <test_id> auk5.d </test_id>
+      <test_dsc> Invalid set of keys after SQLWHR subsetting </test_dsc>
+      <Pparm_DS> classes_DUP </Pparm_DS>
+      <Pparm_KEYS> name sex </Pparm_KEYS>
+      <Kparm_INCL missing=" " />
+      <Kparm_SQLWHR> &#x77;&#x68;&#x65;&#x72;&#x65;&#x20;&#x61;&#x67;&#x65;&#x20;&#x3C;&#x20;&#x31;&#x33; </Kparm_SQLWHR>
+      <test_expect> fail_auk5_d=work.fail_auk </test_expect>
+      <test_expect_sym> continue=0 </test_expect_sym>
+      <test_result> fail_auk5_d=work.fail_auk </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_result_sym> continue=0 </test_result_sym>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> &#x25;&#x61;&#x73;&#x73;&#x65;&#x72;&#x74;&#x5F;&#x75;&#x6E;&#x69;&#x71;&#x75;&#x65;&#x5F;&#x6B;&#x65;&#x79;&#x73;&#x28;&#x20;&#x63;&#x6C;&#x61;&#x73;&#x73;&#x65;&#x73;&#x5F;&#x44;&#x55;&#x50;&#x2C;&#x20;&#x6E;&#x61;&#x6D;&#x65;&#x20;&#x73;&#x65;&#x78;&#x2C;&#x20;&#x53;&#x51;&#x4C;&#x57;&#x48;&#x52;&#x3D;&#x77;&#x68;&#x65;&#x72;&#x65;&#x20;&#x61;&#x67;&#x65;&#x20;&#x3C;&#x20;&#x31;&#x33;&#x29; </macro_call_1>
+      <test_type> D </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+</TABLE>

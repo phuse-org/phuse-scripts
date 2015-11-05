@@ -1,0 +1,765 @@
+1                                         The SAS System       18:33 Wednesday, September 23, 2015
+
+NOTE: Copyright (c) 2002-2008 by SAS Institute Inc., Cary, NC, USA. 
+NOTE: SAS (r) Proprietary Software 9.2 (TS2M3) 
+      Licensed to F. HOFFMANN LA ROCHE AG, Site 50701490.
+NOTE: This session is executing on the X64_VSPRO  platform.
+
+
+
+NOTE: SAS initialization used:
+      real time           2.32 seconds
+      cpu time            0.84 seconds
+      
+1          /***
+2            Qualification tests for PhUSE/CSS utility macro UTIL_ACCESS_TEST_DATA
+3          
+4            SETUP:  Ensure that PhUSE/CSS utilities are in the AUTOCALL path
+5          
+6            TEST PLAN:
+7            https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/qualification/test
+7        ! plan_util_access_test_data.docx
+8          
+9          ***/
+10         
+11         
+12         *--- SETUP ---*;
+13         
+14           %let macroname = UTIL_ACCESS_TEST_DATA;
+15         
+16           %put WARNING: (TEST_%upcase(&macroname)) User must ensure PhUSE/CSS utilities are in
+16       ! the AUTOCALL path.;
+WARNING: (TEST_UTIL_ACCESS_TEST_DATA) User must ensure PhUSE/CSS utilities are in the AUTOCALL 
+path.
+17         
+18             OPTIONS mrecall sasautos=(%sysfunc(getoption(sasautos)) "C:\CSS\phuse-scripts\whitepapers\utilities") ls=max ps=max;
+19           /*** EXECUTE ONE TIME only as needed
+20         
+21             Ensure PhUSE/CSS utilities are in the AUTOCALL path
+22             NB: This line is not necessary if PhUSE/CSS utilities are in your default AUTOCALL paths
+23         
+24             OPTIONS mrecall sasautos=(%sysfunc(getoption(sasautos)) "C:\CSS\phuse-scripts\whitepapers\utilities") ls=max ps=max;
+25         
+26           ***/
+27         
+28         
+29           *--- SAVE TEST RESULTS as XML filename  ---*;
+30           *--- NB: if this filename is blank, do NOT save xml test results ---*;
+31         
+32             %let XML_FILENAME = .\outputs_sas\testresults_%lowcase(&macroname).xml;
+33         
+34         
+35         *--- Test Definitions  ---*;
+36           *--- Full Specs for test definitions: https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/utilities/util_passfail.sas ---*;
+37         
+38           proc sql;
+39             create table my_test_definitions
+40               (  test_mac        char(32) label='Name of macro to test'
+41                , test_id         char(15) label="Test ID for %upcase(&macroname)"
+42                , test_dsc        char(80) label='Test Description'
+43         
+44                , test_type       char(5)  label='Test Type (Macro var, String-<B|C|L|T>, Data set, In data step)'
+45                , pparm_DS        char(32) label='Test values for the Positional parameter DS'
+46                , kparm_XPORT     char(32) label='Test values for the Keyword parameter XPORT'
+47                , kparm_LOCAL     char(75) label='Test values for the Keyword parameter LOCAL'
+48         
+49                , test_expect     char(50) label="EXPECTED test results for each call to %upcase(&macroname)"
+50               )
+51             ;
+NOTE: Table WORK.MY_TEST_DEFINITIONS created, with 0 rows and 8 columns.
+52         
+53             insert into my_test_definitions
+54               values("%lowcase(&macroname)", 'atd.1.a.1', 'Error: Valid XPORT,  Invalid DS, remote XPT',
+55                      'D', 'dset_dne', 'test',  ''                                 '-css_dset_dne')
+56               values("%lowcase(&macroname)", 'atd.1.a.2', 'Error: Valid XPORT,  Invalid DS, local XPT',
+57                      'D', 'dset_dne', 'test',  "%str(%sysfunc(pathname(WORK))/)"  '-css_dset_dne')
+58               values("%lowcase(&macroname)", 'atd.1.b.1', 'Error: Invalid XPORT, remote XPT',
+59                      'D', 'xpt_dne', '',       ''                                 '-css_xpt_dne')
+60               values("%lowcase(&macroname)", 'atd.1.b.2', 'Error: Invalid XPORT, local XPT',
+61                      'D', 'xpt_dne', '',       "%str(%sysfunc(pathname(WORK))/)"  '-css_xpt_dne')
+62         
+63               values("%lowcase(&macroname)", 'atd.2.a.1', 'Access same-named data set',
+64                      'D', 'test', '',     ''                                 'expect_test=css_test')
+65               values("%lowcase(&macroname)", 'atd.2.a.2', 'Access local same-named data set',
+66                      'D', 'test', '',     "%str(%sysfunc(pathname(WORK))/)"  'expect_test=css_test')
+67               values("%lowcase(&macroname)", 'atd.2.b.1', 'Access other-named data set',
+68                      'D', 'demo', 'test', ''                                 'expect_demo=css_demo')
+69               values("%lowcase(&macroname)", 'atd.2.b.2', 'Access local other-named data set',
+70                      'D', 'demo', 'test', "%str(%sysfunc(pathname(WORK))/)"  'expect_demo=css_demo')
+71         
+72             /***
+73               values("%lowcase(&macroname)", '', '',   'D', '', '', ''   '')
+74               values("%lowcase(&macroname)", '', '',   'D', '', '', ''   '')
+75               values("%lowcase(&macroname)", '', '',   'D', '', '', ''   '')
+76             ***/
+77         
+78             ;
+NOTE: 8 rows were inserted into WORK.MY_TEST_DEFINITIONS.
+
+79           quit;
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.06 seconds
+      cpu time            0.06 seconds
+      
+
+80         
+81         
+82         *--- Setup test environment here (dsets, macro vars, etc) ---*;
+83           *--- Create a small XPT containing 2 data sets. Store in central location of CSS/PhUSE test data ---*;
+84             %util_access_test_data(adsl);
+NOTE: Libref SOURCE was successfully assigned as follows: 
+      Engine:        XPORT 
+      Physical Name: https://raw.github.com/phuse-org/phuse-scripts/master/scriptathon2014/data/adsl.xpt
+
+NOTE: There were 254 observations read from the data set SOURCE.ADSL.
+NOTE: The data set WORK.CSS_ADSL has 254 observations and 48 variables.
+NOTE: DATA statement used (Total process time):
+      real time           10.09 seconds
+      cpu time            0.10 seconds
+      
+
+NOTE: Fileref SOURCE has been deassigned.
+NOTE: Libref SOURCE has been deassigned.
+85         
+86           *--- NB: IF YOU CHANGE THIS DATA SET, you need to also change the XPT in the central location ---*;
+87             data test (keep=studyid usubjid arm saffl ittfl)
+88                  demo (keep=studyid usubjid arm age race sex);
+89               set css_adsl (keep=studyid usubjid arm saffl ittfl age race sex);
+90               retain reference 'http://www.theonion.com/article/fda-approves-sale-of-prescription-placebo-1606';
+91         
+92               if _n_ > 5 then delete;
+93               if arm =: 'Xanomeline' then substr(arm,1,10) = 'Sucrosa';
+94               arm = compbl(arm);
+95             run;
+
+NOTE: There were 254 observations read from the data set WORK.CSS_ADSL.
+NOTE: The data set WORK.TEST has 5 observations and 5 variables.
+NOTE: The data set WORK.DEMO has 5 observations and 6 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.05 seconds
+      cpu time            0.01 seconds
+      
+
+96         
+97           /*** XPORT format for central test data repository
+98            The following XPORT container, including 2 data sets, should be on the CSS/PhUSE central test data repository
+99            ***/
+100        
+101            libname csstest xport "%sysfunc(pathname(WORK))/test.xpt";
+NOTE: Libref CSSTEST was successfully assigned as follows: 
+      Engine:        XPORT 
+      Physical Name: C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD5928\test.xpt
+102            proc copy in=work out=csstest memtype=data;
+103               select test demo;
+104            run;
+
+NOTE: Copying WORK.TEST to CSSTEST.TEST (memtype=DATA).
+NOTE: There were 5 observations read from the data set WORK.TEST.
+NOTE: The data set CSSTEST.TEST has 5 observations and 5 variables.
+NOTE: Copying WORK.DEMO to CSSTEST.DEMO (memtype=DATA).
+NOTE: There were 5 observations read from the data set WORK.DEMO.
+NOTE: The data set CSSTEST.DEMO has 5 observations and 6 variables.
+NOTE: PROCEDURE COPY used (Total process time):
+      real time           0.07 seconds
+      cpu time            0.07 seconds
+      
+
+105            libname csstest clear;
+NOTE: Libref CSSTEST has been deassigned.
+106        
+107        
+108        *--- Create EXPECTED test results ---*;
+109          data _null_;
+110            rc = rename('test', 'expect_test', 'data');
+111            rc = rename('demo', 'expect_demo', 'data');
+112          run;
+
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.03 seconds
+      
+
+113        
+114        *--- Execute & evaluate tests, and report & store test results ---*;
+115        
+116          *--- DISABLE syntax check mode, which otherwise stops processing after 1st invalid dset name ---*;
+117          options NOSYNTAXCHECK;
+118        
+119          %util_passfail (my_test_definitions, savexml=&xml_filename, debug=N);
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: There were 8 observations read from the data set WORK.MY_TEST_DEFINITIONS.
+NOTE: The data set WORK.CSS_PASSFAIL has 8 observations and 11 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE (BUILD_MACRO_CALLS): > atd.1.a.1 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %util_access_test_data( dset_dne, XPORT=test)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > atd.1.a.2 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %util_access_test_data( dset_dne, XPORT=test, LOCAL=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD5928/)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > atd.1.b.1 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %util_access_test_data( xpt_dne)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > atd.1.b.2 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %util_access_test_data( xpt_dne, LOCAL=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD5928/)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > atd.2.a.1 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %util_access_test_data( test)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > atd.2.a.2 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %util_access_test_data( test, LOCAL=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD5928/)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > atd.2.b.1 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %util_access_test_data( demo, XPORT=test)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > atd.2.b.2 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %util_access_test_data( demo, XPORT=test, LOCAL=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD5928/)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE: There were 8 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 8 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: There were 1 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+      
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD5928\#LN00007,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=23Sep2015:18:33:27,
+      Create Time=23Sep2015:18:33:27
+
+NOTE: 1 record was written to the file PFEXCODE.
+      The minimum record length was 45.
+      The maximum record length was 45.
+NOTE: There were 8 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 8 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+NOTE: Libref SOURCE was successfully assigned as follows: 
+      Engine:        XPORT 
+      Physical Name: https://raw.github.com/phuse-org/phuse-scripts/master/scriptathon2014/data/test.xpt
+ERROR: File SOURCE.DSET_DNE.DATA does not exist.
+
+NOTE: The SAS System stopped processing this step because of errors.
+WARNING: The data set WORK.CSS_DSET_DNE may be incomplete.  When this step was stopped there were 0 observations and 0 variables.
+NOTE: DATA statement used (Total process time):
+      real time           9.79 seconds
+      cpu time            0.10 seconds
+      
+
+ERROR: (UTIL_ACCESS_TEST_DATA) Please confirm that data set DSET_DNE exists in transport file TEST.
+
+NOTE: Deleting WORK.CSS_DSET_DNE (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+NOTE: Fileref SOURCE has been deassigned.
+NOTE: Libref SOURCE has been deassigned.
+
+NOTE: There were 8 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 8 observations rewritten, 0 observations added and 0 observations deleted.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD5928\#LN00007,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=23Sep2015:18:33:37,
+      Create Time=23Sep2015:18:33:27
+
+NOTE: 1 record was written to the file PFEXCODE.
+      The minimum record length was 118.
+      The maximum record length was 118.
+NOTE: There were 8 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 8 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.01 seconds
+      
+
+NOTE: Libref SOURCE was successfully assigned as follows: 
+      Engine:        XPORT 
+      Physical Name: C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD5928\test.xpt
+ERROR: File SOURCE.DSET_DNE.DATA does not exist.
+
+NOTE: The SAS System stopped processing this step because of errors.
+WARNING: The data set WORK.CSS_DSET_DNE may be incomplete.  When this step was stopped there were 0 observations and 0 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.01 seconds
+      
+
+ERROR: (UTIL_ACCESS_TEST_DATA) Please confirm that data set DSET_DNE exists in transport file TEST.
+
+NOTE: Deleting WORK.CSS_DSET_DNE (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: Fileref SOURCE has been deassigned.
+NOTE: Libref SOURCE has been deassigned.
+
+NOTE: There were 8 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 8 observations rewritten, 0 observations added and 0 observations deleted.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD5928\#LN00007,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=23Sep2015:18:33:37,
+      Create Time=23Sep2015:18:33:27
+
+NOTE: 1 record was written to the file PFEXCODE.
+      The minimum record length was 32.
+      The maximum record length was 32.
+NOTE: There were 8 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 8 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+      
+
+NOTE: Libref SOURCE was successfully assigned as follows: 
+      Engine:        XPORT 
+      Physical Name: https://raw.github.com/phuse-org/phuse-scripts/master/scriptathon2014/data/xpt_dne.xpt
+ERROR: Invalid reply received from the HTTP server. Use the debug option for more info.
+
+NOTE: The SAS System stopped processing this step because of errors.
+WARNING: The data set WORK.CSS_XPT_DNE may be incomplete.  When this step was stopped there were 0 observations and 0 variables.
+NOTE: DATA statement used (Total process time):
+      real time           9.71 seconds
+      cpu time            0.03 seconds
+      
+
+ERROR: (UTIL_ACCESS_TEST_DATA) Please confirm that data set XPT_DNE exists in transport file XPT_DNE.
+
+NOTE: Deleting WORK.CSS_XPT_DNE (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.03 seconds
+      
+
+NOTE: Fileref SOURCE has been deassigned.
+NOTE: Libref SOURCE has been deassigned.
+
+NOTE: There were 8 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 8 observations rewritten, 0 observations added and 0 observations deleted.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.01 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD5928\#LN00007,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=23Sep2015:18:33:47,
+      Create Time=23Sep2015:18:33:27
+
+NOTE: 1 record was written to the file PFEXCODE.
+      The minimum record length was 105.
+      The maximum record length was 105.
+NOTE: There were 8 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 8 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: Libref SOURCE was successfully assigned as follows: 
+      Engine:        XPORT 
+      Physical Name: C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD5928\xpt_dne.xpt
+ERROR: Physical file does not exist, C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD5928\xpt_dne.xpt.
+
+NOTE: The SAS System stopped processing this step because of errors.
+WARNING: The data set WORK.CSS_XPT_DNE may be incomplete.  When this step was stopped there were 0 observations and 0 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+ERROR: (UTIL_ACCESS_TEST_DATA) Please confirm that data set XPT_DNE exists in transport file XPT_DNE.
+
+NOTE: Deleting WORK.CSS_XPT_DNE (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: Fileref SOURCE has been deassigned.
+NOTE: Libref SOURCE has been deassigned.
+
+NOTE: There were 8 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 8 observations rewritten, 0 observations added and 0 observations deleted.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD5928\#LN00007,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=23Sep2015:18:33:47,
+      Create Time=23Sep2015:18:33:27
+
+NOTE: 1 record was written to the file PFEXCODE.
+      The minimum record length was 29.
+      The maximum record length was 29.
+NOTE: There were 8 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 8 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+      
+
+NOTE: Libref SOURCE was successfully assigned as follows: 
+      Engine:        XPORT 
+      Physical Name: https://raw.github.com/phuse-org/phuse-scripts/master/scriptathon2014/data/test.xpt
+
+NOTE: There were 5 observations read from the data set SOURCE.TEST.
+NOTE: The data set WORK.CSS_TEST has 5 observations and 5 variables.
+NOTE: DATA statement used (Total process time):
+      real time           9.66 seconds
+      cpu time            0.04 seconds
+      
+
+NOTE: Fileref SOURCE has been deassigned.
+NOTE: Libref SOURCE has been deassigned.
+
+NOTE: There were 5 observations read from the data set WORK.EXPECT_TEST.
+NOTE: There were 5 observations read from the data set WORK.CSS_TEST.
+NOTE: PROCEDURE COMPARE used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: Deleting WORK.CSS_TEST (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: There were 8 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 8 observations rewritten, 0 observations added and 0 observations deleted.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD5928\#LN00007,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=23Sep2015:18:33:57,
+      Create Time=23Sep2015:18:33:27
+
+NOTE: 1 record was written to the file PFEXCODE.
+      The minimum record length was 102.
+      The maximum record length was 102.
+NOTE: There were 8 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 8 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+NOTE: Libref SOURCE was successfully assigned as follows: 
+      Engine:        XPORT 
+      Physical Name: C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD5928\test.xpt
+
+NOTE: There were 5 observations read from the data set SOURCE.TEST.
+NOTE: The data set WORK.CSS_TEST has 5 observations and 5 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+NOTE: Fileref SOURCE has been deassigned.
+NOTE: Libref SOURCE has been deassigned.
+
+NOTE: There were 5 observations read from the data set WORK.EXPECT_TEST.
+NOTE: There were 5 observations read from the data set WORK.CSS_TEST.
+NOTE: PROCEDURE COMPARE used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: Deleting WORK.CSS_TEST (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: There were 8 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 8 observations rewritten, 0 observations added and 0 observations deleted.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD5928\#LN00007,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=23Sep2015:18:33:57,
+      Create Time=23Sep2015:18:33:27
+
+NOTE: 1 record was written to the file PFEXCODE.
+      The minimum record length was 41.
+      The maximum record length was 41.
+NOTE: There were 8 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 8 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.01 seconds
+      
+
+NOTE: Libref SOURCE was successfully assigned as follows: 
+      Engine:        XPORT 
+      Physical Name: https://raw.github.com/phuse-org/phuse-scripts/master/scriptathon2014/data/test.xpt
+
+NOTE: There were 5 observations read from the data set SOURCE.DEMO.
+NOTE: The data set WORK.CSS_DEMO has 5 observations and 6 variables.
+NOTE: DATA statement used (Total process time):
+      real time           9.67 seconds
+      cpu time            0.10 seconds
+      
+
+NOTE: Fileref SOURCE has been deassigned.
+NOTE: Libref SOURCE has been deassigned.
+
+NOTE: There were 5 observations read from the data set WORK.EXPECT_DEMO.
+NOTE: There were 5 observations read from the data set WORK.CSS_DEMO.
+NOTE: PROCEDURE COMPARE used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: Deleting WORK.CSS_DEMO (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: There were 8 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 8 observations rewritten, 0 observations added and 0 observations deleted.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.01 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD5928\#LN00007,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=23Sep2015:18:34:07,
+      Create Time=23Sep2015:18:33:27
+
+NOTE: 1 record was written to the file PFEXCODE.
+      The minimum record length was 114.
+      The maximum record length was 114.
+NOTE: There were 8 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 8 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.03 seconds
+      
+
+NOTE: Libref SOURCE was successfully assigned as follows: 
+      Engine:        XPORT 
+      Physical Name: C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD5928\test.xpt
+
+NOTE: There were 5 observations read from the data set SOURCE.DEMO.
+NOTE: The data set WORK.CSS_DEMO has 5 observations and 6 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+NOTE: Fileref SOURCE has been deassigned.
+NOTE: Libref SOURCE has been deassigned.
+
+NOTE: There were 5 observations read from the data set WORK.EXPECT_DEMO.
+NOTE: There were 5 observations read from the data set WORK.CSS_DEMO.
+NOTE: PROCEDURE COMPARE used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: Deleting WORK.CSS_DEMO (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+      
+
+
+NOTE: There were 8 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 8 observations rewritten, 0 observations added and 0 observations deleted.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+
+NOTE: 13 lines were written to file PRINT.
+NOTE: There were 8 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 8 observations and 14 variables.
+NOTE: The DATA step printed page 1.
+NOTE: DATA statement used (Total process time):
+      real time           0.02 seconds
+      cpu time            0.03 seconds
+      
+
+NOTE: Libref SAVEXML was successfully assigned as follows: 
+      Engine:        XML 
+      Physical Name: .\outputs_sas\testresults_util_access_test_data.xml
+
+NOTE: SAS variable labels, formats, and lengths are not written to DBMS tables.
+NOTE: There were 8 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set SAVEXML.CSS_PASSFAIL has 8 observations and 14 variables.
+NOTE: DATA statement used (Total process time):
+      real time           3.07 seconds
+      cpu time            0.70 seconds
+      
+
+NOTE: Libref SAVEXML has been deassigned.
+
+ERROR: Errors printed on page 1.
+
+NOTE: SAS Institute Inc., SAS Campus Drive, Cary, NC USA 27513-2414
+NOTE: The SAS System used:
+      real time           55.59 seconds
+      cpu time            2.94 seconds
+      

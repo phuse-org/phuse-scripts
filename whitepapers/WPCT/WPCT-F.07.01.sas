@@ -3,18 +3,19 @@
     Display:     Figure 7.1 Box plot - Measurements by Analysis Timepoint, Visit and Planned Treatment
     White paper: Central Tendency
 
-    Specs:       https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/specification/WPCT-F.07.01_specs.yml
+    Specs:       https://github.com/phuse-org/phuse-scripts/tree/master/whitepapers/specification
+    Test Data:   https://github.com/phuse-org/phuse-scripts/tree/master/scriptathon2014/data
     Output:      https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/WPCT/outputs_sas/WPCT-F.07.01_Box_plot_DIABP_by_visit_for_timepoint_815.pdf
 
     Using this program:
 
       * See USER PROCESSING AND SETTINGS, below, to configure this program for your environment and data
-      * Program plots all visits, ordered by AVISITN, with maximum of 20 boxes on a page (default)
-        + see user option MAX_BOXES_PER_PAGE, below, to change 20 per page
-      * Program separately plots all parameters available in PARAMCD
+      * Program will plot all visits, ordered by AVISITN, with maximum of 20 boxes on a page (default)
+        + see user option MAX_BOXES_PER_PAGE, below, to change limit of 20 boxes per page
+      * Program separately plots all parameters provided in PARAMCD
       * Measurements within each PARAMCD and ATPTN determine precision of statistical results
         + MEAN gets 1 extra decimal, STD DEV gets 2 extra decimals
-        + see macro UTIL_VALUE_FORMAT to adjust this behavior
+        + see macro UTIL_VALUE_FORMAT to modify this behavior
       * If your treatment names are too long for the summary table, change TRTP 
         in the input data, and add a footnote that explains your short Tx codes
 
@@ -24,8 +25,7 @@
       * Complete and confirm specifications (see Outliers & Reference limit discussions, below)
           https://github.com/phuse-org/phuse-scripts/tree/master/whitepapers/specification
       * For annotated RED CIRCLEs outside normal range limits
-          UPDATE the test data so that default outputs have some CIRCLEs that are not also RED.
-      * TEST the reference line options
+          UPDATE the test data so that default outputs have some IQR OUTLIER SQUAREs that are not also RED.
       * CHECK LOGIC - see TO DO, below. Can temp dsets left over from one loop interfer with a subsequent loop?
       * LABS & ECG - ADaM VS/LAB/ECG domains have some different variables and variable naming conventions.
           - What variables are used for LAB/ECG box plots?
@@ -105,12 +105,12 @@ end HEADER ***/
 
     /*** 2a) ACCESS data, by default PhUSE/CSS test data, and create work copy with prefix "CSS_"  ***/
     /***     NB: If remote access to test data files does not work, see local override, below.     ***/
-      %util_access_test_data(adsl)
-      %util_access_test_data(advs)
+      %* util_access_test_data(adsl)
+      %* util_access_test_data(advs)
 
       *--- NB: For CSS/PhUSE test data, override remote access with a local path, if needed ---*;
-        %* %util_access_test_data(adsl, local=C:\CSS\phuse-scripts\scriptathon2014\data\);
-        %* %util_access_test_data(advs, local=C:\CSS\phuse-scripts\scriptathon2014\data\);
+        %%util_access_test_data(adsl, local=C:\CSS\phuse-scripts\scriptathon2014\data\)
+        %%util_access_test_data(advs, local=C:\CSS\phuse-scripts\scriptathon2014\data\)
 
 
     /*** 2b) USER SUBSET of data, to limit number of box plot outputs, and to shorten Tx labels ***/
@@ -334,7 +334,7 @@ end HEADER ***/
 
           *--- Graphics Settings - Default HSIZE and VSIZE are suitable for A4 and letter ---*;
             options orientation=landscape;
-            goptions reset=all hsize=11.5in vsize=7.5in;
+            goptions reset=all device=pdf;
 
             title     justify=left height=1.2 "Box Plot - &&paramcd_lab&pdx by Visit, Analysis Timepoint: &&atptn_lab&tdx";
             footnote1 justify=left height=1.0 'Box plot type=schematic, the box shows median, interquartile range (IQR, edge of the bar), min and max';
@@ -342,7 +342,6 @@ end HEADER ***/
             footnote3 justify=left height=1.0 'above 75% are shown as outliers. Means plotted as different symbols by treatments.';
             axis1     value=none label=none major=none minor=none;
             axis2     order=( %util_axis_order(%scan(&aval_min_max,1), %scan(&aval_min_max,2)) );
-
 
           *--- PDF output destination ---*;
             ods pdf file="&outputs_folder\WPCT-F.07.01_Box_plot_&&paramcd_val&pdx.._by_visit_for_timepoint_&&atptn_val&tdx...pdf";

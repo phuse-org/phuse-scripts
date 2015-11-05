@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="windows-1252" ?>
+<TABLE>
+   <CSS_PASSFAIL>
+      <test_mac> assert_var_exist </test_mac>
+      <test_id> ave.1.a.1 </test_id>
+      <test_dsc> NULL data set </test_dsc>
+      <Pparm_DS missing=" " />
+      <Pparm_VAR missing=" " />
+      <test_expect> 0 </test_expect>
+      <test_result> 0 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_var_exist </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_var_exist </test_mac>
+      <test_id> ave.1.a.2 </test_id>
+      <test_dsc> Non-existent one-level data set, but name matches start of a valid name </test_dsc>
+      <Pparm_DS> longdata </Pparm_DS>
+      <Pparm_VAR missing=" " />
+      <test_expect> 0 </test_expect>
+      <test_result> 0 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_var_exist( longdata) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_var_exist </test_mac>
+      <test_id> ave.1.a.3 </test_id>
+      <test_dsc> Non-existent one-level data set, but name appears within a valid name </test_dsc>
+      <Pparm_DS> dataset </Pparm_DS>
+      <Pparm_VAR missing=" " />
+      <test_expect> 0 </test_expect>
+      <test_result> 0 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_var_exist( dataset) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_var_exist </test_mac>
+      <test_id> ave.1.a.4 </test_id>
+      <test_dsc> Non-existent two-level data set, but name matches end of a valid name </test_dsc>
+      <Pparm_DS> sasuser.setname </Pparm_DS>
+      <Pparm_VAR missing=" " />
+      <test_expect> 0 </test_expect>
+      <test_result> 0 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_var_exist( sasuser.setname) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_var_exist </test_mac>
+      <test_id> ave.1.b.1 </test_id>
+      <test_dsc> NULL variable </test_dsc>
+      <Pparm_DS> longdatasetname </Pparm_DS>
+      <Pparm_VAR missing=" " />
+      <test_expect> 0 </test_expect>
+      <test_result> 0 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_var_exist( longdatasetname) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_var_exist </test_mac>
+      <test_id> ave.1.b.2 </test_id>
+      <test_dsc> Non-existent variable in one-level data set, but name is prefix of a valid variable </test_dsc>
+      <Pparm_DS> longdatasetname </Pparm_DS>
+      <Pparm_VAR> longnam </Pparm_VAR>
+      <test_expect> 0 </test_expect>
+      <test_result> 0 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_var_exist( longdatasetname, longnam) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_var_exist </test_mac>
+      <test_id> ave.1.b.3 </test_id>
+      <test_dsc> Non-existent variable in one-level data set, but name appears within a valid variable </test_dsc>
+      <Pparm_DS> longdatasetname </Pparm_DS>
+      <Pparm_VAR> ongvar </Pparm_VAR>
+      <test_expect> 0 </test_expect>
+      <test_result> 0 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_var_exist( longdatasetname, ongvar) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_var_exist </test_mac>
+      <test_id> ave.1.b.4 </test_id>
+      <test_dsc> Non-existent variable in one-level data set, but name is suffix of a valid variable </test_dsc>
+      <Pparm_DS> longdatasetname </Pparm_DS>
+      <Pparm_VAR> ablename </Pparm_VAR>
+      <test_expect> 0 </test_expect>
+      <test_result> 0 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_var_exist( longdatasetname, ablename) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_var_exist </test_mac>
+      <test_id> ave.1.b.5 </test_id>
+      <test_dsc> Non-existent variable in two-level data set, but a valid variable matches start of this variable </test_dsc>
+      <Pparm_DS> sasuser.longdsetname </Pparm_DS>
+      <Pparm_VAR> longname </Pparm_VAR>
+      <test_expect> 0 </test_expect>
+      <test_result> 0 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_var_exist( sasuser.longdsetname, longname) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_var_exist </test_mac>
+      <test_id> ave.1.b.6 </test_id>
+      <test_dsc> Non-existent variable in two-level data set, but a valid variable appears within this variable </test_dsc>
+      <Pparm_DS> sasuser.longdsetname </Pparm_DS>
+      <Pparm_VAR> newvariablestr </Pparm_VAR>
+      <test_expect> 0 </test_expect>
+      <test_result> 0 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_var_exist( sasuser.longdsetname, newvariablestr) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_var_exist </test_mac>
+      <test_id> ave.1.b.7 </test_id>
+      <test_dsc> Non-existent variable in two-level data set, but a valid variable matches end of this variable </test_dsc>
+      <Pparm_DS> sasuser.longdsetname </Pparm_DS>
+      <Pparm_VAR> ratherlongvariablestr </Pparm_VAR>
+      <test_expect> 0 </test_expect>
+      <test_result> 0 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_var_exist( sasuser.longdsetname, ratherlongvariablestr) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_var_exist </test_mac>
+      <test_id> ave.2.a.1 </test_id>
+      <test_dsc> Valid variable in one-level data set </test_dsc>
+      <Pparm_DS> longdatasetname </Pparm_DS>
+      <Pparm_VAR> longvariablename </Pparm_VAR>
+      <test_expect> 1 </test_expect>
+      <test_result> 1 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_var_exist( longdatasetname, longvariablename) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_var_exist </test_mac>
+      <test_id> ave.2.a.2 </test_id>
+      <test_dsc> Valid variable in two-level data set </test_dsc>
+      <Pparm_DS> sasuser.longdsetname </Pparm_DS>
+      <Pparm_VAR> long </Pparm_VAR>
+      <test_expect> 1 </test_expect>
+      <test_result> 1 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_var_exist( sasuser.longdsetname, long) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+</TABLE>

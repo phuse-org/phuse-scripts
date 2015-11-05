@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="windows-1252" ?>
+<TABLE>
+   <CSS_PASSFAIL>
+      <test_mac> util_access_test_data </test_mac>
+      <test_id> atd.1.a.1 </test_id>
+      <test_dsc> Error: Valid XPORT,  Invalid DS, remote XPT </test_dsc>
+      <pparm_DS> dset_dne </pparm_DS>
+      <kparm_XPORT> test </kparm_XPORT>
+      <kparm_LOCAL missing=" " />
+      <test_expect> -css_dset_dne </test_expect>
+      <test_result> -css_dset_dne </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %util_access_test_data( dset_dne, XPORT=test) </macro_call_1>
+      <test_type> D </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> util_access_test_data </test_mac>
+      <test_id> atd.1.a.2 </test_id>
+      <test_dsc> Error: Valid XPORT,  Invalid DS, local XPT </test_dsc>
+      <pparm_DS> dset_dne </pparm_DS>
+      <kparm_XPORT> test </kparm_XPORT>
+      <kparm_LOCAL> C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD5928/ </kparm_LOCAL>
+      <test_expect> -css_dset_dne </test_expect>
+      <test_result> -css_dset_dne </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %util_access_test_data( dset_dne, XPORT=test, LOCAL=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD5928/) </macro_call_1>
+      <test_type> D </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> util_access_test_data </test_mac>
+      <test_id> atd.1.b.1 </test_id>
+      <test_dsc> Error: Invalid XPORT, remote XPT </test_dsc>
+      <pparm_DS> xpt_dne </pparm_DS>
+      <kparm_XPORT missing=" " />
+      <kparm_LOCAL missing=" " />
+      <test_expect> -css_xpt_dne </test_expect>
+      <test_result> -css_xpt_dne </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %util_access_test_data( xpt_dne) </macro_call_1>
+      <test_type> D </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> util_access_test_data </test_mac>
+      <test_id> atd.1.b.2 </test_id>
+      <test_dsc> Error: Invalid XPORT, local XPT </test_dsc>
+      <pparm_DS> xpt_dne </pparm_DS>
+      <kparm_XPORT missing=" " />
+      <kparm_LOCAL> C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD5928/ </kparm_LOCAL>
+      <test_expect> -css_xpt_dne </test_expect>
+      <test_result> -css_xpt_dne </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %util_access_test_data( xpt_dne, LOCAL=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD5928/) </macro_call_1>
+      <test_type> D </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> util_access_test_data </test_mac>
+      <test_id> atd.2.a.1 </test_id>
+      <test_dsc> Access same-named data set </test_dsc>
+      <pparm_DS> test </pparm_DS>
+      <kparm_XPORT missing=" " />
+      <kparm_LOCAL missing=" " />
+      <test_expect> expect_test=css_test </test_expect>
+      <test_result> expect_test=css_test </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %util_access_test_data( test) </macro_call_1>
+      <test_type> D </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> util_access_test_data </test_mac>
+      <test_id> atd.2.a.2 </test_id>
+      <test_dsc> Access local same-named data set </test_dsc>
+      <pparm_DS> test </pparm_DS>
+      <kparm_XPORT missing=" " />
+      <kparm_LOCAL> C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD5928/ </kparm_LOCAL>
+      <test_expect> expect_test=css_test </test_expect>
+      <test_result> expect_test=css_test </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %util_access_test_data( test, LOCAL=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD5928/) </macro_call_1>
+      <test_type> D </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> util_access_test_data </test_mac>
+      <test_id> atd.2.b.1 </test_id>
+      <test_dsc> Access other-named data set </test_dsc>
+      <pparm_DS> demo </pparm_DS>
+      <kparm_XPORT> test </kparm_XPORT>
+      <kparm_LOCAL missing=" " />
+      <test_expect> expect_demo=css_demo </test_expect>
+      <test_result> expect_demo=css_demo </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %util_access_test_data( demo, XPORT=test) </macro_call_1>
+      <test_type> D </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> util_access_test_data </test_mac>
+      <test_id> atd.2.b.2 </test_id>
+      <test_dsc> Access local other-named data set </test_dsc>
+      <pparm_DS> demo </pparm_DS>
+      <kparm_XPORT> test </kparm_XPORT>
+      <kparm_LOCAL> C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD5928/ </kparm_LOCAL>
+      <test_expect> expect_demo=css_demo </test_expect>
+      <test_result> expect_demo=css_demo </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %util_access_test_data( demo, XPORT=test, LOCAL=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD5928/) </macro_call_1>
+      <test_type> D </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+</TABLE>
