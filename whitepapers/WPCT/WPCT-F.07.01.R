@@ -6,39 +6,55 @@
 # Contributors: Jeno Pizarro, Suzie Perigaud
 
 #TO DO List for program:
-#*Test using ADaM, TRT01A / AVAL instead of ACTARM / LBSTRESN
-#*SDTM based off LB, make more generic for use in any results domain
 #*Tested with only 5 visits, functionality to move to next page when there are more, etc
-#*move table closer below plot?
-#*annotations
+#*clean up ymax warnings (plot making)
+#*annotations, space above table
 
 #TESTING and QUALIFICATION:
 #DEVELOP STAGE
 #12-JUL-2015, ran without errors using STATIN TEST DATA v0 - DM, LB csvs 
+#29-NOV-2015, edited to be more flexible, allows user to specify Column names rather than assign based on SDTM vs ADaM
 
-#ggplot2, data.table, gridExtra required, if not installed, program will quit.
+#ggplot2, data.table, gridExtra required, if not installed, program will error.
 library(ggplot2)
 library(data.table)
 library(gridExtra)
 
-#SDTM or ADaM?
-datastandard <- "SDTM"
-#set input and output file directories
-inputdirectory <- "path/"
-outputdirectory <- "path/"
-testfilename <- "lb.csv"
-#demofilename only needed if datastandard = SDTM
-demofilename <- "dm.csv"
 #test or parameter to be analyzed
 testname <- "CHOL"
 yaxislabel <- "Cholesterol (mg/dL)"
 #number of digits in table, sd = dignum +1
 dignum <- 1
 ###limits configuration
-    #lower limit(s) - ANRLO <- c(l1, l2, ...) -
-    ANRLO <- c(200)
-    #upper limit(s) - ANRHI <- c(l1, l2, ...) -
-    ANRHI <- c(240)
+#lower limit(s) - ANRLO <- c(l1, l2, ...) -
+ANRLO <- c(200)
+#upper limit(s) - ANRHI <- c(l1, l2, ...) -
+ANRHI <- c(240)
+
+#set input and output file directories
+inputdirectory <- "path"
+outputdirectory <- "path"
+testfilename <- "lb.csv"
+#Read in DATASET
+testresults <-read.csv(file.path(inputdirectory,testfilename))
+#RUN THIS BLOCK IF USING TABULATION (SDTM) DATA, merges DM characteristics on test dataset
+demofilename <- "dm.csv"
+dm_read <-read.csv(file.path(inputdirectory,demofilename))
+dm <- subset(dm_read, ACTARM != "Screen Failure")
+testresults<- merge(x=testresults, y=dm, by = "USUBJID")
+#END SDTM ONLY BLOCK
+
+#SELECT VARIABLES (examples in parenthesis): Results (LBSTRESN, AVAL), TIME (VISITNUM), TREATMENT (ARM, ACTARM, TRT01A), PARAMCD (LBTESTCD)
+#colnames(testresults)[names(testresults) == "OLD VARIABLE"] <- "NEW VARIABLE"
+colnames(testresults)[names(testresults) == "LBSTRESN"] <- "RESULTS"
+colnames(testresults)[names(testresults) == "VISITNUM"] <- "TIME"
+colnames(testresults)[names(testresults) == "ACTARM"] <- "TREATMENT"
+colnames(testresults)[names(testresults) == "LBTESTCD"] <- "PARAMCD"
+
+
+testresults <- subset(testresults, PARAMCD == testname)
+testresults<- data.table(testresults)
+
 
 
 #functions to be called
@@ -59,27 +75,16 @@ buildtable <- function(avalue, dfname, by1, by2, dignum){
   return(summary)
 }
 
-testresults_read <-read.csv(file.path(inputdirectory,testfilename))
 
 
-if(datastandard == "SDTM") {
-  dm_read <-read.csv(file.path(inputdirectory,demofilename))
-  dm <- subset(dm_read, ACTARM != "Screen Failure")
-  testresults <- subset(testresults_read, LBTESTCD == testname)
-  testresults_dm <- merge(x=testresults, y=dm, by = "USUBJID")
-  testresults_dm <- data.table(testresults_dm)
-  #setkey for speed gains when summarizing
-  setkey(testresults_dm, USUBJID, ACTARM, VISITNUM)
-  #create a variable for the out of limits data
-  i <- 1
-  testresults_dm$OUT <- NA
-  for (i in 1:length(testresults_dm$LBSTRESN)){
-    if (testresults_dm$LBSTRESN[i] < ANRLO | testresults_dm$LBSTRESN[i] > ANRHI){
-      testresults_dm$OUT[i] <- testresults_dm$LBSTRESN[i]
-  }
-}
+#setkey for speed gains when summarizing
+setkey(testresults, USUBJID, TREATMENT, TIME)
+
+#create a variable for the out of limits data
+testresults$OUT <- ifelse(testresults$RESULTS < ANRLO | testresults$RESULTS > ANRHI, testresults$RESULTS, NA)
+
 #specify plot
-p <- ggplot(testresults_dm, aes(factor(VISITNUM), fill = ACTARM, LBSTRESN))
+p <- ggplot(testresults, aes(factor(TIME), fill = TREATMENT, RESULTS))
 # add notch = TRUE
 p1 <- p + geom_boxplot(notch = TRUE) + xlab("Visit Number") + ylab(yaxislabel) + theme(legend.position="bottom", legend.title=element_blank(), text = element_text(size = 14))  
 # add mean points
@@ -87,38 +92,11 @@ p2 <- p1 + stat_summary(fun.y=mean, colour="dark red", geom="point", position=po
 # add normal range limits
 p3 <- p2 + geom_hline(yintercept = c(ANRLO,ANRHI), colour = "red")
 #out of limits jittered points
-p4 <- p3 + geom_jitter(data = testresults_dm, aes(factor(VISITNUM), testresults_dm$OUT), colour = "dark red", position = position_dodge(width=0.75))
-#call summary table function
-summary <- buildtable(avalue = quote(LBSTRESN), dfname= quote(testresults_dm), by1 = "VISITNUM", by2 = "ACTARM", dignum)[order(VISITNUM, ACTARM)]
-table_summary <- data.frame(t(summary))           
-} else {
-  testresults <- subset(testresults_read, PARAMCD == testname & TRT01A != "Screen Failure")
+p4 <- p3 + geom_jitter(data = testresults, aes(factor(TIME), testresults$OUT), colour = "dark red", position = position_dodge(width=0.75))
 
-#setkey for speed gains when summarizing
-testresults <- data.table(testresults)
-setkey(testresults, USUBJID, TRT01A, VISITNUM)
-#create a variable for the out of limits data
-i <- 1
-testresults$OUT <- NA
-for (i in 1:length(testresults_dm$AVAL)){
-  if (testresults$AVAL[i] < ANRLO | testresults$AVAL[i] > ANRHI){
-    testresults$OUT[i] <- testresults$AVAL[i]
-  }
-}
-#specify plot
-p <- ggplot(testresults, aes(factor(VISITNUM), AVAL))
-# add notch = TRUE
-p1 <- p + geom_boxplot(aes(fill = TRT01A), notch = TRUE) + xlab("Visit Number") + ylab(yaxislabel) + theme(legend.position="bottom", legend.title=element_blank(), text = element_text(size = 14))
-# add mean points
-p2 <- p1 + stat_summary(fun.y=mean, colour="dark red", geom = "point", position = position_dodge(width=0.75))
-# add normal range limits
-p3 <- p2 + geom_hline(yintercept = c(ANRLO,ANRHI), colour = "red")
-#out of limits (jittered) points
-p4 <- p3 + geom_jitter(data = testresults, aes(factor(VISITNUM), testresults$OUT), colour = "dark red", position = position_dodge(width=0.75))
 #call summary table function
-summary <- buildtable(avalue = quote(AVAL), dfname= quote(testresults), by1 = "VISITNUM", by2 = "TRT01A", dignum)[order(VISITNUM, TRT01A)]
-table_summary <- data.frame(t(summary))  
-}
+summary <- buildtable(avalue = quote(RESULTS), dfname= quote(testresults), by1 = "TIME", by2 = "TREATMENT", dignum)[order(TIME, TREATMENT)]
+table_summary <- data.frame(t(summary))           
 
 
 t1 <- tableGrob(table_summary, gpar.coretext = gpar(fontsize = 12), show.colnames = FALSE)
@@ -130,5 +108,7 @@ dev.off()
 # Optionally, use JPEG
 jpeg(file.path(outputdirectory,"plot.JPEG"), , width = 1200, height = 1000, units = "px", pointsize = 12)
 grid.arrange(p4, t1, ncol = 1)
+
 dev.off()
- 
+
+
