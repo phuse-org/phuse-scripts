@@ -1,0 +1,18 @@
+PhUSE/CSS Central Tendency Standard Analyses
+User Guide
+0.1
+
+* PhUSE/CSS Central Tendency data displays are described in detail in the "Central Tendency" White Paper
+  . http://www.phusewiki.org/wiki/index.php?title=SS_P08_Central_Tendency_White_Paper
+
+* Analyses as well as SAS and R implementations are based on ADaM-compliant data sets
+  . Out of scope: ADaM conformance checks
+  . Out of scope: analysing SDTM data
+
+* Getting started with SAS and R scripts
+  . Each data display in the Central Tendency White Paper (CTWP) has a same-name script in SAS and R
+  . We refer to these as "standard" scripts - because they produce one of the standard displays enumerated in the CTWP
+  . Standard R scripts require some common functions, available in github
+    (here?)
+  . Standard SAS scripts require some common macros, available in github 
+    https://github.com/phuse-org/phuse-scripts/tree/master/whitepapers/utilities
