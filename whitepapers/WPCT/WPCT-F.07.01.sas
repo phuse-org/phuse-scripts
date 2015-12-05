@@ -3,9 +3,10 @@
     Display:     Figure 7.1 Box plot - Measurements by Analysis Timepoint, Visit and Planned Treatment
     White paper: Central Tendency
 
-    Specs:       https://github.com/phuse-org/phuse-scripts/tree/master/whitepapers/specification
-    Test Data:   https://github.com/phuse-org/phuse-scripts/tree/master/scriptathon2014/data
-    Output:      https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/WPCT/outputs_sas/WPCT-F.07.01_Box_plot_DIABP_by_visit_for_timepoint_815.pdf
+    Specs:          https://github.com/phuse-org/phuse-scripts/tree/master/whitepapers/specification
+    Test Data:      https://github.com/phuse-org/phuse-scripts/tree/master/scriptathon2014/data
+    Sample Output:  https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/WPCT/outputs_sas/WPCT-F.07.01_Box_plot_DIABP_by_visit_for_timepoint_815.pdf
+    User Guide:     https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/CentralTendency-UserGuide.txt
 
     Using this program:
 
@@ -22,11 +23,11 @@
     TO DO list for program:
 
       * Q for Reviewer: Should we use ADSL data to report patients, not just obs in stats table?
+          initial reviewer response in "No.", so could remove code related to ADSL.
       * Complete and confirm specifications (see Outliers & Reference limit discussions, below)
           https://github.com/phuse-org/phuse-scripts/tree/master/whitepapers/specification
       * For annotated RED CIRCLEs outside normal range limits
           UPDATE the test data so that default outputs have some IQR OUTLIER SQUAREs that are not also RED.
-      * CHECK LOGIC - see TO DO, below. Can temp dsets left over from one loop interfer with a subsequent loop?
       * LABS & ECG - ADaM VS/LAB/ECG domains have some different variables and variable naming conventions.
           - What variables are used for LAB/ECG box plots?
           - What visits/time-points are relevant to LAB/ECG box plots?
@@ -86,9 +87,9 @@ end HEADER ***/
        OUTPUTS_FOLDER:
              Location to write PDF outputs (WITHOUT final back- or forward-slash)
 
-  ****************************************
-  *** END user processing and settings ***
-  ****************************************/
+  ************************************
+  *** user processing and settings ***
+  ************************************/
 
 
     %put WARNING: (WPCT-F.07.01) User must ensure PhUSE/CSS utilities are in the AUTOCALL path.;
@@ -105,12 +106,12 @@ end HEADER ***/
 
     /*** 2a) ACCESS data, by default PhUSE/CSS test data, and create work copy with prefix "CSS_"  ***/
     /***     NB: If remote access to test data files does not work, see local override, below.     ***/
-      %* util_access_test_data(adsl)
-      %* util_access_test_data(advs)
+      %util_access_test_data(adsl)
+      %util_access_test_data(advs)
 
-      *--- NB: For CSS/PhUSE test data, override remote access with a local path, if needed ---*;
-        %%util_access_test_data(adsl, local=C:\CSS\phuse-scripts\scriptathon2014\data\)
-        %%util_access_test_data(advs, local=C:\CSS\phuse-scripts\scriptathon2014\data\)
+      *--- NB: OFFLINE CSS/PhUSE test data, override remote access by providing a local path ---*;
+        %* %util_access_test_data(adsl, local=C:\CSS\phuse-scripts\scriptathon2014\data\) ;
+        %* %util_access_test_data(advs, local=C:\CSS\phuse-scripts\scriptathon2014\data\) ;
 
 
     /*** 2b) USER SUBSET of data, to limit number of box plot outputs, and to shorten Tx labels ***/
@@ -225,7 +226,7 @@ end HEADER ***/
     %*--- Parameters: Number (&PARAMCD_N), Names (&PARAMCD_NAM1 ...) and Labels (&PARAMCD_LAB1 ...) ---*;
       %util_labels_from_var(css_anadata, paramcd, param)
 
-    %*--- Number of planned treatments: &TRTN ---*;
+    %*--- Number of planned treatments: Set &TRTN from ana variable TRTP ---*;
       %util_count_unique_values(css_anadata, trtp, trtn)
 
 
@@ -343,8 +344,13 @@ end HEADER ***/
             axis1     value=none label=none major=none minor=none;
             axis2     order=( %util_axis_order(%scan(&aval_min_max,1), %scan(&aval_min_max,2)) );
 
-          *--- PDF output destination ---*;
-            ods pdf file="&outputs_folder\WPCT-F.07.01_Box_plot_&&paramcd_val&pdx.._by_visit_for_timepoint_&&atptn_val&tdx...pdf";
+          *--- ODS PDF destination (Traditional Graphics, No ODS or Listing output) ---*;
+            ODS GRAPHICS OFF;
+            ODS LISTING CLOSE;
+            ods pdf author='PhUSE/CSS Standard Analysis Library'
+                    subject='PhUSE/CSS Measures of Central Tendency'
+                    title="Boxplot of &&paramcd_lab&pdx by Visit for Analysis Timepoint &&atptn_lab&tdx"
+                    file="&outputs_folder\WPCT-F.07.01_Box_plot_&&paramcd_val&pdx.._by_visit_for_timepoint_&&atptn_val&tdx...pdf";
 
 
           /*** LOOP 3 - FINALLY, A Graph ****************************
@@ -366,7 +372,6 @@ end HEADER ***/
                          annotate = css_annotate (where=( %sysfunc(tranwrd(&nxtvis, timept, x)) ))
                          boxstyle = schematic
                          notches
-                         stddeviations
                          nolegend
                          ltmargin = 5
                          blockpos = 3
@@ -406,6 +411,7 @@ end HEADER ***/
 
           *--- Release the PDF output file! ---*;
             ods pdf close;
+            ods listing;
 
         %end; %*--- LOOP 2 - Time Points, TDX ---*;
 

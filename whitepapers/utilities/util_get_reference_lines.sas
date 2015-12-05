@@ -123,7 +123,7 @@
 
       %let idx=%eval(&idx+1);
     %end;
-    %put NOTE: (UTIL_GET_REFERENCE_LINES) If you see duplicate values, check the HEX value of your data.;
+    %put NOTE: (UTIL_GET_REFERENCE_LINES) If you see duplicate values, check the HEX values in your data.;
 
     %*--- DETERMINE which of these non-missing reference lines to draw ---*;
       %if &range_count > 0 %then %do;
