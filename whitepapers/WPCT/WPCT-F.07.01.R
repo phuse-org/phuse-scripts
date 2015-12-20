@@ -49,6 +49,7 @@ colnames(testresults)[names(testresults) == "avisitn"] <- "TIME"
 colnames(testresults)[names(testresults) == "trta"] <- "TREATMENT"
 colnames(testresults)[names(testresults) == "paramcd"] <- "PARAMCD"
 colnames(testresults)[names(testresults) == "usubjid"] <- "USUBJID"
+colnames(testresults)[names(testresults) == "saffl"] <- "POPFLAG" #select population flag to subset on
 
 #Rename Treatment Arms if desired
 testresults$TREATMENT <- ifelse(testresults$TREATMENT == "Xanomeline Low Dose","X-low",
@@ -57,8 +58,8 @@ testresults$TREATMENT <- ifelse(testresults$TREATMENT == "Xanomeline Low Dose","
                                        )
                                 )
 
-#subset on test to be analyzed
-testresults <- subset(testresults, PARAMCD == testname & TIME %in% selectedvisits)
+#subset on test, visits, population to be analyzed
+testresults <- subset(testresults, PARAMCD == testname & TIME %in% selectedvisits & POPFLAG == "Y")
 testresults<- data.table(testresults)
 
 
@@ -105,7 +106,7 @@ summary <- buildtable(avalue = quote(RESULTS), dfname= quote(testresults), by1 =
 table_summary <- data.frame(t(summary))           
 
 t1theme <- ttheme_default(core = list(fg_params = list (fontsize = 12)))
-t1 <- tableGrob(table_summary, theme = t1theme, rows = NULL, cols = NULL) 
+t1 <- tableGrob(table_summary, theme = t1theme, cols = NULL) 
 
 #Output to TIFF
 tiff(file.path(outputdirectory,"plot.TIFF"), width = 1200, height = 1000, units = "px", pointsize = 12)
