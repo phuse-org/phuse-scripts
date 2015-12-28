@@ -1,0 +1,14 @@
+Modified CDISC ADaM example data are now in new Github structure:
+
+  https://github.com/phuse-org/phuse-scripts/tree/master/data/adam/cdisc-split
+
+Modification:
+  * Split single-study CDISC pilot data: 
+  * Into 2 studies: 01 and 02
+
+CDISC published the original pilot data in a pilot electronic submission package:
+
+  http://www.cdisc.org/sdtmadam-pilot-project
+  * Complete CDISC pilot package is available to CDISC members only
+  * Location within CDISC archive: 
+    Updated Pilot Submission Package\900172\m5\datasets\cdiscpilot01\analysis\adam\datasets\
