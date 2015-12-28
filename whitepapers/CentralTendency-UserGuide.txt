@@ -2,8 +2,8 @@ PhUSE/CSS Central Tendency Standard Analyses
 User Guide
 0.1
 
-* PhUSE/CSS Central Tendency data displays are described in detail in the "Central Tendency" White Paper
-  . http://www.phusewiki.org/wiki/index.php?title=SS_P08_Central_Tendency_White_Paper
+* PhUSE/CSS Central Tendency data displays are described in detail in the "Central Tendency" White Paper (CTWP)
+  http://www.phusewiki.org/wiki/index.php?title=SS_P08_Central_Tendency_White_Paper
 
 * Analyses as well as SAS and R implementations are based on ADaM-compliant data sets
   . Out of scope: ADaM conformance checks
@@ -15,18 +15,29 @@ User Guide
     
   . We refer to these as "standard" scripts - because they produce one of the standard displays enumerated in the CTWP
   
-  . Standard R scripts require some common functions, available in github
-    (here?)
+  . Standard SAS scripts, by default, produce an example output from PhUSE/CSS test data
+    + Located here in github:
+      https://github.com/phuse-org/phuse-scripts/tree/master/data/adam/cdisc
+    + Originally published here by CDISC:
+      http://www.cdisc.org/sdtmadam-pilot-project
   
   . Standard SAS scripts require some common macros, available in github 
     https://github.com/phuse-org/phuse-scripts/tree/master/whitepapers/utilities
   
-  . Scripts require that users set some parameters based on their computing environments and data
+  . Standard R scripts require some common functions (?), available in github
+    (here?)
   
-  . Scripts are organized to clearly isolate user settings and pre-processing instructions (e.g., to subset data before performing analyses)
+  . Scripts require that users set some parameters based on their computing environments and data
+    + Scripts are organized to clearly isolate user settings and pre-processing instructions (e.g., to subset data before performing analyses)
+    + By default, scripts use CDISC ADaM pilot data, mentioned above, and include custom pre-processing code to abbreviate treatment labels
 
 * Project conventions
-  . Qualification process: 
-    + http://www.phusewiki.org/wiki/index.php?title=WG5_Project_02#Qualification_Process
-  . Programming Guidelines:
-    + http://www.phusewiki.org/wiki/index.php?title=WG5_P02_Programming_Guidelines
+  . Programming Guidelines in Phusewiki:
+    http://www.phusewiki.org/wiki/index.php?title=WG5_P02_Programming_Guidelines
+  . Qualification process in Phusewiki:
+    http://www.phusewiki.org/wiki/index.php?title=WG5_Project_02#Qualification_Process
+
+  . Test (Qualification) scripts and results in github:
+    https://github.com/phuse-org/phuse-scripts/tree/master/whitepapers/qualification
+    + these use a PASS/FAIL unit test approach (and macro) published in Pharmaceutical Users Software Exchange 2011:
+      http://www.lexjansen.com/phuse/2011/ad/AD04.pdf
