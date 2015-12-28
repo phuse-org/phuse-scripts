@@ -1,4 +1,4 @@
-/*** Access PhUSE/CSS test data
+/*** Access PhUSE/CSS test data, XPT containers
 
   See explaination in the PhUSE Wiki of this FILENAME/LIBNAME access to XPORT files
     http://www.phusewiki.org/wiki/index.php?title=WG5_Code_to_Retrieve_CSS/PhUSE_Test_Data
@@ -12,7 +12,7 @@
   remaining PhUSE/CSS template programs.
 
   See the PhUSE Repository in Github for available PhUSE/CSS test data sets
-    https://github.com/phuse-org/phuse-scripts/tree/master/scriptathon2014/data
+    https://github.com/phuse-org/phuse-scripts/tree/master/data/adam/cdisc
 
   INPUT
     DS    name of PhUSE/CSS test data set
@@ -22,14 +22,14 @@
     XPORT name of XPORT archive, if different from DS
       optional keyword
       Syntax:  Filename of XPORT archive that includes DS. If missing, set to DS
-      Example: CSS_TEST_DATA
+      Example: ADVS_CONTAINER
     LOCAL path to a local folder that contains the CSS test data sets, to override remote access
       optional keyword
       Syntax:  Local path to folder with test data, quoted as needed
-      Example: C:\CSS\phuse-scripts\scriptathon2014\data
+      Example: C:\CSS\phuse-scripts\data\adam\cdisc
 
   OUTPUT
-    WORK data set with name CSS_&DS
+    WORK data set with name &DS
 
   TO DO
     * Implement some way of warning the user that a specified PhUSE/CSS data set does not exist.
@@ -51,18 +51,18 @@
     filename source "&local.&xport..xpt";
   %end;
   %else %do;
-    filename source url "https://raw.github.com/phuse-org/phuse-scripts/master/scriptathon2014/data/&xport..xpt";
+    filename source url "https://github.com/phuse-org/phuse-scripts/raw/master/data/adam/cdisc/&xport..xpt";
   %end;
 
   libname source xport access=READONLY;
 
-  data css_&ds;
+  data work.&ds;
     set source.&ds;
   run;
 
   %if &SYSERR ne 0 %then %do;
     %put ERROR: (UTIL_ACCESS_TEST_DATA) Please confirm that data set %upcase(&DS) exists in transport file %upcase(&XPORT).;
-    %util_delete_dsets(css_&ds)
+    %util_delete_dsets(&ds)
   %end;
 
   filename source clear;

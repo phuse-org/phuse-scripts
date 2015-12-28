@@ -10,12 +10,16 @@ User Guide
   . Out of scope: analysing SDTM data
 
 * Getting started with SAS and R scripts
+  . SAS development version: SAS 9.4 M02, utilizing ODS and GTL functionality
+    (but a SAS 9.2 boxplot approach is available in the script WPCT-F.07.01-sas92-QCshewhart.sas)
+  . R development version: ???
+
   . Each data display in the Central Tendency White Paper (CTWP) has a same-name script in SAS and R
     https://github.com/phuse-org/phuse-scripts/tree/master/whitepapers/WPCT
     
   . We refer to these as "standard" scripts - because they produce one of the standard displays enumerated in the CTWP
   
-  . Standard SAS scripts, by default, produce an example output from PhUSE/CSS test data
+  . Standard scripts, by default, produce an example output from PhUSE/CSS test data
     + Located here in github:
       https://github.com/phuse-org/phuse-scripts/tree/master/data/adam/cdisc
     + Originally published here by CDISC:
@@ -32,12 +36,14 @@ User Guide
     + By default, scripts use CDISC ADaM pilot data, mentioned above, and include custom pre-processing code to abbreviate treatment labels
 
 * Project conventions
-  . Whitepaper sub-directories in github
-    + specification
-      . Requirements documents for standard scripts
+  . Main sub-directories in github, starting from whitepapers
+    https://github.com/phuse-org/phuse-scripts/tree/master/whitepapers
+
     + qualification
       . Test specifications for standard scripts, and 
       . Unit test specifications for utilities that the standard scripts use
+    + specification
+      . Requirements documents for standard scripts
     + utilities
       . SAS macros that the standard SAS scripts use
     + WPCT
