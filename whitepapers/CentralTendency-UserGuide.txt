@@ -32,6 +32,17 @@ User Guide
     + By default, scripts use CDISC ADaM pilot data, mentioned above, and include custom pre-processing code to abbreviate treatment labels
 
 * Project conventions
+  . Whitepaper sub-directories in github
+    + specification
+      . Requirements documents for standard scripts
+    + qualification
+      . Test specifications for standard scripts, and 
+      . Unit test specifications for utilities that the standard scripts use
+    + utilities
+      . SAS macros that the standard SAS scripts use
+    + WPCT
+      . "White Paper Central Tendency" - Standard R and SAS scripts to create outputs that this white paper specifies
+
   . Programming Guidelines in Phusewiki:
     http://www.phusewiki.org/wiki/index.php?title=WG5_P02_Programming_Guidelines
   . Qualification process in Phusewiki:
