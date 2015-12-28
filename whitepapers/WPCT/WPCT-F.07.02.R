@@ -1,5 +1,5 @@
 # HEADER
-# Display:     Figure 7.1 Box plot - Measurements by Analysis Timepoint, Visit and Planned Treatment
+# Display:     Figure 7.2 Box plot - Measurements by Analysis Timepoint, Visit and Planned Treatment
 # White paper: Central Tendency
 # Specs:       https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/specification/
 # Output:      https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/WPCT/outputs_r/
@@ -11,8 +11,7 @@
 
 #TESTING and QUALIFICATION:
 #DEVELOP STAGE
-#12-JUL-2015, ran without errors using STATIN TEST DATA v0 - DM, LB csvs 
-#29-NOV-2015, edited to be more flexible, allows user to specify Column names
+#20-DEC-2015 - Developed from 7.1 script
 
 #ggplot2, data.table, gridExtra, Hmisc (for xpt import) required, if not installed, program will error.
 library(ggplot2)
@@ -24,14 +23,10 @@ library(Hmisc)
 testname <- "DIABP"
 yaxislabel <- "Diastolic Blood Pressure (mmHG)"
 #visit numbers to be analyzed
-selectedvisits <-c(0,2,4,6,8,12)
+selectedvisits <-c(2,4,6,8,12)
 #number of digits in table, standard deviation = dignum +1
 dignum <- 1
-###limits configuration
-#lower limit(s) - ANRLO <- c(l1, l2, ...) -
-ANRLO <- c(50)
-#upper limit(s) - ANRHI <- c(l1, l2, ...) -
-ANRHI <- c(100)
+
 
 #set input and output file directories
 inputdirectory <- "path"
@@ -44,7 +39,7 @@ testresults<- sasxport.get(file.path(inputdirectory,testfilename))
 #SELECT VARIABLES (examples in parenthesis): Results (LBSTRESN, AVAL), TIME (VISITNUM), TREATMENT (ARM, ACTARM, TRT01A), PARAMCD (LBTESTCD)
 #colnames(testresults)[names(testresults) == "OLD VARIABLE"] <- "NEW VARIABLE"
 
-colnames(testresults)[names(testresults) == "aval"] <- "RESULTS"
+colnames(testresults)[names(testresults) == "chg"] <- "RESULTS"
 colnames(testresults)[names(testresults) == "avisitn"] <- "TIME"
 colnames(testresults)[names(testresults) == "trta"] <- "TREATMENT"
 colnames(testresults)[names(testresults) == "paramcd"] <- "PARAMCD"
@@ -61,8 +56,6 @@ testresults$TREATMENT <- ifelse(testresults$TREATMENT == "Xanomeline Low Dose","
 #subset on test, visits, population to be analyzed
 testresults <- subset(testresults, PARAMCD == testname & TIME %in% selectedvisits & POPFLAG == "Y")
 testresults<- data.table(testresults)
-
-
 
 #buildtable function to be called later, summarize data to enable creation of accompanying datatable
 buildtable <- function(avalue, dfname, by1, by2, dignum){
@@ -87,19 +80,14 @@ buildtable <- function(avalue, dfname, by1, by2, dignum){
 #setkey for speed gains when summarizing
 setkey(testresults, USUBJID, TREATMENT, TIME)
 
-#create a variable for the out of limits data
-testresults$OUT <- ifelse(testresults$RESULTS < ANRLO | testresults$RESULTS > ANRHI, testresults$RESULTS, NA)
-
 #specify plot
 p <- ggplot(testresults, aes(factor(TIME), fill = TREATMENT, RESULTS))
 # add notch = TRUE
 p1 <- p + geom_boxplot(notch = TRUE) + xlab("Visit Number") + ylab(yaxislabel) + theme(legend.position="bottom", legend.title=element_blank(), text = element_text(size = 14))  
 # add mean points
 p2 <- p1 + stat_summary(fun.y=mean, colour="dark red", geom="point", position=position_dodge(width=0.75))
-# add normal range limits
-p3 <- p2 + geom_hline(yintercept = c(ANRLO,ANRHI), colour = "red")
-#out of limits jittered points
-p4 <- p3 + geom_jitter(data = testresults, aes(factor(TIME), testresults$OUT), colour = "dark red", position = position_dodge(width=0.75))
+# add red horizontal line at 0
+p3 <- p2 + geom_hline(yintercept = 0, colour = "red")
 
 #call summary table function
 summary <- buildtable(avalue = quote(RESULTS), dfname= quote(testresults), by1 = "TIME", by2 = "TREATMENT", dignum)[order(TIME, TREATMENT)]
@@ -110,12 +98,12 @@ t1 <- tableGrob(table_summary, theme = t1theme, cols = NULL)
 
 #Output to TIFF
 tiff(file.path(outputdirectory,"plot.TIFF"), width = 1200, height = 1000, units = "px", pointsize = 12)
-grid.arrange(p4, t1, ncol = 1)
+grid.arrange(p3, t1, ncol = 1)
 dev.off()
 
 # Optionally, use JPEG
 jpeg(file.path(outputdirectory,"plot.JPEG"), , width = 1200, height = 1000, units = "px", pointsize = 12)
-grid.arrange(p4, t1, ncol = 1)
+grid.arrange(p3, t1, ncol = 1)
 
 dev.off()
 
