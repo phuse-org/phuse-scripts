@@ -1,6 +1,12 @@
-/*** Prep box plot data for PROC SHEWHART
-
+/***
+  Prep box plot data for PROC SHEWHART
   This macro prepares measurement data for SAS/QC PROC SHEWHART, which has several conventions for plotting data.
+
+  ---
+    Development Freeze: OBSOLETE MACRO
+    This approach is not longer needed in SAS 9.4 scripts,
+    which now use a GTL approach instead on annotating a traditional graphic.
+  ---
 
   PROC SHEWHART creates the summary table of stats from "block" variable (typically "stats", for us)
                 and reads "phases" from a special _PHASE_ variable (typically "visits", for us)
@@ -48,7 +54,7 @@
 
 ***/
 
-%macro util_prep_shewhart_data(ds, vvisn=, vtrtn=, vtrt=, vval=, numtrt=, numvis=, alsokeep=);
+%macro obsolete_prep_shewhart_data(ds, vvisn=, vtrtn=, vtrt=, vval=, numtrt=, numvis=, alsokeep=);
   %global BOXPLOT_TIMEPT_RANGES;
   %local OK;
   %let OK = 1;
@@ -110,4 +116,4 @@
 
   %end;
 
-%mend util_prep_shewhart_data;
+%mend obsolete_prep_shewhart_data;

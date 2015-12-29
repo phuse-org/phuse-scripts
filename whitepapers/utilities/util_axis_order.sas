@@ -4,14 +4,14 @@
     0 to 100 by 10
 
   -INPUT:
-    MIN  data set containing the numeric variable for which you want MIN and MAX
+    MIN  minimum data value to include in the resulting step-wise axis interval
            REQUIRED
-           Syntax:  (libname.)memname
-           Example: ANA.ADVS
-    MAX  variable on DSET containing non-missing values
+           Syntax:  non-missing number, less than MAX
+           Example: 4.8
+    MAX  maximum data value to include in the resulting step-wise axis interval
            REQUIRED
-           Syntax:  variable-name
-           Example: AVAL
+           Syntax:  non-missing number, greater than MIN
+           Example: 23.42
 
   -OUTPUT:
     <string> return IN-LINE to be used in an AXIS ORDER=(<string>) statement.
@@ -60,26 +60,3 @@
     &emin to &emax by &step
   %end;
 %mend util_axis_order;
-
-
-/*** TEST calls
-
-  %put [%util_axis_order(88.2, 20.2)];        *** NB: ERROR condition ***;
-  %put [%util_axis_order(20.2, 20.2)];        *** NB: ERROR condition ***;
-  %put [%util_axis_order(87.9999, 88.0001)];
-
-  %put [%util_axis_order(0.00009, 202)];
-  %put [%util_axis_order(8.8, 20.2)];
-  %put [%util_axis_order(7.9, 8.8)];
-  %put [%util_axis_order(42, 2725)];
-  %put [%util_axis_order(-2029, -39)];
-
-  %put [%util_axis_order(-88, 202)];
-  %put [%util_axis_order(-202, 72)];
-
-  %put [%util_axis_order(0.000038, 0.00202)];
-  %put [%util_axis_order(-0.00202, -0.000038)];
-  %put [%util_axis_order(-0.00202, 0.000038)];
-  %put [%util_axis_order(-0.000038, 0.00202)];
-
-***/

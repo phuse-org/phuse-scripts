@@ -139,7 +139,6 @@ end HEADER ***/
       %let lo_var = ANRLO;
       %let hi_var = ANRHI;
 
-      %let jitter = Y;
       %let ref_lines = UNIFORM;
 
       %let p_fl = saffl;
@@ -184,11 +183,14 @@ end HEADER ***/
 
     %*--- Global boolean symbol CONTINUE, used with macro assert_continue(), warns user of invalid environment. Processing should HALT. ---*;
       %let CONTINUE = %assert_depend(OS=%str(AIX,WIN,HP IPF),
-                                     SASV=9.2+,
+                                     SASV=9.4M2,
+                                     SYSPROD=,
                                      vars=%str(css_anadata : &ana_variables),
                                      macros=assert_continue util_labels_from_var util_count_unique_values 
-                                            util_proc_template util_get_reference_lines util_get_var_min_max
-                                            util_value_format util_boxplot_visit_ranges util_delete_dsets
+                                            util_get_reference_lines util_proc_template util_get_var_min_max
+                                            util_value_format util_boxplot_visit_ranges util_axis_order util_delete_dsets,
+                                     symbols=m_lb m_ds m_var lo_var hi_var ref_lines p_fl a_fl 
+                                             max_boxes_per_page outputs_folder
                                     );
 
       %assert_continue(After asserting the dependencies of this script)
@@ -227,10 +229,11 @@ end HEADER ***/
            Or are temp dsets always initialized within each loop?
   ***/
 
+    %util_proc_template(phuseboxplot)
 
     %macro boxplot_each_param_tp(plotds=css_anadata, cleanup=1);
 
-      %local pdx tdx;
+      %local pdx tdx ;
 
       %do pdx = 1 %to &paramcd_n;
 
@@ -247,28 +250,10 @@ end HEADER ***/
         %*--- Analysis Timepoints for this parameter: Num (&ATPTN_N), Names (&ATPTN_NAM1 ...) and Labels (&ATPTN_LAB1 ...) ---*;
           %util_labels_from_var(css_nextparam, atptn, atpt)
 
-        %*--- Create NXT_VREFS: a list of reference lines for this parameter, across all timepoints ---*;
-          %util_get_reference_lines(css_nextparam, nxt_vrefs,
+        %*--- Create NXT_REFLINES: a list of reference lines for this parameter, across all timepoints ---*;
+          %util_get_reference_lines(css_nextparam, nxt_reflines,
                                     low_var  =&lo_var, high_var =&hi_var,
                                     ref_lines=&ref_lines)
-
-
-
-
-
-
-
-
-          %util_proc_template(phuseboxplot, ref_lines=&nxt_vrefs)
-
-
-
-
-
-
-
-
-
 
 
         %do tdx = 1 %to &atptn_n;
@@ -304,20 +289,23 @@ end HEADER ***/
                      n=n mean=mean std=std median=median min=datamin max=datamax q1=q1 q3=q3;
             run;
 
-            *--- STACK statistics (do NOT merge) BELOW the plot data, one obs per TREATMENT/VISIT        ---*;
-            *--- NB: We need exactly ONE obs per timepoint and trt: AXISTABLE defaults to a SUM function ---*;
+            /***
+              STACK statistics (do NOT merge) BELOW the plot data, one obs per TREATMENT/VISIT.
+              Concatenate any reference lines from css_reflines BELOW the statistics.
+              NB: We need exactly ONE obs per timepoint and trt: AXISTABLE defaults to a SUM function
+            ***/
             data css_plot;
               set css_nexttimept
                   css_stats;
 
-              label n       = 'n'
-                    mean    = 'Mean'
-                    std     = 'Std Dev'
-                    datamin = 'Min'
-                    q1      = 'Q1'
-                    median  = 'Median'
-                    q3      = 'Q3'
-                    datamax = 'Max'
+              label n         = 'n'
+                    mean      = 'Mean'
+                    std       = 'Std Dev'
+                    datamin   = 'Min'
+                    q1        = 'Q1'
+                    median    = 'Median'
+                    q3        = 'Q3'
+                    datamax   = 'Max'
                     ;
               format mean %scan(&util_value_format, 1, %str( )) std %scan(&util_value_format, 2, %str( ));
             run;
@@ -359,8 +347,11 @@ end HEADER ***/
                         _AVISIT     = 'avisit' 
                         _AVAL       = 'aval'
                         _AVALOUTLIE = 'm_var_outlier'
-                        _REFMIN     = 60
-                        _REFMAX     = 90
+
+                        %if %length(&nxt_reflines) > 0 %then %do;
+                          _REFLINES   = "%sysfunc(translate( &nxt_reflines, %str(,), %str( ) ))"
+                        %end;
+
                         _YMIN       = %scan(&y_axis, 1, %str( ))
                         _YMAX       = %scan(&y_axis, 3, %str( ))
                         _N          = 'n'
@@ -387,7 +378,7 @@ end HEADER ***/
 
 
       *--- Clean up temp data sets required to create box plots ---*;
-        %if &cleanup %then %util_delete_dsets(css_nextparam css_nexttimept css_stats css_plot);
+        %if &cleanup %then %util_delete_dsets(css_nextparam css_nexttimept css_stats css_reflines css_plot);
 
     %mend boxplot_each_param_tp;
 

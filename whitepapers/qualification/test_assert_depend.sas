@@ -60,12 +60,16 @@
       values("%lowcase(&macroname)", 'ad.1.b.1', 'macro variable exists',     
              'S', ' ', ' ', ' ', 'MacroName SYSscp MV_DoesNotExist', '0')
 
-      values("%lowcase(&macroname)", 'ad.2.a.1', 'SAS version IS 6.12+', 
-             'S', ' ', '6.12+', ' ', ' ',   '1')
-      values("%lowcase(&macroname)", 'ad.2.a.2', 'SAS version IS 9.1+', 
-             'S', ' ', '9.1+', ' ', ' ',    '1')
-      values("%lowcase(&macroname)", 'ad.2.b',   'SAS version is NOT 20.5+',     
-             'S', ' ', '20.5+', ' ', ' ',   '0')
+      values("%lowcase(&macroname)", 'ad.2.a.1', 'SAS version IS at least 6.12',
+             'S', ' ', '6.12', ' ', ' ',     '1')
+      values("%lowcase(&macroname)", 'ad.2.a.2', 'SAS version IS at least 9.1',
+             'S', ' ', '9.1', ' ', ' ',      '1')
+      values("%lowcase(&macroname)", 'ad.2.a.3', 'SAS version IS at least 9.4M2',
+             'S', ' ', '9.4M2', ' ', ' ',    '1')
+      values("%lowcase(&macroname)", 'ad.2.b1',   'SAS version is NOT 9.4M8',     
+             'S', ' ', '09.04m08', ' ', ' ', '0')
+      values("%lowcase(&macroname)", 'ad.2.b2',   'SAS version is NOT 20.5',
+             'S', ' ', '20.5', ' ', ' ',     '0')
 
       /*** NB: OS check never returns 0, but issues a WARNING to the log ***/
       values("%lowcase(&macroname)", 'ad.3.a',   'Confirm whether OS is exactly WIN',
@@ -79,13 +83,13 @@
 
 
       values("%lowcase(&macroname)", 'ad.4.a', 'AUTOCALL MACRO is missing',
-             'S', '%str(Win,Aix,Hp,Lin,Linux,Sun)', '6.12+', 'LowCase DNE_Delete_DSets', 'MacroName SYSscp',   '0')
+             'S', '%str(Win,Aix,Hp,Lin,Linux,Sun)', '6.12', 'LowCase DNE_Delete_DSets', 'MacroName SYSscp',   '0')
       values("%lowcase(&macroname)", 'ad.4.b', 'SAS VERSION is obsolete',
-             'S', '%str(Win,Aix,Hp,Lin,Linux,Sun)', '29.4+', 'LowCase Util_Delete_DSets', 'MacroName SYSscp',  '0')
+             'S', '%str(Win,Aix,Hp,Lin,Linux,Sun)', '9.04M08', 'LowCase Util_Delete_DSets', 'MacroName SYSscp',  '0')
       values("%lowcase(&macroname)", 'ad.4.c', 'OS is not supported',
-             'S', '%str(Dne,Junk)', '6.12+', 'LowCase Util_Delete_DSets', 'MacroName SYSscp',                  '1')
+             'S', '%str(Dne,Junk)', '9.4m1', 'LowCase Util_Delete_DSets', 'MacroName SYSscp',                  '1')
       values("%lowcase(&macroname)", 'ad.4.d', 'All conditions are successful',
-             'S', '%str(Win,Aix,Hp,Lin,Linux,Sun)', '6.12+', 'LowCase Util_Delete_DSets', 'MacroName SYSscp',  '1')
+             'S', '%str(Win,Aix,Hp,Lin,Linux,Sun)', '9.4M1', 'LowCase Util_Delete_DSets', 'MacroName SYSscp',  '1')
 
       /***
       values("%lowcase(&macroname)", '', '',

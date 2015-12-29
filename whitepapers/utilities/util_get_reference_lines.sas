@@ -1,6 +1,9 @@
 /***
-  From input data set such as boxplot data, determin 
-             
+  From input data set with normal reference range limits, such as lab or vital sign data,
+  determine which reference lines to include in a graphic, based on user-selected rule.
+
+  Example of return value: 50 75 100
+
   INPUTS                                                                              
     DSET      data set containing the measurement values and normal range values. data set options OK.
               REQUIRED - positional
@@ -23,9 +26,11 @@
     REF_LINES Reference lines to display, e.g., Normal Range LOWs/HIGHs. 
                 (See discussion in Central Tendency white paper.)
               optional
-              Syntax:  NONE (default) or UNIFORM (only if LOW & HIGH are uniform) or 
-                       NARROW (max LOW and min HIGH) or ALL (confusing to review) or
-                       numeric-value(s) to specify reference lines (see second example)
+              Syntax:  NONE (default) or 
+                       UNIFORM (only if LOW & HIGH are uniform) or 
+                       NARROW (max LOW and min HIGH) or 
+                       ALL (confusing to review) or
+                       numeric-value(s) to specify reference lines (see 2nd example)
               Example: UNIFORM
               Example: -5 0 5
 

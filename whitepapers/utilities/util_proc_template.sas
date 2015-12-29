@@ -30,16 +30,16 @@
   *--- Box width, Box plot cluster width and Scatter cluster width should all match ---*;
   %local iqr_size nr_size clusterwidth;
 
-  %let iqr_size = 7;
+  %let iqr_size = 6;
   %let nr_size = 5;
-  %let clusterwidth = 0.8;
+  %let clusterwidth = 0.6;
 
   %if %upcase(&template) = PHUSEBOXPLOT %then %do;
     proc template;
       define statgraph PhUSEboxplot;
 
-        dynamic _TRT _AVISIT _AVISITN _AVAL _AVALOUTLIE 
-                _REFMIN _REFMAX _YMIN _YMAX 
+        dynamic _TRT _AVISIT _AVISITN _AVAL _AVALOUTLIE
+                _YMIN _YMAX _REFLINES
                 _N _MEAN _STD _DATAMIN _Q1 _MEDIAN _Q3 _DATAMAX
                 _TICKLIST_;
 
@@ -132,8 +132,7 @@
                         clusterwidth=&clusterwidth
                         ;
 
-            referenceline y=_REFMAX / lineattrs=(color=red) name='Max';
-            referenceline y=_REFMIN / lineattrs=(color=red) name='Min';
+            referenceline y=eval(coln(_REFLINES)) / lineattrs=(color=red) name='Reference Lines';
 
             *--- KNOWN LIMITATION: 'box' markers work in SAS 9.4 M3 and later. See header notes. ---*;
             discretelegend 'box' 'IQROutliers' 'NormalRangeOutliers' /

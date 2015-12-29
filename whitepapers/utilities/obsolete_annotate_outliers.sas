@@ -1,7 +1,13 @@
 /***
   From input data set such as boxplot data, output an annotate data set to plot
   filled circles for outliers according to normal range criteria
-             
+
+  ---
+    Development Freeze: OBSOLETE MACRO
+    This approach is not longer needed in SAS 9.4 scripts,
+    which now use a GTL approach instead on annotating a traditional graphic.
+  ---
+
   INPUTS                                                                              
     DSET      data set containing the measurement values and normal range values
               REQUIRED - positional
@@ -59,7 +65,7 @@
   Author:          Dante Di Tommaso
 ***/
 
-%macro util_annotate_outliers(dset,
+%macro obsolete_annotate_outliers(dset,
                               annoset,
                               x_var=,
                               y_var=,
@@ -147,4 +153,4 @@
   %end;
   %else %put ERROR: (UTIL_ANNOTATE_OUTLIERS) Unable to create an annotate data set based on parameters provided. See log messages.;
 
-%mend util_annotate_outliers;
+%mend obsolete_annotate_outliers;

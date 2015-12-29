@@ -1,0 +1,1210 @@
+NOTE: Copyright (c) 2002-2012 by SAS Institute Inc., Cary, NC, USA.
+NOTE: SAS (r) Proprietary Software 9.4 (TS1M2)
+      Licensed to F. HOFFMANN LA ROCHE AG, Site 50701490.
+NOTE: This session is executing on the X64_7PRO  platform.
+
+
+
+NOTE: Updated analytical products:
+
+      SAS/STAT 13.2
+      SAS/ETS 13.2
+      SAS/IML 13.2
+      SAS/QC 13.2
+
+NOTE: Additional host information:
+
+ X64_7PRO WIN 6.1.7601 Service Pack 1 Workstation
+
+NOTE: SAS initialization used:
+      real time           17.49 seconds
+      cpu time            6.37 seconds
+
+1          OPTIONS sasautos=(%sysfunc(getoption(sasautos))
+1  ! "C:\CSS\phuse-scripts\whitepapers\utilities");
+
+2    %util_access_test_data(advs, local=C:\CSS\phuse-scripts\data\adam\cdisc\)
+NOTE: Libref SOURCE was successfully assigned as follows:
+      Engine:        XPORT
+      Physical Name: C:\CSS\phuse-scripts\data\adam\cdisc\advs.xpt
+
+NOTE: There were 32139 observations read from the data set SOURCE.ADVS.
+NOTE: The data set WORK.ADVS has 32139 observations and 44 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.70 seconds
+      cpu time            0.70 seconds
+
+
+NOTE: Fileref SOURCE has been deassigned.
+NOTE: Libref SOURCE has been deassigned.
+
+3
+4          data advs_sub (rename=(trtp_short=trtp));
+5            set work.advs;
+6            where (paramcd in ('DIABP') and atptn in (815)) or
+7                  (paramcd in ('SYSBP') and atptn in (816));
+8
+9            length trtp_short $6;
+10           select (trtp);
+11             when ('Placebo')              trtp_short = 'P';
+12             when ('Xanomeline High Dose') trtp_short = 'X-high';
+13             when ('Xanomeline Low Dose')  trtp_short = 'X-low';
+14             otherwise                     trtp_short = 'UNEXPECTED';
+15           end;
+16
+17           drop trtp;
+18         run;
+
+NOTE: There were 5925 observations read from the data set WORK.ADVS.
+      WHERE ((paramcd='DIABP') and (atptn=815)) or ((paramcd='SYSBP') and (atptn=816));
+NOTE: The data set WORK.ADVS_SUB has 5925 observations and 44 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.28 seconds
+      cpu time            0.28 seconds
+
+
+19
+20
+21       %*--- 3) Key user settings ---*;
+22
+23         %let m_lb   = work;
+24         %let m_ds   = advs_sub;
+25
+26         %let m_var  = AVAL;
+27         %let lo_var = ANRLO;
+28         %let hi_var = ANRHI;
+29
+30         %let ref_lines = ALL;
+31
+32         %let p_fl = saffl;
+33         %let a_fl = anl01fl;
+34
+35         %let max_boxes_per_page = 20;
+36
+37         %let outputs_folder = C:\CSS\phuse-scripts\whitepapers\WPCT\outputs_sas;
+38
+39     /*** end USER PROCESSING AND SETTINGS ***********************************
+40      *** RELAX.                                                           ***
+41      *** The rest should simply work, or alert you to invalid conditions. ***
+42      ************************************************************************
+43     ***/
+44
+45
+46
+47     /*** SETUP & CHECK DEPENDENCIES
+48       Explain to user in case environment or data do not support this analysis
+49
+50       Keep just those variables and records required for this analysis
+51       For details, see specifications at top
+52     ***/
+53
+54       options nocenter mautosource mrecall mprint msglevel=I mergenoby=WARN ls=max ps=max;
+55       goptions reset=all;
+56       ods show;
+Current OVERALL select list is: ALL
+57
+58       %let ana_variables = STUDYID USUBJID &p_fl &a_fl TRTP TRTPN PARAM PARAMCD &m_var &lo_var &hi_var AVISIT AVISITN ATPT ATPTN;
+59
+60       *--- Restrict analysis to SAFETY POP and ANALYSIS RECORDS (&a_fl) ---*;
+61         data css_anadata;
+62           set &m_lb..&m_ds (keep=&ana_variables);
+63           where &p_fl = 'Y' and &a_fl = 'Y';
+64
+65           *--- Create a Normal Range Outlier variable, for scatter plot overlay ---*;
+66             if (2 = n(&m_var, &lo_var) and &m_var < &lo_var) or
+67                (2 = n(&m_var, &hi_var) and &m_var > &hi_var) then m_var_outlier = &m_var;
+68             else m_var_outlier = .;
+69
+70         run;
+
+NOTE: There were 4054 observations read from the data set WORK.ADVS_SUB.
+      WHERE (saffl='Y') and (anl01fl='Y');
+NOTE: The data set WORK.CSS_ANADATA has 4054 observations and 16 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.04 seconds
+
+
+71
+72       %*--- Global boolean symbol CONTINUE, used with macro assert_continue(), warns user of invalid environment. Processing should HALT. ---*;
+73         %let CONTINUE = %assert_depend(OS=%str(AIX,WIN,HP IPF),
+74                                        SASV=9.4M2,
+75                                        SYSPROD=,
+76                                        vars=%str(css_anadata : &ana_variables),
+77                                        macros=assert_continue util_labels_from_var util_count_unique_values
+78                                               util_get_reference_lines util_proc_template util_get_var_min_max
+79                                               util_value_format util_boxplot_visit_ranges util_axis_order util_delete_dsets,
+80                                        symbols=m_lb m_ds m_var lo_var hi_var ref_lines p_fl a_fl
+81                                                max_boxes_per_page outputs_folder
+82                                       );
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CSS_ANADATA is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CSS_ANADATA is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set CSS_ANADATA, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. STUDYID is a variable on data set CSS_ANADATA.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CSS_ANADATA is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set CSS_ANADATA, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. USUBJID is a variable on data set CSS_ANADATA.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CSS_ANADATA is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set CSS_ANADATA, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. SAFFL is a variable on data set CSS_ANADATA.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CSS_ANADATA is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set CSS_ANADATA, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. ANL01FL is a variable on data set CSS_ANADATA.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CSS_ANADATA is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set CSS_ANADATA, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. TRTP is a variable on data set CSS_ANADATA.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CSS_ANADATA is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set CSS_ANADATA, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. TRTPN is a variable on data set CSS_ANADATA.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CSS_ANADATA is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set CSS_ANADATA, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. PARAM is a variable on data set CSS_ANADATA.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CSS_ANADATA is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set CSS_ANADATA, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. PARAMCD is a variable on data set CSS_ANADATA.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CSS_ANADATA is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set CSS_ANADATA, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. AVAL is a variable on data set CSS_ANADATA.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CSS_ANADATA is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set CSS_ANADATA, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. ANRLO is a variable on data set CSS_ANADATA.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CSS_ANADATA is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set CSS_ANADATA, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. ANRHI is a variable on data set CSS_ANADATA.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CSS_ANADATA is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set CSS_ANADATA, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. AVISIT is a variable on data set CSS_ANADATA.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CSS_ANADATA is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set CSS_ANADATA, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. AVISITN is a variable on data set CSS_ANADATA.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CSS_ANADATA is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set CSS_ANADATA, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. ATPT is a variable on data set CSS_ANADATA.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CSS_ANADATA is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set CSS_ANADATA, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. ATPTN is a variable on data set CSS_ANADATA.
+NOTE: (ASSERT_MACRO_EXIST) PASS, found macro ASSERT_CONTINUE in "C:\CSS\phuse-scripts\whitepapers\utilities\assert_continue.sas".
+NOTE: (ASSERT_MACRO_EXIST) PASS, found macro UTIL_LABELS_FROM_VAR in "C:\CSS\phuse-scripts\whitepapers\utilities\util_labels_from_var.sas".
+NOTE: (ASSERT_MACRO_EXIST) PASS, found macro UTIL_COUNT_UNIQUE_VALUES in "C:\CSS\phuse-scripts\whitepapers\utilities\util_count_unique_values.sas".
+NOTE: (ASSERT_MACRO_EXIST) PASS, found macro UTIL_GET_REFERENCE_LINES in "C:\CSS\phuse-scripts\whitepapers\utilities\util_get_reference_lines.sas".
+NOTE: (ASSERT_MACRO_EXIST) PASS, found macro UTIL_PROC_TEMPLATE in "C:\CSS\phuse-scripts\whitepapers\utilities\util_proc_template.sas".
+NOTE: (ASSERT_MACRO_EXIST) PASS, found macro UTIL_GET_VAR_MIN_MAX in "C:\CSS\phuse-scripts\whitepapers\utilities\util_get_var_min_max.sas".
+NOTE: (ASSERT_MACRO_EXIST) PASS, found macro UTIL_VALUE_FORMAT in "C:\CSS\phuse-scripts\whitepapers\utilities\util_value_format.sas".
+NOTE: (ASSERT_MACRO_EXIST) PASS, found macro UTIL_BOXPLOT_VISIT_RANGES in "C:\CSS\phuse-scripts\whitepapers\utilities\util_boxplot_visit_ranges.sas".
+NOTE: (ASSERT_MACRO_EXIST) PASS, found macro UTIL_AXIS_ORDER in "C:\CSS\phuse-scripts\whitepapers\utilities\util_axis_order.sas".
+NOTE: (ASSERT_MACRO_EXIST) PASS, found macro UTIL_DELETE_DSETS in "C:\CSS\phuse-scripts\whitepapers\utilities\util_delete_dsets.sas".
+NOTE: (ASSERT_DEPEND) PASS, found mac var M_LB with value "work"
+NOTE: (ASSERT_DEPEND) PASS, found mac var M_DS with value "advs_sub"
+NOTE: (ASSERT_DEPEND) PASS, found mac var M_VAR with value "AVAL"
+NOTE: (ASSERT_DEPEND) PASS, found mac var LO_VAR with value "ANRLO"
+NOTE: (ASSERT_DEPEND) PASS, found mac var HI_VAR with value "ANRHI"
+NOTE: (ASSERT_DEPEND) PASS, found mac var REF_LINES with value "ALL"
+NOTE: (ASSERT_DEPEND) PASS, found mac var P_FL with value "saffl"
+NOTE: (ASSERT_DEPEND) PASS, found mac var A_FL with value "anl01fl"
+NOTE: (ASSERT_DEPEND) PASS, found mac var MAX_BOXES_PER_PAGE with value "20"
+NOTE: (ASSERT_DEPEND) PASS, found mac var OUTPUTS_FOLDER with value "C:\CSS\phuse-scripts\whitepapers\WPCT\outputs_sas"
+NOTE: (ASSERT_DEPEND) Result is PASS.
+83
+84         %assert_continue(After asserting the dependencies of this script)
+NOTE: (ASSERT_CONTINUE) After asserting the dependencies of this script. OK to continue.
+85
+86
+87     /*** GATHER INFO for data-driven processing
+88       Collect required information about these measurements:
+89
+90       Number, Names and Labels of PARAMCDs - used to cycle through parameters that have measurements
+91         &PARAMCD_N count of parameters
+92         &PARAMCD_VAL1 to &&&PARAMCD_VAL&PARAMCD_N series of parameter codes
+93         &PARAMCD_LAB1 to &&&PARAMCD_LAB&PARAMCD_N series of parameter labels
+94
+95       Number of planned treatments - used for handling treatments categories
+96         &TRTN
+97     ***/
+98
+99       %*--- Parameters: Number (&PARAMCD_N), Names (&PARAMCD_NAM1 ...) and Labels (&PARAMCD_LAB1 ...) ---*;
+100        %util_labels_from_var(css_anadata, paramcd, param)
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CSS_ANADATA is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CSS_ANADATA is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set CSS_ANADATA, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. PARAMCD is a variable on data set CSS_ANADATA.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CSS_ANADATA is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set CSS_ANADATA, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. PARAM is a variable on data set CSS_ANADATA.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CSS_ANADATA is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CSS_ANADATA is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set CSS_ANADATA, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. PARAMCD is a variable on data set CSS_ANADATA.
+MPRINT(UTIL_COUNT_UNIQUE_VALUES):   proc sql noprint;
+MPRINT(UTIL_COUNT_UNIQUE_VALUES):   select count(unique(paramcd)) into: paramcd_n from css_anadata ;
+MPRINT(UTIL_COUNT_UNIQUE_VALUES):   quit;
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.06 seconds
+      cpu time            0.06 seconds
+
+
+NOTE: (UTIL_COUNT_UNIQUE_VALUES) Successfully created symbol PARAMCD_N = 2
+MPRINT(UTIL_LABELS_FROM_VAR):   *--- Create paired sequences of symbols containing values and labels ---*;
+MPRINT(UTIL_LABELS_FROM_VAR):   proc sort data=css_anadata out=css_lfv nodupkey;
+MPRINT(UTIL_LABELS_FROM_VAR):   by paramcd param;
+MPRINT(UTIL_LABELS_FROM_VAR):   run;
+
+NOTE: There were 4054 observations read from the data set WORK.CSS_ANADATA.
+NOTE: SAS sort was used.
+NOTE: 4052 observations with duplicate key values were deleted.
+NOTE: The data set WORK.CSS_LFV has 2 observations and 16 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.07 seconds
+      cpu time            0.07 seconds
+
+
+MPRINT(UTIL_LABELS_FROM_VAR):   data _null_;
+MPRINT(UTIL_LABELS_FROM_VAR):   set css_lfv;
+MPRINT(UTIL_LABELS_FROM_VAR):   by paramcd;
+MPRINT(UTIL_LABELS_FROM_VAR):   if not (first.paramcd and last.paramcd) then do;
+MPRINT(UTIL_LABELS_FROM_VAR):   put "ERROR: (UTIL_LABELS_FROM_VAR) Each PARAMCD value should have exacly one PARAM value." paramcd= param=;
+MPRINT(UTIL_LABELS_FROM_VAR):   put "ERROR: (UTIL_LABELS_FROM_VAR) Most likely you are missing some global symbols.";
+MPRINT(UTIL_LABELS_FROM_VAR):   end;
+MPRINT(UTIL_LABELS_FROM_VAR):   call symput(strip("paramcd_val"!!put(_n_, 8.-L)), strip(paramcd));
+MPRINT(UTIL_LABELS_FROM_VAR):   call symput(strip("paramcd_lab"!!put(_n_, 8.-L)), strip(param));
+MPRINT(UTIL_LABELS_FROM_VAR):   run;
+
+NOTE: There were 2 observations read from the data set WORK.CSS_LFV.
+NOTE: DATA statement used (Total process time):
+      real time           0.07 seconds
+      cpu time            0.07 seconds
+
+
+MPRINT(UTIL_LABELS_FROM_VAR):   proc datasets library=WORK memtype=DATA nolist nodetails;
+MPRINT(UTIL_LABELS_FROM_VAR):   delete css_lfv;
+MPRINT(UTIL_LABELS_FROM_VAR):   quit;
+NOTE: Deleting WORK.CSS_LFV (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.23 seconds
+      cpu time            0.10 seconds
+
+
+NOTE: (UTIL_LABELS_FROM_VAR) Successfully created symbols for Values and Labels from PARAMCD and PARAM
+101
+102      %*--- Number of planned treatments: Set &TRTN from ana variable TRTP ---*;
+103        %util_count_unique_values(css_anadata, trtp, trtn)
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CSS_ANADATA is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CSS_ANADATA is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set CSS_ANADATA, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. TRTP is a variable on data set CSS_ANADATA.
+MPRINT(UTIL_COUNT_UNIQUE_VALUES):   proc sql noprint;
+MPRINT(UTIL_COUNT_UNIQUE_VALUES):   select count(unique(trtp)) into: trtn from css_anadata ;
+MPRINT(UTIL_COUNT_UNIQUE_VALUES):   quit;
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: (UTIL_COUNT_UNIQUE_VALUES) Successfully created symbol TRTN = 3
+104
+105
+106    /*** BOXPLOT for each PARAMETER and ANALYSIS TIMEPOINT in selected data
+107
+108      One box plot for each PARAMETER and ANALYSIS TIMEPOINT.
+109      By Visit and Planned Treatment.
+110
+111      In case of many visits and planned treatments, each box plot will use multiple pages.
+112
+113      CLEANUP = O, blocks the macro from deleting temp data sets after the last parameter & timepoint loop
+114
+115      TO DO: Confirm whether temp data sets should be explicitly deleted after each parameter & timepoint loop.
+116             Could a left-over temp data set interfer with a subsequent loop?
+117             Or are temp dsets always initialized within each loop?
+118    ***/
+119
+120      %util_proc_template(phuseboxplot)
+MPRINT(UTIL_PROC_TEMPLATE):   *--- Normal Range outlier symbol (size 5) should fit in the IQR outlier (size 7) ---*;
+MPRINT(UTIL_PROC_TEMPLATE):   *--- Box width, Box plot cluster width and Scatter cluster width should all match ---*;
+MPRINT(UTIL_PROC_TEMPLATE):   proc template;
+MPRINT(UTIL_PROC_TEMPLATE):   define statgraph PhUSEboxplot;
+MPRINT(UTIL_PROC_TEMPLATE):   dynamic _TRT _AVISIT _AVISITN _AVAL _AVALOUTLIE _YMIN _YMAX _REFLINES _N _MEAN _STD _DATAMIN _Q1 _MEDIAN _Q3 _DATAMAX _TICKLIST_;
+MPRINT(UTIL_PROC_TEMPLATE):   *--- Design dimensions are suitable for landscape A4 and Letter ---*;
+MPRINT(UTIL_PROC_TEMPLATE):   begingraph / border=false dataskin=none designwidth=260mm designheight=190mm attrpriority=none;
+MPRINT(UTIL_PROC_TEMPLATE):   *--- Define extra legend items for Outlier markers. Define these OUTSIDE the layout block ---*;
+MPRINT(UTIL_PROC_TEMPLATE):   legenditem type=marker name='IQROutliers' / label='IQR Outliers' markerattrs=(color=CX000000 symbol=square size=6);
+MPRINT(UTIL_PROC_TEMPLATE):   legenditem type=marker name='NormalRangeOutliers' / label='Normal Range Outliers' markerattrs=(color=CXFF0000 symbol=circlefilled size=5);
+MPRINT(UTIL_PROC_TEMPLATE):   layout overlay / walldisplay=none pad=(top=20) yaxisopts=(type=linear linearopts=(viewmin=_YMIN viewmax=_YMAX) ) xaxisopts=(labelfitpolicy=split) xaxisopts=(type=discrete discreteopts=(tickvaluelist=_TICKLIST_
+tickvaluefitpolicy=splitrotate tickvaluelistpolicy=union) );
+MPRINT(UTIL_PROC_TEMPLATE):   *--- TOP INNER MARGIN: Timepoint labels appear across the top of the plot area ---*;
+MPRINT(UTIL_PROC_TEMPLATE):   innermargin / align=top separator=false pad=(top=0);
+MPRINT(UTIL_PROC_TEMPLATE):   blockplot x=_AVISITN block=_AVISIT / outlineattrs=(color=CXB3B3B3) display=(outline values) valuefitpolicy=split valuehalign=left valuevalign=top ;
+MPRINT(UTIL_PROC_TEMPLATE):   endinnermargin;
+MPRINT(UTIL_PROC_TEMPLATE):   *--- MAIN BOX PLOT: Including IQR outliers. Cluster width must match that of Scatter plot, and the Box plot width. By default, they do not match! ---*;
+MPRINT(UTIL_PROC_TEMPLATE):   boxplot x=_AVISITN y=_AVAL / group=_TRT name='box' capshape=serif boxwidth=0.6 display=(notches caps mean median fill outliers) groupdisplay=cluster clusterwidth=0.6 fillattrs=(color=CXB9CFE7) outlineattrs=(color=darkblue
+pattern=solid thickness=0.5) medianattrs=(color=darkblue) whiskerattrs=(color=darkblue) meanattrs=(symbol=plus size=8) outlierattrs=(color=cx000000 symbol=square size=6) ;
+MPRINT(UTIL_PROC_TEMPLATE):   *--- OUTLIER SCATTER PLOT: Normal Range Outliers. Cluster width must match that of Box plot. By default, they do not match! ---*;
+MPRINT(UTIL_PROC_TEMPLATE):   scatterplot x=_AVISITN y=_AVALOUTLIE / name='scatter' jitter=auto group=_TRT markerattrs=(color=CXFF0000 symbol=CIRCLEFILLED size=5) legendlabel='Normal Range Outliers' groupdisplay=cluster clusterwidth=0.6 ;
+MPRINT(UTIL_PROC_TEMPLATE):   referenceline y=eval(coln(_REFLINES)) / lineattrs=(color=red) name='Reference Lines';
+MPRINT(UTIL_PROC_TEMPLATE):   *--- KNOWN LIMITATION: 'box' markers work in SAS 9.4 M3 and later. See header notes. ---*;
+MPRINT(UTIL_PROC_TEMPLATE):   discretelegend 'box' 'IQROutliers' 'NormalRangeOutliers' / type=marker location=outside valign=bottom border=false title='Treatments & Outliers:' ;
+MPRINT(UTIL_PROC_TEMPLATE):   innermargin / align=bottom separator=false pad=(bottom=0);
+MPRINT(UTIL_PROC_TEMPLATE):   axistable x=_AVISITN value=_TRT / class=_TRT label='Treatment' classdisplay=cluster colorgroup=_TRT;
+MPRINT(UTIL_PROC_TEMPLATE):   axistable x=_AVISITN value=_N / class=_TRT label='n' classdisplay=cluster colorgroup=_TRT;
+MPRINT(UTIL_PROC_TEMPLATE):   axistable x=_AVISITN value=_MEAN / class=_TRT label='Mean' classdisplay=cluster colorgroup=_TRT;
+MPRINT(UTIL_PROC_TEMPLATE):   axistable x=_AVISITN value=_STD / class=_TRT label='Std Dev' classdisplay=cluster colorgroup=_TRT;
+MPRINT(UTIL_PROC_TEMPLATE):   axistable x=_AVISITN value=_DATAMIN / class=_TRT label='Min' classdisplay=cluster colorgroup=_TRT;
+MPRINT(UTIL_PROC_TEMPLATE):   axistable x=_AVISITN value=_Q1 / class=_TRT label='Q1' classdisplay=cluster colorgroup=_TRT;
+MPRINT(UTIL_PROC_TEMPLATE):   axistable x=_AVISITN value=_MEDIAN / class=_TRT label='Median' classdisplay=cluster colorgroup=_TRT;
+MPRINT(UTIL_PROC_TEMPLATE):   axistable x=_AVISITN value=_Q3 / class=_TRT label='Q3' classdisplay=cluster colorgroup=_TRT;
+MPRINT(UTIL_PROC_TEMPLATE):   axistable x=_AVISITN value=_DATAMAX / class=_TRT label='Max' classdisplay=cluster colorgroup=_TRT;
+MPRINT(UTIL_PROC_TEMPLATE):   endinnermargin;
+MPRINT(UTIL_PROC_TEMPLATE):   endlayout;
+MPRINT(UTIL_PROC_TEMPLATE):   endgraph;
+MPRINT(UTIL_PROC_TEMPLATE):   end;
+NOTE: Overwriting existing template/link: PhUSEboxplot
+NOTE: STATGRAPH 'PhUSEboxplot' has been saved to: SASUSER.TEMPLAT
+NOTE: PROCEDURE TEMPLATE used (Total process time):
+      real time           1.07 seconds
+      cpu time            0.18 seconds
+
+
+MPRINT(UTIL_PROC_TEMPLATE):   run;
+
+121      %macro boxplot_each_param_tp(plotds=css_anadata, cleanup=1);
+122
+123        %local pdx tdx ;
+124
+125        %do pdx = 1 %to &paramcd_n;
+126
+127          /*** LOOP 1 *****************************************************
+128           *** Loop through each PARAMETER, working with ALL TIMEPOINTS ***
+129           ****************************************************************/
+130            data css_nextparam;
+131              set &plotds (where=(paramcd = "&&paramcd_val&pdx"));
+132            run;
+133
+134          %*--- Y-AXIS alternative: Fix Y-Axis MIN/MAX based on all timepoints for PARAM. See Y-AXIS DEFAULT, below. ---*;
+135          %*   %util_get_var_min_max(css_nextparam, &m_var, aval_min_max)   *;
+136
+137          %*--- Analysis Timepoints for this parameter: Num (&ATPTN_N), Names (&ATPTN_NAM1 ...) and Labels (&ATPTN_LAB1 ...) ---*;
+138            %util_labels_from_var(css_nextparam, atptn, atpt)
+139
+140          %*--- Create NXT_REFLINES: a list of reference lines for this parameter, across all timepoints ---*;
+141            %util_get_reference_lines(css_nextparam, nxt_reflines,
+142                                      low_var  =&lo_var, high_var =&hi_var,
+143                                      ref_lines=&ref_lines)
+144
+145
+146          %do tdx = 1 %to &atptn_n;
+147
+148            /*** LOOP 2 ********************************************************************
+149             *** Loop through each TIMEPOINT for this parameter, working with ALL VISITS ***
+150             *** NB: PROC SORT here is REQUIRED in order to merge on STAT details, below ***
+151             *******************************************************************************/
+152              proc sort data=css_nextparam (where=(atptn = &&atptn_val&tdx))
+153                         out=css_nexttimept;
+154                by avisitn trtpn;
+155              run;
+156
+157
+158            %*--- Y-AXIS DEFAULT: Fix Y-Axis MIN/MAX based on this timepoint. See Y-AXIS alternative, above. ---*;
+159              %util_get_var_min_max(css_nexttimept, &m_var, aval_min_max)
+160
+161            %*--- Number of visits for this parameter and analysis timepoint: &VISN ---*;
+162              %util_count_unique_values(css_nexttimept, avisitn, visn)
+163
+164            %*--- Create format string to display MEAN and STDDEV to default sig-digs: &UTIL_VALUE_FORMAT ---*;
+165              %util_value_format(css_nexttimept, &m_var)
+166
+167            %*--- Create macro variable BOXPLOT_VISIT_RANGES, to subset visits into box plot pages ---*;
+168              %util_boxplot_visit_ranges(css_nexttimept, vvisn=avisitn, vtrtn=trtpn, numtrt=&trtn, numvis=&visn);
+169
+170
+171            *--- Calculate summary statistics, KEEP LABELS of VISIT and TRT for plotting, below ---*;
+172              proc summary data=css_nexttimept noprint;
+173                by avisitn trtpn avisit trtp;
+174                var &m_var;
+175                output out=css_stats (drop=_type_ _freq_)
+176                       n=n mean=mean std=std median=median min=datamin max=datamax q1=q1 q3=q3;
+177              run;
+178
+179              /***
+180                STACK statistics (do NOT merge) BELOW the plot data, one obs per TREATMENT/VISIT.
+181                Concatenate any reference lines from css_reflines BELOW the statistics.
+182                NB: We need exactly ONE obs per timepoint and trt: AXISTABLE defaults to a SUM function
+183              ***/
+184              data css_plot;
+185                set css_nexttimept
+186                    css_stats;
+187
+188                label n         = 'n'
+189                      mean      = 'Mean'
+190                      std       = 'Std Dev'
+191                      datamin   = 'Min'
+192                      q1        = 'Q1'
+193                      median    = 'Median'
+194                      q3        = 'Q3'
+195                      datamax   = 'Max'
+196                      ;
+197                format mean %scan(&util_value_format, 1, %str( )) std %scan(&util_value_format, 2, %str( ));
+198              run;
+199
+200
+201            *--- Graphics Settings - Default HSIZE and VSIZE are suitable for A4 and letter ---*;
+202              options orientation=landscape;
+203              goptions reset=all device=pdf;
+204
+205              title     justify=left height=1.2 "Box Plot - &&paramcd_lab&pdx by Visit, Analysis Timepoint: &&atptn_lab&tdx";
+206              footnote1 justify=left height=1.0 'Box plot type=schematic, the box shows median, interquartile range (IQR, edge of the bar), min and max';
+207              footnote2 justify=left height=1.0 'within 1.5 IQR below 25% and above 75% (ends of the whisker). Values outside the 1.5 IQR below 25% and';
+208              footnote3 justify=left height=1.0 'above 75% are shown as outliers. Means plotted as different symbols by treatments.';
+209
+210              %let y_axis = %util_axis_order( %scan(&aval_min_max,1), %scan(&aval_min_max,2) );
+211
+212            *--- ODS PDF destination (Traditional Graphics, No ODS or Listing output) ---*;
+213              ODS GRAPHICS OFF;
+214              ODS LISTING CLOSE;
+215              ods pdf author='PhUSE/CSS Standard Analysis Library'
+216                      subject='PhUSE/CSS Measures of Central Tendency'
+217                      title="Boxplot of &&paramcd_lab&pdx by Visit for Analysis Timepoint &&atptn_lab&tdx"
+218                      file="&outputs_folder\WPCT-F.07.01_Box_plot_&&paramcd_val&pdx.._by_visit_for_timepoint_&&atptn_val&tdx...pdf";
+219
+220
+221            /*** LOOP 3 - FINALLY, A Graph ****************************
+222             *** - Multiple pages in case of many visits/treatments ***
+223             **********************************************************/
+224
+225              %local vdx nxtvis;
+226              %let vdx=1;
+227              %do %while (%qscan(&boxplot_visit_ranges,&vdx,|) ne );
+228                %let nxtvis = %qscan(&boxplot_visit_ranges,&vdx,|);
+229
+230                proc sgrender data=css_plot (where=( &nxtvis )) template=PhUSEboxplot ;
+231                  dynamic
+232                          _TRT        = 'trtp'
+233                          _AVISITN    = 'avisitn'
+234                          _AVISIT     = 'avisit'
+235                          _AVAL       = 'aval'
+236                          _AVALOUTLIE = 'm_var_outlier'
+237
+238                          %if %length(&nxt_reflines) > 0 %then %do;
+239                            _REFLINES   = "%sysfunc(translate( &nxt_reflines, %str(,), %str( ) ))"
+240                          %end;
+241
+242                          _YMIN       = %scan(&y_axis, 1, %str( ))
+243                          _YMAX       = %scan(&y_axis, 3, %str( ))
+244                          _N          = 'n'
+245                          _MEAN       = 'mean'
+246                          _STD        = 'std'
+247                          _DATAMIN    = 'datamin'
+248                          _Q1         = 'q1'
+249                          _MEDIAN     = 'median'
+250                          _Q3         = 'q3'
+251                          _DATAMAX    = 'datamax'
+252                          ;
+253                run;
+254
+255                %let vdx=%eval(&vdx+1);
+256              %end; %* --- LOOP 3 - Pages of box plots, VDX ---*;
+257
+258            *--- Release the PDF output file! ---*;
+259              ods pdf close;
+260              ods listing;
+261
+262          %end; %*--- LOOP 2 - Time Points, TDX ---*;
+263
+264        %end; %*--- LOOP 1 - Parameters, PDX ---*;
+265
+266
+267        *--- Clean up temp data sets required to create box plots ---*;
+268          %if &cleanup %then %util_delete_dsets(css_nextparam css_nexttimept css_stats css_reflines css_plot);
+269
+270      %mend boxplot_each_param_tp;
+271
+272      %boxplot_each_param_tp;
+MPRINT(BOXPLOT_EACH_PARAM_TP):   data css_nextparam;
+MPRINT(BOXPLOT_EACH_PARAM_TP):   set css_anadata (where=(paramcd = "DIABP"));
+MPRINT(BOXPLOT_EACH_PARAM_TP):   run;
+
+NOTE: There were 2027 observations read from the data set WORK.CSS_ANADATA.
+      WHERE paramcd='DIABP';
+NOTE: The data set WORK.CSS_NEXTPARAM has 2027 observations and 16 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CSS_NEXTPARAM is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CSS_NEXTPARAM is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set CSS_NEXTPARAM, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. ATPTN is a variable on data set CSS_NEXTPARAM.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CSS_NEXTPARAM is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set CSS_NEXTPARAM, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. ATPT is a variable on data set CSS_NEXTPARAM.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CSS_NEXTPARAM is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CSS_NEXTPARAM is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set CSS_NEXTPARAM, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. ATPTN is a variable on data set CSS_NEXTPARAM.
+MPRINT(UTIL_COUNT_UNIQUE_VALUES):   proc sql noprint;
+MPRINT(UTIL_COUNT_UNIQUE_VALUES):   select count(unique(atptn)) into: atptn_n from css_nextparam ;
+MPRINT(UTIL_COUNT_UNIQUE_VALUES):   quit;
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: (UTIL_COUNT_UNIQUE_VALUES) Successfully created symbol ATPTN_N = 1
+MPRINT(UTIL_LABELS_FROM_VAR):   *--- Create paired sequences of symbols containing values and labels ---*;
+MPRINT(UTIL_LABELS_FROM_VAR):   proc sort data=css_nextparam out=css_lfv nodupkey;
+MPRINT(UTIL_LABELS_FROM_VAR):   by atptn atpt;
+MPRINT(UTIL_LABELS_FROM_VAR):   run;
+
+NOTE: There were 2027 observations read from the data set WORK.CSS_NEXTPARAM.
+NOTE: SAS sort was used.
+NOTE: 2026 observations with duplicate key values were deleted.
+NOTE: The data set WORK.CSS_LFV has 1 observations and 16 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+MPRINT(UTIL_LABELS_FROM_VAR):   data _null_;
+MPRINT(UTIL_LABELS_FROM_VAR):   set css_lfv;
+MPRINT(UTIL_LABELS_FROM_VAR):   by atptn;
+MPRINT(UTIL_LABELS_FROM_VAR):   if not (first.atptn and last.atptn) then do;
+MPRINT(UTIL_LABELS_FROM_VAR):   put "ERROR: (UTIL_LABELS_FROM_VAR) Each ATPTN value should have exacly one ATPT value." atptn= atpt=;
+MPRINT(UTIL_LABELS_FROM_VAR):   put "ERROR: (UTIL_LABELS_FROM_VAR) Most likely you are missing some global symbols.";
+MPRINT(UTIL_LABELS_FROM_VAR):   end;
+MPRINT(UTIL_LABELS_FROM_VAR):   call symput(strip("atptn_val"!!put(_n_, 8.-L)), strip(atptn));
+MPRINT(UTIL_LABELS_FROM_VAR):   call symput(strip("atptn_lab"!!put(_n_, 8.-L)), strip(atpt));
+MPRINT(UTIL_LABELS_FROM_VAR):   run;
+
+NOTE: Numeric values have been converted to character values at the places given by: (Line):(Column).
+      1:1
+NOTE: There were 1 observations read from the data set WORK.CSS_LFV.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.01 seconds
+
+
+MPRINT(UTIL_LABELS_FROM_VAR):   proc datasets library=WORK memtype=DATA nolist nodetails;
+MPRINT(UTIL_LABELS_FROM_VAR):   delete css_lfv;
+MPRINT(UTIL_LABELS_FROM_VAR):   quit;
+NOTE: Deleting WORK.CSS_LFV (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: (UTIL_LABELS_FROM_VAR) Successfully created symbols for Values and Labels from ATPTN and ATPT
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CSS_NEXTPARAM is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CSS_NEXTPARAM is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set CSS_NEXTPARAM, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. ANRLO is a variable on data set CSS_NEXTPARAM.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CSS_NEXTPARAM is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set CSS_NEXTPARAM, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. ANRHI is a variable on data set CSS_NEXTPARAM.
+MPRINT(UTIL_GET_REFERENCE_LINES):   proc sql noprint;
+MPRINT(UTIL_GET_REFERENCE_LINES):   select distinct ANRLO, ANRHI, count(ANRLO)+nmiss(ANRLO) into :lo_vals separated by ', ', :hi_vals separated by ', ', :val_counts separated by ' ' from css_nextparam where n(ANRLO, ANRHI) > 0 group by ANRLO, ANRHI;
+MPRINT(UTIL_GET_REFERENCE_LINES):   quit;
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: (UTIL_GET_REFERENCE_LINES) 1 distinct reference ranges in css_nextparam.
+NOTE: (UTIL_GET_REFERENCE_LINES) LOW , HIGH (number of observations)
+NOTE: (UTIL_GET_REFERENCE_LINES) 60 , 90 (2027)
+NOTE: (UTIL_GET_REFERENCE_LINES) If you see duplicate values, check the HEX values in your data.
+MPRINT(UTIL_GET_REFERENCE_LINES):   *--- Use data step and sort to clean up this list of reference lines (Unique, sorted Ascending) ---*;
+MPRINT(UTIL_GET_REFERENCE_LINES):   data grl_temp;
+MPRINT(UTIL_GET_REFERENCE_LINES):   do val = 60, 90 ;
+MPRINT(UTIL_GET_REFERENCE_LINES):   OUTPUT;
+MPRINT(UTIL_GET_REFERENCE_LINES):   end;
+MPRINT(UTIL_GET_REFERENCE_LINES):   run;
+
+NOTE: The data set WORK.GRL_TEMP has 2 observations and 1 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+MPRINT(UTIL_GET_REFERENCE_LINES):   proc sql noprint;
+MPRINT(UTIL_GET_REFERENCE_LINES):   select distinct val into :nxt_reflines separated by ' ' from grl_temp where not missing(val) order by val;
+MPRINT(UTIL_GET_REFERENCE_LINES):   quit;
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+MPRINT(UTIL_GET_REFERENCE_LINES):   proc datasets library=WORK memtype=DATA nolist nodetails;
+MPRINT(UTIL_GET_REFERENCE_LINES):   delete grl_temp;
+MPRINT(UTIL_GET_REFERENCE_LINES):   quit;
+
+NOTE: Deleting WORK.GRL_TEMP (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: (UTIL_GET_REFERENCE_LINES) Successfully created macro var NXT_REFLINES with reference values (60 90).
+MPRINT(BOXPLOT_EACH_PARAM_TP):   proc sort data=css_nextparam (where=(atptn = 815)) out=css_nexttimept;
+MPRINT(BOXPLOT_EACH_PARAM_TP):   by avisitn trtpn;
+MPRINT(BOXPLOT_EACH_PARAM_TP):   run;
+
+NOTE: There were 2027 observations read from the data set WORK.CSS_NEXTPARAM.
+      WHERE atptn=815;
+NOTE: SAS sort was used.
+NOTE: The data set WORK.CSS_NEXTTIMEPT has 2027 observations and 16 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CSS_NEXTTIMEPT is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CSS_NEXTTIMEPT is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set CSS_NEXTTIMEPT, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. AVAL is a variable on data set CSS_NEXTTIMEPT.
+MPRINT(UTIL_GET_VAR_MIN_MAX):   proc sql noprint;
+MPRINT(UTIL_GET_VAR_MIN_MAX):   select min(AVAL), max(AVAL) into :minval, :maxval from css_nexttimept ;
+MPRINT(UTIL_GET_VAR_MIN_MAX):   quit;
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: (UTIL_GET_VAR_MIN_MAX) Successfully created symbol AVAL_MIN_MAX = 40 109.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CSS_NEXTTIMEPT is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CSS_NEXTTIMEPT is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set CSS_NEXTTIMEPT, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. AVISITN is a variable on data set CSS_NEXTTIMEPT.
+MPRINT(UTIL_COUNT_UNIQUE_VALUES):   proc sql noprint;
+MPRINT(UTIL_COUNT_UNIQUE_VALUES):   select count(unique(avisitn)) into: visn from css_nexttimept ;
+MPRINT(UTIL_COUNT_UNIQUE_VALUES):   quit;
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: (UTIL_COUNT_UNIQUE_VALUES) Successfully created symbol VISN = 11
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CSS_NEXTTIMEPT is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CSS_NEXTTIMEPT is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set CSS_NEXTTIMEPT, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. AVAL is a variable on data set CSS_NEXTTIMEPT.
+MPRINT(UTIL_VALUE_FORMAT):   data css_fmt;
+MPRINT(UTIL_VALUE_FORMAT):   set css_nexttimept end=NoMore;
+MPRINT(UTIL_VALUE_FORMAT):   retain max_int 0 max_dec 0;
+MPRINT(UTIL_VALUE_FORMAT):   length int dec $8;
+MPRINT(UTIL_VALUE_FORMAT):   valtxt = put(AVAL, best8.-L);
+MPRINT(UTIL_VALUE_FORMAT):   int = scan(valtxt, 1, '.');
+MPRINT(UTIL_VALUE_FORMAT):   dec = scan(valtxt, 2, '.');
+MPRINT(UTIL_VALUE_FORMAT):   max_int = ifn(not missing(int) and length(int) > max_int, length(int), max_int);
+MPRINT(UTIL_VALUE_FORMAT):   max_dec = ifn(not missing(dec) and length(dec) > max_dec, length(dec), max_dec);
+MPRINT(UTIL_VALUE_FORMAT):   if NoMore then do;
+MPRINT(UTIL_VALUE_FORMAT):   meanfmt = strip(put(max_int+max_dec+2,8.-L))!!'.'!!strip(put(max_dec+1,8.-L));
+MPRINT(UTIL_VALUE_FORMAT):   stdvfmt = strip(put(max_int+max_dec+3,8.-L))!!'.'!!strip(put(max_dec+2,8.-L));
+MPRINT(UTIL_VALUE_FORMAT):   call symput('util_value_format', strip(meanfmt)!!' '!!strip(stdvfmt));
+MPRINT(UTIL_VALUE_FORMAT):   end;
+MPRINT(UTIL_VALUE_FORMAT):   run;
+
+NOTE: There were 2027 observations read from the data set WORK.CSS_NEXTTIMEPT.
+NOTE: The data set WORK.CSS_FMT has 2027 observations and 23 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+MPRINT(UTIL_VALUE_FORMAT):   proc datasets library=WORK memtype=DATA nolist nodetails;
+MPRINT(UTIL_VALUE_FORMAT):   delete css_fmt;
+MPRINT(UTIL_VALUE_FORMAT):   quit;
+
+NOTE: Deleting WORK.CSS_FMT (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: (UTIL_VALUE_FORMAT) Successfully created symbol UTIL_VALUE_FORMAT = 5.1 6.2
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CSS_NEXTTIMEPT is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CSS_NEXTTIMEPT is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set CSS_NEXTTIMEPT, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. AVISITN is a variable on data set CSS_NEXTTIMEPT.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CSS_NEXTTIMEPT is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set CSS_NEXTTIMEPT, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. TRTPN is a variable on data set CSS_NEXTTIMEPT.
+NOTE: (ASSERT_DEPEND) PASS, found mac var MAX_BOXES_PER_PAGE with value "20"
+NOTE: (ASSERT_DEPEND) Result is PASS.
+MPRINT(UTIL_BOXPLOT_VISIT_RANGES):   proc sort data=css_nexttimept (keep=avisitn trtpn) out=temp_vis_trt nodupkey;
+MPRINT(UTIL_BOXPLOT_VISIT_RANGES):   by avisitn trtpn;
+MPRINT(UTIL_BOXPLOT_VISIT_RANGES):   run;
+
+NOTE: There were 2027 observations read from the data set WORK.CSS_NEXTTIMEPT.
+NOTE: SAS sort was used.
+NOTE: 1994 observations with duplicate key values were deleted.
+NOTE: The data set WORK.TEMP_VIS_TRT has 33 observations and 2 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+MPRINT(UTIL_BOXPLOT_VISIT_RANGES):   data _null_;
+MPRINT(UTIL_BOXPLOT_VISIT_RANGES):   set temp_vis_trt end=NoMore;
+MPRINT(UTIL_BOXPLOT_VISIT_RANGES):   by avisitn trtpn;
+MPRINT(UTIL_BOXPLOT_VISIT_RANGES):   *--- Create BOXPLOT_VISIT_RANGES, to limit number of boxes per plot page to &MAX_BOXES_PER_PAGE ---*;
+MPRINT(UTIL_BOXPLOT_VISIT_RANGES):   length boxplot_visit_ranges $200;
+MPRINT(UTIL_BOXPLOT_VISIT_RANGES):   retain boxes_on_page 0 start_visit . boxplot_visit_ranges ' ';
+MPRINT(UTIL_BOXPLOT_VISIT_RANGES):   if missing(start_visit) then start_visit = avisitn;
+MPRINT(UTIL_BOXPLOT_VISIT_RANGES):   boxes_on_page + 1;
+MPRINT(UTIL_BOXPLOT_VISIT_RANGES):   *--- Within a visit, keep all trts together: On last obs for this visit, is there room for another set of boxes? ---*;
+MPRINT(UTIL_BOXPLOT_VISIT_RANGES):   if last.avisitn then do;
+MPRINT(UTIL_BOXPLOT_VISIT_RANGES):   if NoMore or boxes_on_page + 3 > 20 then do;
+MPRINT(UTIL_BOXPLOT_VISIT_RANGES):   *--- Current visit is enough for this plot. No more boxes. Next visit would be too much ---*;
+MPRINT(UTIL_BOXPLOT_VISIT_RANGES):   boxplot_visit_ranges = strip(boxplot_visit_ranges) !!strip(compbl( put(start_visit, best8.-L) !!" <= avisitn <= " !!put(avisitn, best8.-L) )) !!'|';
+MPRINT(UTIL_BOXPLOT_VISIT_RANGES):   boxes_on_page = 0;
+MPRINT(UTIL_BOXPLOT_VISIT_RANGES):   start_visit = .;
+MPRINT(UTIL_BOXPLOT_VISIT_RANGES):   end;
+MPRINT(UTIL_BOXPLOT_VISIT_RANGES):   end;
+MPRINT(UTIL_BOXPLOT_VISIT_RANGES):   if NoMore then call symput('boxplot_visit_ranges', strip(boxplot_visit_ranges));
+MPRINT(UTIL_BOXPLOT_VISIT_RANGES):   run;
+
+NOTE: There were 33 observations read from the data set WORK.TEMP_VIS_TRT.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+MPRINT(UTIL_DELETE_DSETS):   proc datasets library=WORK memtype=DATA nolist nodetails;
+MPRINT(UTIL_DELETE_DSETS):   delete TEMP_VIS_TRT;
+MPRINT(UTIL_DELETE_DSETS):   quit;
+
+NOTE: Deleting WORK.TEMP_VIS_TRT (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+Note: (UTIL_BOXPLOT_VISIT_RANGES) Default visit ranges for each plot produces, limiting to 20 boxes max per page.
+Note: (UTIL_BOXPLOT_VISIT_RANGES) BOXPLOT_VISIT_RANGES set to: 0 <= avisitn <= 12|16 <= avisitn <= 99|
+MPRINT(BOXPLOT_EACH_PARAM_TP):  ;
+MPRINT(BOXPLOT_EACH_PARAM_TP):   *--- Calculate summary statistics, KEEP LABELS of VISIT and TRT for plotting, below ---*;
+MPRINT(BOXPLOT_EACH_PARAM_TP):   proc summary data=css_nexttimept noprint;
+MPRINT(BOXPLOT_EACH_PARAM_TP):   by avisitn trtpn avisit trtp;
+MPRINT(BOXPLOT_EACH_PARAM_TP):   var AVAL;
+MPRINT(BOXPLOT_EACH_PARAM_TP):   output out=css_stats (drop=_type_ _freq_) n=n mean=mean std=std median=median min=datamin max=datamax q1=q1 q3=q3;
+MPRINT(BOXPLOT_EACH_PARAM_TP):   run;
+
+NOTE: There were 2027 observations read from the data set WORK.CSS_NEXTTIMEPT.
+NOTE: The data set WORK.CSS_STATS has 33 observations and 12 variables.
+NOTE: PROCEDURE SUMMARY used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+MPRINT(BOXPLOT_EACH_PARAM_TP):   data css_plot;
+MPRINT(BOXPLOT_EACH_PARAM_TP):   set css_nexttimept css_stats;
+MPRINT(BOXPLOT_EACH_PARAM_TP):   label n = 'n' mean = 'Mean' std = 'Std Dev' datamin = 'Min' q1 = 'Q1' median = 'Median' q3 = 'Q3' datamax = 'Max' ;
+MPRINT(BOXPLOT_EACH_PARAM_TP):   format mean 5.1 std 6.2;
+MPRINT(BOXPLOT_EACH_PARAM_TP):   run;
+
+NOTE: There were 2027 observations read from the data set WORK.CSS_NEXTTIMEPT.
+NOTE: There were 33 observations read from the data set WORK.CSS_STATS.
+NOTE: The data set WORK.CSS_PLOT has 2060 observations and 24 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+MPRINT(BOXPLOT_EACH_PARAM_TP):   *--- Graphics Settings - Default HSIZE and VSIZE are suitable for A4 and letter ---*;
+MPRINT(BOXPLOT_EACH_PARAM_TP):   options orientation=landscape;
+MPRINT(BOXPLOT_EACH_PARAM_TP):   goptions reset=all device=pdf;
+MPRINT(BOXPLOT_EACH_PARAM_TP):   title justify=left height=1.2 "Box Plot - Diastolic Blood Pressure (mmHg) by Visit, Analysis
+Timepoint: AFTER LYING DOWN FOR 5 MINUTES";
+MPRINT(BOXPLOT_EACH_PARAM_TP):   footnote1 justify=left height=1.0 'Box plot type=schematic, the box shows median,
+interquartile range (IQR, edge of the bar), min and max';
+MPRINT(BOXPLOT_EACH_PARAM_TP):   footnote2 justify=left height=1.0 'within 1.5 IQR below 25% and above 75% (ends of the
+whisker). Values outside the 1.5 IQR below 25% and';
+MPRINT(BOXPLOT_EACH_PARAM_TP):   footnote3 justify=left height=1.0 'above 75% are shown as outliers. Means plotted as different
+symbols by treatments.';
+MPRINT(BOXPLOT_EACH_PARAM_TP):   *--- ODS PDF destination (Traditional Graphics, No ODS or Listing output) ---*;
+MPRINT(BOXPLOT_EACH_PARAM_TP):   ODS GRAPHICS OFF;
+MPRINT(BOXPLOT_EACH_PARAM_TP):   ODS LISTING CLOSE;
+MPRINT(BOXPLOT_EACH_PARAM_TP):   ods pdf author='PhUSE/CSS Standard Analysis Library' subject='PhUSE/CSS Measures of Central
+Tendency' title="Boxplot of Diastolic Blood Pressure (mmHg) by Visit for Analysis Timepoint AFTER LYING DOWN FOR 5 MINUTES"
+file="C:\CSS\phuse-scripts\whitepapers\WPCT\outputs_sas\WPCT-F.07.01_Box_plot_DIABP_by_visit_for_timepoint_815.pdf";
+NOTE: Writing ODS PDF output to DISK destination
+      "C:\CSS\phuse-scripts\whitepapers\WPCT\outputs_sas\WPCT-F.07.01_Box_plot_DIABP_by_visit_for_timepoint_815.pdf",
+      printer "PDF".
+MPRINT(BOXPLOT_EACH_PARAM_TP):   proc sgrender data=css_plot (where=( 0 <= avisitn <= 12 )) template=PhUSEboxplot ;
+MPRINT(BOXPLOT_EACH_PARAM_TP):   dynamic _TRT = 'trtp' _AVISITN = 'avisitn' _AVISIT = 'avisit' _AVAL = 'aval' _AVALOUTLIE =
+'m_var_outlier' _REFLINES = "60,90" _YMIN = 40 _YMAX = 110 _N = 'n' _MEAN = 'mean' _STD = 'std' _DATAMIN = 'datamin' _Q1 = 'q1'
+_MEDIAN = 'median' _Q3 = 'q3' _DATAMAX = 'datamax' ;
+MPRINT(BOXPLOT_EACH_PARAM_TP):   run;
+
+NOTE: The graph will be rendered as an image due to the use of data skins.
+NOTE: There were 1316 observations read from the data set WORK.CSS_PLOT.
+      WHERE (avisitn>=0 and avisitn<=12);
+NOTE: PROCEDURE SGRENDER used (Total process time):
+      real time           12.30 seconds
+      cpu time            1.90 seconds
+
+
+MPRINT(BOXPLOT_EACH_PARAM_TP):   proc sgrender data=css_plot (where=( 16 <= avisitn <= 99 )) template=PhUSEboxplot ;
+MPRINT(BOXPLOT_EACH_PARAM_TP):   dynamic _TRT = 'trtp' _AVISITN = 'avisitn' _AVISIT = 'avisit' _AVAL = 'aval' _AVALOUTLIE =
+'m_var_outlier' _REFLINES = "60,90" _YMIN = 40 _YMAX = 110 _N = 'n' _MEAN = 'mean' _STD = 'std' _DATAMIN = 'datamin' _Q1 = 'q1'
+_MEDIAN = 'median' _Q3 = 'q3' _DATAMAX = 'datamax' ;
+MPRINT(BOXPLOT_EACH_PARAM_TP):   run;
+
+NOTE: The graph will be rendered as an image due to the use of data skins.
+NOTE: There were 744 observations read from the data set WORK.CSS_PLOT.
+      WHERE (avisitn>=16 and avisitn<=99);
+NOTE: PROCEDURE SGRENDER used (Total process time):
+      real time           1.60 seconds
+      cpu time            0.49 seconds
+
+
+MPRINT(BOXPLOT_EACH_PARAM_TP):   *--- Release the PDF output file! ---*;
+MPRINT(BOXPLOT_EACH_PARAM_TP):   ods pdf close;
+NOTE: ODS PDF printed 2 pages to
+      C:\CSS\phuse-scripts\whitepapers\WPCT\outputs_sas\WPCT-F.07.01_Box_plot_DIABP_by_visit_for_timepoint_815.pdf.
+MPRINT(BOXPLOT_EACH_PARAM_TP):   ods listing;
+MPRINT(BOXPLOT_EACH_PARAM_TP):   data css_nextparam;
+MPRINT(BOXPLOT_EACH_PARAM_TP):   set css_anadata (where=(paramcd = "SYSBP"));
+MPRINT(BOXPLOT_EACH_PARAM_TP):   run;
+
+NOTE: There were 2027 observations read from the data set WORK.CSS_ANADATA.
+      WHERE paramcd='SYSBP';
+NOTE: The data set WORK.CSS_NEXTPARAM has 2027 observations and 16 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CSS_NEXTPARAM is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CSS_NEXTPARAM is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set CSS_NEXTPARAM, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. ATPTN is a variable on data set CSS_NEXTPARAM.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CSS_NEXTPARAM is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set CSS_NEXTPARAM, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. ATPT is a variable on data set CSS_NEXTPARAM.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CSS_NEXTPARAM is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CSS_NEXTPARAM is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set CSS_NEXTPARAM, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. ATPTN is a variable on data set CSS_NEXTPARAM.
+MPRINT(UTIL_COUNT_UNIQUE_VALUES):   proc sql noprint;
+MPRINT(UTIL_COUNT_UNIQUE_VALUES):   select count(unique(atptn)) into: atptn_n from css_nextparam ;
+MPRINT(UTIL_COUNT_UNIQUE_VALUES):   quit;
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: (UTIL_COUNT_UNIQUE_VALUES) Successfully created symbol ATPTN_N = 1
+MPRINT(UTIL_LABELS_FROM_VAR):   *--- Create paired sequences of symbols containing values and labels ---*;
+MPRINT(UTIL_LABELS_FROM_VAR):   proc sort data=css_nextparam out=css_lfv nodupkey;
+MPRINT(UTIL_LABELS_FROM_VAR):   by atptn atpt;
+MPRINT(UTIL_LABELS_FROM_VAR):   run;
+
+NOTE: There were 2027 observations read from the data set WORK.CSS_NEXTPARAM.
+NOTE: SAS sort was used.
+NOTE: 2026 observations with duplicate key values were deleted.
+NOTE: The data set WORK.CSS_LFV has 1 observations and 16 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+MPRINT(UTIL_LABELS_FROM_VAR):   data _null_;
+MPRINT(UTIL_LABELS_FROM_VAR):   set css_lfv;
+MPRINT(UTIL_LABELS_FROM_VAR):   by atptn;
+MPRINT(UTIL_LABELS_FROM_VAR):   if not (first.atptn and last.atptn) then do;
+MPRINT(UTIL_LABELS_FROM_VAR):   put "ERROR: (UTIL_LABELS_FROM_VAR) Each ATPTN value should have exacly one ATPT value." atptn=
+atpt=;
+MPRINT(UTIL_LABELS_FROM_VAR):   put "ERROR: (UTIL_LABELS_FROM_VAR) Most likely you are missing some global symbols.";
+MPRINT(UTIL_LABELS_FROM_VAR):   end;
+MPRINT(UTIL_LABELS_FROM_VAR):   call symput(strip("atptn_val"!!put(_n_, 8.-L)), strip(atptn));
+MPRINT(UTIL_LABELS_FROM_VAR):   call symput(strip("atptn_lab"!!put(_n_, 8.-L)), strip(atpt));
+MPRINT(UTIL_LABELS_FROM_VAR):   run;
+
+NOTE: Numeric values have been converted to character values at the places given by: (Line):(Column).
+      1:1
+NOTE: There were 1 observations read from the data set WORK.CSS_LFV.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+MPRINT(UTIL_LABELS_FROM_VAR):   proc datasets library=WORK memtype=DATA nolist nodetails;
+MPRINT(UTIL_LABELS_FROM_VAR):   delete css_lfv;
+MPRINT(UTIL_LABELS_FROM_VAR):   quit;
+NOTE: Deleting WORK.CSS_LFV (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: (UTIL_LABELS_FROM_VAR) Successfully created symbols for Values and Labels from ATPTN and ATPT
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CSS_NEXTPARAM is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CSS_NEXTPARAM is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set CSS_NEXTPARAM, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. ANRLO is a variable on data set CSS_NEXTPARAM.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CSS_NEXTPARAM is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set CSS_NEXTPARAM, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. ANRHI is a variable on data set CSS_NEXTPARAM.
+MPRINT(UTIL_GET_REFERENCE_LINES):   proc sql noprint;
+MPRINT(UTIL_GET_REFERENCE_LINES):   select distinct ANRLO, ANRHI, count(ANRLO)+nmiss(ANRLO) into :lo_vals separated by ', ',
+:hi_vals separated by ', ', :val_counts separated by ' ' from css_nextparam where n(ANRLO, ANRHI) > 0 group by ANRLO, ANRHI;
+NOTE: No rows were selected.
+MPRINT(UTIL_GET_REFERENCE_LINES):   quit;
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: (UTIL_GET_REFERENCE_LINES) 0 distinct reference ranges in css_nextparam.
+NOTE: (UTIL_GET_REFERENCE_LINES) LOW , HIGH (number of observations)
+NOTE: (UTIL_GET_REFERENCE_LINES) If you see duplicate values, check the HEX values in your data.
+NOTE: (UTIL_GET_REFERENCE_LINES) Non-uniform reference limits detected, so suppressing reference lines.
+NOTE: (UTIL_GET_REFERENCE_LINES) Successfully created macro var NXT_REFLINES with reference values ().
+MPRINT(BOXPLOT_EACH_PARAM_TP):   proc sort data=css_nextparam (where=(atptn = 816)) out=css_nexttimept;
+MPRINT(BOXPLOT_EACH_PARAM_TP):   by avisitn trtpn;
+MPRINT(BOXPLOT_EACH_PARAM_TP):   run;
+
+NOTE: There were 2027 observations read from the data set WORK.CSS_NEXTPARAM.
+      WHERE atptn=816;
+NOTE: SAS sort was used.
+NOTE: The data set WORK.CSS_NEXTTIMEPT has 2027 observations and 16 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CSS_NEXTTIMEPT is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CSS_NEXTTIMEPT is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set CSS_NEXTTIMEPT, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. AVAL is a variable on data set CSS_NEXTTIMEPT.
+MPRINT(UTIL_GET_VAR_MIN_MAX):   proc sql noprint;
+MPRINT(UTIL_GET_VAR_MIN_MAX):   select min(AVAL), max(AVAL) into :minval, :maxval from css_nexttimept ;
+MPRINT(UTIL_GET_VAR_MIN_MAX):   quit;
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: (UTIL_GET_VAR_MIN_MAX) Successfully created symbol AVAL_MIN_MAX = 80 202.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CSS_NEXTTIMEPT is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CSS_NEXTTIMEPT is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set CSS_NEXTTIMEPT, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. AVISITN is a variable on data set CSS_NEXTTIMEPT.
+MPRINT(UTIL_COUNT_UNIQUE_VALUES):   proc sql noprint;
+MPRINT(UTIL_COUNT_UNIQUE_VALUES):   select count(unique(avisitn)) into: visn from css_nexttimept ;
+MPRINT(UTIL_COUNT_UNIQUE_VALUES):   quit;
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: (UTIL_COUNT_UNIQUE_VALUES) Successfully created symbol VISN = 11
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CSS_NEXTTIMEPT is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CSS_NEXTTIMEPT is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set CSS_NEXTTIMEPT, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. AVAL is a variable on data set CSS_NEXTTIMEPT.
+MPRINT(UTIL_VALUE_FORMAT):   data css_fmt;
+MPRINT(UTIL_VALUE_FORMAT):   set css_nexttimept end=NoMore;
+MPRINT(UTIL_VALUE_FORMAT):   retain max_int 0 max_dec 0;
+MPRINT(UTIL_VALUE_FORMAT):   length int dec $8;
+MPRINT(UTIL_VALUE_FORMAT):   valtxt = put(AVAL, best8.-L);
+MPRINT(UTIL_VALUE_FORMAT):   int = scan(valtxt, 1, '.');
+MPRINT(UTIL_VALUE_FORMAT):   dec = scan(valtxt, 2, '.');
+MPRINT(UTIL_VALUE_FORMAT):   max_int = ifn(not missing(int) and length(int) > max_int, length(int), max_int);
+MPRINT(UTIL_VALUE_FORMAT):   max_dec = ifn(not missing(dec) and length(dec) > max_dec, length(dec), max_dec);
+MPRINT(UTIL_VALUE_FORMAT):   if NoMore then do;
+MPRINT(UTIL_VALUE_FORMAT):   meanfmt = strip(put(max_int+max_dec+2,8.-L))!!'.'!!strip(put(max_dec+1,8.-L));
+MPRINT(UTIL_VALUE_FORMAT):   stdvfmt = strip(put(max_int+max_dec+3,8.-L))!!'.'!!strip(put(max_dec+2,8.-L));
+MPRINT(UTIL_VALUE_FORMAT):   call symput('util_value_format', strip(meanfmt)!!' '!!strip(stdvfmt));
+MPRINT(UTIL_VALUE_FORMAT):   end;
+MPRINT(UTIL_VALUE_FORMAT):   run;
+
+NOTE: There were 2027 observations read from the data set WORK.CSS_NEXTTIMEPT.
+NOTE: The data set WORK.CSS_FMT has 2027 observations and 23 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+MPRINT(UTIL_VALUE_FORMAT):   proc datasets library=WORK memtype=DATA nolist nodetails;
+MPRINT(UTIL_VALUE_FORMAT):   delete css_fmt;
+MPRINT(UTIL_VALUE_FORMAT):   quit;
+
+NOTE: Deleting WORK.CSS_FMT (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: (UTIL_VALUE_FORMAT) Successfully created symbol UTIL_VALUE_FORMAT = 5.1 6.2
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CSS_NEXTTIMEPT is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CSS_NEXTTIMEPT is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set CSS_NEXTTIMEPT, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. AVISITN is a variable on data set CSS_NEXTTIMEPT.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CSS_NEXTTIMEPT is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set CSS_NEXTTIMEPT, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. TRTPN is a variable on data set CSS_NEXTTIMEPT.
+NOTE: (ASSERT_DEPEND) PASS, found mac var MAX_BOXES_PER_PAGE with value "20"
+NOTE: (ASSERT_DEPEND) Result is PASS.
+MPRINT(UTIL_BOXPLOT_VISIT_RANGES):   proc sort data=css_nexttimept (keep=avisitn trtpn) out=temp_vis_trt nodupkey;
+MPRINT(UTIL_BOXPLOT_VISIT_RANGES):   by avisitn trtpn;
+MPRINT(UTIL_BOXPLOT_VISIT_RANGES):   run;
+
+NOTE: There were 2027 observations read from the data set WORK.CSS_NEXTTIMEPT.
+NOTE: SAS sort was used.
+NOTE: 1994 observations with duplicate key values were deleted.
+NOTE: The data set WORK.TEMP_VIS_TRT has 33 observations and 2 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+MPRINT(UTIL_BOXPLOT_VISIT_RANGES):   data _null_;
+MPRINT(UTIL_BOXPLOT_VISIT_RANGES):   set temp_vis_trt end=NoMore;
+MPRINT(UTIL_BOXPLOT_VISIT_RANGES):   by avisitn trtpn;
+MPRINT(UTIL_BOXPLOT_VISIT_RANGES):   *--- Create BOXPLOT_VISIT_RANGES, to limit number of boxes per plot page to
+&MAX_BOXES_PER_PAGE ---*;
+MPRINT(UTIL_BOXPLOT_VISIT_RANGES):   length boxplot_visit_ranges $200;
+MPRINT(UTIL_BOXPLOT_VISIT_RANGES):   retain boxes_on_page 0 start_visit . boxplot_visit_ranges ' ';
+MPRINT(UTIL_BOXPLOT_VISIT_RANGES):   if missing(start_visit) then start_visit = avisitn;
+MPRINT(UTIL_BOXPLOT_VISIT_RANGES):   boxes_on_page + 1;
+MPRINT(UTIL_BOXPLOT_VISIT_RANGES):   *--- Within a visit, keep all trts together: On last obs for this visit, is there room for
+another set of boxes? ---*;
+MPRINT(UTIL_BOXPLOT_VISIT_RANGES):   if last.avisitn then do;
+MPRINT(UTIL_BOXPLOT_VISIT_RANGES):   if NoMore or boxes_on_page + 3 > 20 then do;
+MPRINT(UTIL_BOXPLOT_VISIT_RANGES):   *--- Current visit is enough for this plot. No more boxes. Next visit would be too much
+---*;
+MPRINT(UTIL_BOXPLOT_VISIT_RANGES):   boxplot_visit_ranges = strip(boxplot_visit_ranges) !!strip(compbl( put(start_visit,
+best8.-L) !!" <= avisitn <= " !!put(avisitn, best8.-L) )) !!'|';
+MPRINT(UTIL_BOXPLOT_VISIT_RANGES):   boxes_on_page = 0;
+MPRINT(UTIL_BOXPLOT_VISIT_RANGES):   start_visit = .;
+MPRINT(UTIL_BOXPLOT_VISIT_RANGES):   end;
+MPRINT(UTIL_BOXPLOT_VISIT_RANGES):   end;
+MPRINT(UTIL_BOXPLOT_VISIT_RANGES):   if NoMore then call symput('boxplot_visit_ranges', strip(boxplot_visit_ranges));
+MPRINT(UTIL_BOXPLOT_VISIT_RANGES):   run;
+
+NOTE: There were 33 observations read from the data set WORK.TEMP_VIS_TRT.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+MPRINT(UTIL_DELETE_DSETS):   proc datasets library=WORK memtype=DATA nolist nodetails;
+MPRINT(UTIL_DELETE_DSETS):   delete TEMP_VIS_TRT;
+MPRINT(UTIL_DELETE_DSETS):   quit;
+
+NOTE: Deleting WORK.TEMP_VIS_TRT (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+Note: (UTIL_BOXPLOT_VISIT_RANGES) Default visit ranges for each plot produces, limiting to 20 boxes max per page.
+Note: (UTIL_BOXPLOT_VISIT_RANGES) BOXPLOT_VISIT_RANGES set to: 0 <= avisitn <= 12|16 <= avisitn <= 99|
+MPRINT(BOXPLOT_EACH_PARAM_TP):  ;
+MPRINT(BOXPLOT_EACH_PARAM_TP):   *--- Calculate summary statistics, KEEP LABELS of VISIT and TRT for plotting, below ---*;
+MPRINT(BOXPLOT_EACH_PARAM_TP):   proc summary data=css_nexttimept noprint;
+MPRINT(BOXPLOT_EACH_PARAM_TP):   by avisitn trtpn avisit trtp;
+MPRINT(BOXPLOT_EACH_PARAM_TP):   var AVAL;
+MPRINT(BOXPLOT_EACH_PARAM_TP):   output out=css_stats (drop=_type_ _freq_) n=n mean=mean std=std median=median min=datamin
+max=datamax q1=q1 q3=q3;
+MPRINT(BOXPLOT_EACH_PARAM_TP):   run;
+
+NOTE: There were 2027 observations read from the data set WORK.CSS_NEXTTIMEPT.
+NOTE: The data set WORK.CSS_STATS has 33 observations and 12 variables.
+NOTE: PROCEDURE SUMMARY used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+MPRINT(BOXPLOT_EACH_PARAM_TP):   data css_plot;
+MPRINT(BOXPLOT_EACH_PARAM_TP):   set css_nexttimept css_stats;
+MPRINT(BOXPLOT_EACH_PARAM_TP):   label n = 'n' mean = 'Mean' std = 'Std Dev' datamin = 'Min' q1 = 'Q1' median = 'Median' q3 =
+'Q3' datamax = 'Max' ;
+MPRINT(BOXPLOT_EACH_PARAM_TP):   format mean 5.1 std 6.2;
+MPRINT(BOXPLOT_EACH_PARAM_TP):   run;
+
+NOTE: There were 2027 observations read from the data set WORK.CSS_NEXTTIMEPT.
+NOTE: There were 33 observations read from the data set WORK.CSS_STATS.
+NOTE: The data set WORK.CSS_PLOT has 2060 observations and 24 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+MPRINT(BOXPLOT_EACH_PARAM_TP):   *--- Graphics Settings - Default HSIZE and VSIZE are suitable for A4 and letter ---*;
+MPRINT(BOXPLOT_EACH_PARAM_TP):   options orientation=landscape;
+MPRINT(BOXPLOT_EACH_PARAM_TP):   goptions reset=all device=pdf;
+MPRINT(BOXPLOT_EACH_PARAM_TP):   title justify=left height=1.2 "Box Plot - Systolic Blood Pressure (mmHg) by Visit, Analysis
+Timepoint: AFTER STANDING FOR 1 MINUTE";
+MPRINT(BOXPLOT_EACH_PARAM_TP):   footnote1 justify=left height=1.0 'Box plot type=schematic, the box shows median,
+interquartile range (IQR, edge of the bar), min and max';
+MPRINT(BOXPLOT_EACH_PARAM_TP):   footnote2 justify=left height=1.0 'within 1.5 IQR below 25% and above 75% (ends of the
+whisker). Values outside the 1.5 IQR below 25% and';
+MPRINT(BOXPLOT_EACH_PARAM_TP):   footnote3 justify=left height=1.0 'above 75% are shown as outliers. Means plotted as different
+symbols by treatments.';
+MPRINT(BOXPLOT_EACH_PARAM_TP):   *--- ODS PDF destination (Traditional Graphics, No ODS or Listing output) ---*;
+MPRINT(BOXPLOT_EACH_PARAM_TP):   ODS GRAPHICS OFF;
+MPRINT(BOXPLOT_EACH_PARAM_TP):   ODS LISTING CLOSE;
+MPRINT(BOXPLOT_EACH_PARAM_TP):   ods pdf author='PhUSE/CSS Standard Analysis Library' subject='PhUSE/CSS Measures of Central
+Tendency' title="Boxplot of Systolic Blood Pressure (mmHg) by Visit for Analysis Timepoint AFTER STANDING FOR 1 MINUTE"
+file="C:\CSS\phuse-scripts\whitepapers\WPCT\outputs_sas\WPCT-F.07.01_Box_plot_SYSBP_by_visit_for_timepoint_816.pdf";
+NOTE: Writing ODS PDF output to DISK destination
+      "C:\CSS\phuse-scripts\whitepapers\WPCT\outputs_sas\WPCT-F.07.01_Box_plot_SYSBP_by_visit_for_timepoint_816.pdf",
+      printer "PDF".
+MPRINT(BOXPLOT_EACH_PARAM_TP):   proc sgrender data=css_plot (where=( 0 <= avisitn <= 12 )) template=PhUSEboxplot ;
+MPRINT(BOXPLOT_EACH_PARAM_TP):   dynamic _TRT = 'trtp' _AVISITN = 'avisitn' _AVISIT = 'avisit' _AVAL = 'aval' _AVALOUTLIE =
+'m_var_outlier' _YMIN = 80 _YMAX = 220 _N = 'n' _MEAN = 'mean' _STD = 'std' _DATAMIN = 'datamin' _Q1 = 'q1' _MEDIAN = 'median'
+_Q3 = 'q3' _DATAMAX = 'datamax' ;
+MPRINT(BOXPLOT_EACH_PARAM_TP):   run;
+
+NOTE: The graph will be rendered as an image due to the use of data skins.
+WARNING: The referenceline statement named 'Reference Lines' will not be drawn because one or more of the required arguments
+         were not supplied.
+WARNING: Y=M_VAR_OUTLIER is invalid. The option expects that the column not contain all missing values.
+NOTE: There were 1316 observations read from the data set WORK.CSS_PLOT.
+      WHERE (avisitn>=0 and avisitn<=12);
+NOTE: PROCEDURE SGRENDER used (Total process time):
+      real time           11.17 seconds
+      cpu time            1.84 seconds
+
+
+MPRINT(BOXPLOT_EACH_PARAM_TP):   proc sgrender data=css_plot (where=( 16 <= avisitn <= 99 )) template=PhUSEboxplot ;
+MPRINT(BOXPLOT_EACH_PARAM_TP):   dynamic _TRT = 'trtp' _AVISITN = 'avisitn' _AVISIT = 'avisit' _AVAL = 'aval' _AVALOUTLIE =
+'m_var_outlier' _YMIN = 80 _YMAX = 220 _N = 'n' _MEAN = 'mean' _STD = 'std' _DATAMIN = 'datamin' _Q1 = 'q1' _MEDIAN = 'median'
+_Q3 = 'q3' _DATAMAX = 'datamax' ;
+MPRINT(BOXPLOT_EACH_PARAM_TP):   run;
+
+NOTE: The graph will be rendered as an image due to the use of data skins.
+WARNING: The referenceline statement named 'Reference Lines' will not be drawn because one or more of the required arguments
+         were not supplied.
+WARNING: Y=M_VAR_OUTLIER is invalid. The option expects that the column not contain all missing values.
+NOTE: There were 744 observations read from the data set WORK.CSS_PLOT.
+      WHERE (avisitn>=16 and avisitn<=99);
+NOTE: PROCEDURE SGRENDER used (Total process time):
+      real time           1.73 seconds
+      cpu time            0.71 seconds
+
+
+MPRINT(BOXPLOT_EACH_PARAM_TP):   *--- Release the PDF output file! ---*;
+MPRINT(BOXPLOT_EACH_PARAM_TP):   ods pdf close;
+NOTE: ODS PDF printed 2 pages to
+      C:\CSS\phuse-scripts\whitepapers\WPCT\outputs_sas\WPCT-F.07.01_Box_plot_SYSBP_by_visit_for_timepoint_816.pdf.
+MPRINT(BOXPLOT_EACH_PARAM_TP):   ods listing;
+MPRINT(BOXPLOT_EACH_PARAM_TP):   *--- Clean up temp data sets required to create box plots ---*;
+MPRINT(UTIL_DELETE_DSETS):   proc datasets library=WORK memtype=DATA nolist nodetails;
+MPRINT(UTIL_DELETE_DSETS):   delete CSS_NEXTPARAM CSS_NEXTTIMEPT CSS_STATS CSS_REFLINES CSS_PLOT;
+MPRINT(UTIL_DELETE_DSETS):   quit;
+
+NOTE: The file WORK.CSS_REFLINES (memtype=DATA) was not found, but appears on a DELETE statement.
+NOTE: Deleting WORK.CSS_NEXTPARAM (memtype=DATA).
+NOTE: Deleting WORK.CSS_NEXTTIMEPT (memtype=DATA).
+NOTE: Deleting WORK.CSS_STATS (memtype=DATA).
+NOTE: Deleting WORK.CSS_PLOT (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+273
+274    /*** END boxplotting ***/
+

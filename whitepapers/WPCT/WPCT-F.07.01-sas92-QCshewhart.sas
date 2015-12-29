@@ -11,6 +11,14 @@
 
     Using this program:
 
+      DEVELOPMENT FREEZE, SAS 9.2 approach
+
+      *** SAS 9.2 QC/PROC SHEWHART is obsolete, but provided for users of SAS versions prior to SAS 9.4 (TS1M2)
+      *** This uses utility macros that are also now obsolete:
+      ***   obsolete_annotate_outliers.sas
+      ***   obsolete_prep_shewhart_data.sas
+      ***   
+
       * See USER PROCESSING AND SETTINGS, below, to configure this program for your environment and data
       * Program will plot all visits, ordered by AVISITN, with maximum of 20 boxes on a page (default)
         + see user option MAX_BOXES_PER_PAGE, below, to change limit of 20 boxes per page
@@ -176,10 +184,14 @@ end HEADER ***/
 
     %*--- Global boolean symbol CONTINUE, used with macro assert_continue(), warns user of invalid environment. Processing should HALT. ---*;
       %let CONTINUE = %assert_depend(OS=%str(AIX,WIN,HP IPF),
-                                     SASV=9.2+,
+                                     SASV=9.2,
                                      vars=%str(css_anadata : &ana_variables),
                                      macros=assert_continue util_labels_from_var util_count_unique_values 
-                                            util_value_format util_prep_shewhart_data
+                                            util_get_var_min_max util_value_format obsolete_prep_shewhart_data
+                                            obsolete_annotate_outliers util_axis_order 
+                                            util_get_reference_lines util_delete_dsets,
+                                     symbols=m_lb m_ds m_var lo_var hi_var jitter ref_lines p_fl a_fl 
+                                             max_boxes_per_page outputs_folder
                                     );
 
       %assert_continue(After asserting the dependencies of this script)
@@ -290,15 +302,15 @@ end HEADER ***/
             Create symbol BOXPLOT_TIMEPT_RANGES, a |-delimited string that groups visits onto pages
               Example of BOXPLOT_TIMEPT_RANGES: 0 <= timept < 7|7 <= timept < 12|
 
-            NB: OUTPUT DSET of %util_prep_shewhart_data has _TP suffix.
+            NB: OUTPUT DSET: CSS_PLOT_TP (%obsolete_prep_shewhart_data adds the _TP suffix)
           ***/
 
-            %util_prep_shewhart_data(css_plot, 
-                                     vvisn=avisitn, vtrtn=trtpn, vtrt=trtp, vval=&m_var,
-                                     numtrt=&trtn, numvis=&visn,
-                                     alsokeep=&lo_var &hi_var)
+            %obsolete_prep_shewhart_data(css_plot, 
+                                         vvisn=avisitn, vtrtn=trtpn, vtrt=trtp, vval=&m_var,
+                                         numtrt=&trtn, numvis=&visn,
+                                         alsokeep=&lo_var &hi_var)
 
-            %util_annotate_outliers(css_plot_tp, 
+            %obsolete_annotate_outliers(css_plot_tp, 
                                     css_annotate,
                                     x_var    = TIMEPT,
                                     y_var    = &m_var,
