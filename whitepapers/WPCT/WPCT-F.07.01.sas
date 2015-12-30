@@ -164,8 +164,6 @@ end HEADER ***/
   ***/
 
     options nocenter mautosource mrecall mprint msglevel=I mergenoby=WARN ls=max ps=max;
-    goptions reset=all;
-    ods show;
 
     %let ana_variables = STUDYID USUBJID &p_fl &a_fl TRTP TRTPN PARAM PARAMCD &m_var &lo_var &hi_var AVISIT AVISITN ATPT ATPTN;
 
@@ -311,20 +309,22 @@ end HEADER ***/
             run;
 
 
-          *--- Graphics Settings - Default HSIZE and VSIZE are suitable for A4 and letter ---*;
+          *--- Graphics Settings - Set defaults for all graphs ---*;
             options orientation=landscape;
-            goptions reset=all device=pdf;
+            goptions reset=all;
+
+            ods graphics on / reset=all;
+            ods graphics    / border=no attrpriority=COLOR;
 
             title     justify=left height=1.2 "Box Plot - &&paramcd_lab&pdx by Visit, Analysis Timepoint: &&atptn_lab&tdx";
-            footnote1 justify=left height=1.0 'Box plot type=schematic, the box shows median, interquartile range (IQR, edge of the bar), min and max';
-            footnote2 justify=left height=1.0 'within 1.5 IQR below 25% and above 75% (ends of the whisker). Values outside the 1.5 IQR below 25% and';
-            footnote3 justify=left height=1.0 'above 75% are shown as outliers. Means plotted as different symbols by treatments.';
+            footnote1 justify=left height=1.0 'Box plot type is schematic: the box shows median and interquartile range (IQR, the box edges); the whiskers extend to the minimum';
+            footnote2 justify=left height=1.0 'and maximum data points within 1.5 IQR below 25% and above 75%, respectively. Values outside the whiskers are shown as outliers.';
+            footnote3 justify=left height=1.0 'Means are marked with a different symbol for each treatment. Red dots indicate measures outside the normal reference range.';
 
             %let y_axis = %util_axis_order( %scan(&aval_min_max,1), %scan(&aval_min_max,2) );
 
           *--- ODS PDF destination (Traditional Graphics, No ODS or Listing output) ---*;
-            ODS GRAPHICS OFF;
-            ODS LISTING CLOSE;
+            ods listing close;
             ods pdf author='PhUSE/CSS Standard Analysis Library'
                     subject='PhUSE/CSS Measures of Central Tendency'
                     title="Boxplot of &&paramcd_lab&pdx by Visit for Analysis Timepoint &&atptn_lab&tdx"
@@ -352,10 +352,12 @@ end HEADER ***/
                           _REFLINES   = "%sysfunc(translate( &nxt_reflines, %str(,), %str( ) ))"
                         %end;
 
+                        _YLABEL     = "&&paramcd_lab&pdx"
                         _YMIN       = %scan(&y_axis, 1, %str( ))
                         _YMAX       = %scan(&y_axis, 3, %str( ))
+                        _YINCR      = %scan(&y_axis, 5, %str( ))
                         _N          = 'n'
-                        _MEAN       = 'mean'
+                        _MEAN        = 'mean'
                         _STD        = 'std'
                         _DATAMIN    = 'datamin'
                         _Q1         = 'q1'
