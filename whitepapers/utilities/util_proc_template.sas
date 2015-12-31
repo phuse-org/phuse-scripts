@@ -61,7 +61,7 @@
                                               symbol=square 
                                               size=&iqr_size);
           legenditem type=marker name='NormalRangeOutliers' / 
-                                 label='Normal Range Outliers' 
+                                 label='Normal Range Outliers'
                                  markerattrs=(color=CXFF0000 
                                               symbol=circlefilled 
                                               size=%eval(&iqr_size - 1)
@@ -123,23 +123,33 @@
                                   size=&iqr_size)
                     ;
 
-            *--- OUTLIER SCATTER PLOT: Normal Range Outliers. 
+            *--- OUTLIER SCATTER PLOT: Normal Range Outliers, IF NON-MISSING.
                  Cluster width must match that of Box plot. 
                  By default, they do not match! ---*;
-            scatterplot x=_AVISITN y=_AVALOUTLIE /
-                        name='scatter'
-                        group=_TRT
-                        groupdisplay=cluster
-                        clusterwidth=&clusterwidth
-                        jitter=auto
-                        markerattrs=(color=CXFF0000 
-                                     symbol=circlefilled 
-                                     size=%eval(&iqr_size - 1)
-                                    )
-                        legendlabel='Normal Range Outliers'
-                        ;
 
-            referenceline y=eval(coln(_REFLINES)) / lineattrs=(color=red) name='Reference Lines';
+            IF ( MEAN(_AVALOUTLIE) NE . )
+
+              scatterplot x=_AVISITN y=_AVALOUTLIE /
+                          name='scatter'
+                          group=_TRT
+                          groupdisplay=cluster
+                          clusterwidth=&clusterwidth
+                          jitter=auto
+                          markerattrs=(color=CXFF0000 
+                                       symbol=circlefilled 
+                                       size=%eval(&iqr_size - 1)
+                                      )
+                          legendlabel='Normal Range Outliers'
+                          ;
+
+            ENDIF;
+
+            *--- Normal Range Reference lines, IF PROVIDED ---*;
+            IF (length(_REFLINES) > 0)
+
+              referenceline y=eval(coln(_REFLINES)) / lineattrs=(color=red) name='Reference Lines';
+
+            ENDIF;
 
             *--- KNOWN LIMITATION: 'box' markers work in SAS 9.4 M3 and later. See header notes. ---*;
             discretelegend 'box' 'IQROutliers' 'NormalRangeOutliers' /

@@ -14,6 +14,10 @@
               REQUIRED
               Syntax:  symbol-name
               Example: aval_min_max
+    EXTRA   Additional values to include in resulting range. E.g., to ensure axis range include Normal Range interval.
+              optional
+              Syntax:  Space-delimited list of numeric values
+              Example: -5 0 10
     SQLWHR  complete SQL where expression, to limit check to subset of DS data
               optional
               Syntax:  where sql-where-expression
@@ -25,10 +29,10 @@
   Author:          Dante Di Tommaso
 ***/
 
-%macro util_get_var_min_max(ds, var, sym, sqlwhr=);
+%macro util_get_var_min_max(ds, var, sym, sqlwhr=, extra=);
 
   %global &sym;
-  %local OK minval maxval;
+  %local OK minval maxval idx nxt;
 
   %let OK = %assert_dset_exist(&ds);
   %if &OK %then %let OK = %assert_var_exist(&ds, &var);
@@ -42,6 +46,15 @@
     quit;
     %let minval = &minval;
     %let maxval = &maxval;
+
+    %*--- Adjust range to accomodate any extra values provided ---*;
+    %if %length(&extra) > 0 %then %do idx = 1 %to %sysfunc(countw(&extra, %str( )));
+      %let nxt = %scan(&extra, &idx, %str( ));
+
+      %if %sysevalf(&minval > &nxt) %then %let minval = &nxt;
+      %if %sysevalf(&maxval < &nxt) %then %let maxval = &nxt;
+    %end;
+
     %let &sym = &minval &maxval;
 
     %if &minval = . or &maxval = . %then
@@ -54,4 +67,3 @@
   %end;
 
 %mend util_get_var_min_max;
-

@@ -242,9 +242,6 @@ end HEADER ***/
             set &plotds (where=(paramcd = "&&paramcd_val&pdx"));
           run;
 
-        %*--- Y-AXIS alternative: Fix Y-Axis MIN/MAX based on all timepoints for PARAM. See Y-AXIS DEFAULT, below. ---*;
-        %*   %util_get_var_min_max(css_nextparam, &m_var, aval_min_max)   *;
-
         %*--- Analysis Timepoints for this parameter: Num (&ATPTN_N), Names (&ATPTN_NAM1 ...) and Labels (&ATPTN_LAB1 ...) ---*;
           %util_labels_from_var(css_nextparam, atptn, atpt)
 
@@ -252,6 +249,10 @@ end HEADER ***/
           %util_get_reference_lines(css_nextparam, nxt_reflines,
                                     low_var  =&lo_var, high_var =&hi_var,
                                     ref_lines=&ref_lines)
+
+        %*--- Y-AXIS alternative: Fix Y-Axis MIN/MAX based on all timepoints for PARAM. See Y-AXIS DEFAULT, below. ---*;
+        %*--- NB: EXTRA normal range reference lines could expand Y-AXIS range.                                    ---*;
+        %*   %util_get_var_min_max(css_nextparam, &m_var, aval_min_max, extra=&nxt_reflines)   *;
 
 
         %do tdx = 1 %to &atptn_n;
@@ -265,9 +266,9 @@ end HEADER ***/
               by avisitn trtpn;
             run;
 
-
-          %*--- Y-AXIS DEFAULT: Fix Y-Axis MIN/MAX based on this timepoint. See Y-AXIS alternative, above. ---*;
-            %util_get_var_min_max(css_nexttimept, &m_var, aval_min_max)
+          %*--- Y-AXIS DEFAULT: Set Y-Axis MIN/MAX based on this timepoint. See Y-AXIS alternative, above. ---*;
+          %*--- NB: EXTRA normal range reference lines could expand Y-AXIS range.                          ---*;
+            %util_get_var_min_max(css_nexttimept, &m_var, aval_min_max, extra=&nxt_reflines)
 
           %*--- Number of visits for this parameter and analysis timepoint: &VISN ---*;
             %util_count_unique_values(css_nexttimept, avisitn, visn)
