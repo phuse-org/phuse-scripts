@@ -344,7 +344,7 @@ end HEADER ***/
                         _TRT        = 'trtp'
                         _AVISITN    = 'avisitn' 
                         _AVISIT     = 'avisit' 
-                        _AVAL       = "m_var"
+                        _AVAL       = "&m_var"
                         _AVALOUTLIE = 'm_var_outlier'
 
                         %if %length(&nxt_reflines) > 0 %then %do;
