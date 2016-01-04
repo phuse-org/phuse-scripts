@@ -1,13 +1,13 @@
 /*** HEADER
 
-    Display:     Figure 7.1 Box plot - Measurements by Analysis Timepoint, Visit and Planned Treatment
+    Display:     Figure 7.2 Box plot - Change from Baseline by Analysis Timepoint, Visit and Planned Treatment
     White paper: Central Tendency
 
     User Guide:     https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/CentralTendency-UserGuide.txt
     Macro Library:  https://github.com/phuse-org/phuse-scripts/tree/master/whitepapers/utilities
     Specs:          https://github.com/phuse-org/phuse-scripts/tree/master/whitepapers/specification
     Test Data:      https://github.com/phuse-org/phuse-scripts/tree/master/data/adam/cdisc
-    Sample Output:  https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/WPCT/outputs_sas/WPCT-F.07.01_Box_plot_DIABP_by_visit_for_timepoint_815.pdf
+    Sample Output:  https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/WPCT/outputs_sas/WPCT-F.07.02_Box_plot_DIABP_Change_by_visit_for_timepoint_815.pdf
 
     Using this program:
 
@@ -57,27 +57,16 @@ end HEADER ***/
          - Visits
 
     3) REQUIRED - Key user settings (libraries, data sets, variables and box plot options)
-       M_LB:   Libname containing ADaM measurement data, such as ADVS.
+       C_LB:   Libname containing ADaM measurement data, such as ADVS.
                WORK by default, since step (2) creates the desired WORK subsets.
-       M_DS:   Measuments data set, such as ADVS.
+       C_DS:   Measuments data set including derived Change-from-baseline, such as ADVS.
+       C_VAR:  Variable in C_DS with change-from-baseline data, such as CHG.
 
-       M_VAR:  Variable in M_DS with measurements data, such as AVAL.
-       LO_VAR: Variable in M_DS with LOWER LIMIT of reference range, such as ANRLO.
-               Required to highlight values outside reference range (RED DOT in box plot), and reference lines
-       HI_VAR: Variable in M_DS with UPPER LIMIT of reference range, such as ANRHI.
-               Required to highlight values outside reference range (RED DOT in box plot), and reference lines
+       B_VISN: Visit number that represents Baseline in AVISITN (e.g., 0)
+       E_VISN: Visit number that represents endpoint in AVISITN for chg-from-baseline comparison (e.g., 99)
 
-       P_FL:  Population flag variable. 'Y' indicates record is in population of interest.
-       A_FL:  Analysis Flag variable.   'Y' indicates that record is selected for analysis.
-
-       REF_LINES:
-             Option to specify which Normal Range reference lines to include in box plots
-             <NONE | UNIFORM | NARROW | ALL | numeric-value(s)> See discussion in Central Tendency White Paper 
-             NONE    - default. no reference lines on box plot
-             UNIFORM - preferred alternative to default. Only plot LOW/HIGH ref lines if uniform for all obs
-             NARROW  - display only the narrow normal limits: max LOW, and min HIGH limits
-             ALL     - discouraged since displaying ALL reference lines confuses review our data display
-             numeric-values - space-delimited list of reference line values, such as a 0 reference line for displays of change.
+       P_FL:   Population flag variable. 'Y' indicates record is in population of interest.
+       A_FL:   Analysis Flag variable.   'Y' indicates that record is selected for analysis.
 
        MAX_BOXES_PER_PAGE:
              Maximum number of boxes to display per plot page (see "Notes", above)
@@ -131,17 +120,15 @@ end HEADER ***/
 
     %*--- 3) Key user settings ---*;
 
-      %let m_lb   = work;
-      %let m_ds   = advs_sub;
+      %let c_lb   = work;
+      %let c_ds   = advs_sub;
+      %let c_var  = chg;
 
-      %let m_var  = AVAL;
-      %let lo_var = ANRLO;
-      %let hi_var = ANRHI;
+      %let b_visn = 0;
+      %let e_visn = 99;
 
       %let p_fl = saffl;
       %let a_fl = anl01fl;
-
-      %let ref_lines = UNIFORM;
 
       %let max_boxes_per_page = 20;
 
@@ -164,17 +151,17 @@ end HEADER ***/
 
     options nocenter mautosource mrecall mprint msglevel=I mergenoby=WARN ls=max ps=max;
 
-    %let ana_variables = STUDYID USUBJID &p_fl &a_fl TRTP TRTPN PARAM PARAMCD &m_var &lo_var &hi_var AVISIT AVISITN ATPT ATPTN;
+    %let ana_variables = STUDYID USUBJID &p_fl &a_fl TRTP TRTPN PARAM PARAMCD &c_var AVISIT AVISITN ATPT ATPTN;
 
     %*--- Global boolean symbol CONTINUE, used with macro assert_continue(), warns user of invalid environment. Processing should HALT. ---*;
       %let CONTINUE = %assert_depend(OS=%str(AIX,WIN,HP IPF),
                                      SASV=9.4M2,
                                      SYSPROD=,
-                                     vars=%str(&m_lb..&m_ds : &ana_variables),
+                                     vars=%str(&c_lb..&c_ds : &ana_variables),
                                      macros=assert_continue util_labels_from_var util_count_unique_values 
                                             util_get_reference_lines util_proc_template util_get_var_min_max
                                             util_value_format util_boxplot_visit_ranges util_axis_order util_delete_dsets,
-                                     symbols=m_lb m_ds m_var lo_var hi_var ref_lines p_fl a_fl 
+                                     symbols=c_lb c_ds c_var b_visn e_visn p_fl a_fl 
                                              max_boxes_per_page outputs_folder
                                     );
 
@@ -183,14 +170,11 @@ end HEADER ***/
 
     *--- Restrict analysis to SAFETY POP and ANALYSIS RECORDS (&a_fl) ---*;
       data css_anadata;
-        set &m_lb..&m_ds (keep=&ana_variables);
+        set &c_lb..&c_ds (keep=&ana_variables);
         where &p_fl = 'Y' and &a_fl = 'Y';
 
-        *--- Create a Normal Range Outlier variable, for scatter plot overlay ---*;
-          if (2 = n(&m_var, &lo_var) and &m_var < &lo_var) or
-             (2 = n(&m_var, &hi_var) and &m_var > &hi_var) then m_var_outlier = &m_var;
-          else m_var_outlier = .;
-
+        *--- DO NOT display the baseline change, which is always zero ---*;
+          where also avisitn ne &b_visn;
       run;
 
 
@@ -204,10 +188,25 @@ end HEADER ***/
 
     Number of planned treatments - used for handling treatments categories
       &TRTN
+
+    Baseline visit value & label
+      &b_visn_val1
+      &b_visn_lab1
+
+    Endpoint visit value & label
+      &b_visn_val1
+      &b_visn_lab1
+
   ***/
 
     %*--- Parameters: Number (&PARAMCD_N), Names (&PARAMCD_VAL1 ...) and Labels (&PARAMCD_LAB1 ...) ---*;
       %util_labels_from_var(css_anadata, paramcd, param)
+
+    %*--- Baseline visit: Number (&B_VISN_N), Names (&B_VISN_VAL1 ...) and Labels (&B_VISN_LAB1 ...) ---*;
+      %util_labels_from_var(&c_lb..&c_ds, avisitn, avisit, prefix=b_visn, whr=%str(where avisitn eq &b_visn;))
+
+    %*--- Endpoint visit: Number (&E_VISN_N), Names (&E_VISN_VAL1 ...) and Labels (&E_VISN_LAB1 ...) ---*;
+      %util_labels_from_var(css_anadata, avisitn, avisit, prefix=e_visn, whr=%str(where avisitn eq &e_visn;))
 
     %*--- Number of planned treatments: Set &TRTN from ana variable TRTP ---*;
       %util_count_unique_values(css_anadata, trtp, trtn)
@@ -242,14 +241,8 @@ end HEADER ***/
         %*--- Analysis Timepoints for this parameter: Num (&ATPTN_N), Names (&ATPTN_VAL1 ...) and Labels (&ATPTN_LAB1 ...) ---*;
           %util_labels_from_var(css_nextparam, atptn, atpt)
 
-        %*--- Create NXT_REFLINES: a list of reference lines for this parameter, across all timepoints ---*;
-          %util_get_reference_lines(css_nextparam, nxt_reflines,
-                                    low_var  =&lo_var, high_var =&hi_var,
-                                    ref_lines=&ref_lines)
-
         %*--- Y-AXIS alternative: Fix Y-Axis MIN/MAX based on all timepoints for PARAM. See Y-AXIS DEFAULT, below. ---*;
-        %*--- NB: EXTRA normal range reference lines could expand Y-AXIS range.                                    ---*;
-        %*   %util_get_var_min_max(css_nextparam, &m_var, aval_min_max, extra=&nxt_reflines)   *;
+        %*   %util_get_var_min_max(css_nextparam, &c_var, aval_min_max)   *;
 
 
         %do tdx = 1 %to &atptn_n;
@@ -264,14 +257,13 @@ end HEADER ***/
             run;
 
           %*--- Y-AXIS DEFAULT: Set Y-Axis MIN/MAX based on this timepoint. See Y-AXIS alternative, above. ---*;
-          %*--- NB: EXTRA normal range reference lines could expand Y-AXIS range.                          ---*;
-            %util_get_var_min_max(css_nexttimept, &m_var, aval_min_max, extra=&nxt_reflines)
+            %util_get_var_min_max(css_nexttimept, &c_var, aval_min_max)
 
           %*--- Number of visits for this parameter and analysis timepoint: &VISN ---*;
             %util_count_unique_values(css_nexttimept, avisitn, visn)
 
           %*--- Create format string to display MEAN and STDDEV to default sig-digs: &UTIL_VALUE_FORMAT ---*;
-            %util_value_format(css_nexttimept, &m_var)
+            %util_value_format(css_nexttimept, &c_var)
 
           %*--- Create macro variable BOXPLOT_VISIT_RANGES, to subset visits into box plot pages ---*;
             %util_boxplot_visit_ranges(css_nexttimept, vvisn=avisitn, vtrtn=trtpn, numtrt=&trtn, numvis=&visn);
@@ -280,7 +272,7 @@ end HEADER ***/
           *--- Calculate summary statistics, KEEP LABELS of VISIT and TRT for plotting, below ---*;
             proc summary data=css_nexttimept noprint;
               by avisitn trtpn avisit trtp;
-              var &m_var;
+              var &c_var;
               output out=css_stats (drop=_type_ _freq_) 
                      n=n mean=mean std=std median=median min=datamin max=datamax q1=q1 q3=q3;
             run;
@@ -314,10 +306,10 @@ end HEADER ***/
             ods graphics on / reset=all;
             ods graphics    / border=no attrpriority=COLOR;
 
-            title     justify=left height=1.2 "Box Plot - &&paramcd_lab&pdx by Visit, Analysis Timepoint: &&atptn_lab&tdx";
+            title     justify=left height=1.2 "Box Plot - &&paramcd_lab&pdx Change from Baseline by Visit, Analysis Timepoint: &&atptn_lab&tdx";
             footnote1 justify=left height=1.0 'Box plot type is schematic: the box shows median and interquartile range (IQR, the box edges); the whiskers extend to the minimum';
             footnote2 justify=left height=1.0 'and maximum data points within 1.5 IQR below 25% and above 75%, respectively. Values outside the whiskers are shown as outliers.';
-            footnote3 justify=left height=1.0 'Means are marked with a different symbol for each treatment. Red dots indicate measures outside the normal reference range.';
+            footnote3 justify=left height=1.0 'Means are marked with a different symbol for each treatment. P-value is for the treatment comparison from ANCOVA model Change = Baseline + Treatment.';
 
             %let y_axis = %util_axis_order( %scan(&aval_min_max,1,%str( )), %scan(&aval_min_max,2,%str( )) );
 
@@ -326,8 +318,8 @@ end HEADER ***/
             ods pdf dpi=300
                     author="(&SYSUSERID) PhUSE/CSS Standard Analysis Library"
                     subject='PhUSE/CSS Measures of Central Tendency'
-                    title="Boxplot of &&paramcd_lab&pdx by Visit for Analysis Timepoint &&atptn_lab&tdx"
-                    file="&outputs_folder\WPCT-F.07.01_Box_plot_&&paramcd_val&pdx.._by_visit_for_timepoint_&&atptn_val&tdx...pdf";
+                    title="Boxplot of &&paramcd_lab&pdx Change from Baseline by Visit for Analysis Timepoint &&atptn_lab&tdx"
+                    file="&outputs_folder\WPCT-F.07.02_Box_plot_&&paramcd_val&pdx.._Change_by_visit_for_timepoint_&&atptn_val&tdx...pdf";
 
 
           /*** LOOP 3 - FINALLY, A Graph ****************************
@@ -344,19 +336,15 @@ end HEADER ***/
                         _TRT        = 'trtp'
                         _AVISITN    = 'avisitn' 
                         _AVISIT     = 'avisit' 
-                        _AVAL       = "m_var"
+                        _AVAL       = "&c_var"
                         _AVALOUTLIE = 'm_var_outlier'
-
-                        %if %length(&nxt_reflines) > 0 %then %do;
-                          _REFLINES   = "%sysfunc(translate( &nxt_reflines, %str(,), %str( ) ))"
-                        %end;
-
+                        _REFLINES   = '0'
                         _YLABEL     = "&&paramcd_lab&pdx"
                         _YMIN       = %scan(&y_axis, 1, %str( ))
                         _YMAX       = %scan(&y_axis, 3, %str( ))
                         _YINCR      = %scan(&y_axis, 5, %str( ))
                         _N          = 'n'
-                        _MEAN        = 'mean'
+                        _MEAN       = 'mean'
                         _STD        = 'std'
                         _DATAMIN    = 'datamin'
                         _Q1         = 'q1'
@@ -379,7 +367,7 @@ end HEADER ***/
 
 
       *--- Clean up temp data sets required to create box plots ---*;
-        %if &cleanup %then %util_delete_dsets(css_nextparam css_nexttimept css_stats css_reflines css_plot);
+        %if &cleanup %then %util_delete_dsets(css_nextparam css_nexttimept css_stats css_plot);
 
     %mend boxplot_each_param_tp;
 

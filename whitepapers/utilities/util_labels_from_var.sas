@@ -53,10 +53,10 @@
 
   %if &OK %then %do;
 
-    %util_count_unique_values(&ds, &var, &prefix._n)
+    %util_count_unique_values(&ds, &var, &prefix._n, sqlwhr=&whr)
 
     *--- Create paired sequences of symbols containing values and labels ---*;
-      %do idx = 1 %to &&&var._n;
+      %do idx = 1 %to &&&prefix._n;
         %global &prefix._val&idx &prefix._lab&idx;
       %end;
 

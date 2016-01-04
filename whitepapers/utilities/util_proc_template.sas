@@ -49,9 +49,9 @@
                 ;
 
         *--- Design dimensions are suitable for landscape A4 and Letter ---*;
-        begingraph / attrpriority=none border=false
+        begingraph / attrpriority=none border=false pad=0
                      dataskin=none
-                     designwidth=260mm designheight=190mm 
+                     designwidth=260mm designheight=170mm
                      ;
 
           *--- Define extra legend items for Outlier markers. Define these OUTSIDE the layout block ---*;
@@ -69,10 +69,11 @@
 
           layout overlay /
                  walldisplay=none
-                 pad=(top=30)
+                 pad=(top=20)
                  yaxisopts=(type=linear
+                            display=standard
                             label=_YLABEL
-                            linearopts=(viewmin=_YMIN viewmax=_YMAX 
+                            linearopts=(viewmin=_YMIN viewmax=_YMAX
                                         tickvaluesequence=(start=_YMIN 
                                                            end=_YMAX 
                                                            increment=_YINCR)
@@ -80,12 +81,13 @@
                             )
                  xaxisopts=(type=discrete
                             display=(line)
+                            discreteopts=(colorbands=even colorbandsattrs=GraphBlock (transparency=0.75))
                            );
 
             *--- TOP INNER MARGIN: Timepoint labels appear across the top of the plot area ---*;
             innermargin / align=top 
                           separator=false 
-                          pad=(top=0);
+                          pad=0;
               blockplot x=_AVISITN block=_AVISIT /
                         display=(outline 
                                  values)
@@ -112,9 +114,7 @@
                              fill 
                              outliers)
                     fillattrs=(color=CXB9CFE7)
-                    outlineattrs=(color=navy 
-                                  pattern=solid 
-                                  thickness=0.1)
+                    outlineattrs=GraphOutlines(color=navy thickness=0.01)
                     medianattrs=(color=navy)
                     whiskerattrs=(color=navy)
                     meanattrs=(size=%eval(&iqr_size + 1))
