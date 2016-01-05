@@ -27,7 +27,7 @@
 
       * Q for Reviewer: Should we use ADSL data to report patients, not just obs in stats table?
           initial reviewer response in "No.", so removed code related to ADSL.
-      * Complete and confirm specifications (see Outliers & Reference limit discussions, below)
+      * Complete and confirm specifications
           https://github.com/phuse-org/phuse-scripts/tree/master/whitepapers/specification
       * For annotated RED CIRCLEs outside normal range limits
           UPDATE the test data so that default outputs have some IQR OUTLIER SQUAREs that are not also RED.
@@ -159,8 +159,8 @@ end HEADER ***/
                                      SYSPROD=,
                                      vars=%str(&c_lb..&c_ds : &ana_variables),
                                      macros=assert_continue util_labels_from_var util_count_unique_values 
-                                            util_get_reference_lines util_proc_template util_get_var_min_max
-                                            util_value_format util_boxplot_visit_ranges util_axis_order util_delete_dsets,
+                                            util_proc_template util_get_var_min_max util_value_format
+                                            util_boxplot_visit_ranges util_axis_order util_delete_dsets,
                                      symbols=c_lb c_ds c_var b_visn e_visn p_fl a_fl 
                                              max_boxes_per_page outputs_folder
                                     );
@@ -194,8 +194,8 @@ end HEADER ***/
       &b_visn_lab1
 
     Endpoint visit value & label
-      &b_visn_val1
-      &b_visn_lab1
+      &e_visn_val1
+      &e_visn_lab1
 
   ***/
 
@@ -279,7 +279,6 @@ end HEADER ***/
 
             /***
               STACK statistics (do NOT merge) BELOW the plot data, one obs per TREATMENT/VISIT.
-              Concatenate any reference lines from css_reflines BELOW the statistics.
               NB: We need exactly ONE obs per timepoint and trt: AXISTABLE defaults to a SUM function
             ***/
             data css_plot;
@@ -338,7 +337,7 @@ end HEADER ***/
                         _AVISIT     = 'avisit' 
                         _AVAL       = "&c_var"
                         _AVALOUTLIE = 'm_var_outlier'
-                        _REFLINES   = '0'
+                        _REFLINES   = "0"
                         _YLABEL     = "&&paramcd_lab&pdx"
                         _YMIN       = %scan(&y_axis, 1, %str( ))
                         _YMAX       = %scan(&y_axis, 3, %str( ))

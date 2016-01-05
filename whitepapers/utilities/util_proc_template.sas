@@ -81,7 +81,7 @@
                             )
                  xaxisopts=(type=discrete
                             display=(line)
-                            discreteopts=(colorbands=even colorbandsattrs=GraphBlock (transparency=0.75))
+                            discreteopts=(colorbands=even colorbandsattrs=GraphBlock (transparency=0.7))
                            );
 
             *--- TOP INNER MARGIN: Timepoint labels appear across the top of the plot area ---*;
@@ -145,7 +145,7 @@
             ENDIF;
 
             *--- Normal Range Reference lines, IF PROVIDED ---*;
-            IF (length(_REFLINES) > 0)
+            IF (EXISTS(_REFLINES))
 
               referenceline y=eval(coln(_REFLINES)) / lineattrs=(color=red) name='Reference Lines';
 
