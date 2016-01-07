@@ -1,4 +1,4 @@
-# phuse-scripts
+# CSS/PhUSE Standard Analyses
 
 * [CSS/PhUSE Standard Analyses Working Group](http://www.phusewiki.org/wiki/index.php?title=Standard_Scripts)
 * SAWG's [Analysis and Display White Papers project](http://www.phusewiki.org/wiki/index.php?title=WG5_Project_08)
@@ -7,8 +7,9 @@
 * SAWG's [Script discovery and acquisition project](http://www.phusewiki.org/wiki/index.php?title=WG5_Project_07)
 * SAWG's [Communication, Promotion and Education project](http://www.phusewiki.org/wiki/index.php?title=WG5_Project_07)
 
-# github help
+# Git and GitHub help
 
+* [Git e-book](http://www.git-scm.com/book/en/v2)
 * [GitHub for beginners](http://sixrevisions.com/resources/git-tutorials-beginners/)
 * [Learn: Code Academy quick video tutorial](https://www.youtube.com/watch?v=0fKg7e37bQE)
 * [Tutorial on setup and workflows](https://www.atlassian.com/git/tutorials/setting-up-a-repository)
