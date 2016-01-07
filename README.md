@@ -7,6 +7,9 @@
 * SAWG's [Script discovery and acquisition project](http://www.phusewiki.org/wiki/index.php?title=WG5_Project_07)
 * SAWG's [Communication, Promotion and Education project](http://www.phusewiki.org/wiki/index.php?title=WG5_Project_07)
 
+* [Out Wiki](https://github.com/phuse-org/phuse-scripts/wiki) contains latest information for active efforts
+
+
 # Git and GitHub help
 
 * [Git e-book](http://www.git-scm.com/book/en/v2)
