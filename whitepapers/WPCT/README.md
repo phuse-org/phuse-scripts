@@ -7,6 +7,7 @@ Contents
 * Each WPCT figure should have a corresponding SAS and R script.
 * Each SAS and R script should have a YML metadata file that describes the script (not the display that it implements).
 * A [template for the YML metadata file](https://github.com/phuse-org/phuse-scripts/blob/master/MetaData_template.yml) is available in the repository.
+* Output (listings, plots, pdfs) and artifacts (logs) from these scripts are in the language-specific output subfolders.
 
 Guidelines, Conventions, etc.
 --------------------------------
