@@ -23,14 +23,14 @@
         + This program contains custom code to shorted Tx labels in the PhUSE/CSS test data
         + See "2b) USER SUBSET of data", below
 
-    TO DO list for program:
+    TO DO list:
 
-      * Q for Reviewer: Should we use ADSL data to report patients, not just obs in stats table?
-          initial reviewer response in "No.", so removed code related to ADSL.
       * Complete and confirm specifications
           https://github.com/phuse-org/phuse-scripts/tree/master/whitepapers/specification
-      * For annotated RED CIRCLEs outside normal range limits
-          UPDATE the test data so that default outputs have some IQR OUTLIER SQUAREs that are not also RED.
+      * IMPROVE TEST DATA
+        + NORNAL RANGE OUTLIERS (red circles) - Fewer NR outliers? Some IQR outliers that are not also NR outliers?
+        + REFERENCE LINES - LO/HI variations: Only ULN, Only LLN, Non-uniform LLN/ULN
+        + MODIFY some outcome measures, to produce some small p-values for Endpoint change from baseline.
       * LABS & ECG - ADaM VS/LAB/ECG domains have some different variables and variable naming conventions.
           - What variables are used for LAB/ECG box plots?
           - What visits/time-points are relevant to LAB/ECG box plots?
@@ -56,23 +56,27 @@ end HEADER ***/
          - Analysis Timepoints
          - Visits
 
-    3) REQUIRED - Key user settings (libraries, data sets, variables and box plot options)
-       C_LB:   Libname containing ADaM measurement data, such as ADVS.
-               WORK by default, since step (2) creates the desired WORK subsets.
-       C_DS:   Measuments data set including derived Change-from-baseline, such as ADVS.
-       C_VAR:  Variable in C_DS with change-from-baseline data, such as CHG.
+    3a) REQUIRED - Key user settings (libraries, data sets, variables and box plot options)
+        C_LB:     Libname containing ADaM measurement data, such as ADVS.
+                  WORK by default, since step (2) creates the desired WORK subsets.
+        C_DS:     Measuments data set including derived Change-from-baseline, such as ADVS.
+        C_VAR:    Variable in C_DS with change-from-baseline data, such as CHG.
 
-       B_VISN: Visit number that represents Baseline in AVISITN (e.g., 0)
-       E_VISN: Visit number that represents endpoint in AVISITN for chg-from-baseline comparison (e.g., 99)
+        OPTIONAL: omit to suppress Endpoint P-VALUE in graphic
+          B_VAR:    Variable in C_DS with baseline measurements
+          REF_TRTN: Numeric value of TRTPN for reference (comparator) treatment
 
-       P_FL:   Population flag variable. 'Y' indicates record is in population of interest.
-       A_FL:   Analysis Flag variable.   'Y' indicates that record is selected for analysis.
+        B_VISN:   Visit number that represents Baseline in AVISITN (e.g., 0)
+        E_VISN:   Visit number that represents endpoint in AVISITN for chg-from-baseline comparison (e.g., 99)
 
-       MAX_BOXES_PER_PAGE:
-             Maximum number of boxes to display per plot page (see "Notes", above)
+        P_FL:     Population flag variable. 'Y' indicates record is in population of interest.
+        A_FL:     Analysis Flag variable.   'Y' indicates that record is selected for analysis.
 
-       OUTPUTS_FOLDER:
-             Location to write PDF outputs (WITHOUT final back- or forward-slash)
+        MAX_BOXES_PER_PAGE:
+              Maximum number of boxes to display per plot page (see "Notes", above)
+
+        OUTPUTS_FOLDER:
+              Location to write PDF outputs (WITHOUT final back- or forward-slash)
 
   ************************************
   *** user processing and settings ***
@@ -124,6 +128,9 @@ end HEADER ***/
       %let c_ds   = advs_sub;
       %let c_var  = chg;
 
+      %let b_var  = base;
+      %let ref_trtn = 0;
+
       %let b_visn = 0;
       %let e_visn = 99;
 
@@ -151,7 +158,7 @@ end HEADER ***/
 
     options nocenter mautosource mrecall mprint msglevel=I mergenoby=WARN ls=max ps=max;
 
-    %let ana_variables = STUDYID USUBJID &p_fl &a_fl TRTP TRTPN PARAM PARAMCD &c_var AVISIT AVISITN ATPT ATPTN;
+    %let ana_variables = STUDYID USUBJID &p_fl &a_fl TRTP TRTPN PARAM PARAMCD &c_var &b_var AVISIT AVISITN ATPT ATPTN;
 
     %*--- Global boolean symbol CONTINUE, used with macro assert_continue(), warns user of invalid environment. Processing should HALT. ---*;
       %let CONTINUE = %assert_depend(OS=%str(AIX,WIN,HP IPF),
@@ -227,7 +234,7 @@ end HEADER ***/
 
     %macro boxplot_each_param_tp(plotds=css_anadata, cleanup=1);
 
-      %local pdx tdx ;
+      %local pdx tdx css_pval_ds;
 
       %do pdx = 1 %to &paramcd_n;
 
@@ -277,10 +284,55 @@ end HEADER ***/
                      n=n mean=mean std=std median=median min=datamin max=datamax q1=q1 q3=q3;
             run;
 
-            /***
-              STACK statistics (do NOT merge) BELOW the plot data, one obs per TREATMENT/VISIT.
-              NB: We need exactly ONE obs per timepoint and trt: AXISTABLE defaults to a SUM function
-            ***/
+
+          %*--- Add ANCOVA p-values for Endpoint: CHG = BASE + TRT (if user specified a reference arm) ---*;
+            %if %length(&b_var) > 0 and %length(&ref_trtn) > 0 %then %do;
+              %local endpoint_definition;
+
+              %let css_pval_ds = css_pvalues;
+              %let endpoint_definition = avisitn = &e_visn;
+
+              ods select parameterestimates;
+              ods output parameterestimates = &css_pval_ds;
+
+              proc glm data=css_nexttimept;
+                where &endpoint_definition;
+                class trtpn (ref="&ref_trtn");
+                model &c_var = &b_var trtpn / solution;
+              run; quit;
+
+              *--- UPDATE CSS_STATS with p-values for active arms, at Endpoint visit ---*;
+                data temp;
+                  *--- We simply need the structure of these vars, for subsequent merge ---*;
+                  set css_stats (keep=avisitn trtpn);
+                  STOP;
+                run;
+
+                data &css_pval_ds;
+                  set temp &css_pval_ds (keep=parameter probt 
+                                         rename=(probt=pval)
+                                         where=(parameter=:'TRTPN'));
+                  label pval="GLM ANCOVA p-value: Reference is TRTPN = &ref_trtn";
+                  &endpoint_definition;
+                  trtpn   = input(scan(parameter,-1,' '), best8.);
+                run;
+
+                proc sort data=&css_pval_ds;
+                  by avisitn trtpn;
+                run;
+
+                data css_stats;
+                  merge css_stats &css_pval_ds (keep=avisitn trtpn pval);
+                  by avisitn trtpn;
+                run;
+
+                %util_delete_dsets(temp);
+            %end;          
+
+          /***
+            STACK statistics (do NOT merge) BELOW the plot data, one obs per TREATMENT/VISIT.
+            NB: We need exactly ONE obs per timepoint and trt: AXISTABLE defaults to a SUM function
+          ***/
             data css_plot;
               set css_nexttimept
                   css_stats;
@@ -350,6 +402,7 @@ end HEADER ***/
                         _MEDIAN     = 'median'
                         _Q3         = 'q3'
                         _DATAMAX    = 'datamax'
+                        _PVAL       = 'pval'
                         ;
               run;
 
@@ -366,7 +419,7 @@ end HEADER ***/
 
 
       *--- Clean up temp data sets required to create box plots ---*;
-        %if &cleanup %then %util_delete_dsets(css_nextparam css_nexttimept css_stats css_plot);
+        %if &cleanup %then %util_delete_dsets(css_nextparam css_nexttimept &css_pval_ds css_stats css_plot);
 
     %mend boxplot_each_param_tp;
 

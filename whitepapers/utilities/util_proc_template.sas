@@ -45,7 +45,7 @@
         dynamic _TRT _AVISIT _AVISITN _AVAL _AVALOUTLIE
                 _YLABEL _YMIN _YMAX _YINCR 
                 _REFLINES
-                _N _MEAN _STD _DATAMIN _Q1 _MEDIAN _Q3 _DATAMAX
+                _N _MEAN _STD _DATAMIN _Q1 _MEDIAN _Q3 _DATAMAX _PVAL
                 ;
 
         *--- Design dimensions are suitable for landscape A4 and Letter ---*;
@@ -170,6 +170,10 @@
                   axistable x=_AVISITN value=_MEDIAN  / class=_TRT label='Median'    classdisplay=cluster colorgroup=_TRT;
                   axistable x=_AVISITN value=_Q3      / class=_TRT label='Q3'        classdisplay=cluster colorgroup=_TRT;
                   axistable x=_AVISITN value=_DATAMAX / class=_TRT label='Max'       classdisplay=cluster colorgroup=_TRT;
+
+                  IF (EXISTS(_PVAL))
+                    axistable x=_AVISITN value=_PVAL  / class=_TRT label='P Value'   classdisplay=cluster colorgroup=_TRT;
+                  ENDIF;
             endinnermargin;
 
           endlayout;

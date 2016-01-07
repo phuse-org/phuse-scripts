@@ -17,8 +17,8 @@ NOTE: Additional host information:
  X64_7PRO WIN 6.1.7601 Service Pack 1 Workstation
 
 NOTE: SAS initialization used:
-      real time           2.44 seconds
-      cpu time            1.20 seconds
+      real time           7.46 seconds
+      cpu time            5.80 seconds
 
 1          OPTIONS sasautos=(%sysfunc(getoption(sasautos))
 1  ! "C:\CSS\phuse-scripts\whitepapers\utilities");
@@ -31,72 +31,81 @@ NOTE: Libref SOURCE was successfully assigned as follows:
 NOTE: There were 32139 observations read from the data set SOURCE.ADVS.
 NOTE: The data set WORK.ADVS has 32139 observations and 44 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.14 seconds
-      cpu time            0.14 seconds
+      real time           0.59 seconds
+      cpu time            0.59 seconds
 
 
 NOTE: Fileref SOURCE has been deassigned.
 NOTE: Libref SOURCE has been deassigned.
 
-3
-4          data advs_sub (rename=(trtp_short=trtp));
-5            set work.advs;
-6            where (paramcd in ('DIABP') and atptn in (815)) or
-7                  (paramcd in ('SYSBP') and atptn in (816));
-8
-9            length trtp_short $6;
-10           select (trtp);
-11             when ('Placebo')              trtp_short = 'P';
-12             when ('Xanomeline High Dose') trtp_short = 'X-high';
-13             when ('Xanomeline Low Dose')  trtp_short = 'X-low';
-14             otherwise                     trtp_short = 'UNEXPECTED';
-15           end;
-16
-17           drop trtp;
-18         run;
+3        /*** 2b) USER SUBSET of data, to limit number of box plot outputs, and to shorten Tx
+3  ! labels ***/
+4
+5          data advs_sub (rename=(trtp_short=trtp));
+6            set work.advs;
+7            where (paramcd in ('DIABP') and atptn in (815)) or
+8                  (paramcd in ('SYSBP') and atptn in (816));
+9
+10           length trtp_short $6;
+11           select (trtp);
+12             when ('Placebo')              trtp_short = 'P';
+13             when ('Xanomeline High Dose') trtp_short = 'X-high';
+14             when ('Xanomeline Low Dose')  trtp_short = 'X-low';
+15             otherwise                     trtp_short = 'UNEXPECTED';
+16           end;
+17
+18           drop trtp;
+19         run;
 
 NOTE: There were 5925 observations read from the data set WORK.ADVS.
       WHERE ((paramcd='DIABP') and (atptn=815)) or ((paramcd='SYSBP') and (atptn=816));
 NOTE: The data set WORK.ADVS_SUB has 5925 observations and 44 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.07 seconds
-      cpu time            0.06 seconds
+      real time           0.26 seconds
+      cpu time            0.29 seconds
 
 
-19
 20
-21       %*--- 3) Key user settings ---*;
-22
-23         %let m_lb   = work;
-24         %let m_ds   = advs_sub;
-25
-26         %let m_var  = AVAL;
-27         %let lo_var = ANRLO;
-28         %let hi_var = ANRHI;
-29
-30         %let p_fl = saffl;
-31         %let a_fl = anl01fl;
-32
-33         %let ref_lines = UNIFORM;
-34
-35         %let max_boxes_per_page = 20;
-36
-37         %let outputs_folder = C:\CSS\phuse-scripts\whitepapers\WPCT\outputs_sas;
-38       options nocenter mautosource mrecall mprint msglevel=I mergenoby=WARN ls=max ps=max;
+21
+22       %*--- 3) Key user settings ---*;
+23
+24         %let m_lb   = work;
+25         %let m_ds   = advs_sub;
+26
+27         %let m_var  = AVAL;
+28         %let lo_var = ANRLO;
+29         %let hi_var = ANRHI;
+30
+31         %let p_fl = saffl;
+32         %let a_fl = anl01fl;
+33
+34         %let ref_lines = UNIFORM;
+35
+36         %let max_boxes_per_page = 20;
+37
+38         %let outputs_folder = C:\CSS\phuse-scripts\whitepapers\WPCT\outputs_sas;
 39
-40       %let ana_variables = STUDYID USUBJID &p_fl &a_fl TRTP TRTPN PARAM PARAMCD &m_var &lo_var &hi_var AVISIT AVISITN ATPT ATPTN;
-41
-42       %*--- Global boolean symbol CONTINUE, used with macro assert_continue(), warns user of invalid environment. Processing should HALT. ---*;
-43         %let CONTINUE = %assert_depend(OS=%str(AIX,WIN,HP IPF),
-44                                        SASV=9.4M2,
-45                                        SYSPROD=,
-46                                        vars=%str(&m_lb..&m_ds : &ana_variables),
-47                                        macros=assert_continue util_labels_from_var util_count_unique_values
-48                                               util_get_reference_lines util_proc_template util_get_var_min_max
-49                                               util_value_format util_boxplot_visit_ranges util_axis_order util_delete_dsets,
-50                                        symbols=m_lb m_ds m_var lo_var hi_var ref_lines p_fl a_fl
-51                                                max_boxes_per_page outputs_folder
-52                                       );
+40     /*** end USER PROCESSING AND SETTINGS ***********************************
+41      *** RELAX.                                                           ***
+42      *** The rest should simply work, or alert you to invalid conditions. ***
+43      ************************************************************************
+44     ***/
+
+45       options nocenter mautosource mrecall mprint msglevel=I mergenoby=WARN ls=max ps=max;
+46
+47       %let ana_variables = STUDYID USUBJID &p_fl &a_fl TRTP TRTPN PARAM PARAMCD &m_var &lo_var &hi_var AVISIT AVISITN ATPT ATPTN;
+48
+49       %*--- Global boolean symbol CONTINUE, used with macro assert_continue(), warns user of invalid environment. Processing should HALT. ---*;
+50         %let CONTINUE = %assert_depend(OS=%str(AIX,WIN,HP IPF),
+51                                        SASV=9.4M2,
+52                                        SYSPROD=,
+53                                        vars=%str(&m_lb..&m_ds : &ana_variables),
+54                                        macros=assert_continue util_labels_from_var util_count_unique_values
+55                                               util_get_reference_lines util_proc_template util_get_var_min_max
+56                                               util_value_format util_boxplot_visit_ranges util_axis_order util_delete_dsets,
+57                                        symbols=m_lb m_ds m_var lo_var hi_var ref_lines p_fl a_fl
+58                                                max_boxes_per_page outputs_folder
+59                                       );
 NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set WORK.ADVS_SUB is accessible.
 NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set WORK.ADVS_SUB is accessible.
 NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set WORK.ADVS_SUB, try closing data set ID 1
@@ -164,46 +173,33 @@ NOTE: (ASSERT_DEPEND) PASS, found mac var A_FL with value "anl01fl"
 NOTE: (ASSERT_DEPEND) PASS, found mac var MAX_BOXES_PER_PAGE with value "20"
 NOTE: (ASSERT_DEPEND) PASS, found mac var OUTPUTS_FOLDER with value "C:\CSS\phuse-scripts\whitepapers\WPCT\outputs_sas"
 NOTE: (ASSERT_DEPEND) Result is PASS.
-53
-54         %assert_continue(After asserting the dependencies of this script)
-NOTE: (ASSERT_CONTINUE) After asserting the dependencies of this script. OK to continue.
-55
-56       *--- Restrict analysis to SAFETY POP and ANALYSIS RECORDS (&a_fl) ---*;
-57         data css_anadata;
-58           set &m_lb..&m_ds (keep=&ana_variables);
-59           where &p_fl = 'Y' and &a_fl = 'Y';
 60
-61           *--- Create a Normal Range Outlier variable, for scatter plot overlay ---*;
-62             if (2 = n(&m_var, &lo_var) and &m_var < &lo_var) or
-63                (2 = n(&m_var, &hi_var) and &m_var > &hi_var) then m_var_outlier = &m_var;
-64             else m_var_outlier = .;
-65
-66         run;
+61         %assert_continue(After asserting the dependencies of this script)
+NOTE: (ASSERT_CONTINUE) After asserting the dependencies of this script. OK to continue.
+62
+63
+64       *--- Restrict analysis to SAFETY POP and ANALYSIS RECORDS (&a_fl) ---*;
+65         data css_anadata;
+66           set &m_lb..&m_ds (keep=&ana_variables);
+67           where &p_fl = 'Y' and &a_fl = 'Y';
+68
+69           *--- Create a Normal Range Outlier variable, for scatter plot overlay ---*;
+70             if (2 = n(&m_var, &lo_var) and &m_var < &lo_var) or
+71                (2 = n(&m_var, &hi_var) and &m_var > &hi_var) then m_var_outlier = &m_var;
+72             else m_var_outlier = .;
+73
+74         run;
 
 NOTE: There were 4054 observations read from the data set WORK.ADVS_SUB.
       WHERE (saffl='Y') and (anl01fl='Y');
 NOTE: The data set WORK.CSS_ANADATA has 4054 observations and 16 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.03 seconds
-      cpu time            0.03 seconds
+      real time           0.04 seconds
+      cpu time            0.04 seconds
 
 
-67
-68
-69     /*** GATHER INFO for data-driven processing
-70       Collect required information about these measurements:
-71
-72       Number, Names and Labels of PARAMCDs - used to cycle through parameters that have measurements
-73         &PARAMCD_N count of parameters
-74         &PARAMCD_VAL1 to &&&PARAMCD_VAL&PARAMCD_N series of parameter codes
-75         &PARAMCD_LAB1 to &&&PARAMCD_LAB&PARAMCD_N series of parameter labels
-76
-77       Number of planned treatments - used for handling treatments categories
-78         &TRTN
-79     ***/
-80
-81       %*--- Parameters: Number (&PARAMCD_N), Names (&PARAMCD_VAL1 ...) and Labels (&PARAMCD_LAB1 ...) ---*;
-82         %util_labels_from_var(css_anadata, paramcd, param)
+75       %*--- Parameters: Number (&PARAMCD_N), Names (&PARAMCD_VAL1 ...) and Labels (&PARAMCD_LAB1 ...) ---*;
+76         %util_labels_from_var(css_anadata, paramcd, param)
 NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CSS_ANADATA is accessible.
 NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CSS_ANADATA is accessible.
 NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set CSS_ANADATA, try closing data set ID 1
@@ -220,7 +216,7 @@ MPRINT(UTIL_COUNT_UNIQUE_VALUES):   select count(unique(paramcd)) into: paramcd_
 MPRINT(UTIL_COUNT_UNIQUE_VALUES):   quit;
 NOTE: PROCEDURE SQL used (Total process time):
       real time           0.01 seconds
-      cpu time            0.00 seconds
+      cpu time            0.01 seconds
 
 
 NOTE: (UTIL_COUNT_UNIQUE_VALUES) Successfully created symbol PARAMCD_N = 2
@@ -260,14 +256,14 @@ MPRINT(UTIL_LABELS_FROM_VAR):   delete css_lfv;
 MPRINT(UTIL_LABELS_FROM_VAR):   quit;
 NOTE: Deleting WORK.CSS_LFV (memtype=DATA).
 NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.04 seconds
-      cpu time            0.03 seconds
+      real time           0.07 seconds
+      cpu time            0.07 seconds
 
 
 NOTE: (UTIL_LABELS_FROM_VAR) Successfully created symbols for Values and Labels from PARAMCD and PARAM
-83
-84       %*--- Number of planned treatments: Set &TRTN from ana variable TRTP ---*;
-85         %util_count_unique_values(css_anadata, trtp, trtn)
+77
+78       %*--- Number of planned treatments: Set &TRTN from ana variable TRTP ---*;
+79         %util_count_unique_values(css_anadata, trtp, trtn)
 NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CSS_ANADATA is accessible.
 NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CSS_ANADATA is accessible.
 NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set CSS_ANADATA, try closing data set ID 1
@@ -276,37 +272,37 @@ MPRINT(UTIL_COUNT_UNIQUE_VALUES):   proc sql noprint;
 MPRINT(UTIL_COUNT_UNIQUE_VALUES):   select count(unique(trtp)) into: trtn from css_anadata ;
 MPRINT(UTIL_COUNT_UNIQUE_VALUES):   quit;
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.00 seconds
-      cpu time            0.00 seconds
+      real time           0.01 seconds
+      cpu time            0.01 seconds
 
 
 NOTE: (UTIL_COUNT_UNIQUE_VALUES) Successfully created symbol TRTN = 3
+80
+81
+82     /*** BOXPLOT for each PARAMETER and ANALYSIS TIMEPOINT in selected data
+83
+84       One box plot for each PARAMETER and ANALYSIS TIMEPOINT.
+85       By Visit and Planned Treatment.
 86
-87
-88     /*** BOXPLOT for each PARAMETER and ANALYSIS TIMEPOINT in selected data
-89
-90       One box plot for each PARAMETER and ANALYSIS TIMEPOINT.
-91       By Visit and Planned Treatment.
+87       In case of many visits and planned treatments, each box plot will use multiple pages.
+88
+89       CLEANUP = O, blocks the macro from deleting temp data sets after the last parameter & timepoint loop
+90
+91     ***/
 92
-93       In case of many visits and planned treatments, each box plot will use multiple pages.
-94
-95       CLEANUP = O, blocks the macro from deleting temp data sets after the last parameter & timepoint loop
-96
-97     ***/
-98
-99       %util_proc_template(phuseboxplot)
+93       %util_proc_template(phuseboxplot)
 MPRINT(UTIL_PROC_TEMPLATE):   *--- Set marker size relative to IQR outlier: MEAN symbol is +1, Normal Range outlier is -1 ---*;
 MPRINT(UTIL_PROC_TEMPLATE):   *--- Box width, Box plot cluster width and Scatter cluster width should all match ---*;
 MPRINT(UTIL_PROC_TEMPLATE):   proc template;
 MPRINT(UTIL_PROC_TEMPLATE):   define statgraph PhUSEboxplot;
-MPRINT(UTIL_PROC_TEMPLATE):   dynamic _TRT _AVISIT _AVISITN _AVAL _AVALOUTLIE _YLABEL _YMIN _YMAX _YINCR _REFLINES _N _MEAN _STD _DATAMIN _Q1 _MEDIAN _Q3 _DATAMAX ;
+MPRINT(UTIL_PROC_TEMPLATE):   dynamic _TRT _AVISIT _AVISITN _AVAL _AVALOUTLIE _YLABEL _YMIN _YMAX _YINCR _REFLINES _N _MEAN _STD _DATAMIN _Q1 _MEDIAN _Q3 _DATAMAX _PVAL ;
 MPRINT(UTIL_PROC_TEMPLATE):   *--- Design dimensions are suitable for landscape A4 and Letter ---*;
 MPRINT(UTIL_PROC_TEMPLATE):   begingraph / attrpriority=none border=false pad=0 dataskin=none designwidth=260mm designheight=170mm ;
 MPRINT(UTIL_PROC_TEMPLATE):   *--- Define extra legend items for Outlier markers. Define these OUTSIDE the layout block ---*;
 MPRINT(UTIL_PROC_TEMPLATE):   legenditem type=marker name='IQROutliers' / label='IQR Outliers' markerattrs=(color=CX000000 symbol=square size=6);
 MPRINT(UTIL_PROC_TEMPLATE):   legenditem type=marker name='NormalRangeOutliers' / label='Normal Range Outliers' markerattrs=(color=CXFF0000 symbol=circlefilled size=5 );
 MPRINT(UTIL_PROC_TEMPLATE):   layout overlay / walldisplay=none pad=(top=20) yaxisopts=(type=linear display=standard label=_YLABEL linearopts=(viewmin=_YMIN viewmax=_YMAX tickvaluesequence=(start=_YMIN end=_YMAX increment=_YINCR) ) )
-xaxisopts=(type=discrete display=(line) discreteopts=(colorbands=even colorbandsattrs=GraphBlock (transparency=0.75)) );
+xaxisopts=(type=discrete display=(line) discreteopts=(colorbands=even colorbandsattrs=GraphBlock (transparency=0.7)) );
 MPRINT(UTIL_PROC_TEMPLATE):   *--- TOP INNER MARGIN: Timepoint labels appear across the top of the plot area ---*;
 MPRINT(UTIL_PROC_TEMPLATE):   innermargin / align=top separator=false pad=0;
 MPRINT(UTIL_PROC_TEMPLATE):   blockplot x=_AVISITN block=_AVISIT / display=(outline values) valuefitpolicy=split valuehalign=left valuevalign=top ;
@@ -319,7 +315,7 @@ MPRINT(UTIL_PROC_TEMPLATE):   IF ( MEAN(_AVALOUTLIE) NE . ) scatterplot x=_AVISI
 Range Outliers' ;
 MPRINT(UTIL_PROC_TEMPLATE):   ENDIF;
 MPRINT(UTIL_PROC_TEMPLATE):   *--- Normal Range Reference lines, IF PROVIDED ---*;
-MPRINT(UTIL_PROC_TEMPLATE):   IF (length(_REFLINES) > 0) referenceline y=eval(coln(_REFLINES)) / lineattrs=(color=red) name='Reference Lines';
+MPRINT(UTIL_PROC_TEMPLATE):   IF (EXISTS(_REFLINES)) referenceline y=eval(coln(_REFLINES)) / lineattrs=(color=red) name='Reference Lines';
 MPRINT(UTIL_PROC_TEMPLATE):   ENDIF;
 MPRINT(UTIL_PROC_TEMPLATE):   *--- KNOWN LIMITATION: 'box' markers work in SAS 9.4 M3 and later. See header notes. ---*;
 MPRINT(UTIL_PROC_TEMPLATE):   discretelegend 'box' 'IQROutliers' 'NormalRangeOutliers' / type=marker location=outside valign=bottom border=false title='Treatments & Outliers:' ;
@@ -333,6 +329,8 @@ MPRINT(UTIL_PROC_TEMPLATE):   axistable x=_AVISITN value=_Q1 / class=_TRT label=
 MPRINT(UTIL_PROC_TEMPLATE):   axistable x=_AVISITN value=_MEDIAN / class=_TRT label='Median' classdisplay=cluster colorgroup=_TRT;
 MPRINT(UTIL_PROC_TEMPLATE):   axistable x=_AVISITN value=_Q3 / class=_TRT label='Q3' classdisplay=cluster colorgroup=_TRT;
 MPRINT(UTIL_PROC_TEMPLATE):   axistable x=_AVISITN value=_DATAMAX / class=_TRT label='Max' classdisplay=cluster colorgroup=_TRT;
+MPRINT(UTIL_PROC_TEMPLATE):   IF (EXISTS(_PVAL)) axistable x=_AVISITN value=_PVAL / class=_TRT label='P Value' classdisplay=cluster colorgroup=_TRT;
+MPRINT(UTIL_PROC_TEMPLATE):   ENDIF;
 MPRINT(UTIL_PROC_TEMPLATE):   endinnermargin;
 MPRINT(UTIL_PROC_TEMPLATE):   endlayout;
 MPRINT(UTIL_PROC_TEMPLATE):   endgraph;
@@ -340,171 +338,170 @@ MPRINT(UTIL_PROC_TEMPLATE):   end;
 NOTE: Overwriting existing template/link: PhUSEboxplot
 NOTE: STATGRAPH 'PhUSEboxplot' has been saved to: SASUSER.TEMPLAT
 NOTE: PROCEDURE TEMPLATE used (Total process time):
-      real time           0.10 seconds
-      cpu time            0.06 seconds
+      real time           0.14 seconds
+      cpu time            0.04 seconds
 
 
 MPRINT(UTIL_PROC_TEMPLATE):   run;
 
-100
-101      %macro boxplot_each_param_tp(plotds=css_anadata, cleanup=1);
-102
-103        %local pdx tdx ;
-104
-105        %do pdx = 1 %to &paramcd_n;
+94       %macro boxplot_each_param_tp(plotds=css_anadata, cleanup=1);
+95
+96         %local pdx tdx ;
+97
+98         %do pdx = 1 %to &paramcd_n;
+99
+100          /*** LOOP 1 *****************************************************
+101           *** Loop through each PARAMETER, working with ALL TIMEPOINTS ***
+102           ****************************************************************/
+103            data css_nextparam;
+104              set &plotds (where=(paramcd = "&&paramcd_val&pdx"));
+105            run;
 106
-107          /*** LOOP 1 *****************************************************
-108           *** Loop through each PARAMETER, working with ALL TIMEPOINTS ***
-109           ****************************************************************/
-110            data css_nextparam;
-111              set &plotds (where=(paramcd = "&&paramcd_val&pdx"));
-112            run;
-113
-114          %*--- Analysis Timepoints for this parameter: Num (&ATPTN_N), Names (&ATPTN_VAL1 ...) and Labels (&ATPTN_LAB1 ...) ---*;
-115            %util_labels_from_var(css_nextparam, atptn, atpt)
-116
-117          %*--- Create NXT_REFLINES: a list of reference lines for this parameter, across all timepoints ---*;
-118            %util_get_reference_lines(css_nextparam, nxt_reflines,
-119                                      low_var  =&lo_var, high_var =&hi_var,
-120                                      ref_lines=&ref_lines)
+107          %*--- Analysis Timepoints for this parameter: Num (&ATPTN_N), Names (&ATPTN_VAL1 ...) and Labels (&ATPTN_LAB1 ...) ---*;
+108            %util_labels_from_var(css_nextparam, atptn, atpt)
+109
+110          %*--- Create NXT_REFLINES: a list of reference lines for this parameter, across all timepoints ---*;
+111            %util_get_reference_lines(css_nextparam, nxt_reflines,
+112                                      low_var  =&lo_var, high_var =&hi_var,
+113                                      ref_lines=&ref_lines)
+114
+115          %*--- Y-AXIS alternative: Fix Y-Axis MIN/MAX based on all timepoints for PARAM. See Y-AXIS DEFAULT, below. ---*;
+116          %*--- NB: EXTRA normal range reference lines could expand Y-AXIS range.                                    ---*;
+117          %*   %util_get_var_min_max(css_nextparam, &m_var, aval_min_max, extra=&nxt_reflines)   *;
+118
+119
+120          %do tdx = 1 %to &atptn_n;
 121
-122          %*--- Y-AXIS alternative: Fix Y-Axis MIN/MAX based on all timepoints for PARAM. See Y-AXIS DEFAULT, below. ---*;
-123          %*--- NB: EXTRA normal range reference lines could expand Y-AXIS range.                                    ---*;
-124          %*   %util_get_var_min_max(css_nextparam, &m_var, aval_min_max, extra=&nxt_reflines)   *;
-125
-126
-127          %do tdx = 1 %to &atptn_n;
-128
-129            /*** LOOP 2 ********************************************************************
-130             *** Loop through each TIMEPOINT for this parameter, working with ALL VISITS ***
-131             *** NB: PROC SORT here is REQUIRED in order to merge on STAT details, below ***
-132             *******************************************************************************/
-133              proc sort data=css_nextparam (where=(atptn = &&atptn_val&tdx))
-134                         out=css_nexttimept;
-135                by avisitn trtpn;
-136              run;
+122            /*** LOOP 2 ********************************************************************
+123             *** Loop through each TIMEPOINT for this parameter, working with ALL VISITS ***
+124             *** NB: PROC SORT here is REQUIRED in order to merge on STAT details, below ***
+125             *******************************************************************************/
+126              proc sort data=css_nextparam (where=(atptn = &&atptn_val&tdx))
+127                         out=css_nexttimept;
+128                by avisitn trtpn;
+129              run;
+130
+131            %*--- Y-AXIS DEFAULT: Set Y-Axis MIN/MAX based on this timepoint. See Y-AXIS alternative, above. ---*;
+132            %*--- NB: EXTRA normal range reference lines could expand Y-AXIS range.                          ---*;
+133              %util_get_var_min_max(css_nexttimept, &m_var, aval_min_max, extra=&nxt_reflines)
+134
+135            %*--- Number of visits for this parameter and analysis timepoint: &VISN ---*;
+136              %util_count_unique_values(css_nexttimept, avisitn, visn)
 137
-138            %*--- Y-AXIS DEFAULT: Set Y-Axis MIN/MAX based on this timepoint. See Y-AXIS alternative, above. ---*;
-139            %*--- NB: EXTRA normal range reference lines could expand Y-AXIS range.                          ---*;
-140              %util_get_var_min_max(css_nexttimept, &m_var, aval_min_max, extra=&nxt_reflines)
-141
-142            %*--- Number of visits for this parameter and analysis timepoint: &VISN ---*;
-143              %util_count_unique_values(css_nexttimept, avisitn, visn)
+138            %*--- Create format string to display MEAN and STDDEV to default sig-digs: &UTIL_VALUE_FORMAT ---*;
+139              %util_value_format(css_nexttimept, &m_var)
+140
+141            %*--- Create macro variable BOXPLOT_VISIT_RANGES, to subset visits into box plot pages ---*;
+142              %util_boxplot_visit_ranges(css_nexttimept, vvisn=avisitn, vtrtn=trtpn, numtrt=&trtn, numvis=&visn);
+143
 144
-145            %*--- Create format string to display MEAN and STDDEV to default sig-digs: &UTIL_VALUE_FORMAT ---*;
-146              %util_value_format(css_nexttimept, &m_var)
-147
-148            %*--- Create macro variable BOXPLOT_VISIT_RANGES, to subset visits into box plot pages ---*;
-149              %util_boxplot_visit_ranges(css_nexttimept, vvisn=avisitn, vtrtn=trtpn, numtrt=&trtn, numvis=&visn);
-150
-151
-152            *--- Calculate summary statistics, KEEP LABELS of VISIT and TRT for plotting, below ---*;
-153              proc summary data=css_nexttimept noprint;
-154                by avisitn trtpn avisit trtp;
-155                var &m_var;
-156                output out=css_stats (drop=_type_ _freq_)
-157                       n=n mean=mean std=std median=median min=datamin max=datamax q1=q1 q3=q3;
-158              run;
-159
-160              /***
-161                STACK statistics (do NOT merge) BELOW the plot data, one obs per TREATMENT/VISIT.
-162                Concatenate any reference lines from css_reflines BELOW the statistics.
-163                NB: We need exactly ONE obs per timepoint and trt: AXISTABLE defaults to a SUM function
-164              ***/
-165              data css_plot;
-166                set css_nexttimept
-167                    css_stats;
-168
-169                label n         = 'n'
-170                      mean      = 'Mean'
-171                      std       = 'Std Dev'
-172                      datamin   = 'Min'
-173                      q1        = 'Q1'
-174                      median    = 'Median'
-175                      q3        = 'Q3'
-176                      datamax   = 'Max'
-177                      ;
-178                format mean %scan(&util_value_format, 1, %str( )) std %scan(&util_value_format, 2, %str( ));
-179              run;
-180
+145            *--- Calculate summary statistics, KEEP LABELS of VISIT and TRT for plotting, below ---*;
+146              proc summary data=css_nexttimept noprint;
+147                by avisitn trtpn avisit trtp;
+148                var &m_var;
+149                output out=css_stats (drop=_type_ _freq_)
+150                       n=n mean=mean std=std median=median min=datamin max=datamax q1=q1 q3=q3;
+151              run;
+152
+153              /***
+154                STACK statistics (do NOT merge) BELOW the plot data, one obs per TREATMENT/VISIT.
+155                Concatenate any reference lines from css_reflines BELOW the statistics.
+156                NB: We need exactly ONE obs per timepoint and trt: AXISTABLE defaults to a SUM function
+157              ***/
+158              data css_plot;
+159                set css_nexttimept
+160                    css_stats;
+161
+162                label n         = 'n'
+163                      mean      = 'Mean'
+164                      std       = 'Std Dev'
+165                      datamin   = 'Min'
+166                      q1        = 'Q1'
+167                      median    = 'Median'
+168                      q3        = 'Q3'
+169                      datamax   = 'Max'
+170                      ;
+171                format mean %scan(&util_value_format, 1, %str( )) std %scan(&util_value_format, 2, %str( ));
+172              run;
+173
+174
+175            *--- Graphics Settings - Set defaults for all graphs ---*;
+176              options orientation=landscape;
+177              goptions reset=all;
+178
+179              ods graphics on / reset=all;
+180              ods graphics    / border=no attrpriority=COLOR;
 181
-182            *--- Graphics Settings - Set defaults for all graphs ---*;
-183              options orientation=landscape;
-184              goptions reset=all;
-185
-186              ods graphics on / reset=all;
-187              ods graphics    / border=no attrpriority=COLOR;
+182              title     justify=left height=1.2 "Box Plot - &&paramcd_lab&pdx by Visit, Analysis Timepoint: &&atptn_lab&tdx";
+183              footnote1 justify=left height=1.0 'Box plot type is schematic: the box shows median and interquartile range (IQR, the box edges); the whiskers extend to the minimum';
+184              footnote2 justify=left height=1.0 'and maximum data points within 1.5 IQR below 25% and above 75%, respectively. Values outside the whiskers are shown as outliers.';
+185              footnote3 justify=left height=1.0 'Means are marked with a different symbol for each treatment. Red dots indicate measures outside the normal reference range.';
+186
+187              %let y_axis = %util_axis_order( %scan(&aval_min_max,1,%str( )), %scan(&aval_min_max,2,%str( )) );
 188
-189              title     justify=left height=1.2 "Box Plot - &&paramcd_lab&pdx by Visit, Analysis Timepoint: &&atptn_lab&tdx";
-190              footnote1 justify=left height=1.0 'Box plot type is schematic: the box shows median and interquartile range (IQR, the box edges); the whiskers extend to the minimum';
-191              footnote2 justify=left height=1.0 'and maximum data points within 1.5 IQR below 25% and above 75%, respectively. Values outside the whiskers are shown as outliers.';
-192              footnote3 justify=left height=1.0 'Means are marked with a different symbol for each treatment. Red dots indicate measures outside the normal reference range.';
-193
-194              %let y_axis = %util_axis_order( %scan(&aval_min_max,1,%str( )), %scan(&aval_min_max,2,%str( )) );
-195
-196            *--- ODS PDF destination (Traditional Graphics, No ODS or Listing output) ---*;
-197              ods listing close;
-198              ods pdf dpi=300
-199                      author="(&SYSUSERID) PhUSE/CSS Standard Analysis Library"
-200                      subject='PhUSE/CSS Measures of Central Tendency'
-201                      title="Boxplot of &&paramcd_lab&pdx by Visit for Analysis Timepoint &&atptn_lab&tdx"
-202                      file="&outputs_folder\WPCT-F.07.01_Box_plot_&&paramcd_val&pdx.._by_visit_for_timepoint_&&atptn_val&tdx...pdf";
-203
-204
-205            /*** LOOP 3 - FINALLY, A Graph ****************************
-206             *** - Multiple pages in case of many visits/treatments ***
-207             **********************************************************/
-208
-209              %local vdx nxtvis;
-210              %let vdx=1;
-211              %do %while (%qscan(&boxplot_visit_ranges,&vdx,|) ne );
-212                %let nxtvis = %qscan(&boxplot_visit_ranges,&vdx,|);
-213
-214                proc sgrender data=css_plot (where=( &nxtvis )) template=PhUSEboxplot ;
-215                  dynamic
-216                          _TRT        = 'trtp'
-217                          _AVISITN    = 'avisitn'
-218                          _AVISIT     = 'avisit'
-219                          _AVAL       = "&m_var"
-220                          _AVALOUTLIE = 'm_var_outlier'
-221
-222                          %if %length(&nxt_reflines) > 0 %then %do;
-223                            _REFLINES   = "%sysfunc(translate( &nxt_reflines, %str(,), %str( ) ))"
-224                          %end;
-225
-226                          _YLABEL     = "&&paramcd_lab&pdx"
-227                          _YMIN       = %scan(&y_axis, 1, %str( ))
-228                          _YMAX       = %scan(&y_axis, 3, %str( ))
-229                          _YINCR      = %scan(&y_axis, 5, %str( ))
-230                          _N          = 'n'
-231                          _MEAN        = 'mean'
-232                          _STD        = 'std'
-233                          _DATAMIN    = 'datamin'
-234                          _Q1         = 'q1'
-235                          _MEDIAN     = 'median'
-236                          _Q3         = 'q3'
-237                          _DATAMAX    = 'datamax'
-238                          ;
-239                run;
+189            *--- ODS PDF destination (Traditional Graphics, No ODS or Listing output) ---*;
+190              ods listing close;
+191              ods pdf dpi=300
+192                      author="(&SYSUSERID) PhUSE/CSS Standard Analysis Library"
+193                      subject='PhUSE/CSS Measures of Central Tendency'
+194                      title="Boxplot of &&paramcd_lab&pdx by Visit for Analysis Timepoint &&atptn_lab&tdx"
+195                      file="&outputs_folder\WPCT-F.07.01_Box_plot_&&paramcd_val&pdx.._by_visit_for_timepoint_&&atptn_val&tdx...pdf";
+196
+197
+198            /*** LOOP 3 - FINALLY, A Graph ****************************
+199             *** - Multiple pages in case of many visits/treatments ***
+200             **********************************************************/
+201
+202              %local vdx nxtvis;
+203              %let vdx=1;
+204              %do %while (%qscan(&boxplot_visit_ranges,&vdx,|) ne );
+205                %let nxtvis = %qscan(&boxplot_visit_ranges,&vdx,|);
+206
+207                proc sgrender data=css_plot (where=( &nxtvis )) template=PhUSEboxplot ;
+208                  dynamic
+209                          _TRT        = 'trtp'
+210                          _AVISITN    = 'avisitn'
+211                          _AVISIT     = 'avisit'
+212                          _AVAL       = "&m_var"
+213                          _AVALOUTLIE = 'm_var_outlier'
+214
+215                          %if %length(&nxt_reflines) > 0 %then %do;
+216                            _REFLINES   = "%sysfunc(translate( &nxt_reflines, %str(,), %str( ) ))"
+217                          %end;
+218
+219                          _YLABEL     = "&&paramcd_lab&pdx"
+220                          _YMIN       = %scan(&y_axis, 1, %str( ))
+221                          _YMAX       = %scan(&y_axis, 3, %str( ))
+222                          _YINCR      = %scan(&y_axis, 5, %str( ))
+223                          _N          = 'n'
+224                          _MEAN        = 'mean'
+225                          _STD        = 'std'
+226                          _DATAMIN    = 'datamin'
+227                          _Q1         = 'q1'
+228                          _MEDIAN     = 'median'
+229                          _Q3         = 'q3'
+230                          _DATAMAX    = 'datamax'
+231                          ;
+232                run;
+233
+234                %let vdx=%eval(&vdx+1);
+235              %end; %* --- LOOP 3 - Pages of box plots, VDX ---*;
+236
+237            *--- Release the PDF output file! ---*;
+238              ods pdf close;
+239              ods listing;
 240
-241                %let vdx=%eval(&vdx+1);
-242              %end; %* --- LOOP 3 - Pages of box plots, VDX ---*;
-243
-244            *--- Release the PDF output file! ---*;
-245              ods pdf close;
-246              ods listing;
-247
-248          %end; %*--- LOOP 2 - Time Points, TDX ---*;
-249
-250        %end; %*--- LOOP 1 - Parameters, PDX ---*;
-251
-252
-253        *--- Clean up temp data sets required to create box plots ---*;
-254          %if &cleanup %then %util_delete_dsets(css_nextparam css_nexttimept css_stats css_reflines css_plot);
-255
-256      %mend boxplot_each_param_tp;
-257
-258      %boxplot_each_param_tp;
+241          %end; %*--- LOOP 2 - Time Points, TDX ---*;
+242
+243        %end; %*--- LOOP 1 - Parameters, PDX ---*;
+244
+245
+246        *--- Clean up temp data sets required to create box plots ---*;
+247          %if &cleanup %then %util_delete_dsets(css_nextparam css_nexttimept css_stats css_reflines css_plot);
+248
+249      %mend boxplot_each_param_tp;
+250
+251      %boxplot_each_param_tp;
 MPRINT(BOXPLOT_EACH_PARAM_TP):   data css_nextparam;
 MPRINT(BOXPLOT_EACH_PARAM_TP):   set css_anadata (where=(paramcd = "DIABP"));
 MPRINT(BOXPLOT_EACH_PARAM_TP):   run;
@@ -547,8 +544,8 @@ NOTE: SAS sort was used.
 NOTE: 2026 observations with duplicate key values were deleted.
 NOTE: The data set WORK.CSS_LFV has 1 observations and 16 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.03 seconds
-      cpu time            0.03 seconds
+      real time           0.01 seconds
+      cpu time            0.01 seconds
 
 
 MPRINT(UTIL_LABELS_FROM_VAR):   data _null_;
@@ -591,8 +588,8 @@ MPRINT(UTIL_GET_REFERENCE_LINES):   proc sql noprint;
 MPRINT(UTIL_GET_REFERENCE_LINES):   select distinct ANRLO, ANRHI, count(ANRLO)+nmiss(ANRLO) into :lo_vals separated by ', ', :hi_vals separated by ', ', :val_counts separated by ' ' from css_nextparam where n(ANRLO, ANRHI) > 0 group by ANRLO, ANRHI;
 MPRINT(UTIL_GET_REFERENCE_LINES):   quit;
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.03 seconds
-      cpu time            0.03 seconds
+      real time           0.01 seconds
+      cpu time            0.01 seconds
 
 
 NOTE: (UTIL_GET_REFERENCE_LINES) 1 distinct reference ranges in css_nextparam.
@@ -627,7 +624,7 @@ MPRINT(UTIL_GET_REFERENCE_LINES):   quit;
 NOTE: Deleting WORK.GRL_TEMP (memtype=DATA).
 NOTE: PROCEDURE DATASETS used (Total process time):
       real time           0.01 seconds
-      cpu time            0.01 seconds
+      cpu time            0.03 seconds
 
 
 NOTE: (UTIL_GET_REFERENCE_LINES) Successfully created macro var NXT_REFLINES with reference values (60 90).
@@ -640,8 +637,8 @@ NOTE: There were 2027 observations read from the data set WORK.CSS_NEXTPARAM.
 NOTE: SAS sort was used.
 NOTE: The data set WORK.CSS_NEXTTIMEPT has 2027 observations and 16 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.03 seconds
-      cpu time            0.03 seconds
+      real time           0.04 seconds
+      cpu time            0.01 seconds
 
 
 NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CSS_NEXTTIMEPT is accessible.
@@ -653,7 +650,7 @@ MPRINT(UTIL_GET_VAR_MIN_MAX):   select min(AVAL), max(AVAL) into :minval, :maxva
 MPRINT(UTIL_GET_VAR_MIN_MAX):   quit;
 NOTE: PROCEDURE SQL used (Total process time):
       real time           0.01 seconds
-      cpu time            0.01 seconds
+      cpu time            0.00 seconds
 
 
 NOTE: (UTIL_GET_VAR_MIN_MAX) Successfully created symbol AVAL_MIN_MAX = 40 109.
@@ -665,8 +662,8 @@ MPRINT(UTIL_COUNT_UNIQUE_VALUES):   proc sql noprint;
 MPRINT(UTIL_COUNT_UNIQUE_VALUES):   select count(unique(avisitn)) into: visn from css_nexttimept ;
 MPRINT(UTIL_COUNT_UNIQUE_VALUES):   quit;
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
+      real time           0.03 seconds
+      cpu time            0.03 seconds
 
 
 NOTE: (UTIL_COUNT_UNIQUE_VALUES) Successfully created symbol VISN = 11
@@ -693,8 +690,8 @@ MPRINT(UTIL_VALUE_FORMAT):   run;
 NOTE: There were 2027 observations read from the data set WORK.CSS_NEXTTIMEPT.
 NOTE: The data set WORK.CSS_FMT has 2027 observations and 23 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.03 seconds
-      cpu time            0.03 seconds
+      real time           0.04 seconds
+      cpu time            0.04 seconds
 
 
 MPRINT(UTIL_VALUE_FORMAT):   proc datasets library=WORK memtype=DATA nolist nodetails;
@@ -793,8 +790,8 @@ NOTE: There were 2027 observations read from the data set WORK.CSS_NEXTTIMEPT.
 NOTE: There were 33 observations read from the data set WORK.CSS_STATS.
 NOTE: The data set WORK.CSS_PLOT has 2060 observations and 24 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.03 seconds
-      cpu time            0.03 seconds
+      real time           0.01 seconds
+      cpu time            0.01 seconds
 
 
 MPRINT(BOXPLOT_EACH_PARAM_TP):   *--- Graphics Settings - Set defaults for all graphs ---*;
@@ -830,8 +827,8 @@ NOTE: The graph will be rendered as an image due to the use of data skins.
 NOTE: There were 1316 observations read from the data set WORK.CSS_PLOT.
       WHERE (avisitn>=0 and avisitn<=12);
 NOTE: PROCEDURE SGRENDER used (Total process time):
-      real time           6.19 seconds
-      cpu time            2.24 seconds
+      real time           8.54 seconds
+      cpu time            2.84 seconds
 
 
 MPRINT(BOXPLOT_EACH_PARAM_TP):   proc sgrender data=css_plot (where=( 16 <= avisitn <= 99 )) template=PhUSEboxplot ;
@@ -845,8 +842,8 @@ NOTE: The graph will be rendered as an image due to the use of data skins.
 NOTE: There were 744 observations read from the data set WORK.CSS_PLOT.
       WHERE (avisitn>=16 and avisitn<=99);
 NOTE: PROCEDURE SGRENDER used (Total process time):
-      real time           6.03 seconds
-      cpu time            2.83 seconds
+      real time           5.39 seconds
+      cpu time            2.62 seconds
 
 
 MPRINT(BOXPLOT_EACH_PARAM_TP):   *--- Release the PDF output file! ---*;
@@ -862,8 +859,8 @@ NOTE: There were 2027 observations read from the data set WORK.CSS_ANADATA.
       WHERE paramcd='SYSBP';
 NOTE: The data set WORK.CSS_NEXTPARAM has 2027 observations and 16 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.03 seconds
-      cpu time            0.03 seconds
+      real time           0.01 seconds
+      cpu time            0.01 seconds
 
 
 NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CSS_NEXTPARAM is accessible.
@@ -925,8 +922,8 @@ MPRINT(UTIL_LABELS_FROM_VAR):   delete css_lfv;
 MPRINT(UTIL_LABELS_FROM_VAR):   quit;
 NOTE: Deleting WORK.CSS_LFV (memtype=DATA).
 NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
+      real time           0.00 seconds
+      cpu time            0.00 seconds
 
 
 NOTE: (UTIL_LABELS_FROM_VAR) Successfully created symbols for Values and Labels from ATPTN and ATPT
@@ -943,8 +940,8 @@ MPRINT(UTIL_GET_REFERENCE_LINES):   select distinct ANRLO, ANRHI, count(ANRLO)+n
 NOTE: No rows were selected.
 MPRINT(UTIL_GET_REFERENCE_LINES):   quit;
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.03 seconds
-      cpu time            0.03 seconds
+      real time           0.01 seconds
+      cpu time            0.01 seconds
 
 
 NOTE: (UTIL_GET_REFERENCE_LINES) 0 distinct reference ranges in css_nextparam.
@@ -973,8 +970,8 @@ MPRINT(UTIL_GET_VAR_MIN_MAX):   proc sql noprint;
 MPRINT(UTIL_GET_VAR_MIN_MAX):   select min(AVAL), max(AVAL) into :minval, :maxval from css_nexttimept ;
 MPRINT(UTIL_GET_VAR_MIN_MAX):   quit;
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
+      real time           0.00 seconds
+      cpu time            0.00 seconds
 
 
 NOTE: (UTIL_GET_VAR_MIN_MAX) Successfully created symbol AVAL_MIN_MAX = 80 202.
@@ -986,8 +983,8 @@ MPRINT(UTIL_COUNT_UNIQUE_VALUES):   proc sql noprint;
 MPRINT(UTIL_COUNT_UNIQUE_VALUES):   select count(unique(avisitn)) into: visn from css_nexttimept ;
 MPRINT(UTIL_COUNT_UNIQUE_VALUES):   quit;
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.00 seconds
-      cpu time            0.00 seconds
+      real time           0.01 seconds
+      cpu time            0.01 seconds
 
 
 NOTE: (UTIL_COUNT_UNIQUE_VALUES) Successfully created symbol VISN = 11
@@ -1014,8 +1011,8 @@ MPRINT(UTIL_VALUE_FORMAT):   run;
 NOTE: There were 2027 observations read from the data set WORK.CSS_NEXTTIMEPT.
 NOTE: The data set WORK.CSS_FMT has 2027 observations and 23 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.04 seconds
-      cpu time            0.04 seconds
+      real time           0.03 seconds
+      cpu time            0.03 seconds
 
 
 MPRINT(UTIL_VALUE_FORMAT):   proc datasets library=WORK memtype=DATA nolist nodetails;
@@ -1105,8 +1102,8 @@ MPRINT(BOXPLOT_EACH_PARAM_TP):   run;
 NOTE: There were 2027 observations read from the data set WORK.CSS_NEXTTIMEPT.
 NOTE: The data set WORK.CSS_STATS has 33 observations and 12 variables.
 NOTE: PROCEDURE SUMMARY used (Total process time):
-      real time           0.03 seconds
-      cpu time            0.03 seconds
+      real time           0.01 seconds
+      cpu time            0.01 seconds
 
 
 MPRINT(BOXPLOT_EACH_PARAM_TP):   data css_plot;
@@ -1157,8 +1154,8 @@ NOTE: The graph will be rendered as an image due to the use of data skins.
 NOTE: There were 1316 observations read from the data set WORK.CSS_PLOT.
       WHERE (avisitn>=0 and avisitn<=12);
 NOTE: PROCEDURE SGRENDER used (Total process time):
-      real time           4.81 seconds
-      cpu time            1.96 seconds
+      real time           7.92 seconds
+      cpu time            3.29 seconds
 
 
 MPRINT(BOXPLOT_EACH_PARAM_TP):   proc sgrender data=css_plot (where=( 16 <= avisitn <= 99 )) template=PhUSEboxplot ;
@@ -1172,8 +1169,8 @@ NOTE: The graph will be rendered as an image due to the use of data skins.
 NOTE: There were 744 observations read from the data set WORK.CSS_PLOT.
       WHERE (avisitn>=16 and avisitn<=99);
 NOTE: PROCEDURE SGRENDER used (Total process time):
-      real time           2.74 seconds
-      cpu time            1.24 seconds
+      real time           4.96 seconds
+      cpu time            2.49 seconds
 
 
 MPRINT(BOXPLOT_EACH_PARAM_TP):   *--- Release the PDF output file! ---*;
@@ -1192,10 +1189,10 @@ NOTE: Deleting WORK.CSS_NEXTTIMEPT (memtype=DATA).
 NOTE: Deleting WORK.CSS_STATS (memtype=DATA).
 NOTE: Deleting WORK.CSS_PLOT (memtype=DATA).
 NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
+      real time           0.04 seconds
+      cpu time            0.04 seconds
 
 
-259
-260    /*** END boxplotting ***/
+252
+253    /*** END boxplotting ***/
 
