@@ -2,22 +2,23 @@ PhUSE/CSS Central Tendency Standard Analyses
 User Guide
 0.1
 
-* PhUSE/CSS Central Tendency data displays are described in detail in the "Central Tendency" White Paper (CTWP)
+* PhUSE/CSS Central Tendency data displays are described in detail in the White Paper on Central Tendency (WPCT)
   http://www.phusewiki.org/wiki/index.php?title=SS_P08_Central_Tendency_White_Paper
 
-* Analyses as well as SAS and R implementations are based on ADaM-compliant data sets
+* Analyses and their SAS and R implementations are based on ADaM-compliant data sets
   . Out of scope: ADaM conformance checks
   . Out of scope: analysing SDTM data
 
 * Getting started with SAS and R scripts
   . SAS development version: SAS 9.4 M02, utilizing ODS and GTL functionality
-    (but a SAS 9.2 boxplot approach is available in the script WPCT-F.07.01-sas92-QCshewhart.sas)
+    (but a SAS 9.2 boxplot approach is available in the script [WPCT-F.07.01-sas92-QCshewhart.sas](https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/WPCT/WPCT-F.07.01-sas92-QCshewhart.sas))
   . R development version: ???
 
-  . Each data display in the Central Tendency White Paper (CTWP) has a same-name script in SAS and R
+  . Each Central Tendency data display has a same-name script in SAS and R
     https://github.com/phuse-org/phuse-scripts/tree/master/whitepapers/WPCT
+    (e.g., Fig. 1, Fig. 2, etc.)
     
-  . We refer to these as "standard" scripts - because they produce one of the standard displays enumerated in the CTWP
+  . We refer to these as "standard" scripts - because they produce one of the standard displays enumerated in the WPCT
   
   . Standard scripts, by default, produce an example output from PhUSE/CSS test data
     + Located here in github:
@@ -33,11 +34,12 @@ User Guide
   
   . Scripts require that users set some parameters based on their computing environments and data
     + Scripts are organized to clearly isolate user settings and pre-processing instructions (e.g., to subset data before performing analyses)
-    + By default, scripts use CDISC ADaM pilot data, mentioned above, and include custom pre-processing code to abbreviate treatment labels
+    + By default, scripts use CDISC ADaM pilot data, mentioned above, and include custom pre-processing code to abbreviate treatment labels and subset data to limit the number of outputs.
 
 * Project conventions
   . Main sub-directories in github, starting from whitepapers
     https://github.com/phuse-org/phuse-scripts/tree/master/whitepapers
+    (see each folder for further details)
 
     + qualification
       . Test specifications for standard scripts, and 
@@ -49,9 +51,9 @@ User Guide
     + WPCT
       . "White Paper Central Tendency" - Standard R and SAS scripts to create outputs that this white paper specifies
 
-  . Programming Guidelines in Phusewiki:
+  . Programming Guidelines for this project are in Phusewiki:
     http://www.phusewiki.org/wiki/index.php?title=WG5_P02_Programming_Guidelines
-  . Qualification process in Phusewiki:
+  . Qualification process for this project is in Phusewiki:
     http://www.phusewiki.org/wiki/index.php?title=WG5_Project_02#Qualification_Process
 
   . Test (Qualification) scripts and results in github:
