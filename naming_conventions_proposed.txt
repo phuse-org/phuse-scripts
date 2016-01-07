@@ -1,0 +1,21 @@
+/*
+
+MM/DD/YYYY (developer) - Description
+------------------------------------
+07/01/2016 (ddt) - split naming conventions from folder structure file
+
+*/
+
+; Naming conventions for scripts or specification files
+
+Proposal: {prg|sub-cat}[_{term}].{ext}
+  where
+    {prg|sub-cat} - program name or sub-cat such as PK
+    [_{term}]     - (optional) meaningful term
+    {ext}         - language extension such as sas, sql, java, R, etc.
+  For instance: PK_dual_box.sas, PK_dual_box.R
+
+For metadata file: {prg|sub-cat}[_{term}]_{ext}.yml  
+  Example:
+    Program : PK_dual_box.sas, PK_dual_box.R
+    Metafile: PK_dual_box_sas.yml, PK_dual_box_R.yml
