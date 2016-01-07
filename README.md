@@ -1,17 +1,12 @@
 # phuse-scripts
-Automatically exported from code.google.com/p/phuse-scripts
+[CSS/PhUSE Standard Analyses Working Group](http://www.phusewiki.org/wiki/index.php?title=Standard_Scripts)
 
-A Top-ten list of GitHub for beginners: http://sixrevisions.com/resources/git-tutorials-beginners/
+GitHub for beginners: http://sixrevisions.com/resources/git-tutorials-beginners/
 
-LearnCode Academy quick video tutorial: https://www.youtube.com/watch?v=0fKg7e37bQE
+Learn: Code Academy quick video tutorial: https://www.youtube.com/watch?v=0fKg7e37bQE
 
 Tutorial on Setup and workflow: https://www.atlassian.com/git/tutorials/setting-up-a-repository
 
 Various desktop clients for Git:
-
-Windows: https://windows.github.com/
-
-Mac OSX: https://mac.github.com/
-
-Using Git in R/RStudio: http://r-pkgs.had.co.nz/git.html
-
+GitHub Clients: https://help.github.com/articles/set-up-git/
+Using Git in R/RStudio: https://support.rstudio.com/hc/en-us/articles/200532077-Version-Control-with-Git-and-SVN
