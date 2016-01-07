@@ -1,7 +1,8 @@
 
 SAS Programming Guidelines and Conventions
 ==========================================
-PhUSE/CSS WG5 Project 02: Standard Analyses
+PhUSE/CSS Standard Analyses
+---------------------------
 
 Starting Point is the PhUSE Good Programming Practice Guide:
 * http://www.phuse.eu/publications.aspx
