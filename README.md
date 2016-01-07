@@ -1,14 +1,13 @@
 # CSS/PhUSE Standard Analyses
 
-* [CSS/PhUSE Standard Analyses Working Group](http://www.phusewiki.org/wiki/index.php?title=Standard_Scripts)
-* SAWG's [Analysis and Display White Papers project](http://www.phusewiki.org/wiki/index.php?title=WG5_Project_08)
-* SAWG's [Repository Governance & Infrastructure project](http://www.phusewiki.org/wiki/index.php?title=WG5_Project_03)
-* SAWG's [Repository content and delivery project](http://www.phusewiki.org/wiki/index.php?title=WG5_Project_02)
+* [CSS/PhUSE Standard Analyses Working Group](http://www.phusewiki.org/wiki/index.php?title=Standard_Scripts) (SAWG)
+* SAWG's [Analysis and Display White Papers project](http://www.phusewiki.org/wiki/index.php?title=WG5_Project_08) - Defining Standard Analyses
+* SAWG's [Repository Governance & Infrastructure project](http://www.phusewiki.org/wiki/index.php?title=WG5_Project_03) - Setting up our GitHub repository
+* SAWG's [Repository content and delivery project](http://www.phusewiki.org/wiki/index.php?title=WG5_Project_02) - Implementing Standard Analyses
 * SAWG's [Script discovery and acquisition project](http://www.phusewiki.org/wiki/index.php?title=WG5_Project_07)
 * SAWG's [Communication, Promotion and Education project](http://www.phusewiki.org/wiki/index.php?title=WG5_Project_07)
 
-* [Our Wiki](https://github.com/phuse-org/phuse-scripts/wiki) contains latest information for active efforts
-
+* [Our GitHub Wiki](https://github.com/phuse-org/phuse-scripts/wiki) contains latest information for active efforts
 
 # Git and GitHub help
 
