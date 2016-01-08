@@ -1,0 +1,643 @@
+<?xml version="1.0" encoding="windows-1252" ?>
+<TABLE>
+   <CSS_PASSFAIL>
+      <test_mac> util_axis_order </test_mac>
+      <test_id> 1.a.1 </test_id>
+      <test_dsc> Missing min </test_dsc>
+      <Pparm_min missing=" " />
+      <Pparm_max> -8 </Pparm_max>
+      <Kparm_ticks missing=" " />
+      <test_expect missing=" " />
+      <test_result missing=" " />
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %util_axis_order( -8) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> util_axis_order </test_mac>
+      <test_id> 1.a.2 </test_id>
+      <test_dsc> Missing max </test_dsc>
+      <Pparm_min> 52 </Pparm_min>
+      <Pparm_max missing=" " />
+      <Kparm_ticks missing=" " />
+      <test_expect missing=" " />
+      <test_result missing=" " />
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %util_axis_order( 52) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> util_axis_order </test_mac>
+      <test_id> 1.a.3 </test_id>
+      <test_dsc> Missing min &amp; max </test_dsc>
+      <Pparm_min missing=" " />
+      <Pparm_max missing=" " />
+      <Kparm_ticks missing=" " />
+      <test_expect missing=" " />
+      <test_result missing=" " />
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %util_axis_order </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> util_axis_order </test_mac>
+      <test_id> 1.b.1a </test_id>
+      <test_dsc> Min = Max </test_dsc>
+      <Pparm_min> 1E-2 </Pparm_min>
+      <Pparm_max> 0.01 </Pparm_max>
+      <Kparm_ticks missing=" " />
+      <test_expect missing=" " />
+      <test_result missing=" " />
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %util_axis_order( 1E-2, 0.01) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> util_axis_order </test_mac>
+      <test_id> 1.b.1b </test_id>
+      <test_dsc> Min = Max </test_dsc>
+      <Pparm_min> 315.01 </Pparm_min>
+      <Pparm_max> 315.010 </Pparm_max>
+      <Kparm_ticks missing=" " />
+      <test_expect missing=" " />
+      <test_result missing=" " />
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %util_axis_order( 315.01, 315.010) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> util_axis_order </test_mac>
+      <test_id> 1.b.1c </test_id>
+      <test_dsc> Min = Max </test_dsc>
+      <Pparm_min> 075 </Pparm_min>
+      <Pparm_max> 75.0 </Pparm_max>
+      <Kparm_ticks missing=" " />
+      <test_expect missing=" " />
+      <test_result missing=" " />
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %util_axis_order( 075, 75.0) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> util_axis_order </test_mac>
+      <test_id> 1.b.2a </test_id>
+      <test_dsc> Min &gt; Max </test_dsc>
+      <Pparm_min> -5.1 </Pparm_min>
+      <Pparm_max> -5.12 </Pparm_max>
+      <Kparm_ticks missing=" " />
+      <test_expect missing=" " />
+      <test_result missing=" " />
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %util_axis_order( -5.1, -5.12) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> util_axis_order </test_mac>
+      <test_id> 1.b.2b </test_id>
+      <test_dsc> Min &gt; Max </test_dsc>
+      <Pparm_min> 3 </Pparm_min>
+      <Pparm_max> -15 </Pparm_max>
+      <Kparm_ticks missing=" " />
+      <test_expect missing=" " />
+      <test_result missing=" " />
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %util_axis_order( 3, -15) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> util_axis_order </test_mac>
+      <test_id> 1.b.2c </test_id>
+      <test_dsc> Min &gt; Max </test_dsc>
+      <Pparm_min> 67 </Pparm_min>
+      <Pparm_max> 57 </Pparm_max>
+      <Kparm_ticks missing=" " />
+      <test_expect missing=" " />
+      <test_result missing=" " />
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %util_axis_order( 67, 57) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> util_axis_order </test_mac>
+      <test_id> 2.a.1 </test_id>
+      <test_dsc> Pos min &amp; max, various vals </test_dsc>
+      <Pparm_min> 0.0038 </Pparm_min>
+      <Pparm_max> 0.0202 </Pparm_max>
+      <Kparm_ticks missing=" " />
+      <test_expect> 0.002 to 0.022 by 0.002 </test_expect>
+      <test_result> 0.002 to 0.022 by 0.002 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %util_axis_order( 0.0038, 0.0202) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> util_axis_order </test_mac>
+      <test_id> 2.a.2 </test_id>
+      <test_dsc> Pos min &amp; max, various vals </test_dsc>
+      <Pparm_min> 0.004 </Pparm_min>
+      <Pparm_max> 202 </Pparm_max>
+      <Kparm_ticks missing=" " />
+      <test_expect> 0 to 210 by 30 </test_expect>
+      <test_result> 0 to 210 by 30 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %util_axis_order( 0.004, 202) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> util_axis_order </test_mac>
+      <test_id> 2.a.3 </test_id>
+      <test_dsc> Pos min &amp; max, various vals </test_dsc>
+      <Pparm_min> 87.98 </Pparm_min>
+      <Pparm_max> 88.01 </Pparm_max>
+      <Kparm_ticks missing=" " />
+      <test_expect> 87.978 to 88.011 by 0.003 </test_expect>
+      <test_result> 87.978 to 88.011 by 0.003 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %util_axis_order( 87.98, 88.01) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> util_axis_order </test_mac>
+      <test_id> 2.a.4 </test_id>
+      <test_dsc> Pos min &amp; max, various vals </test_dsc>
+      <Pparm_min> 8.8 </Pparm_min>
+      <Pparm_max> 20.2 </Pparm_max>
+      <Kparm_ticks missing=" " />
+      <test_expect> 8 to 22 by 2 </test_expect>
+      <test_result> 8 to 22 by 2 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %util_axis_order( 8.8, 20.2) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> util_axis_order </test_mac>
+      <test_id> 2.a.5 </test_id>
+      <test_dsc> Pos min &amp; max, various vals </test_dsc>
+      <Pparm_min> 7.2 </Pparm_min>
+      <Pparm_max> 800.8 </Pparm_max>
+      <Kparm_ticks missing=" " />
+      <test_expect> 0 to 880 by 80 </test_expect>
+      <test_result> 0 to 880 by 80 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %util_axis_order( 7.2, 800.8) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> util_axis_order </test_mac>
+      <test_id> 2.a.6 </test_id>
+      <test_dsc> Pos min &amp; max, various vals </test_dsc>
+      <Pparm_min> 60 </Pparm_min>
+      <Pparm_max> 210 </Pparm_max>
+      <Kparm_ticks missing=" " />
+      <test_expect> 60 to 220 by 20 </test_expect>
+      <test_result> 60 to 220 by 20 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %util_axis_order( 60, 210) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> util_axis_order </test_mac>
+      <test_id> 2.a.7 </test_id>
+      <test_dsc> Pos min &amp; max, various vals </test_dsc>
+      <Pparm_min> 4 </Pparm_min>
+      <Pparm_max> 2725 </Pparm_max>
+      <Kparm_ticks missing=" " />
+      <test_expect> 0 to 3000 by 300 </test_expect>
+      <test_result> 0 to 3000 by 300 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %util_axis_order( 4, 2725) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> util_axis_order </test_mac>
+      <test_id> 2.b.1 </test_id>
+      <test_dsc> Non-pos min &amp; pos max, various vals </test_dsc>
+      <Pparm_min> -0.0202 </Pparm_min>
+      <Pparm_max> 0.0038 </Pparm_max>
+      <Kparm_ticks missing=" " />
+      <test_expect> -0.021 to 0.006 by 0.003 </test_expect>
+      <test_result> -0.021 to 0.006 by 0.003 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %util_axis_order( -0.0202, 0.0038) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> util_axis_order </test_mac>
+      <test_id> 2.b.2 </test_id>
+      <test_dsc> Non-pos min &amp; pos max, various vals </test_dsc>
+      <Pparm_min> 0 </Pparm_min>
+      <Pparm_max> 0.0202 </Pparm_max>
+      <Kparm_ticks missing=" " />
+      <test_expect> 0 to 0.021 by 0.003 </test_expect>
+      <test_result> 0 to 0.021 by 0.003 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %util_axis_order( 0, 0.0202) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> util_axis_order </test_mac>
+      <test_id> 2.b.3 </test_id>
+      <test_dsc> Non-pos min &amp; pos max, various vals </test_dsc>
+      <Pparm_min> -0.001 </Pparm_min>
+      <Pparm_max> 10000 </Pparm_max>
+      <Kparm_ticks missing=" " />
+      <test_expect> -1000 to 10000 by 1000 </test_expect>
+      <test_result> -1000 to 10000 by 1000 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %util_axis_order( -0.001, 10000) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> util_axis_order </test_mac>
+      <test_id> 2.b.4 </test_id>
+      <test_dsc> Non-pos min &amp; pos max, various vals </test_dsc>
+      <Pparm_min> -0.90 </Pparm_min>
+      <Pparm_max> 0.95 </Pparm_max>
+      <Kparm_ticks missing=" " />
+      <test_expect> -1 to 1 by 0.2 </test_expect>
+      <test_result> -1 to 1 by 0.2 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %util_axis_order( -0.90, 0.95) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> util_axis_order </test_mac>
+      <test_id> 2.b.5 </test_id>
+      <test_dsc> Non-pos min &amp; pos max, various vals </test_dsc>
+      <Pparm_min> -88 </Pparm_min>
+      <Pparm_max> 202 </Pparm_max>
+      <Kparm_ticks missing=" " />
+      <test_expect> -90 to 210 by 30 </test_expect>
+      <test_result> -90 to 210 by 30 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %util_axis_order( -88, 202) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> util_axis_order </test_mac>
+      <test_id> 2.b.6 </test_id>
+      <test_dsc> Non-pos min &amp; pos max, various vals </test_dsc>
+      <Pparm_min> -202 </Pparm_min>
+      <Pparm_max> 72 </Pparm_max>
+      <Kparm_ticks missing=" " />
+      <test_expect> -210 to 90 by 30 </test_expect>
+      <test_result> -210 to 90 by 30 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %util_axis_order( -202, 72) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> util_axis_order </test_mac>
+      <test_id> 2.b.7 </test_id>
+      <test_dsc> Non-pos min &amp; pos max, various vals </test_dsc>
+      <Pparm_min> -82 </Pparm_min>
+      <Pparm_max> 80 </Pparm_max>
+      <Kparm_ticks missing=" " />
+      <test_expect> -100 to 80 by 20 </test_expect>
+      <test_result> -100 to 80 by 20 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %util_axis_order( -82, 80) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> util_axis_order </test_mac>
+      <test_id> 2.b.8 </test_id>
+      <test_dsc> Non-pos min &amp; pos max, various vals </test_dsc>
+      <Pparm_min> -820 </Pparm_min>
+      <Pparm_max> 800 </Pparm_max>
+      <Kparm_ticks missing=" " />
+      <test_expect> -1000 to 800 by 200 </test_expect>
+      <test_result> -1000 to 800 by 200 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %util_axis_order( -820, 800) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> util_axis_order </test_mac>
+      <test_id> 2.c.1 </test_id>
+      <test_dsc> Neg min &amp; non-pos max, various vals </test_dsc>
+      <Pparm_min> -0.0202 </Pparm_min>
+      <Pparm_max> -0.0038 </Pparm_max>
+      <Kparm_ticks missing=" " />
+      <test_expect> -0.022 to -0.002 by 0.002 </test_expect>
+      <test_result> -0.022 to -0.002 by 0.002 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %util_axis_order( -0.0202, -0.0038) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> util_axis_order </test_mac>
+      <test_id> 2.c.2 </test_id>
+      <test_dsc> Neg min &amp; non-pos max, various vals </test_dsc>
+      <Pparm_min> -202 </Pparm_min>
+      <Pparm_max> -0.004 </Pparm_max>
+      <Kparm_ticks missing=" " />
+      <test_expect> -210 to 0 by 30 </test_expect>
+      <test_result> -210 to 0 by 30 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %util_axis_order( -202, -0.004) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> util_axis_order </test_mac>
+      <test_id> 2.c.3 </test_id>
+      <test_dsc> Neg min &amp; non-pos max, various vals </test_dsc>
+      <Pparm_min> -88.01 </Pparm_min>
+      <Pparm_max> -87.99 </Pparm_max>
+      <Kparm_ticks missing=" " />
+      <test_expect> -88.01 to -87.99 by 0.002 </test_expect>
+      <test_result> -88.01 to -87.99 by 0.002 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %util_axis_order( -88.01, -87.99) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> util_axis_order </test_mac>
+      <test_id> 2.c.4 </test_id>
+      <test_dsc> Neg min &amp; non-pos max, various vals </test_dsc>
+      <Pparm_min> -20.2 </Pparm_min>
+      <Pparm_max> 0 </Pparm_max>
+      <Kparm_ticks missing=" " />
+      <test_expect> -21 to 0 by 3 </test_expect>
+      <test_result> -21 to 0 by 3 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %util_axis_order( -20.2, 0) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> util_axis_order </test_mac>
+      <test_id> 2.c.5 </test_id>
+      <test_dsc> Neg min &amp; non-pos max, various vals </test_dsc>
+      <Pparm_min> -800.8 </Pparm_min>
+      <Pparm_max> -7.2 </Pparm_max>
+      <Kparm_ticks missing=" " />
+      <test_expect> -880 to 0 by 80 </test_expect>
+      <test_result> -880 to 0 by 80 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %util_axis_order( -800.8, -7.2) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> util_axis_order </test_mac>
+      <test_id> 2.c.6 </test_id>
+      <test_dsc> Neg min &amp; non-pos max, various vals </test_dsc>
+      <Pparm_min> -210 </Pparm_min>
+      <Pparm_max> -60 </Pparm_max>
+      <Kparm_ticks missing=" " />
+      <test_expect> -220 to -60 by 20 </test_expect>
+      <test_result> -220 to -60 by 20 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %util_axis_order( -210, -60) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> util_axis_order </test_mac>
+      <test_id> 2.c.7 </test_id>
+      <test_dsc> Neg min &amp; non-pos max, various vals </test_dsc>
+      <Pparm_min> -2725 </Pparm_min>
+      <Pparm_max> -4 </Pparm_max>
+      <Kparm_ticks missing=" " />
+      <test_expect> -3000 to 0 by 300 </test_expect>
+      <test_result> -3000 to 0 by 300 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %util_axis_order( -2725, -4) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> util_axis_order </test_mac>
+      <test_id> 2.d.1 </test_id>
+      <test_dsc> Non-pos, non-int TICKS val </test_dsc>
+      <Pparm_min> 0 </Pparm_min>
+      <Pparm_max> 10 </Pparm_max>
+      <Kparm_ticks> 0 </Kparm_ticks>
+      <test_expect> 0 to 10 by 1 </test_expect>
+      <test_result> 0 to 10 by 1 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %util_axis_order( 0, 10, ticks=0) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> util_axis_order </test_mac>
+      <test_id> 2.d.2 </test_id>
+      <test_dsc> Non-pos, non-int TICKS val </test_dsc>
+      <Pparm_min> 0 </Pparm_min>
+      <Pparm_max> 10 </Pparm_max>
+      <Kparm_ticks> 5.5 </Kparm_ticks>
+      <test_expect> 0 to 10 by 2 </test_expect>
+      <test_result> 0 to 10 by 2 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %util_axis_order( 0, 10, ticks=5.5) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> util_axis_order </test_mac>
+      <test_id> 2.d.3 </test_id>
+      <test_dsc> Non-pos, non-int TICKS val </test_dsc>
+      <Pparm_min> 0 </Pparm_min>
+      <Pparm_max> 10 </Pparm_max>
+      <Kparm_ticks> 0.001 </Kparm_ticks>
+      <test_expect> 0 to 10 by 1 </test_expect>
+      <test_result> 0 to 10 by 1 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %util_axis_order( 0, 10, ticks=0.001) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> util_axis_order </test_mac>
+      <test_id> 2.d.4 </test_id>
+      <test_dsc> Non-pos, non-int TICKS val </test_dsc>
+      <Pparm_min> 0 </Pparm_min>
+      <Pparm_max> 10 </Pparm_max>
+      <Kparm_ticks> -0.001 </Kparm_ticks>
+      <test_expect> 0 to 10 by 1 </test_expect>
+      <test_result> 0 to 10 by 1 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %util_axis_order( 0, 10, ticks=-0.001) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> util_axis_order </test_mac>
+      <test_id> 2.d.5 </test_id>
+      <test_dsc> Non-pos, non-int TICKS val </test_dsc>
+      <Pparm_min> 0 </Pparm_min>
+      <Pparm_max> 10 </Pparm_max>
+      <Kparm_ticks> -4.2 </Kparm_ticks>
+      <test_expect> 0 to 10 by 1 </test_expect>
+      <test_result> 0 to 10 by 1 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %util_axis_order( 0, 10, ticks=-4.2) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> util_axis_order </test_mac>
+      <test_id> 2.d.6 </test_id>
+      <test_dsc> Non-pos, non-int TICKS val </test_dsc>
+      <Pparm_min> 0 </Pparm_min>
+      <Pparm_max> 10 </Pparm_max>
+      <Kparm_ticks> -8.5 </Kparm_ticks>
+      <test_expect> 0 to 10 by 1 </test_expect>
+      <test_result> 0 to 10 by 1 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %util_axis_order( 0, 10, ticks=-8.5) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> util_axis_order </test_mac>
+      <test_id> 2.e.1 </test_id>
+      <test_dsc> Range of pos int TICKS val </test_dsc>
+      <Pparm_min> -10 </Pparm_min>
+      <Pparm_max> 10 </Pparm_max>
+      <Kparm_ticks> 1 </Kparm_ticks>
+      <test_expect> -20 to 20 by 20 </test_expect>
+      <test_result> -20 to 20 by 20 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %util_axis_order( -10, 10, ticks=1) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> util_axis_order </test_mac>
+      <test_id> 2.e.2 </test_id>
+      <test_dsc> Range of pos int TICKS val </test_dsc>
+      <Pparm_min> -20 </Pparm_min>
+      <Pparm_max> 0 </Pparm_max>
+      <Kparm_ticks> 10 </Kparm_ticks>
+      <test_expect> -20 to 0 by 2 </test_expect>
+      <test_result> -20 to 0 by 2 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %util_axis_order( -20, 0, ticks=10) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> util_axis_order </test_mac>
+      <test_id> 2.e.3 </test_id>
+      <test_dsc> Range of pos int TICKS val </test_dsc>
+      <Pparm_min> 0 </Pparm_min>
+      <Pparm_max> 20 </Pparm_max>
+      <Kparm_ticks> 100 </Kparm_ticks>
+      <test_expect> 0 to 20 by 0.2 </test_expect>
+      <test_result> 0 to 20 by 0.2 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %util_axis_order( 0, 20, ticks=100) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+</TABLE>

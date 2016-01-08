@@ -12,9 +12,9 @@
             REQUIRED
             Syntax:  non-missing number, greater than MIN
             Example: 23.42
-    ticks maximum number of ticks on the continuous axis. you will see at most this many.
+    ticks maximum number of ticks on the continuous axis. you will see about this many (it is NOT exact)
             OPTIONAL
-            Syntax:  Integer
+            Syntax:  Positive integer
             Example: 16
 
   -OUTPUT:
@@ -26,15 +26,20 @@
   Author:          Dante Di Tommaso
 ***/
 
-%macro util_axis_order(min, max, ticks=14);
-  %local OK diff estep  emin emax omin omax step;
+%macro util_axis_order(min, max, ticks=10);
+  %local OK diff estep emin emax omin omax step;
 
   %if %sysevalf(&min >= &max) or 
-      "&min" = "." or "&max" = "." or 
-      %length(&min) = 0 or %length(&max) = 0 %then %do;
-    %put ERROR: (UTIL_AXIS_ORDER) MIN (&min) and MAX (&max) must be ascending, non-missing numeric values.;
-  %end;
+      %datatyp(&min) = CHAR or %datatyp(&max) = CHAR or 
+      %length(&min) = 0 or %length(&max) = 0 %then
+      %put ERROR: (UTIL_AXIS_ORDER) MIN (&min) and MAX (&max) must be ascending, non-missing numeric values.;
+  %else %if %length(&ticks) > 0 and %datatyp(&ticks) = CHAR %then
+      %put ERROR: (UTIL_AXIS_ORDER) TICKS (&ticks) must be a non-missing, positive value.;
   %else %do;
+
+    %*--- TICKS must be a positive integer, so avoid trouble ---*;
+      %if %sysevalf(&ticks < 1) %then %let ticks = 10;
+      %else %let ticks = %sysfunc(intz(&ticks));
 
     %*--- Interval to cover ---*;
       %let diff = %sysevalf(&max - &min);

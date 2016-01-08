@@ -1,0 +1,1337 @@
+3298    /***
+3299      Qualification tests for PhUSE/CSS utility macro <MACRO-NAME>
+3300
+3301      SETUP:  Ensure that PhUSE/CSS utilities are in the AUTOCALL path
+3302
+3303      TEST PLAN:
+3304      https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/qualification/testplan_<MACRO-NAME>.docx
+3305
+3306    ***/
+3307
+3308
+3309    *--- SETUP ---*;
+3310
+3311      %let macroname = UTIL_AXIS_ORDER;
+3312
+3313      %put WARNING: (TEST_%upcase(&macroname)) User must ensure PhUSE/CSS utilities are in the AUTOCALL path.;
+WARNING: (TEST_UTIL_AXIS_ORDER) User must ensure PhUSE/CSS utilities are in the AUTOCALL path.
+3314
+3315      /*** EXECUTE ONE TIME only as needed
+3316
+3317        Ensure PhUSE/CSS utilities are in the AUTOCALL path
+3318        NB: This line is not necessary if PhUSE/CSS utilities are in your default AUTOCALL paths
+3319
+3320        OPTIONS mrecall sasautos=(%sysfunc(getoption(sasautos)) "C:\CSS\phuse-scripts\whitepapers\utilities") ls=max ps=max formdlim=' ';
+3321
+3322      ***/
+3323
+3324
+3325      *--- SAVE TEST RESULTS as XML filename  ---*;
+3326      *--- NB: if this filename is blank, do NOT save xml test results ---*;
+3327
+3328        %let XML_FILENAME = .\outputs_sas\testresults_%lowcase(&macroname).xml;
+3329        %let XML_FILENAME = ;
+3330
+3331
+3332    *--- Test Definitions  ---*;
+3333      *--- Full Specs for test definitions: https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/utilities/util_passfail.sas ---*;
+3334
+3335      proc sql;
+3336        create table my_test_definitions
+3337          (  test_mac        char(32) label='Name of macro to test'
+3338           , test_id         char(15) label="Test ID for %upcase(&macroname)"
+3339           , test_dsc        char(40) label='Test Description'
+3340
+3341           , test_type       char(2)  label='Test Type (Macro var, String-<B|C|L|T>, Data set, In data step)'
+3342           , Pparm_min       char(10) label='Test values for the Positional parameter MIN'
+3343           , Pparm_max       char(10) label='Test values for the Positional parameter MAX'
+3344           , Kparm_ticks     char(8)  label='Test values for the Keyword parameter TICKS'
+3345
+3346           , test_expect     char(40) label="EXPECTED test results for each call to %upcase(&macroname)"
+3347          )
+3348        ;
+NOTE: Table WORK.MY_TEST_DEFINITIONS created, with 0 rows and 8 columns.
+3349
+3350        insert into my_test_definitions
+3351          values("%lowcase(&macroname)", '1.a.1', 'Missing min',        'S', '', '-8', '',  '')
+3352          values("%lowcase(&macroname)", '1.a.2', 'Missing max',        'S', '52', '', '',  '')
+3353          values("%lowcase(&macroname)", '1.a.3', 'Missing min & max',  'S', '', '', '',  '')
+3354          values("%lowcase(&macroname)", '1.b.1a', 'Min = Max',         'S', '1E-2', '0.01', '',  '')
+3355          values("%lowcase(&macroname)", '1.b.1b', 'Min = Max',         'S', '315.01', '315.010', '',  '')
+3356          values("%lowcase(&macroname)", '1.b.1c', 'Min = Max',         'S', '075', '75.0', '',  '')
+3357          values("%lowcase(&macroname)", '1.b.2a', 'Min > Max',         'S', '-5.1', '-5.12', '',  '')
+3358          values("%lowcase(&macroname)", '1.b.2b', 'Min > Max',         'S', '3', '-15', '',  '')
+3359          values("%lowcase(&macroname)", '1.b.2c', 'Min > Max',         'S', '67', '57', '',  '')
+3360
+3361          values("%lowcase(&macroname)", '2.a.1', 'Pos min & max, various vals',    'S', '0.0038', '0.0202', '',  '0.002 to 0.022 by 0.002')
+3362          values("%lowcase(&macroname)", '2.a.2', 'Pos min & max, various vals',    'S', '0.004', '202', '',      '0 to 210 by 30')
+3363          values("%lowcase(&macroname)", '2.a.3', 'Pos min & max, various vals',    'S', '87.98', '88.01', '',    '87.978 to 88.011 by 0.003')
+3364          values("%lowcase(&macroname)", '2.a.4', 'Pos min & max, various vals',    'S', '8.8', '20.2', '',       '8 to 22 by 2')
+3365          values("%lowcase(&macroname)", '2.a.5', 'Pos min & max, various vals',    'S', '7.2', '800.8', '',      '0 to 880 by 80')
+3366          values("%lowcase(&macroname)", '2.a.6', 'Pos min & max, various vals',    'S', '60', '210', '',         '60 to 220 by 20')
+3367          values("%lowcase(&macroname)", '2.a.7', 'Pos min & max, various vals',    'S', '4', '2725', '',         '0 to 3000 by 300')
+3368
+3369          values("%lowcase(&macroname)", '2.b.1', 'Non-pos min & pos max, various vals',    'S', '-0.0202', '0.0038', '',  '-0.021 to 0.006 by 0.003')
+3370          values("%lowcase(&macroname)", '2.b.2', 'Non-pos min & pos max, various vals',    'S', '0', '0.0202', '',        '0 to 0.021 by 0.003')
+3371          values("%lowcase(&macroname)", '2.b.3', 'Non-pos min & pos max, various vals',    'S', '-0.001', '10000', '',    '-1000 to 10000 by 1000')
+3372          values("%lowcase(&macroname)", '2.b.4', 'Non-pos min & pos max, various vals',    'S', '-0.90', '0.95', '',      '-1 to 1 by 0.2')
+3373          values("%lowcase(&macroname)", '2.b.5', 'Non-pos min & pos max, various vals',    'S', '-88', '202', '',         '-90 to 210 by 30')
+3374          values("%lowcase(&macroname)", '2.b.6', 'Non-pos min & pos max, various vals',    'S', '-202', '72', '',         '-210 to 90 by 30')
+3375          values("%lowcase(&macroname)", '2.b.7', 'Non-pos min & pos max, various vals',    'S', '-82', '80', '',          '-100 to 80 by 20')
+3376          values("%lowcase(&macroname)", '2.b.8', 'Non-pos min & pos max, various vals',    'S', '-820', '800', '',        '-1000 to 800 by 200')
+3377
+3378          values("%lowcase(&macroname)", '2.c.1', 'Neg min & non-pos max, various vals',    'S', '-0.0202', '-0.0038', '',  '-0.022 to -0.002 by 0.002')
+3379          values("%lowcase(&macroname)", '2.c.2', 'Neg min & non-pos max, various vals',    'S', '-202', '-0.004', '',      '-210 to 0 by 30')
+3380          values("%lowcase(&macroname)", '2.c.3', 'Neg min & non-pos max, various vals',    'S', '-88.01', '-87.99', '',    '-88.01 to -87.99 by 0.002')
+3381          values("%lowcase(&macroname)", '2.c.4', 'Neg min & non-pos max, various vals',    'S', '-20.2', '0', '',          '-21 to 0 by 3')
+3382          values("%lowcase(&macroname)", '2.c.5', 'Neg min & non-pos max, various vals',    'S', '-800.8', '-7.2', '',      '-880 to 0 by 80')
+3383          values("%lowcase(&macroname)", '2.c.6', 'Neg min & non-pos max, various vals',    'S', '-210', '-60', '',         '-220 to -60 by 20')
+3384          values("%lowcase(&macroname)", '2.c.7', 'Neg min & non-pos max, various vals',    'S', '-2725', '-4', '',         '-3000 to 0 by 300')
+3385
+3386          values("%lowcase(&macroname)", '2.d.1', 'Non-pos, non-int TICKS val',    'S', '0', '10', '0',       '0 to 10 by 1')
+3387          values("%lowcase(&macroname)", '2.d.2', 'Non-pos, non-int TICKS val',    'S', '0', '10', '5.5',     '0 to 10 by 2')
+3388          values("%lowcase(&macroname)", '2.d.3', 'Non-pos, non-int TICKS val',    'S', '0', '10', '0.001',   '0 to 10 by 1')
+3389          values("%lowcase(&macroname)", '2.d.4', 'Non-pos, non-int TICKS val',    'S', '0', '10', '-0.001',  '0 to 10 by 1')
+3390          values("%lowcase(&macroname)", '2.d.5', 'Non-pos, non-int TICKS val',    'S', '0', '10', '-4.2',    '0 to 10 by 1')
+3391          values("%lowcase(&macroname)", '2.d.6', 'Non-pos, non-int TICKS val',    'S', '0', '10', '-8.5',    '0 to 10 by 1')
+3392
+3393          values("%lowcase(&macroname)", '2.e.1', 'Range of pos int TICKS val',    'S', '-10', '10', '1',     '-20 to 20 by 20')
+3394          values("%lowcase(&macroname)", '2.e.2', 'Range of pos int TICKS val',    'S', '-20', '0', '10',     '-20 to 0 by 2')
+3395          values("%lowcase(&macroname)", '2.e.3', 'Range of pos int TICKS val',    'S', '0', '20', '100',     '0 to 20 by 0.2')
+3396
+3397    /*
+3398          values("%lowcase(&macroname)", ' ', ' ',    'S', '', '', '',  ' to  by ')
+3399    */
+3400
+3401        ;
+NOTE: 40 rows were inserted into WORK.MY_TEST_DEFINITIONS.
+
+3402      quit;
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.12 seconds
+      cpu time            0.12 seconds
+
+
+3403
+3404
+3405    *--- Setup test environment here (dsets, macro vars, etc) ---*;
+3406
+3407
+3408    *--- Create EXPECTED test results ---*;
+3409
+3410
+3411    *--- Execute & evaluate tests, and report & store test results ---*;
+3412      %util_passfail (my_test_definitions, savexml=&xml_filename, debug=N);
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: There were 40 observations read from the data set WORK.MY_TEST_DEFINITIONS.
+NOTE: The data set WORK.CSS_PASSFAIL has 40 observations and 11 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+
+NOTE (BUILD_MACRO_CALLS): > 1.a.1 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %util_axis_order( -8)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > 1.a.2 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %util_axis_order( 52)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > 1.a.3 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %util_axis_order
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > 1.b.1a , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %util_axis_order( 1E-2, 0.01)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > 1.b.1b , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %util_axis_order( 315.01, 315.010)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > 1.b.1c , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %util_axis_order( 075, 75.0)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > 1.b.2a , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %util_axis_order( -5.1, -5.12)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > 1.b.2b , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %util_axis_order( 3, -15)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > 1.b.2c , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %util_axis_order( 67, 57)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > 2.a.1 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %util_axis_order( 0.0038, 0.0202)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > 2.a.2 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %util_axis_order( 0.004, 202)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > 2.a.3 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %util_axis_order( 87.98, 88.01)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > 2.a.4 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %util_axis_order( 8.8, 20.2)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > 2.a.5 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %util_axis_order( 7.2, 800.8)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > 2.a.6 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %util_axis_order( 60, 210)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > 2.a.7 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %util_axis_order( 4, 2725)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > 2.b.1 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %util_axis_order( -0.0202, 0.0038)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > 2.b.2 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %util_axis_order( 0, 0.0202)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > 2.b.3 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %util_axis_order( -0.001, 10000)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > 2.b.4 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %util_axis_order( -0.90, 0.95)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > 2.b.5 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %util_axis_order( -88, 202)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > 2.b.6 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %util_axis_order( -202, 72)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > 2.b.7 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %util_axis_order( -82, 80)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > 2.b.8 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %util_axis_order( -820, 800)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > 2.c.1 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %util_axis_order( -0.0202, -0.0038)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > 2.c.2 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %util_axis_order( -202, -0.004)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > 2.c.3 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %util_axis_order( -88.01, -87.99)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > 2.c.4 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %util_axis_order( -20.2, 0)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > 2.c.5 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %util_axis_order( -800.8, -7.2)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > 2.c.6 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %util_axis_order( -210, -60)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > 2.c.7 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %util_axis_order( -2725, -4)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > 2.d.1 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %util_axis_order( 0, 10, ticks=0)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > 2.d.2 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %util_axis_order( 0, 10, ticks=5.5)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > 2.d.3 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %util_axis_order( 0, 10, ticks=0.001)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > 2.d.4 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %util_axis_order( 0, 10, ticks=-0.001)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > 2.d.5 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %util_axis_order( 0, 10, ticks=-4.2)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > 2.d.6 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %util_axis_order( 0, 10, ticks=-8.5)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > 2.e.1 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %util_axis_order( -10, 10, ticks=1)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > 2.e.2 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %util_axis_order( -20, 0, ticks=10)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > 2.e.3 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %util_axis_order( 0, 20, ticks=100)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE: There were 40 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 40 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.15 seconds
+      cpu time            0.15 seconds
+
+
+
+NOTE: There were 1 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD8292_RBAMW049235_\#LN00053,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=08Jan2016:17:44:10,
+      Create Time=08Jan2016:16:32:07
+
+ERROR: (UTIL_AXIS_ORDER) MIN (-8) and MAX () must be ascending, non-missing numeric values.
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 40 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 40 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD8292_RBAMW049235_\#LN00053,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=08Jan2016:17:44:10,
+      Create Time=08Jan2016:16:32:07
+
+ERROR: (UTIL_AXIS_ORDER) MIN (52) and MAX () must be ascending, non-missing numeric values.
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 40 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 40 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD8292_RBAMW049235_\#LN00053,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=08Jan2016:17:44:10,
+      Create Time=08Jan2016:16:32:07
+
+ERROR: (UTIL_AXIS_ORDER) MIN () and MAX () must be ascending, non-missing numeric values.
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 40 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 40 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD8292_RBAMW049235_\#LN00053,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=08Jan2016:17:44:11,
+      Create Time=08Jan2016:16:32:07
+
+ERROR: (UTIL_AXIS_ORDER) MIN (1E-2) and MAX (0.01) must be ascending, non-missing numeric values.
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 40 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 40 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD8292_RBAMW049235_\#LN00053,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=08Jan2016:17:44:11,
+      Create Time=08Jan2016:16:32:07
+
+ERROR: (UTIL_AXIS_ORDER) MIN (315.01) and MAX (315.010) must be ascending, non-missing numeric values.
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 40 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 40 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.03 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD8292_RBAMW049235_\#LN00053,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=08Jan2016:17:44:11,
+      Create Time=08Jan2016:16:32:07
+
+ERROR: (UTIL_AXIS_ORDER) MIN (075) and MAX (75.0) must be ascending, non-missing numeric values.
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 40 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 40 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD8292_RBAMW049235_\#LN00053,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=08Jan2016:17:44:11,
+      Create Time=08Jan2016:16:32:07
+
+ERROR: (UTIL_AXIS_ORDER) MIN (-5.1) and MAX (-5.12) must be ascending, non-missing numeric values.
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 40 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 40 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.04 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD8292_RBAMW049235_\#LN00053,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=08Jan2016:17:44:11,
+      Create Time=08Jan2016:16:32:07
+
+ERROR: (UTIL_AXIS_ORDER) MIN (3) and MAX (-15) must be ascending, non-missing numeric values.
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 40 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 40 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD8292_RBAMW049235_\#LN00053,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=08Jan2016:17:44:11,
+      Create Time=08Jan2016:16:32:07
+
+ERROR: (UTIL_AXIS_ORDER) MIN (67) and MAX (57) must be ascending, non-missing numeric values.
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 40 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 40 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD8292_RBAMW049235_\#LN00053,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=08Jan2016:17:44:11,
+      Create Time=08Jan2016:16:32:07
+
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 40 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 40 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.04 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD8292_RBAMW049235_\#LN00053,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=08Jan2016:17:44:11,
+      Create Time=08Jan2016:16:32:07
+
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 40 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 40 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.04 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD8292_RBAMW049235_\#LN00053,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=08Jan2016:17:44:11,
+      Create Time=08Jan2016:16:32:07
+
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 40 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 40 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.04 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD8292_RBAMW049235_\#LN00053,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=08Jan2016:17:44:11,
+      Create Time=08Jan2016:16:32:07
+
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 40 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 40 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.04 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD8292_RBAMW049235_\#LN00053,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=08Jan2016:17:44:11,
+      Create Time=08Jan2016:16:32:07
+
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 40 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 40 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD8292_RBAMW049235_\#LN00053,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=08Jan2016:17:44:12,
+      Create Time=08Jan2016:16:32:07
+
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 40 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 40 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD8292_RBAMW049235_\#LN00053,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=08Jan2016:17:44:12,
+      Create Time=08Jan2016:16:32:07
+
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 40 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 40 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD8292_RBAMW049235_\#LN00053,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=08Jan2016:17:44:12,
+      Create Time=08Jan2016:16:32:07
+
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 40 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 40 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD8292_RBAMW049235_\#LN00053,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=08Jan2016:17:44:12,
+      Create Time=08Jan2016:16:32:07
+
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 40 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 40 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.04 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD8292_RBAMW049235_\#LN00053,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=08Jan2016:17:44:12,
+      Create Time=08Jan2016:16:32:07
+
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 40 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 40 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.06 seconds
+      cpu time            0.06 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD8292_RBAMW049235_\#LN00053,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=08Jan2016:17:44:12,
+      Create Time=08Jan2016:16:32:07
+
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 40 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 40 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.04 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD8292_RBAMW049235_\#LN00053,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=08Jan2016:17:44:12,
+      Create Time=08Jan2016:16:32:07
+
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 40 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 40 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.04 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD8292_RBAMW049235_\#LN00053,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=08Jan2016:17:44:12,
+      Create Time=08Jan2016:16:32:07
+
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 40 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 40 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD8292_RBAMW049235_\#LN00053,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=08Jan2016:17:44:12,
+      Create Time=08Jan2016:16:32:07
+
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 40 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 40 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD8292_RBAMW049235_\#LN00053,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=08Jan2016:17:44:12,
+      Create Time=08Jan2016:16:32:07
+
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 40 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 40 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD8292_RBAMW049235_\#LN00053,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=08Jan2016:17:44:12,
+      Create Time=08Jan2016:16:32:07
+
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 40 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 40 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.04 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD8292_RBAMW049235_\#LN00053,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=08Jan2016:17:44:13,
+      Create Time=08Jan2016:16:32:07
+
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 40 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 40 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.04 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD8292_RBAMW049235_\#LN00053,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=08Jan2016:17:44:13,
+      Create Time=08Jan2016:16:32:07
+
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 40 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 40 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.04 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD8292_RBAMW049235_\#LN00053,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=08Jan2016:17:44:13,
+      Create Time=08Jan2016:16:32:07
+
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 40 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 40 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD8292_RBAMW049235_\#LN00053,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=08Jan2016:17:44:13,
+      Create Time=08Jan2016:16:32:07
+
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 40 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 40 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD8292_RBAMW049235_\#LN00053,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=08Jan2016:17:44:13,
+      Create Time=08Jan2016:16:32:07
+
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 40 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 40 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD8292_RBAMW049235_\#LN00053,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=08Jan2016:17:44:13,
+      Create Time=08Jan2016:16:32:07
+
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 40 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 40 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD8292_RBAMW049235_\#LN00053,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=08Jan2016:17:44:13,
+      Create Time=08Jan2016:16:32:07
+
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 40 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 40 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD8292_RBAMW049235_\#LN00053,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=08Jan2016:17:44:13,
+      Create Time=08Jan2016:16:32:07
+
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 40 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 40 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD8292_RBAMW049235_\#LN00053,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=08Jan2016:17:44:13,
+      Create Time=08Jan2016:16:32:07
+
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 40 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 40 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.04 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD8292_RBAMW049235_\#LN00053,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=08Jan2016:17:44:13,
+      Create Time=08Jan2016:16:32:07
+
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 40 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 40 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD8292_RBAMW049235_\#LN00053,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=08Jan2016:17:44:13,
+      Create Time=08Jan2016:16:32:07
+
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 40 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 40 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD8292_RBAMW049235_\#LN00053,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=08Jan2016:17:44:13,
+      Create Time=08Jan2016:16:32:07
+
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 40 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 40 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD8292_RBAMW049235_\#LN00053,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=08Jan2016:17:44:14,
+      Create Time=08Jan2016:16:32:07
+
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 40 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 40 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD8292_RBAMW049235_\#LN00053,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=08Jan2016:17:44:14,
+      Create Time=08Jan2016:16:32:07
+
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 40 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 40 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD8292_RBAMW049235_\#LN00053,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=08Jan2016:17:44:14,
+      Create Time=08Jan2016:16:32:07
+
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 40 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 40 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: 47 lines were written to file PRINT.
+NOTE: There were 40 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 40 observations and 14 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.01 seconds
+
+
+
