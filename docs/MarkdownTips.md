@@ -4,10 +4,10 @@
 #### And they keep getting smaller
 ##### GitHub Markdown tips:
 
-Making a TOC -- automatic anchors for header text (hyphens replace blanks)
-* [Styling text](#Styling-text)
-* [Links](#Links)
-* [Code blocks with language-specific syntax highlighting](#Code-blocks-with-language-specific-syntax-highlighting)
+Making a TOC -- automatic anchors for header text (anchor text is all lower-case, and hyphens replace blanks)
+* [Styling text](#styling-text)
+* [Links](#links)
+* [Code blocks with language-specific syntax highlighting](#code-blocks-with-language-specific-syntax-highlighting)
 
 ###### Styling text
 * **bold**
