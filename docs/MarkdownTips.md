@@ -4,7 +4,12 @@
 #### And they keep getting smaller
 ##### GitHub Markdown tips:
 
-###### Styling text: 
+Making a TOC -- automatic anchors for header text (hyphens replace blanks)
+* [Biggest header](#Biggest-header)
+* [Big Header](#big-header)
+* [Middle Header](#middle-header)
+
+###### Styling text
 * **bold**
 * *italics*
 * `monospace`
