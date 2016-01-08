@@ -5,9 +5,9 @@
 ##### GitHub Markdown tips:
 
 Making a TOC -- automatic anchors for header text (hyphens replace blanks)
-* [Biggest header](#Biggest-header)
-* [Big Header](#big-header)
-* [Middle Header](#middle-header)
+* [Styling text](#Styling-text)
+* [Links](#Links)
+* [Code blocks with language-specific syntax highlighting](#Code-blocks-with-language-specific-syntax-highlighting)
 
 ###### Styling text
 * **bold**
