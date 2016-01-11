@@ -1,5 +1,6 @@
 General
 -------
+We have outlined our [qualification process in the PhUSE wiki](http://www.phusewiki.org/wiki/index.php?title=WG5_Project_02#Qualification_Process).
 Assert and Util macros can generally be testing using a PASS/FAIL unit-test approach.
 
 PASS/FAIL convention
