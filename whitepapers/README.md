@@ -7,4 +7,6 @@ While work continues on our github folder structure, the Repository Content team
 * [utilities](https://github.com/phuse-org/phuse-scripts/tree/master/whitepapers/utilities) - SAS macros that the standard scripts use for basic (generic) discovery and manipulation tasks, which should otherwise not cause distraction from the analyses that the standard scripts conduct.
 * [qualification](https://github.com/phuse-org/phuse-scripts/tree/master/whitepapers/qualification) - Test plans & test scripts for the standard scripts and the components that they use. Results and artifacts of testing are in language-specific subfolders.
 
+Remaining folders contain preliminary work on other white papers. The **focus for 2016** is on the White Paper on Central Tendencies, in the folders highlighted above.
+
 **Note**: Code on this site is by definition 'under development'.
