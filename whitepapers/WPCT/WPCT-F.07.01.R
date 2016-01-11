@@ -60,8 +60,8 @@ ANRLO <- 50
 ANRHI <- 100
 
 #set input and output file directories
-inputdirectory <- "/Users/jeno/Dropbox/Jeno/Professional Development/"
-outputdirectory <- "/Users/jeno/Dropbox/Jeno/Professional Development/"
+inputdirectory <- "path"
+outputdirectory <- "path"
 #accepts CSV or XPT files
 testfilename <- "advs.xpt" #"advs.xpt"
 #output file type - TIFF or JPEG. 
