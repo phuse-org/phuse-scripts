@@ -10,6 +10,9 @@ Script:
   Type   : figure
   Subtype  : boxplot
   Target : http://www.phusewiki.org/wiki/images/4/48/CSS_WhitePaper_CentralTendency_v1.0.pdf
+Package:
+  name : WPCT
+  label: White Paper on Measures of Central Tendency
 Language: 
   name   : SAS
   version: 9.4M2
