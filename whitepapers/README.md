@@ -2,7 +2,7 @@ The working group's **2016 goal** is to publish R and SAS scripts that unlock th
 
 While work continues on our github folder structure, the Repository Content team is working within this folder. The structure:
 * [CentralTendency-UserGuide.txt](https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/CentralTendency-UserGuide.txt)
-** Guidance for WPCT Script Users and Contributors
+* * Guidance for WPCT Script Users and Contributors
 * [specifications](https://github.com/phuse-org/phuse-scripts/tree/master/whitepapers/specification) - General formatting conventions, as well as detailed specifications for each Central Tendancy display.
 * [WPCT](https://github.com/phuse-org/phuse-scripts/tree/master/whitepapers/WPCT) - Standard scripts for WPCT data displays, in SAS and R. Example outputs are in language-specific subfolders.
 * [utilities](https://github.com/phuse-org/phuse-scripts/tree/master/whitepapers/utilities) - SAS macros that the standard scripts use for basic (generic) discovery and manipulation tasks, which should otherwise not cause distraction from the analyses that the standard scripts conduct.
