@@ -9,4 +9,6 @@ While work continues on our github folder structure, the Repository Content team
 
 * [scriptathons](https://github.com/phuse-org/phuse-scripts/tree/master/whitepapers/scriptathons) - Scripts that volunteers contributed during Scriptathon events
 
+Remaining folders contain preliminary work on other white papers. The **focus for 2016** is on the White Paper on Central Tendencies, in the folders highlighted above.
+
 **Note**: Code on this site is by definition 'under development'.

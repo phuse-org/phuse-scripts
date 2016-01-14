@@ -1,6 +1,7 @@
 General
 -------
-Assert and Util macros can generally be testing using a PASS/FAIL unit-test approach.
+We have outlined our [qualification process in the PhUSE wiki](http://www.phusewiki.org/wiki/index.php?title=WG5_Project_02#Qualification_Process).
+We can typically test Assert and Util SAS macros using a PASS/FAIL unit-test approach.
 
 PASS/FAIL convention
 --------------------
