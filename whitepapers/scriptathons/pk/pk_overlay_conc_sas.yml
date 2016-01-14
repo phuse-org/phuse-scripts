@@ -1,0 +1,25 @@
+KeyWords: PK, Central, Mean Time Plot, labs, vital signs, ECGs 
+Script: 
+  Desc   : PK White Paper: Figure 7.5 Overlaying PK concentration-time profiles
+  Name   : pk_overlay_conc.sas
+  GCR    : r135
+  SRV    : 
+  Source : White Paper
+  Topic  : PK
+  Title  : Overlaying PK concentration-time profiles
+  Type   : figure
+  Subtype  : plot
+  Target : http://www.phusewiki.org/wiki/images/4/48/CSS_WhitePaper_CentralTendency_v1.0.pdf
+Language: 
+  name   : SAS
+  version: 9.2.1
+Comments : > 
+  Please edit this file.
+  To provide more and better information.
+Qualification: 
+  LastQualDate: 
+  LastQualBy: 
+  Stage: Contributed
+Rating:   
+  ByUser: 
+  Stars: 3
