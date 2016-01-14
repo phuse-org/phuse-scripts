@@ -12,6 +12,6 @@ While work continues on our github folder structure, the Repository Content team
 * [**utilities**](https://github.com/phuse-org/phuse-scripts/tree/master/whitepapers/utilities)
   * SAS macros that the standard scripts use for basic (generic) discovery and manipulation tasks, which should otherwise not cause distraction from the analyses that the standard scripts conduct.
 * [**scriptathon**](https://github.com/phuse-org/phuse-scripts/tree/master/whitepapers/scriptathon)
-  * Scripts that volunteers created during PhUSE Scriptathon events through 2015.
+  * Scripts that volunteers created during PhUSE Scriptathon events through 2015, which we mine for good techniques and ideas for our standard, qualified scripts.
 
 **Note**: Code on this site is by definition 'under development'.
