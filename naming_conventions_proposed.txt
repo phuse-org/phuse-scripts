@@ -10,7 +10,7 @@ MM/DD/YYYY (developer) - Description
 
 Proposal: {prg|sub-cat|pkg}[-{pkg-detail}][_{term}].{ext}
   where
-    {prg|sub-cat|pkg} - Program name or Sub-category such as PK, or White Paper abbreviation such as [WPCT](https://github.com/phuse-org/phuse-scripts/tree/master/whitepapers/WPCT)
+    {prg|sub-cat|pkg} - Program name or Sub-category such as PK, or White Paper abbreviation such as WPCT
     [_{pkg-detail}]   - (optional) required for White Paper Package {pkg} scripts, detail such as figure number like "-F.07.01"
     [_{term}]         - (optional) meaningful term describing contents of this specific 
     {ext}             - language or type extension such as sas, sql, java, R, pdf, etc.
