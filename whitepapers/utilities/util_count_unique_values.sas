@@ -25,7 +25,9 @@
 ***/
 
 %macro util_count_unique_values(ds, var, sym, sqlwhr=);
-  %global &sym;
+
+  %*--- Create requested symbol, if it does not already exist in an exclosing symbol table ---*;
+  %if not %symexist(&sym) %then %global &sym;
   %local OK;
 
   %let OK = %assert_dset_exist(&ds);

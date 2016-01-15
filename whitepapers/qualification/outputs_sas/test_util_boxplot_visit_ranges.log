@@ -1,0 +1,633 @@
+NOTE: Copyright (c) 2002-2012 by SAS Institute Inc., Cary, NC, USA.
+NOTE: SAS (r) Proprietary Software 9.4 (TS1M2)
+      Licensed to F. HOFFMANN LA ROCHE AG, Site 50701490.
+NOTE: This session is executing on the X64_7PRO  platform.
+
+
+
+NOTE: Updated analytical products:
+
+      SAS/STAT 13.2
+      SAS/ETS 13.2
+      SAS/IML 13.2
+      SAS/QC 13.2
+
+NOTE: Additional host information:
+
+ X64_7PRO WIN 6.1.7601 Service Pack 1 Workstation
+
+NOTE: SAS initialization used:
+      real time           4.62 seconds
+      cpu time            2.32 seconds
+
+1      %let macroname = util_boxplot_visit_ranges;
+2        OPTIONS mrecall sasautos=(%sysfunc(getoption(sasautos)) "C:\CSS\phuse-scripts\whitepapers\utilities") ls=max ps=max;
+
+3        %let XML_FILENAME = .\outputs_sas\testresults_%lowcase(&macroname).xml;
+4
+5      proc sql;
+6        create table my_test_definitions
+7          (  test_mac        char(32) label='Name of macro to test'
+8           , test_id         char(15) label="Test ID for %upcase(&macroname)"
+9           , test_dsc        char(80) label='Test Description'
+10
+11          , test_type       char(1)  label='Test Type (Macro var, String-<B|C|L|T>, Data set, In data step)'
+12
+13          , Pparm_ds        char(50) label='Test values for the Positional parameter DS'
+14          , Kparm_vvisn     char(50) label='Test values for the Keyword parameter VVISN'
+15          , Kparm_vtrtn     char(50) label='Test values for the Keyword parameter VTRTN'
+16
+17          , test_expect     char(1)   label="EXPECTED test results for each call to %upcase(&macroname)"
+18          , test_expect_sym char(200) label='TEST_PDLIM-delim Name=Value pairs of EXPECTED global syms created'
+19          , test_wrap       char(120) label="Set MAX_BOXES_PER_PAGE and symdel BEFORE/AFTER each call to %upcase(&macroname)"
+20          , test_pdlim      char(1)   label="OVERRIDE default test delimiter (|) which %upcase(&macroname) also uses in results"
+21         )
+22       ;
+NOTE: Table WORK.MY_TEST_DEFINITIONS created, with 0 rows and 11 columns.
+23
+24
+25       insert into my_test_definitions
+26         values("%lowcase(&macroname)", '2.a.1', 'numeric vars, consistent visits x treatments', 'M',   'rectangular', 'visitnum', 'treatnum',
+27                '', 'BOXPLOT_VISIT_RANGES=10 <= visitnum <= 13|16 <= visitnum <= 19|22 <= visitnum <= 25|28 <= visitnum <= 31|34 <= visitnum <= 37|40 <= visitnum <= 40|',
+28                '%GLOBAL MAX_BOXES_PER_PAGE; %LET MAX_BOXES_PER_PAGE=10; _MACCALL1_; %SYMDEL MAX_BOXES_PER_PAGE;',
+29                '~')
+30         values("%lowcase(&macroname)", '2.a.2', 'char vars, consistent visits x treatments',    'M',   'alph_rec',    'visitcd', 'treatcd',
+31                '', 'BOXPLOT_VISIT_RANGES="eight" <= visitcd <= "five"|"four" <= visitcd <= "nine"|"one" <= visitcd <= "seven"|"six" <= visitcd <= "ten"|"three" <= visitcd <= "two"|',
+32                '%GLOBAL MAX_BOXES_PER_PAGE; %LET MAX_BOXES_PER_PAGE=10; _MACCALL1_; %SYMDEL MAX_BOXES_PER_PAGE;',
+33                '~')
+34
+35         values("%lowcase(&macroname)", '2.b.1', 'numeric vars, some missing visits & treatments', 'M',   'gaps', 'visitnum', 'treatnum',
+36                '', 'BOXPLOT_VISIT_RANGES=10 <= visitnum <= 13|16 <= visitnum <= 22|25 <= visitnum <= 28|31 <= visitnum <= 34|37 <= visitnum <= 40|',
+37                '%GLOBAL MAX_BOXES_PER_PAGE; %LET MAX_BOXES_PER_PAGE=10; _MACCALL1_; %SYMDEL MAX_BOXES_PER_PAGE;',
+38                '~')
+39         values("%lowcase(&macroname)", '2.b.2', 'char vars, some missing visits & treatments',    'M',   'alph_gap',    'visitcd', 'treatcd',
+40                '', 'BOXPLOT_VISIT_RANGES="eight" <= visitcd <= "five"|"four" <= visitcd <= "one"|"seven" <= visitcd <= "six"|"ten" <= visitcd <= "two"|',
+41                '%GLOBAL MAX_BOXES_PER_PAGE; %LET MAX_BOXES_PER_PAGE=10; _MACCALL1_; %SYMDEL MAX_BOXES_PER_PAGE;',
+42                '~')
+43
+44   /*
+45         values("%lowcase(&macroname)", '', '',   'M',   '', '', '',   '', 'BOXPLOT_VISIT_RANGES=')
+46         values("%lowcase(&macroname)", '', '',   'M',   '', '', '',   '', 'BOXPLOT_VISIT_RANGES=')
+47         values("%lowcase(&macroname)", '', '',   'M',   '', '', '',   '', 'BOXPLOT_VISIT_RANGES=')
+48         values("%lowcase(&macroname)", '', '',   'M',   '', '', '',   '', 'BOXPLOT_VISIT_RANGES=')
+49   */
+50
+51       ;
+NOTE: 4 rows were inserted into WORK.MY_TEST_DEFINITIONS.
+
+52     quit;
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.07 seconds
+      cpu time            0.07 seconds
+
+
+53
+54
+55   *--- Setup test environment here (dsets, macro vars, etc) ---*;
+56     data rectangular;
+57       *--- 44 vis*trt combinations ---*;
+58       do visitnum = 10 to 40 by 3;
+59         do treatnum = 1, 2, 3, 4;
+60           output;
+61         end;
+62       end;
+63     run;
+
+NOTE: The data set WORK.RECTANGULAR has 44 observations and 2 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.05 seconds
+      cpu time            0.01 seconds
+
+
+64
+65     data gaps;
+66       set rectangular;
+67
+68       if (13 = visitnum and 3 = treatnum) or
+69          (19 = visitnum and treatnum in (2, 3)) or
+70          (28 = visitnum and 1 = treatnum) or
+71          (37 = visitnum and treatnum in (3, 4)) or
+72          (40 = visitnum and treatnum in (1, 2))
+73          then delete;
+74     run;
+
+NOTE: There were 44 observations read from the data set WORK.RECTANGULAR.
+NOTE: The data set WORK.GAPS has 36 observations and 2 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+75
+76     *--- TEST BEHAVIOR GIVEN ALPHANUMERIC VARS, as well ---*;
+77       data alph_rec;
+78         *--- 40 vis*trt combinations ---*;
+79         length visitcd $ 5;
+80         do visitcd = 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten';
+81           do treatcd = 'a1', 'a2', 'b1', 'b2';
+82             output;
+83           end;
+84         end;
+85       run;
+
+NOTE: The data set WORK.ALPH_REC has 40 observations and 2 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+86
+87       data alph_gap;
+88         set alph_rec;
+89
+90         if ('two' = visitcd and 'b1' = treatcd) or
+91            ('four' = visitcd and treatcd in ('a2', 'b1')) or
+92            ('seven' = visitcd and 'a1' = treatcd) or
+93            ('nine' = visitcd and treatcd in ('b1', 'b2')) or
+94            ('ten' = visitcd and treatcd in ('a1', 'a2'))
+95            then delete;
+96       run;
+
+NOTE: There were 40 observations read from the data set WORK.ALPH_REC.
+NOTE: The data set WORK.ALPH_GAP has 32 observations and 2 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+97     %util_passfail (my_test_definitions, savexml=&xml_filename, debug=N);
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: There were 4 observations read from the data set WORK.MY_TEST_DEFINITIONS.
+NOTE: The data set WORK.CSS_PASSFAIL has 4 observations and 16 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+
+NOTE (BUILD_MACRO_CALLS): > 2.a.1 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %util_boxplot_visit_ranges( rectangular, vvisn=visitnum, vtrtn=treatnum)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > 2.a.2 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %util_boxplot_visit_ranges( alph_rec, vvisn=visitcd, vtrtn=treatcd)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > 2.b.1 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %util_boxplot_visit_ranges( gaps, vvisn=visitnum, vtrtn=treatnum)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE (BUILD_MACRO_CALLS): > 2.b.2 , 1 call(s)
+NOTE (BUILD_MACRO_CALLS):  BUILDING MACRO CALL 1
+NOTE (BUILD_MACRO_CALLS): GENERATED MACRO CALL 1 %util_boxplot_visit_ranges( alph_gap, vvisn=visitcd, vtrtn=treatcd)
+NOTE (BUILD_MACRO_CALLS): <
+NOTE: There were 4 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 4 observations and 18 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.04 seconds
+
+
+
+NOTE: There were 1 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD10200_RBAMW049235_\#LN00035,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=15Jan2016:16:54:16,
+      Create Time=15Jan2016:16:54:16
+
+NOTE: 1 record was written to the file PFEXCODE.
+      The minimum record length was 157.
+      The maximum record length was 157.
+NOTE: There were 4 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 4 observations and 16 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set RECTANGULAR is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set RECTANGULAR is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set RECTANGULAR, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. VISITNUM is a variable on data set RECTANGULAR.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set RECTANGULAR is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set RECTANGULAR, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. TREATNUM is a variable on data set RECTANGULAR.
+NOTE: (ASSERT_DEPEND) PASS, found mac var MAX_BOXES_PER_PAGE with value "10"
+NOTE: (ASSERT_DEPEND) Result is PASS.
+
+NOTE: Numeric values have been converted to character values at the places given by: (Line):(Column).
+      1:183
+NOTE: There were 1 observations read from the data set WORK.RECTANGULAR.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set RECTANGULAR is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set RECTANGULAR is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set RECTANGULAR, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. VISITNUM is a variable on data set RECTANGULAR.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: (UTIL_COUNT_UNIQUE_VALUES) Successfully created symbol NUMVIS = 11
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set RECTANGULAR is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set RECTANGULAR is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set RECTANGULAR, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. TREATNUM is a variable on data set RECTANGULAR.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: (UTIL_COUNT_UNIQUE_VALUES) Successfully created symbol NUMTRT = 4
+
+NOTE: There were 44 observations read from the data set WORK.RECTANGULAR.
+NOTE: 0 observations with duplicate key values were deleted.
+NOTE: The data set WORK.TEMP_VIS_TRT has 44 observations and 2 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: There were 44 observations read from the data set WORK.TEMP_VIS_TRT.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.04 seconds
+
+
+
+NOTE: Deleting WORK.TEMP_VIS_TRT (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.06 seconds
+      cpu time            0.04 seconds
+
+
+Note: (UTIL_BOXPLOT_VISIT_RANGES) Default visit ranges for each plot produces, limiting to 10 boxes max per page.
+Note: (UTIL_BOXPLOT_VISIT_RANGES) BOXPLOT_VISIT_RANGES set to: 10 <= visitnum <= 13|16 <= visitnum <= 19|22 <= visitnum <= 25|28 <= visitnum <= 31|34 <= visitnum <= 37|40 <= visitnum <= 40|
+
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+NOTE: There were 4 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 4 observations rewritten, 0 observations added and 0 observations deleted.
+
+NOTE: CALL EXECUTE routine executed successfully, but no SAS statements were generated.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD10200_RBAMW049235_\#LN00035,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=15Jan2016:16:54:17,
+      Create Time=15Jan2016:16:54:16
+
+NOTE: 1 record was written to the file PFEXCODE.
+      The minimum record length was 152.
+      The maximum record length was 152.
+NOTE: There were 4 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 4 observations and 16 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set ALPH_REC is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set ALPH_REC is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set ALPH_REC, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. VISITCD is a variable on data set ALPH_REC.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set ALPH_REC is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set ALPH_REC, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. TREATCD is a variable on data set ALPH_REC.
+NOTE: (ASSERT_DEPEND) PASS, found mac var MAX_BOXES_PER_PAGE with value "10"
+NOTE: (ASSERT_DEPEND) Result is PASS.
+
+NOTE: Numeric values have been converted to character values at the places given by: (Line):(Column).
+      1:183
+NOTE: There were 1 observations read from the data set WORK.ALPH_REC.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+WARNING: (UTIL_BOXPLOT_VISIT_RANGES) Expecting NUMERIC visit numbers. Results may be unexpected.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set ALPH_REC is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set ALPH_REC is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set ALPH_REC, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. VISITCD is a variable on data set ALPH_REC.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: (UTIL_COUNT_UNIQUE_VALUES) Successfully created symbol NUMVIS = 10
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set ALPH_REC is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set ALPH_REC is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set ALPH_REC, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. TREATCD is a variable on data set ALPH_REC.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: (UTIL_COUNT_UNIQUE_VALUES) Successfully created symbol NUMTRT = 4
+
+NOTE: There were 40 observations read from the data set WORK.ALPH_REC.
+NOTE: 0 observations with duplicate key values were deleted.
+NOTE: The data set WORK.TEMP_VIS_TRT has 40 observations and 2 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: There were 40 observations read from the data set WORK.TEMP_VIS_TRT.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: Deleting WORK.TEMP_VIS_TRT (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+Note: (UTIL_BOXPLOT_VISIT_RANGES) Default visit ranges for each plot produces, limiting to 10 boxes max per page.
+Note: (UTIL_BOXPLOT_VISIT_RANGES) BOXPLOT_VISIT_RANGES set to: "eight" <= visitcd <= "five"|"four" <= visitcd <= "nine"|"one" <= visitcd <= "seven"|"six" <= visitcd <= "ten"|"three" <= visitcd <= "two"|
+
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+NOTE: There were 4 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 4 observations rewritten, 0 observations added and 0 observations deleted.
+
+NOTE: CALL EXECUTE routine executed successfully, but no SAS statements were generated.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD10200_RBAMW049235_\#LN00035,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=15Jan2016:16:54:17,
+      Create Time=15Jan2016:16:54:16
+
+NOTE: 1 record was written to the file PFEXCODE.
+      The minimum record length was 150.
+      The maximum record length was 150.
+NOTE: There were 4 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 4 observations and 16 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.03 seconds
+
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set GAPS is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set GAPS is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set GAPS, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. VISITNUM is a variable on data set GAPS.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set GAPS is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set GAPS, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. TREATNUM is a variable on data set GAPS.
+NOTE: (ASSERT_DEPEND) PASS, found mac var MAX_BOXES_PER_PAGE with value "10"
+NOTE: (ASSERT_DEPEND) Result is PASS.
+
+NOTE: Numeric values have been converted to character values at the places given by: (Line):(Column).
+      1:183
+NOTE: There were 1 observations read from the data set WORK.GAPS.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set GAPS is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set GAPS is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set GAPS, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. VISITNUM is a variable on data set GAPS.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: (UTIL_COUNT_UNIQUE_VALUES) Successfully created symbol NUMVIS = 11
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set GAPS is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set GAPS is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set GAPS, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. TREATNUM is a variable on data set GAPS.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: (UTIL_COUNT_UNIQUE_VALUES) Successfully created symbol NUMTRT = 4
+
+NOTE: There were 36 observations read from the data set WORK.GAPS.
+NOTE: 0 observations with duplicate key values were deleted.
+NOTE: The data set WORK.TEMP_VIS_TRT has 36 observations and 2 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: There were 36 observations read from the data set WORK.TEMP_VIS_TRT.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: Deleting WORK.TEMP_VIS_TRT (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+Note: (UTIL_BOXPLOT_VISIT_RANGES) Default visit ranges for each plot produces, limiting to 10 boxes max per page.
+Note: (UTIL_BOXPLOT_VISIT_RANGES) BOXPLOT_VISIT_RANGES set to: 10 <= visitnum <= 13|16 <= visitnum <= 22|25 <= visitnum <= 28|31 <= visitnum <= 34|37 <= visitnum <= 40|
+
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+NOTE: There were 4 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 4 observations rewritten, 0 observations added and 0 observations deleted.
+
+NOTE: CALL EXECUTE routine executed successfully, but no SAS statements were generated.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD10200_RBAMW049235_\#LN00035,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=15Jan2016:16:54:17,
+      Create Time=15Jan2016:16:54:16
+
+NOTE: 1 record was written to the file PFEXCODE.
+      The minimum record length was 152.
+      The maximum record length was 152.
+NOTE: There were 4 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 4 observations and 16 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set ALPH_GAP is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set ALPH_GAP is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set ALPH_GAP, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. VISITCD is a variable on data set ALPH_GAP.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set ALPH_GAP is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set ALPH_GAP, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. TREATCD is a variable on data set ALPH_GAP.
+NOTE: (ASSERT_DEPEND) PASS, found mac var MAX_BOXES_PER_PAGE with value "10"
+NOTE: (ASSERT_DEPEND) Result is PASS.
+
+NOTE: Numeric values have been converted to character values at the places given by: (Line):(Column).
+      1:183
+NOTE: There were 1 observations read from the data set WORK.ALPH_GAP.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+WARNING: (UTIL_BOXPLOT_VISIT_RANGES) Expecting NUMERIC visit numbers. Results may be unexpected.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set ALPH_GAP is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set ALPH_GAP is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set ALPH_GAP, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. VISITCD is a variable on data set ALPH_GAP.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: (UTIL_COUNT_UNIQUE_VALUES) Successfully created symbol NUMVIS = 10
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set ALPH_GAP is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set ALPH_GAP is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set ALPH_GAP, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. TREATCD is a variable on data set ALPH_GAP.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: (UTIL_COUNT_UNIQUE_VALUES) Successfully created symbol NUMTRT = 4
+
+NOTE: There were 32 observations read from the data set WORK.ALPH_GAP.
+NOTE: 0 observations with duplicate key values were deleted.
+NOTE: The data set WORK.TEMP_VIS_TRT has 32 observations and 2 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: There were 32 observations read from the data set WORK.TEMP_VIS_TRT.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: Deleting WORK.TEMP_VIS_TRT (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+Note: (UTIL_BOXPLOT_VISIT_RANGES) Default visit ranges for each plot produces, limiting to 10 boxes max per page.
+Note: (UTIL_BOXPLOT_VISIT_RANGES) BOXPLOT_VISIT_RANGES set to: "eight" <= visitcd <= "five"|"four" <= visitcd <= "one"|"seven" <= visitcd <= "six"|"ten" <= visitcd <= "two"|
+
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+NOTE: There were 4 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 4 observations rewritten, 0 observations added and 0 observations deleted.
+
+NOTE: CALL EXECUTE routine executed successfully, but no SAS statements were generated.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: Non-portable document will be produced. The current settings of FORMCHAR use nonstandard line-drawing characters and the resulting output file will not render correctly unless all readers of the document have the SAS Monospace font installed. To
+      make your document portable, issue the following command:
+      OPTIONS FORMCHAR="|----|+|---+=|-/\<>*";
+
+NOTE: 11 lines were written to file PRINT.
+NOTE: There were 4 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 4 observations and 17 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: Libref SAVEXML was successfully assigned as follows:
+      Engine:        XML
+      Physical Name: .\outputs_sas\testresults_util_boxplot_visit_ranges.xml
+
+NOTE: SAS variable labels, formats, and lengths are not written to DBMS tables.
+NOTE: There were 4 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set SAVEXML.CSS_PASSFAIL has 4 observations and 17 variables.
+NOTE: DATA statement used (Total process time):
+      real time           3.44 seconds
+      cpu time            0.71 seconds
+
+
+NOTE: Libref SAVEXML has been deassigned.
+

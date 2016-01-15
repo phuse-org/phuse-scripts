@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="windows-1252" ?>
+<TABLE>
+   <CSS_PASSFAIL>
+      <test_mac> util_boxplot_visit_ranges </test_mac>
+      <test_id> 2.a.1 </test_id>
+      <test_dsc> numeric vars, consistent visits x treatments </test_dsc>
+      <Pparm_ds> rectangular </Pparm_ds>
+      <Kparm_vvisn> visitnum </Kparm_vvisn>
+      <Kparm_vtrtn> treatnum </Kparm_vtrtn>
+      <test_expect missing=" " />
+      <test_expect_sym> BOXPLOT_VISIT_RANGES=10 &lt;= visitnum &lt;= 13|16 &lt;= visitnum &lt;= 19|22 &lt;= visitnum &lt;= 25|28 &lt;= visitnum &lt;= 31|34 &lt;= visitnum &lt;= 37|40 &lt;= visitnum &lt;= 40| </test_expect_sym>
+      <test_wrap> %GLOBAL MAX_BOXES_PER_PAGE; %LET MAX_BOXES_PER_PAGE=10; _MACCALL1_; %SYMDEL MAX_BOXES_PER_PAGE; </test_wrap>
+      <test_pdlim> ~ </test_pdlim>
+      <test_result missing=" " />
+      <test_result_sym> BOXPLOT_VISIT_RANGES=10 &lt;= visitnum &lt;= 13|16 &lt;= visitnum &lt;= 19|22 &lt;= visitnum &lt;= 25|28 &lt;= visitnum &lt;= 31|34 &lt;= visitnum &lt;= 37|40 &lt;= visitnum &lt;= 40| </test_result_sym>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %util_boxplot_visit_ranges( rectangular, vvisn=visitnum, vtrtn=treatnum) </macro_call_1>
+      <test_type> M </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> util_boxplot_visit_ranges </test_mac>
+      <test_id> 2.a.2 </test_id>
+      <test_dsc> char vars, consistent visits x treatments </test_dsc>
+      <Pparm_ds> alph_rec </Pparm_ds>
+      <Kparm_vvisn> visitcd </Kparm_vvisn>
+      <Kparm_vtrtn> treatcd </Kparm_vtrtn>
+      <test_expect missing=" " />
+      <test_expect_sym> BOXPLOT_VISIT_RANGES=&quot;eight&quot; &lt;= visitcd &lt;= &quot;five&quot;|&quot;four&quot; &lt;= visitcd &lt;= &quot;nine&quot;|&quot;one&quot; &lt;= visitcd &lt;= &quot;seven&quot;|&quot;six&quot; &lt;= visitcd &lt;= &quot;ten&quot;|&quot;three&quot; &lt;= visitcd &lt;= &quot;two&quot;| </test_expect_sym>
+      <test_wrap> %GLOBAL MAX_BOXES_PER_PAGE; %LET MAX_BOXES_PER_PAGE=10; _MACCALL1_; %SYMDEL MAX_BOXES_PER_PAGE; </test_wrap>
+      <test_pdlim> ~ </test_pdlim>
+      <test_result missing=" " />
+      <test_result_sym> BOXPLOT_VISIT_RANGES=&quot;eight&quot; &lt;= visitcd &lt;= &quot;five&quot;|&quot;four&quot; &lt;= visitcd &lt;= &quot;nine&quot;|&quot;one&quot; &lt;= visitcd &lt;= &quot;seven&quot;|&quot;six&quot; &lt;= visitcd &lt;= &quot;ten&quot;|&quot;three&quot; &lt;= visitcd &lt;= &quot;two&quot;| </test_result_sym>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %util_boxplot_visit_ranges( alph_rec, vvisn=visitcd, vtrtn=treatcd) </macro_call_1>
+      <test_type> M </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> util_boxplot_visit_ranges </test_mac>
+      <test_id> 2.b.1 </test_id>
+      <test_dsc> numeric vars, some missing visits &amp; treatments </test_dsc>
+      <Pparm_ds> gaps </Pparm_ds>
+      <Kparm_vvisn> visitnum </Kparm_vvisn>
+      <Kparm_vtrtn> treatnum </Kparm_vtrtn>
+      <test_expect missing=" " />
+      <test_expect_sym> BOXPLOT_VISIT_RANGES=10 &lt;= visitnum &lt;= 13|16 &lt;= visitnum &lt;= 22|25 &lt;= visitnum &lt;= 28|31 &lt;= visitnum &lt;= 34|37 &lt;= visitnum &lt;= 40| </test_expect_sym>
+      <test_wrap> %GLOBAL MAX_BOXES_PER_PAGE; %LET MAX_BOXES_PER_PAGE=10; _MACCALL1_; %SYMDEL MAX_BOXES_PER_PAGE; </test_wrap>
+      <test_pdlim> ~ </test_pdlim>
+      <test_result missing=" " />
+      <test_result_sym> BOXPLOT_VISIT_RANGES=10 &lt;= visitnum &lt;= 13|16 &lt;= visitnum &lt;= 22|25 &lt;= visitnum &lt;= 28|31 &lt;= visitnum &lt;= 34|37 &lt;= visitnum &lt;= 40| </test_result_sym>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %util_boxplot_visit_ranges( gaps, vvisn=visitnum, vtrtn=treatnum) </macro_call_1>
+      <test_type> M </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> util_boxplot_visit_ranges </test_mac>
+      <test_id> 2.b.2 </test_id>
+      <test_dsc> char vars, some missing visits &amp; treatments </test_dsc>
+      <Pparm_ds> alph_gap </Pparm_ds>
+      <Kparm_vvisn> visitcd </Kparm_vvisn>
+      <Kparm_vtrtn> treatcd </Kparm_vtrtn>
+      <test_expect missing=" " />
+      <test_expect_sym> BOXPLOT_VISIT_RANGES=&quot;eight&quot; &lt;= visitcd &lt;= &quot;five&quot;|&quot;four&quot; &lt;= visitcd &lt;= &quot;one&quot;|&quot;seven&quot; &lt;= visitcd &lt;= &quot;six&quot;|&quot;ten&quot; &lt;= visitcd &lt;= &quot;two&quot;| </test_expect_sym>
+      <test_wrap> %GLOBAL MAX_BOXES_PER_PAGE; %LET MAX_BOXES_PER_PAGE=10; _MACCALL1_; %SYMDEL MAX_BOXES_PER_PAGE; </test_wrap>
+      <test_pdlim> ~ </test_pdlim>
+      <test_result missing=" " />
+      <test_result_sym> BOXPLOT_VISIT_RANGES=&quot;eight&quot; &lt;= visitcd &lt;= &quot;five&quot;|&quot;four&quot; &lt;= visitcd &lt;= &quot;one&quot;|&quot;seven&quot; &lt;= visitcd &lt;= &quot;six&quot;|&quot;ten&quot; &lt;= visitcd &lt;= &quot;two&quot;| </test_result_sym>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %util_boxplot_visit_ranges( alph_gap, vvisn=visitcd, vtrtn=treatcd) </macro_call_1>
+      <test_type> M </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+</TABLE>

@@ -84,7 +84,7 @@
                   + Expected dsets must not be altered by any of the test macro calls (violates test independence)
                   + IE, macro calls and TEST_WRAP code in suite of tests should not alter any Expected dset
   NB: TEST_WRAP   Contains wrapper code for macro calls to be embedded in other Base SAS statements.
-                  Valid ONLY FOR String (S) and In Data Step (I) tests.
+                  NOT USED for (D) Data set tests. ONLY USED for Macro (M), String (S) and In Data Step (I) tests.
                   Include placeholders for each macro call specified in parameter settings: _MACCALL1_ _MACCALL2_, ...
                   (macro call placeholders must be separated from other codes with spaces or semi-colons)
 
@@ -387,7 +387,8 @@
       drop idx test_fail test_put_temp ;
 
       %if &use_wrap %then %do;
-        drop test_wrap_temp test_wrap_next;
+        drop test_wrap_temp test_wrap_next test_code;
+        attrib test_code length=$ %eval(&mac_calls_num * &len_mac_calls + &len_wrap);
       %end;
 
       test_fail = 0;
@@ -424,7 +425,23 @@
         *|     and not TEST_EXPECT            |*;
         if test_type = 'M' then do;
 
-          %do mac_calls_idx = 1 %to &mac_calls_num;
+          %if &use_wrap %then %do;
+            if not missing(test_wrap) then do;
+              test_code = test_wrap;
+
+              %do mac_calls_idx = 1 %to &mac_calls_num;
+                test_code = tranwrd(test_code, "_MACCALL&mac_calls_idx._", strip(macro_call_&mac_calls_idx));
+              %end;
+
+              put test_code;
+            end;
+            else do;
+              %do mac_calls_idx = 1 %to &mac_calls_num;
+                if not missing(macro_call_&mac_calls_idx) then put macro_call_&mac_calls_idx;
+              %end;
+            end;
+          %end;
+          %else %do mac_calls_idx = 1 %to &mac_calls_num;
             if not missing(macro_call_&mac_calls_idx) then put macro_call_&mac_calls_idx;
           %end;
 
@@ -451,9 +468,6 @@
                         ;
 
           %if &use_wrap %then %do;
-            drop test_code;
-            attrib test_code length=$ %eval(&mac_calls_num * &len_mac_calls + &len_wrap);
-
             if not missing(test_wrap) then do;
               test_code = test_wrap;
 
@@ -527,7 +541,7 @@
             end;
 
           end;
-          else if test_type ne 'S' and not missing(test_wrap) then do;
+          else if test_type eq 'D' and not missing(test_wrap) then do;
             test_put_temp = '%put ALERT ' !! "(&sysmacroname):"!!
                             ' TEST_WRAP value is unexpected, ignored for TEST_ID '!!
                             quote(strip(test_id))!!' with TEST_TYPE '!!quote(strip(test_type))!!'.;';

@@ -1,4 +1,6 @@
 /*** To limit number of boxes per boxplot page, calculate visit ranges for each boxplot page
+     Macro keeps together ALL TREATMENTS within each VISIT block.
+     EG: Either print all TRTs in VISIT X together on this page, or on the next page.
 
   INPUTS
     DS          Data set including (1) measurements to plot, and (2) vars to be used for "block" labels
@@ -7,34 +9,50 @@
       Example:  PLOT_DATA
     VVISN
       REQUIRED
-      Syntax:   Variable on DS containing visit numbers
+      Syntax:   Numeric variable on DS containing visit numbers
       Example:  AVISITN
     VTRTN
       REQUIRED
-      Syntax:   Variable on DS containing treatment numbers
+      Syntax:   Numeric variable on DS containing treatment numbers
       Example:  TRTPN
 
-    NUMTRT              REQUIRED: Number of treatments, e.g., calculate prior with UTIL_COUNT_UNIQUE_VALUES
-    NUMVIS              REQUIRED: Number of visits, e.g., calculate prior with UTIL_COUNT_UNIQUE_VALUES
     MAX_BOXES_PER_PAGE  REQUIRED: Global user setting to limit number of boxes plotted per page
 
   OUTPUT
     BOXPLOT_VISIT_RANGES  global symbol indicating VISIT subsets for each plot page (to limit boxes per page)
-                           Example: 0 <= avisitn <7|7 <= avisitn <12|
+                          Example: 0 <= avisitn <7|7 <= avisitn <12|
 
   NOTES
 
 ***/
 
-%macro util_boxplot_visit_ranges(ds, vvisn=, vtrtn=, numtrt=, numvis=);
+%macro util_boxplot_visit_ranges(ds, vvisn=, vtrtn=);
   %global BOXPLOT_VISIT_RANGES;
-  %local OK;
+  %local OK numvis numtrt vistyp vislen;
   %let OK = 1;
 
   %let OK = %assert_depend(vars=%str(&DS : &vvisn &vtrtn),
                            symbols=max_boxes_per_page);
 
   %if &OK %then %do;
+
+    *--- Expect VISIT var of type N, but handle char var of type C ---*;
+      data _null_;
+        set &ds;
+        call symput('vistyp', vtype(&vvisn));
+        call symput('vislen', vlength(&vvisn));
+        STOP;
+      run;
+
+      %if &vistyp = C %then %do;
+        %let vislen = $&vislen;
+        %put WARNING: (UTIL_BOXPLOT_VISIT_RANGES) Expecting NUMERIC visit numbers. Results may be unexpected.;
+      %end;
+      
+
+    %*--- Get totals from this data set. These are the max values. Some TRTs may not appear in all VISs. ---*;
+    %util_count_unique_values(&ds, &vvisn, numvis)
+    %util_count_unique_values(&ds, &vtrtn, numtrt)
 
     proc sort data=&ds (keep=&vvisn &vtrtn) 
               out=temp_vis_trt nodupkey;
@@ -46,10 +64,13 @@
       by &vvisn &vtrtn;
 
       *--- Create BOXPLOT_VISIT_RANGES, to limit number of boxes per plot page to &MAX_BOXES_PER_PAGE ---*;
-        length boxplot_visit_ranges $%sysfunc(max(200, %eval(&numtrt*&numvis)));
+        length boxplot_visit_ranges $%sysfunc(max(200, %eval(&numvis*&numtrt)))
+               start_visit &vislen;
         retain boxes_on_page 0
-               start_visit .
-               boxplot_visit_ranges ' ';
+               boxplot_visit_ranges ' '
+               %if &vistyp = C %then start_visit ' ';
+               %else start_visit .;
+               ;
 
         if missing(start_visit) then start_visit = &vvisn;
         boxes_on_page + 1;
@@ -59,13 +80,26 @@
 
           if NoMore or boxes_on_page + &numtrt > &max_boxes_per_page then do;
             *--- Current visit is enough for this plot. No more boxes. Next visit would be too much ---*;
-            boxplot_visit_ranges = strip(boxplot_visit_ranges)
-                                   !!strip(compbl(  put(start_visit, best8.-L)
-                                                    !!" <= &vvisn <= "
-                                                    !!put(&vvisn, best8.-L) ))
-                                   !!'|';
+            %if &vistyp = C %then %do;
+              boxplot_visit_ranges = strip(boxplot_visit_ranges)
+                                     !!strip(compbl(  quote(strip(start_visit))
+                                                      !!" <= &vvisn <= "
+                                                      !!quote(strip(&vvisn)) ))
+                                     !!'|';
+            %end;
+            %else %do;
+              boxplot_visit_ranges = strip(boxplot_visit_ranges)
+                                     !!strip(compbl(  put(start_visit, best8.-L)
+                                                      !!" <= &vvisn <= "
+                                                      !!put(&vvisn, best8.-L) ))
+                                     !!'|';
+            %end;
+
             boxes_on_page = 0;
-            start_visit = .;
+
+            %if &vistyp = C %then start_visit = ' ';
+            %else start_visit = .;
+            ;
           end;
 
         end;
