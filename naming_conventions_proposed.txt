@@ -22,7 +22,5 @@ Proposal: {prg|sub-cat|pkg}[-{pkg-detail}][_{term}].{ext}
 
 For metadata file: {prg|sub-cat}[_{term}]_{ext}.yml  
   Example:
-    || Program | Metafile ||
-    --
-    | PK_dual_box.sas | PK_dual_box_sas.yml |
-    | PK_dual_box.R | PK_dual_box_R.yml |
+    Programs:  PK_dual_box.sas,     PK_dual_box.R
+    Metafiles: PK_dual_box_sas.yml, PK_dual_box_R.yml
