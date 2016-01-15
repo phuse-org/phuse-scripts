@@ -1,21 +1,21 @@
 KeyWords: PK, Dual Box
 Script: 
   Desc   : Script description
-  GCR    : Google Code Revision number such as r128
-  Name   : Script name following the proposed convention: https://code.google.com/p/phuse-scripts/source/browse/trunk/folder_structure_proposed.txt
-  SRV    : Script Release Version such as v1.02
-  Source : white paper
+  Name   : Script name following the proposed convention: https://github.com/phuse-org/phuse-scripts/blob/master/naming_conventions_proposed.txt
   Target : a link to the target or whitepaper
   Title  : YML meta data page example
   Topic  : Metadata example
   Type   : metadata
   Subtype: YML
+Package:
+  name : White Paper abbreviation, for example: WPCT
+  title: White Paper title, for example: White Paper on Measures of Central Tendency
 Language: 
   name   : YML
   version: x.x.x
 Comments: >
   Please edit this file.
-  To provide more and better information.
+  To provide useful information.
 Inputs:
   datasets: dat1, dat2, dat3
   P1: String - dataset name
@@ -37,6 +37,3 @@ Qualification:
   LastQualBy: FirstName LastName
   Stage: D
   Note: C - Contributed; D - Development; T - Testing; Q - Qualified
-Rating:   
-  ByUser: 
-  Stars: 5 
