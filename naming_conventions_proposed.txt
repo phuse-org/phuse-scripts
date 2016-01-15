@@ -6,16 +6,23 @@ MM/DD/YYYY (developer) - Description
 
 */
 
-; Naming conventions for scripts or specification files
+### Naming conventions for scripts, specification files or outputs of scripts (TFLs)
 
-Proposal: {prg|sub-cat}[_{term}].{ext}
+Proposal: {prg|sub-cat|pkg}[-{pkg-detail}][_{term}].{ext}
   where
-    {prg|sub-cat} - program name or sub-cat such as PK
-    [_{term}]     - (optional) meaningful term
-    {ext}         - language extension such as sas, sql, java, R, etc.
-  For instance: PK_dual_box.sas, PK_dual_box.R
+    {prg|sub-cat|pkg} - Program name or Sub-category such as PK, or White Paper abbreviation such as [WPCT](https://github.com/phuse-org/phuse-scripts/tree/master/whitepapers/WPCT)
+    [_{pkg-detail}]   - (optional) required for White Paper Package {pkg} scripts, detail such as figure number like "-F.07.01"
+    [_{term}]         - (optional) meaningful term describing contents of this specific 
+    {ext}             - language or type extension such as sas, sql, java, R, pdf, etc.
+  Examples:
+    PK_dual_box.sas
+    PK_dual_box.R
+    WPCT-F.07.01.sas
+    WPCT-F.07.01_Box_plot_DIABP_by_visit_for_timepoint_815.pdf
 
 For metadata file: {prg|sub-cat}[_{term}]_{ext}.yml  
   Example:
-    Program : PK_dual_box.sas, PK_dual_box.R
-    Metafile: PK_dual_box_sas.yml, PK_dual_box_R.yml
+    || Program | Metafile ||
+    --
+    | PK_dual_box.sas | PK_dual_box_sas.yml |
+    | PK_dual_box.R | PK_dual_box_R.yml |
