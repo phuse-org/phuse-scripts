@@ -12,7 +12,7 @@
 2. Adverse Events: Clinical Trials and Integrated Summaries [see this paper's phusewiki page](http://www.phusewiki.org/wiki/index.php?title=SS_P08_Adverse_Events_White_Paper)
 3. QT Studies [see this paper's phusewiki page](http://www.phusewiki.org/wiki/index.php?title=SS_P08_QT_Studies_White_Paper)
 
-##### Under Development - White papers that need further development:
+##### Under Development - White papers that need further contribution and authoring:
 
 1. Questionnaire Data [see this paper's phusewiki page](http://www.phusewiki.org/wiki/index.php?title=SS_P08_Questionnaire_White_Paper)
 2. Events of Special Interest [see this paper's phusewiki page](http://www.phusewiki.org/wiki/index.php?title=SS_P08_Events_of_Special_Interest_White_Paper)
@@ -25,5 +25,11 @@
 2. **2015-09** [Analyses of Outliers and Shifts: Vital Signs, ECG, Labs](http://www.phusewiki.org/wiki/images/9/95/CS_WhitePaper_OutliersShifts_v1.0.pdf) (see also [this white paper's phusewiki page](http://www.phusewiki.org/wiki/index.php?title=SS_P08_Outliers/Shifts_White_Paper))
 
 #### [Repository Contents (Project 02)](http://www.phusewiki.org/wiki/index.php?title=WG5_Project_02)
+
+##### White Paper on Measures of Central Tendency (WPCT)
+
+Currently, our main objective is to deliver robust, easy to use and understand SAS and R scripts for **WPCT** analyses and displays. There are several steps in this process, and therefore several ways that people can participate, learn and contribute.
+
+For details, see our TO-DO list in the [WPCT working area in GitHub](https://github.com/phuse-org/phuse-scripts/new/master/whitepapers/WPCT/TODO.md).
 
 #### [Repository Infrastructure (Project 03)](http://www.phusewiki.org/wiki/index.php?title=WG5_Project_03)
