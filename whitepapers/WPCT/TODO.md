@@ -13,5 +13,5 @@ The Repository Content team aim to deliver a package of robust, easy to use and 
 |![Fig. 7.7](../images/wpct/target_7.7.png)<br/>Ex. SAS<br/>Ex. R|Create specs|R script<br/>SAS script|Review & Test code on your own data| *release upon successful review*|
 |![Fig. 7.8](../images/wpct/target_7.8.png)<br/>Ex. SAS<br/>Ex. R|Create specs|R script<br/>SAS script|Review & Test code on your own data| *release upon successful review*|
 |![Fig. 7.9](../images/wpct/target_7.9.png)<br/>Ex. SAS<br/>Ex. R|Create specs|R script<br/>SAS script|Review & Test code on your own data| *release upon successful review*|
-| | | |*a template row follow*|
+| | | | |*a template row follows*|
 |![Fig. A.b](../images/wpct/target_A.b.png)<br/>[Ex. SAS]()<br/>[Ex. R]()|Review [specs]()|[R script]()<br/>[SAS script]()|Review & Test code on your own data| *release upon successful review*|
