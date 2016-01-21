@@ -5,18 +5,19 @@
 3. [Standard Scripts to-do list](#repository-contents-project-02)
 
 #### [White Papers (Project 08)](http://www.phusewiki.org/wiki/index.php?title=WG5_Project_08)
-Open for Review - White papers that welcome comments and suggestions:
+
+##### Open for Review - White papers that welcome comments and suggestions:
 
 1. Hepatotoxicity: Clinical Trials and Integrated Summaries [see this paper's phusewiki page](http://www.phusewiki.org/wiki/index.php?title=SS_P08_Hepatotoxicity_White_Paper)
 2. Adverse Events: Clinical Trials and Integrated Summaries [see this paper's phusewiki page](http://www.phusewiki.org/wiki/index.php?title=SS_P08_Adverse_Events_White_Paper)
 3. QT Studies [see this paper's phusewiki page](http://www.phusewiki.org/wiki/index.php?title=SS_P08_QT_Studies_White_Paper)
 
-Under Development - White papers that need further development:
+##### Under Development - White papers that need further development:
 
 1. Questionnaire Data [see this paper's phusewiki page](http://www.phusewiki.org/wiki/index.php?title=SS_P08_Questionnaire_White_Paper)
 2. Events of Special Interest [see this paper's phusewiki page](http://www.phusewiki.org/wiki/index.php?title=SS_P08_Events_of_Special_Interest_White_Paper)
 
-Final (published) white papers (see [PhUSE CS Final Deliverables Catalog](http://www.phuse.eu/CSS-deliverables.aspx)):
+##### Final (published) white papers (see [PhUSE CS Final Deliverables Catalog](http://www.phuse.eu/CSS-deliverables.aspx)):
 
 1. **2013-10** [Measures of Central Tendency: Vital Signs, ECG, Labs](http://www.phusewiki.org/wiki/images/4/48/CSS_WhitePaper_CentralTendency_v1.0.pdf) (see also [this white paper's phusewiki page](http://www.phusewiki.org/wiki/index.php?title=SS_P08_Central_Tendency_White_Paper))
 4. **2014-03** [Non-Compartmental Pharmacokinetics](http://www.phusewiki.org/wiki/images/e/ed/PhUSE_CSS_WhitePaper_PK_final_25March2014.pdf) (see also [this white paper's phusewiki page](http://www.phusewiki.org/wiki/index.php?title=SS_P08_PK_White_Paper))
