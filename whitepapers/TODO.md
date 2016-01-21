@@ -1,7 +1,7 @@
 ### Standard Analyses Working Group Task List
 
 1. [Standard Analyses (White Papers) to-do list](#white-papers-project-08)
-2. [Standard Scripts to-do list](#repository-contents-project-02)
+2. [Standard Scripts (Repository Contents) to-do list](#repository-contents-project-02)
 3. [GitHub Infrastructure to-do list](#repository-infrastructure-project-03)
 
 #### [White Papers (Project 08)](http://www.phusewiki.org/wiki/index.php?title=WG5_Project_08)
