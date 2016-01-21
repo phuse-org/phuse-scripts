@@ -1,20 +1,20 @@
 ### Standard Analyses Working Group Task List
 
-1. [White Papers to-do list](#white-papers-project-08)
+1. [Standard Analyses (White Papers) to-do list](#white-papers-project-08)
 2. [GitHub Infrastructure to-do list](#repository-infrastructure-project-03)
 3. [Standard Scripts to-do list](#repository-contents-project-02)
 
 #### [White Papers (Project 08)](http://www.phusewiki.org/wiki/index.php?title=WG5_Project_08)
-Review and comment on a white paper:
+Open for Review - White papers that welcome comments and suggestions:
 
-1. 
-2. 
+1. Hepatotoxicity: Clinical Trials and Integrated Summaries [see this paper's phusewiki page](http://www.phusewiki.org/wiki/index.php?title=SS_P08_Hepatotoxicity_White_Paper)
+2. Adverse Events: Clinical Trials and Integrated Summaries [see this paper's phusewiki page](http://www.phusewiki.org/wiki/index.php?title=SS_P08_Adverse_Events_White_Paper)
+3. QT Studies [see this paper's phusewiki page](http://www.phusewiki.org/wiki/index.php?title=SS_P08_QT_Studies_White_Paper)
 
-Join the team writing further white papers:
+Under Development - White papers that need further development:
 
-1. 
-2. 
-3. 
+1. Questionnaire Data [see this paper's phusewiki page](http://www.phusewiki.org/wiki/index.php?title=SS_P08_Questionnaire_White_Paper)
+2. Events of Special Interest [see this paper's phusewiki page](http://www.phusewiki.org/wiki/index.php?title=SS_P08_Events_of_Special_Interest_White_Paper)
 
 Final (published) white papers (see [PhUSE CS Final Deliverables Catalog](http://www.phuse.eu/CSS-deliverables.aspx)):
 
