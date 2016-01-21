@@ -1,4 +1,4 @@
-### Standard Analyses Working Group Task List
+### Standard Analyses Working Group Task Lists
 
 1. [Standard Analyses (White Papers) to-do list](#white-papers-project-08)
 2. [Standard Scripts (Repository Contents) to-do list](#repository-contents-project-02)
