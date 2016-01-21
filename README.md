@@ -9,6 +9,8 @@
 
 **Note:** [**Our GitHub Wiki**](https://github.com/phuse-org/phuse-scripts/wiki) contains latest information for active efforts
 
+**Looking for ways to contribute?** Have you read our Wiki, above? Then dive into our [To-do list](./TODO.md).
+
 # Git and GitHub help
 
 * [Git e-book](http://www.git-scm.com/book/en/v2)
