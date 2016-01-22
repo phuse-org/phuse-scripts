@@ -15,4 +15,4 @@ See the main [whitepaper](https://github.com/phuse-org/phuse-scripts/tree/master
 
 Caveat
 ------
-Everything here is a work-in-progress, and should be highly collaborative. If you want to improve and advance our project, the please join us.
+Everything here is a work-in-progress, and should be highly collaborative. You are welcome to join us in improving and advancing this project.
