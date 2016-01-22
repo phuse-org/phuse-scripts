@@ -1,0 +1,56 @@
+### PhUSE CS Central Tendency Standard Analyses
+##### User Guide
+##### Version 0.1
+
+PhUSE CS Central Tendency analyses and displays are described in detail in the [White Paper on Measures of Central Tendency (WPCT)](http://www.phusewiki.org/wiki/images/4/48/CSS_WhitePaper_CentralTendency_v1.0.pdf), which PhUSE have [published in the CS Deliverables Catalog](http://www.phuse.eu/CSS-deliverables.aspx)
+
+#### Scope
+
+Analyses and their SAS and R implementations are based on ADaM-compliant data sets
+
+Out of scope:
+* ADaM conformance checks
+* Analyses of tabulated data, SDTM
+
+#### Participating & Contributing: Getting started
+
+##### SAS and R versions
+
+Standard SAS scripts use functionality in **SAS 9.4 M02** or later, utilizing ODS and GTL.
+
+(For users limited to **SAS 9.2**, we provide a SAS 9.2 boxplot approach in the script [WPCT-F.07.01-sas92-QCshewhart.sas](https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/WPCT/WPCT-F.07.01-sas92-QCshewhart.sas))
+
+Standard R scripts use functionality in the current R release and corresponding R packages.
+
+#### WPCT Package Scripts & Conventions
+
+Each Central Tendency data display will have a same-name script in SAS and R in the [WPCT folder](https://github.com/phuse-org/phuse-scripts/tree/master/whitepapers/WPCT). For example, SAS and R scripts for Fig. 7.1, Fig. 7.2, etc.
+
+##### Script basics
+
+  * We refer to these as "standard" scripts because they produce one of the standard displays enumerated in the white paper
+  
+  * Standard scripts, by default, produce an example output from PhUSE CS test data.
+    * We have modified these data to enhance script testing, and [publish these modified data in github](https://github.com/phuse-org/phuse-scripts/tree/master/data/adam/cdisc)
+    * [CDISC publish these data on their website](http://www.cdisc.org/sdtmadam-pilot-project)
+  
+  * Standard SAS scripts require some common macros, which we [publish here in github](https://github.com/phuse-org/phuse-scripts/tree/master/whitepapers/utilities)
+  
+  * Standard R scripts require some common functions (?)
+  
+  * Scripts require that users set some parameters based on their particular computing environment and data
+    * Scripts are organized to clearly isolate user settings and any pre-processing instructions (e.g., to subset data before performing analyses)
+    * By default, scripts use the CDISC ADaM pilot data mentioned above, and include custom pre-processing code to abbreviate treatment labels and subset data to limit the number of outputs.
+
+##### Project conventions
+
+The [whitepapers README file](https://github.com/phuse-org/phuse-scripts/tree/master/whitepapers) describes our directory structure.
+
+  * Programming Guidelines for this project are in [our PhUSE Wiki](http://www.phusewiki.org/wiki/index.php?title=WG5_P02_Programming_Guidelines)
+  * We outline the Qualification Process for this project is [in our PhUSE Wiki, as well](http://www.phusewiki.org/wiki/index.php?title=WG5_Project_02#Qualification_Process)
+
+  * We publish Test (Qualification) scripts and results [in GitHub](https://github.com/phuse-org/phuse-scripts/tree/master/whitepapers/qualification)
+  
+  * We publish an [Index of Standard Scripts in our GitHub Wiki](https://github.com/phuse-org/phuse-scripts/wiki/Standard-Script-Index)
+  
+  * We also publish separately an [Index of SAS Macros in our GitHub Wiki](https://github.com/phuse-org/phuse-scripts/wiki/Utility-Macro-Index-(SAS)). The SAS Standard Scripts requires these macros.
