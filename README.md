@@ -10,20 +10,20 @@
 
 ### Participating and Contributing
 
-[**Our GitHub Wiki**](https://github.com/phuse-org/phuse-scripts/wiki/Current-Activities) contains latest information for active efforts.
+[**Our GitHub Wiki**](http://github.com/phuse-org/phuse-scripts/wiki/Current-Activities) contains latest information for active efforts.
 
 We maintain Task Lists (to-do lists) for both:
 
-  * [Work Group 5, overall](./TODO.md)
-  * The [WPCT Standard Script Package](https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/WPCT/TODO.md)
+  * [Work Group 5, overall](http://github.com/phuse-org/phuse-scripts/blob/master/TODO.md)
+  * The [WPCT Standard Script Package](http://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/WPCT/TODO.md)
 
 ### Git and GitHub help
 
 * [Git e-book](http://www.git-scm.com/book/en/v2)
 * [GitHub for beginners](http://sixrevisions.com/resources/git-tutorials-beginners/)
-* [Learn: Code Academy quick video tutorial](https://www.youtube.com/watch?v=0fKg7e37bQE)
-* [Tutorial on setup and workflows](https://www.atlassian.com/git/tutorials/setting-up-a-repository)
+* [Learn: Code Academy quick video tutorial](http://www.youtube.com/watch?v=0fKg7e37bQE)
+* [Tutorial on setup and workflows](http://www.atlassian.com/git/tutorials/setting-up-a-repository)
 
 ### Various desktop clients for Git:
-* [GitHub Clients](https://help.github.com/articles/set-up-git/)
-* [Using Git in R/RStudio](https://support.rstudio.com/hc/en-us/articles/200532077-Version-Control-with-Git-and-SVN)
+* [GitHub Clients](http://help.github.com/articles/set-up-git/)
+* [Using Git in R/RStudio](http://support.rstudio.com/hc/en-us/articles/200532077-Version-Control-with-Git-and-SVN)
