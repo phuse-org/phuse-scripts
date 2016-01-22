@@ -1,6 +1,6 @@
-# CSS/PhUSE Standard Analyses
+# PhUSE CS Standard Analyses Working Group
 
-* [CSS/PhUSE Standard Analyses Working Group](http://www.phusewiki.org/wiki/index.php?title=Standard_Scripts) (SAWG)
+* PhUSE CS Standard Analyses Working Group, [details available in the PhUSE Wiki](http://www.phusewiki.org/wiki/index.php?title=Standard_Scripts) (SAWG)
 * SAWG's [Analysis and Display White Papers project](http://www.phusewiki.org/wiki/index.php?title=WG5_Project_08) - Defining Standard Analyses
 * SAWG's [Repository Governance & Infrastructure project](http://www.phusewiki.org/wiki/index.php?title=WG5_Project_03) - Setting up our GitHub repository
 * SAWG's [Repository content and delivery project](http://www.phusewiki.org/wiki/index.php?title=WG5_Project_02) - Implementing Standard Analyses
