@@ -113,7 +113,7 @@
 
             %if not %assert_var_exist(&dnxt, &vnxt) %then %do;
               %let OK = 0;
-              %put ERROR: (ASSERT_DEPEND) Data set %upcase(&dnxt) does not contain required variable %upcase(&vnxt).);
+              %put ERROR: (ASSERT_DEPEND) Data set %upcase(&dnxt) does not contain required variable %upcase(&vnxt).;
             %end;
 
             %let vidx = %eval(&vidx + 1);

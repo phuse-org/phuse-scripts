@@ -123,7 +123,7 @@
   %* Establish PROC COMPARE METHOD and CRITERION *;
   %if %length(&criterion) > 0 %then %do;
     %if %datatyp(&criterion) = NUMERIC %then %let compmeth = METHOD=ABSOLUTE CRITERION=&criterion;
-    %else %put ALERT (&sysmacroname): Invalid, non-numeric value (&criterion) for CRITERION. Reveting to PROC COMPARE METHOD=EXACT.;
+    %else %put WARNING: (&sysmacroname) Invalid, non-numeric value (&criterion) for CRITERION. Reveting to PROC COMPARE METHOD=EXACT.;
   %end;
 
   %if %length(&compmeth) = 0 %then %let compmeth = METHOD=EXACT;
@@ -169,8 +169,8 @@
   %let apcnt    = %eval(&ppcnt + &kpcnt);
 
   %if &debug = Y %then %do;
-    %put NOTE (&sysmacroname): Positional parameters are [&pparms];
-    %put NOTE (&sysmacroname): Keyword parameters are    [&kparms];
+    %put NOTE: (&sysmacroname) Positional parameters are [&pparms];
+    %put NOTE: (&sysmacroname) Keyword parameters are    [&kparms];
 
     options ls=MAX;
 
@@ -228,7 +228,7 @@
       call symput('len_call', compress(put(len_call, 8.)));
 
     end;
-    else put "ALERT (&sysmacroname): Unable to open test data set &dsin. Expect trouble.";
+    else put "WARNING: (&sysmacroname) Unable to open test data set &dsin. Expect trouble.";
   run;
 
 
@@ -594,21 +594,21 @@
 
         if fid > 0 then do;
           put ' ';
-          put "NOTE (&sysmacroname): > START of wrapped macro call (test &test_idx of &test_num) >";
+          put "NOTE: (&sysmacroname) > START of wrapped macro call (test &test_idx of &test_num) >";
 
           do while (fread(fid) = 0);
             do while (fget(fid, fidtxt) = 0);
-              put "NOTE (&sysmacroname):   " fidtxt;
+              put "NOTE: (&sysmacroname)   " fidtxt;
               fidtxt = ' ';
             end;
           end;
 
-          put "NOTE (&sysmacroname): < END of wrapped macro call (debug = &debug) <";
+          put "NOTE: (&sysmacroname) < END of wrapped macro call (debug = &debug) <";
           put ' ';
 
           fid = fclose(fid);
         end;
-        else put "ALERT (&sysmacroname): Unable to open PFEXCODE file for debug display!";
+        else put "WARNING: (&sysmacroname) Unable to open PFEXCODE file for debug display!";
       run;
 
     %end;
@@ -618,7 +618,7 @@
     %if &test_fail = 0 %then %do;
       %include PFEXCODE;
     %end;
-    %else %put ALERT (&sysmacroname): Skip execution of test &test_idx of &test_num due to test failure (&test_fail);
+    %else %put WARNING: (&sysmacroname) Skip execution of test &test_idx of &test_num due to test failure (&test_fail);
 
     *+============================================+*;
     *| Record results of in-data-step tests       |*;
@@ -655,7 +655,7 @@
             %let good_compare = 1;
           %end;
           %else %do;
-            %put ALERT (&sysmacroname): Proc Compare Failed (SYSINFO=&sysinfo)! Test &test_idx, Compare &dset_idx (%trim(&test_id) - %trim(&test_dsc)).;
+            %put WARNING: (&sysmacroname) Proc Compare Failed (SYSINFO=&sysinfo)! Test &test_idx, Compare &dset_idx (%trim(&test_id) - %trim(&test_dsc)).;
             %let test_fail_title = %bquote(Test &test_idx, Compare &dset_idx (%trim(&test_id) - %trim(&test_dsc)));
             %let test_fail_title = %sysfunc(quote(FAIL - &test_fail_title));
             title &test_fail_title;
@@ -682,7 +682,7 @@
               delete &res_nam;
             %end;
             %else %do;
-              %put ALERT (&sysmacroname): Saving result %upcase(&res_lib..&res_nam) as %upcase(&res_lib..&res_fail).;
+              %put WARNING: (&sysmacroname) Saving result %upcase(&res_lib..&res_nam) as %upcase(&res_lib..&res_fail).;
               %if %sysfunc(exist(&res_lib..&res_fail)) %then %do;
                 delete &res_fail;
                 run;
@@ -809,10 +809,10 @@
         length put_text $100;
         drop put_text;
         put_text = compbl(test_id !!', '!! put(test_calls,8.-L) !!' call(s)');
-        put "NOTE (&sysmacroname): > " put_text;
+        put "NOTE: (&sysmacroname) > " put_text;
       %end;
 
-      put "NOTE (&sysmacroname):  BUILDING MACRO CALL &test_idx";
+      put "NOTE: (&sysmacroname)  BUILDING MACRO CALL &test_idx";
 
       %if &apcnt > 0 %then %do;
         * Initiate macro call *;
@@ -836,10 +836,10 @@
         macro_call_&test_idx = '%'!! trim(left(test_mac));
       %end;
 
-      put "NOTE (&sysmacroname): GENERATED MACRO CALL &test_idx " macro_call_&test_idx;
+      put "NOTE: (&sysmacroname) GENERATED MACRO CALL &test_idx " macro_call_&test_idx;
 
       if &test_idx = test_calls then
-         put "NOTE (&sysmacroname): <";
+         put "NOTE: (&sysmacroname) <";
 
     end;
   %end;
@@ -859,7 +859,7 @@
     %let nxt  = %qscan(&parmlist, &vdx, %str( ));
     %let nxtv = %qsubstr(&nxt, %index(&nxt,_)+1);
 
-    %if &debug = Y %then %put NOTE (&sysmacroname): Next &parmtype parameter is [&nxtv];
+    %if &debug = Y %then %put NOTE: (&sysmacroname) Next &parmtype parameter is [&nxtv];
 
     next_value = scan( &nxt, &test_idx, test_pdlim, 'M' );
 
@@ -874,12 +874,12 @@
 
       comma=',';
     end;
-    else if "&debug" = 'Y' then put "NOTE (&sysmacroname): Skipping val &test_idx of " &nxt=;
+    else if "&debug" = 'Y' then put "NOTE: (&sysmacroname) Skipping val &test_idx of " &nxt=;
 
     %let vdx = %eval(&vdx + 1);
   %end;
 
-  if "&debug" = 'Y' then put "NOTE (&sysmacroname): Added &parmtype parms to macro call &test_idx " macro_call_&test_idx;
+  if "&debug" = 'Y' then put "NOTE: (&sysmacroname) Added &parmtype parms to macro call &test_idx " macro_call_&test_idx;
 
 %mend add_parms;
 
@@ -918,6 +918,8 @@
                                   !! dlim !! compress(scan(this_sym_name, 1, '='))
                                   !!'='!! symget(this_sym_name)
                                 );
+
+          *--- NB: DLIM is blank, first time through ---*;
           dlim = test_pdlim;
 
           call execute('%symdel '!!this_sym_name!!';');
@@ -955,7 +957,7 @@
 
   %if &extra_endsyms_count > 0 %then %do;
     * Report any new & unexpected global macro vars *;
-    %put WARNING (&sysmacroname): UNEXPECTED Global sym(s) created - Test %cmpres(&test_id: &extra_endsyms);
+    %put WARNING: (&sysmacroname) UNEXPECTED Global sym(s) created - Test %cmpres(&test_id: &extra_endsyms);
 
     data _null_;
       set &dsout ;

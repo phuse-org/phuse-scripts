@@ -13,7 +13,7 @@
 
     %let OK = %assert_dset_exist(&ds);
 
-    %if %length(&var) = 0 %then %let OK = 0;
+    %if 0 = %length(&var) %then %let OK = 0;
 
     %if &OK %then %do;
       %let dsid = %sysfunc(open(&ds));
@@ -23,11 +23,11 @@
         %if %sysfunc(varnum(&dsid, %upcase(&var))) LT 1 %then %let OK = 0;
 
         %let rc = %sysfunc(close(&dsid));
-        %if &rc NE 0 %then %put ERROR: (ASSERT_VAR_EXIST) unable to close data set %upcase(&ds).;
+        %if &rc NE 0 %then %put ERROR: (ASSERT_VAR_EXIST) Unable to close data set %upcase(&ds), opened with data set ID &DSID;
       %end;
       %else %do;
         %let OK = 0;
-        %put ERROR: (ASSERT_VAR_EXIST) data set %upcase(&ds) is not accessible. Abort check for variable %upcase(&var).;
+        %put ERROR: (ASSERT_VAR_EXIST) Data set %upcase(&ds) is not accessible. Abort check for variable %upcase(&var).;
         %put ERROR: (ASSERT_VAR_EXIST) SYSMSG is: %sysfunc(sysmsg());
       %end;
     %end;

@@ -1,0 +1,27 @@
+                                                                                                                                                                                                                              16:46 Friday, January 22, 2016   1
+
+### -----
+###
+### UTIL_BOXPLOT_VISIT_RANGES Overall: ALL TESTS PASSED - 19
+###
+### -----
+
+   001   1.a.1          Invalid DSet
+   002   1.a.2          Invalid VIS var
+   003   1.a.3          Invalid TRT var
+   004   1.a.4          Invalid VIS and TRT vars
+   005   1.b.1          Missing VISIT values
+   006   1.b.2          Missing TREATMENT values
+   007   1.b.3          Missing VISIT and TREATMENT values
+   008   2.a.1          MBPP=3, numeric vars, consistent visits x treatments
+   009   2.a.2          MBPP=3, char vars, consistent visits x treatments
+   010   2.b.1          MBPP=3, numeric vars, some missing visits & treatments
+   011   2.b.2          MBPP=3, char vars, some missing visits & treatments
+   012   2.c.1          MBPP=3, numeric vars, consistent visits x treatments
+   013   2.c.2          MBPP=3, char vars, consistent visits x treatments
+   014   2.d.1          MBPP=3, numeric vars, some missing visits & treatments
+   015   2.d.2          MBPP=3, char vars, some missing visits & treatments
+   016   2.e.1          MBPP=20, numeric vars, consistent visits x treatments
+   017   2.e.2          MBPP=20, char vars, consistent visits x treatments
+   018   2.f.1          MBPP=20, numeric vars, some missing visits & treatments
+   019   2.f.2          MBPP=20, char vars, some missing visits & treatments

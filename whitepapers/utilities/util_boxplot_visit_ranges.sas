@@ -22,19 +22,30 @@
     BOXPLOT_VISIT_RANGES  global symbol indicating VISIT subsets for each plot page (to limit boxes per page)
                           Example: 0 <= avisitn <7|7 <= avisitn <12|
 
-  NOTES
-
+  Author:          Dante Di Tommaso
 ***/
 
 %macro util_boxplot_visit_ranges(ds, vvisn=, vtrtn=);
   %global BOXPLOT_VISIT_RANGES;
-  %local OK numvis numtrt vistyp vislen;
+  %local OK numvis numtrt vistyp vislen max_length;
   %let OK = 1;
 
   %let OK = %assert_depend(vars=%str(&DS : &vvisn &vtrtn),
                            symbols=max_boxes_per_page);
 
   %if &OK %then %do;
+    %*--- Expect only NON-MISSING values for both VISIT and TREATMENT ---*;
+      %if not %assert_var_nonmissing(&ds, &vvisn) %then %put WARNING: (UTIL_BOXPLOT_VISIT_RANGES) Variable "%upcase(&ds..&vvisn)" has missing values. Results may be unexpected.;
+      %if not %assert_var_nonmissing(&ds, &vtrtn) %then %put WARNING: (UTIL_BOXPLOT_VISIT_RANGES) Variable "%upcase(&ds..&vtrtn)" has missing values. Results may be unexpected.;
+
+    %*--- Get VIS and TRT counts from the data. These are the max values. Some TRTs may not appear in all VISs. ---*;
+      %util_count_unique_values(&ds, &vvisn, numvis)
+      %util_count_unique_values(&ds, &vtrtn, numtrt)
+
+      %if &numtrt > &max_boxes_per_page %then %do;
+        %put WARNING: (UTIL_BOXPLOT_VISIT_RANGES) Treatment count (&NUMTRT) is greater than Max boxes per page (&MAX_BOXES_PER_PAGE). Keeping treatments together, Max boxes per page is effectively &NUMTRT..;
+      %end;
+
 
     *--- Expect VISIT var of type N, but handle char var of type C ---*;
       data _null_;
@@ -44,15 +55,24 @@
         STOP;
       run;
 
+      %let vistyp = &vistyp;
+      %let vislen = &vislen;
+
+      %*--- How long could the return string be? For CHAR vars, it could get quite long. 
+        Pattern: "<var-value>" <= <var-name> <= "<var-value>"|
+                 (quotes only used for CHAR vars)
+                 (NUMERIC vals are unlikely to format wider than 30 chars - long date-time formats)
+        Max len: <20 spacing chars + 2*<var-length> + <varname-length>
+        Repeat:  for each page of boxes. Max pages = num visits (one visit per page).
+      ---*;
+        %let max_length = %eval( 20 + 2*%sysfunc(max(30, &vislen)) + %length(&vvisn) );
+        %let max_length = %eval( &numvis*&max_length );
+
       %if &vistyp = C %then %do;
         %let vislen = $&vislen;
-        %put WARNING: (UTIL_BOXPLOT_VISIT_RANGES) Expecting NUMERIC visit numbers. Results may be unexpected.;
+        %put WARNING: (UTIL_BOXPLOT_VISIT_RANGES) Expecting NUMERIC visit numbers, not CHAR &vislen.. Results may be unexpected.;
       %end;
-      
 
-    %*--- Get totals from this data set. These are the max values. Some TRTs may not appear in all VISs. ---*;
-    %util_count_unique_values(&ds, &vvisn, numvis)
-    %util_count_unique_values(&ds, &vtrtn, numtrt)
 
     proc sort data=&ds (keep=&vvisn &vtrtn) 
               out=temp_vis_trt nodupkey;
@@ -64,7 +84,7 @@
       by &vvisn &vtrtn;
 
       *--- Create BOXPLOT_VISIT_RANGES, to limit number of boxes per plot page to &MAX_BOXES_PER_PAGE ---*;
-        length boxplot_visit_ranges $%sysfunc(max(200, %eval(&numvis*&numtrt)))
+        length boxplot_visit_ranges $&max_length
                start_visit &vislen;
         retain boxes_on_page 0
                boxplot_visit_ranges ' '
@@ -72,7 +92,7 @@
                %else start_visit .;
                ;
 
-        if missing(start_visit) then start_visit = &vvisn;
+        if 0 = boxes_on_page then start_visit = &vvisn;
         boxes_on_page + 1;
 
         *--- Within a visit, keep all trts together: On last obs for this visit, is there room for another set of boxes? ---*;
@@ -96,10 +116,6 @@
             %end;
 
             boxes_on_page = 0;
-
-            %if &vistyp = C %then start_visit = ' ';
-            %else start_visit = .;
-            ;
           end;
 
         end;

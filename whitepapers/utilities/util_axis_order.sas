@@ -23,7 +23,7 @@
   -EXAMPLE:
     axis1 order=(%util_axis_order(&non-missing-min, &non-missing-max)); 
 
-  Author:          Dante Di Tommaso
+  Author:   Dante Di Tommaso
 ***/
 
 %macro util_axis_order(min, max, ticks=10);
