@@ -10,7 +10,7 @@
 
 ### Participating and Contributing
 
-[**Our GitHub Wiki**](https://github.com/phuse-org/phuse-scripts/wiki) contains latest information for active efforts.
+[**Our GitHub Wiki**](https://github.com/phuse-org/phuse-scripts/wiki/Current-Activities) contains latest information for active efforts.
 
 We maintain Task Lists (to-do lists) for both:
 
