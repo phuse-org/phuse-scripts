@@ -1,6 +1,0 @@
-CDISC originally published these data in a pilot electronic submission package:
-
-  http://www.cdisc.org/sdtmadam-pilot-project
-  * Complete CDISC pilot package is available to CDISC members only
-  * Location within CDISC archive: 
-    Updated Pilot Submission Package\900172\m5\datasets\cdiscpilot01\analysis\adam\datasets\
