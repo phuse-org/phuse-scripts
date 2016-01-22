@@ -9,9 +9,10 @@ Objective: put together workflow proposal (including Roles) for review by WG lea
 
 ### Git workflow exercises
 
-https://www.atlassian.com/git/tutorials/comparing-workflows
+* [Atlassian Git Workflows](http://www.atlassian.com/git/tutorials/comparing-workflows)
+* [Learn git on Codecademy](http://www.codecademy.com/learn/learn-git)
 
-(for setup, see [Contributor_setup.md](https://github.com/phuse-org/phuse-scripts/blob/master/docs/guides/Contributor_Setup.md))
+(for setup, see [Contributor_setup.md](http://github.com/phuse-org/phuse-scripts/blob/master/docs/guides/Contributor_Setup.md))
 
 #### Setup
 * "training" folder?
