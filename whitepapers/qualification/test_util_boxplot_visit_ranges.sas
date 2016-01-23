@@ -11,6 +11,10 @@
 
 *--- SETUP ---*;
 
+  *--- Expected response strings can be quite long, so avoid meaningless log warnings ---*;
+    OPTIONS NOQUOTELENMAX;
+
+
   %let macroname = util_boxplot_visit_ranges;
 
   %put WARNING: (TEST_%upcase(&macroname)) User must ensure PhUSE/CSS utilities are in the AUTOCALL path.;
@@ -75,16 +79,29 @@
              '%GLOBAL MAX_BOXES_PER_PAGE; %LET MAX_BOXES_PER_PAGE=10; _MACCALL1_; %SYMDEL MAX_BOXES_PER_PAGE;',
              '~')
 
-      values("%lowcase(&macroname)", '1.b.1', 'Missing VISIT values',      'M',   'sashelp.heart', 'smoking_status', 'bp_status',
+      values("%lowcase(&macroname)", '1.b.1', 'Missing CHAR VISIT values',                'M',  'sashelp.heart', 'smoking_status', 'bp_status',
              '', 'BOXPLOT_VISIT_RANGES="" <= smoking_status <= "Light (1-5)"|"Moderate (6-15)" <= smoking_status <= "Very Heavy (> 25)"|',
              '%GLOBAL MAX_BOXES_PER_PAGE; %LET MAX_BOXES_PER_PAGE=10; _MACCALL1_; %SYMDEL MAX_BOXES_PER_PAGE;',
              '~')
-      values("%lowcase(&macroname)", '1.b.2', 'Missing TREATMENT values',  'M',   'sashelp.heart', 'bp_status', 'smoking_status',
+      values("%lowcase(&macroname)", '1.b.2', 'Missing CHAR TREATMENT values',            'M',  'sashelp.heart', 'bp_status', 'smoking_status',
              '', 'BOXPLOT_VISIT_RANGES="High" <= bp_status <= "High"|"Normal" <= bp_status <= "Normal"|"Optimal" <= bp_status <= "Optimal"|',
              '%GLOBAL MAX_BOXES_PER_PAGE; %LET MAX_BOXES_PER_PAGE=10; _MACCALL1_; %SYMDEL MAX_BOXES_PER_PAGE;',
              '~')
-      values("%lowcase(&macroname)", '1.b.3', 'Missing VISIT and TREATMENT values',  'M',   'sashelp.heart', 'weight_status', 'smoking_status',
+      values("%lowcase(&macroname)", '1.b.3', 'Missing CHAR VISIT and TREATMENT values',  'M',  'sashelp.heart', 'weight_status', 'smoking_status',
              '', 'BOXPLOT_VISIT_RANGES="" <= weight_status <= "Normal"|"Overweight" <= weight_status <= "Overweight"|"Underweight" <= weight_status <= "Underweight"|',
+             '%GLOBAL MAX_BOXES_PER_PAGE; %LET MAX_BOXES_PER_PAGE=10; _MACCALL1_; %SYMDEL MAX_BOXES_PER_PAGE;',
+             '~')
+
+      values("%lowcase(&macroname)", '1.c.1', 'Missing NUM VISIT values',                'M',  'rectangular', 'visnum_miss', 'treatnum',
+             '', 'BOXPLOT_VISIT_RANGES=. <= visnum_miss <= 10|13 <= visnum_miss <= 16|19 <= visnum_miss <= 25|28 <= visnum_miss <= 31|34 <= visnum_miss <= 40|',
+             '%GLOBAL MAX_BOXES_PER_PAGE; %LET MAX_BOXES_PER_PAGE=10; _MACCALL1_; %SYMDEL MAX_BOXES_PER_PAGE;',
+             '~')
+      values("%lowcase(&macroname)", '1.c.2', 'Missing NUM TREATMENT values',            'M',  'rectangular', 'visitnum', 'trtnum_miss',
+             '', 'BOXPLOT_VISIT_RANGES=10 <= visitnum <= 13|16 <= visitnum <= 19|22 <= visitnum <= 25|28 <= visitnum <= 31|34 <= visitnum <= 37|40 <= visitnum <= 40|',
+             '%GLOBAL MAX_BOXES_PER_PAGE; %LET MAX_BOXES_PER_PAGE=10; _MACCALL1_; %SYMDEL MAX_BOXES_PER_PAGE;',
+             '~')
+      values("%lowcase(&macroname)", '1.c.3', 'Missing NUM VISIT and TREATMENT values',  'M',  'rectangular', 'visnum_miss', 'trtnum_miss',
+             '', 'BOXPLOT_VISIT_RANGES=. <= visnum_miss <= 10|13 <= visnum_miss <= 16|19 <= visnum_miss <= 25|28 <= visnum_miss <= 31|34 <= visnum_miss <= 40|',
              '%GLOBAL MAX_BOXES_PER_PAGE; %LET MAX_BOXES_PER_PAGE=10; _MACCALL1_; %SYMDEL MAX_BOXES_PER_PAGE;',
              '~')
 
@@ -168,6 +185,13 @@
     *--- 44 vis*trt combinations ---*;
     do visitnum = 10 to 40 by 3;
       do treatnum = 1, 2, 3, 4;
+
+        if ranuni(64785) < 0.1 then visnum_miss = .;
+        else visnum_miss = visitnum;
+
+        if ranuni(16047) < 0.1 then trtnum_miss = .;
+        else trtnum_miss = treatnum;
+
         output;
       end;
     end;

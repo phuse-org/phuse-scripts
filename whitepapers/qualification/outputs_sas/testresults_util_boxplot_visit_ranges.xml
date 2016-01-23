@@ -79,7 +79,7 @@
    <CSS_PASSFAIL>
       <test_mac> util_boxplot_visit_ranges </test_mac>
       <test_id> 1.b.1 </test_id>
-      <test_dsc> Missing VISIT values </test_dsc>
+      <test_dsc> Missing CHAR VISIT values </test_dsc>
       <Pparm_ds> sashelp.heart </Pparm_ds>
       <Kparm_vvisn> smoking_status </Kparm_vvisn>
       <Kparm_vtrtn> bp_status </Kparm_vtrtn>
@@ -98,7 +98,7 @@
    <CSS_PASSFAIL>
       <test_mac> util_boxplot_visit_ranges </test_mac>
       <test_id> 1.b.2 </test_id>
-      <test_dsc> Missing TREATMENT values </test_dsc>
+      <test_dsc> Missing CHAR TREATMENT values </test_dsc>
       <Pparm_ds> sashelp.heart </Pparm_ds>
       <Kparm_vvisn> bp_status </Kparm_vvisn>
       <Kparm_vtrtn> smoking_status </Kparm_vtrtn>
@@ -117,7 +117,7 @@
    <CSS_PASSFAIL>
       <test_mac> util_boxplot_visit_ranges </test_mac>
       <test_id> 1.b.3 </test_id>
-      <test_dsc> Missing VISIT and TREATMENT values </test_dsc>
+      <test_dsc> Missing CHAR VISIT and TREATMENT values </test_dsc>
       <Pparm_ds> sashelp.heart </Pparm_ds>
       <Kparm_vvisn> weight_status </Kparm_vvisn>
       <Kparm_vtrtn> smoking_status </Kparm_vtrtn>
@@ -129,6 +129,63 @@
       <test_result_sym> BOXPLOT_VISIT_RANGES=&quot;&quot; &lt;= weight_status &lt;= &quot;Normal&quot;|&quot;Overweight&quot; &lt;= weight_status &lt;= &quot;Overweight&quot;|&quot;Underweight&quot; &lt;= weight_status &lt;= &quot;Underweight&quot;| </test_result_sym>
       <test_calls> 1 </test_calls>
       <macro_call_1> %util_boxplot_visit_ranges( sashelp.heart, vvisn=weight_status, vtrtn=smoking_status) </macro_call_1>
+      <test_type> M </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> util_boxplot_visit_ranges </test_mac>
+      <test_id> 1.c.1 </test_id>
+      <test_dsc> Missing NUM VISIT values </test_dsc>
+      <Pparm_ds> rectangular </Pparm_ds>
+      <Kparm_vvisn> visnum_miss </Kparm_vvisn>
+      <Kparm_vtrtn> treatnum </Kparm_vtrtn>
+      <test_expect missing=" " />
+      <test_expect_sym> BOXPLOT_VISIT_RANGES=. &lt;= visnum_miss &lt;= 10|13 &lt;= visnum_miss &lt;= 16|19 &lt;= visnum_miss &lt;= 25|28 &lt;= visnum_miss &lt;= 31|34 &lt;= visnum_miss &lt;= 40| </test_expect_sym>
+      <test_wrap> %GLOBAL MAX_BOXES_PER_PAGE; %LET MAX_BOXES_PER_PAGE=10; _MACCALL1_; %SYMDEL MAX_BOXES_PER_PAGE; </test_wrap>
+      <test_pdlim> ~ </test_pdlim>
+      <test_result missing=" " />
+      <test_result_sym> BOXPLOT_VISIT_RANGES=. &lt;= visnum_miss &lt;= 10|13 &lt;= visnum_miss &lt;= 16|19 &lt;= visnum_miss &lt;= 25|28 &lt;= visnum_miss &lt;= 31|34 &lt;= visnum_miss &lt;= 40| </test_result_sym>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %util_boxplot_visit_ranges( rectangular, vvisn=visnum_miss, vtrtn=treatnum) </macro_call_1>
+      <test_type> M </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> util_boxplot_visit_ranges </test_mac>
+      <test_id> 1.c.2 </test_id>
+      <test_dsc> Missing NUM TREATMENT values </test_dsc>
+      <Pparm_ds> rectangular </Pparm_ds>
+      <Kparm_vvisn> visitnum </Kparm_vvisn>
+      <Kparm_vtrtn> trtnum_miss </Kparm_vtrtn>
+      <test_expect missing=" " />
+      <test_expect_sym> BOXPLOT_VISIT_RANGES=10 &lt;= visitnum &lt;= 13|16 &lt;= visitnum &lt;= 19|22 &lt;= visitnum &lt;= 25|28 &lt;= visitnum &lt;= 31|34 &lt;= visitnum &lt;= 37|40 &lt;= visitnum &lt;= 40| </test_expect_sym>
+      <test_wrap> %GLOBAL MAX_BOXES_PER_PAGE; %LET MAX_BOXES_PER_PAGE=10; _MACCALL1_; %SYMDEL MAX_BOXES_PER_PAGE; </test_wrap>
+      <test_pdlim> ~ </test_pdlim>
+      <test_result missing=" " />
+      <test_result_sym> BOXPLOT_VISIT_RANGES=10 &lt;= visitnum &lt;= 13|16 &lt;= visitnum &lt;= 19|22 &lt;= visitnum &lt;= 25|28 &lt;= visitnum &lt;= 31|34 &lt;= visitnum &lt;= 37|40 &lt;= visitnum &lt;= 40| </test_result_sym>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %util_boxplot_visit_ranges( rectangular, vvisn=visitnum, vtrtn=trtnum_miss) </macro_call_1>
+      <test_type> M </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> util_boxplot_visit_ranges </test_mac>
+      <test_id> 1.c.3 </test_id>
+      <test_dsc> Missing NUM VISIT and TREATMENT values </test_dsc>
+      <Pparm_ds> rectangular </Pparm_ds>
+      <Kparm_vvisn> visnum_miss </Kparm_vvisn>
+      <Kparm_vtrtn> trtnum_miss </Kparm_vtrtn>
+      <test_expect missing=" " />
+      <test_expect_sym> BOXPLOT_VISIT_RANGES=. &lt;= visnum_miss &lt;= 10|13 &lt;= visnum_miss &lt;= 16|19 &lt;= visnum_miss &lt;= 25|28 &lt;= visnum_miss &lt;= 31|34 &lt;= visnum_miss &lt;= 40| </test_expect_sym>
+      <test_wrap> %GLOBAL MAX_BOXES_PER_PAGE; %LET MAX_BOXES_PER_PAGE=10; _MACCALL1_; %SYMDEL MAX_BOXES_PER_PAGE; </test_wrap>
+      <test_pdlim> ~ </test_pdlim>
+      <test_result missing=" " />
+      <test_result_sym> BOXPLOT_VISIT_RANGES=. &lt;= visnum_miss &lt;= 10|13 &lt;= visnum_miss &lt;= 16|19 &lt;= visnum_miss &lt;= 25|28 &lt;= visnum_miss &lt;= 31|34 &lt;= visnum_miss &lt;= 40| </test_result_sym>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %util_boxplot_visit_ranges( rectangular, vvisn=visnum_miss, vtrtn=trtnum_miss) </macro_call_1>
       <test_type> M </test_type>
       <test_post missing=" " />
       <result> PASS </result>
