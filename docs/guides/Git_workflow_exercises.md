@@ -1,24 +1,27 @@
-### GitHub roles
+### GitHub workflows
 
 **Objective:** put together workflow proposal (including Roles) for review by WG leads
 
-Pick a location: Here in GitHub (makes sense), or [in Phusewiki](http://www.phusewiki.org/wiki/index.php?title=WG5_Project_02_GitHub_Exercises)?
+**Pick a location:** Here in GitHub (makes sense), or [in Phusewiki](http://www.phusewiki.org/wiki/index.php?title=WG5_Project_02_GitHub_Exercises)?
 
 1. TO DO: Hanming - What can "Owners" or "Team Maintainer" do specifically for the phuse-scripts repository? (Reference: https://help.github.com/articles/repository-permission-levels-for-an-organization/)
 2. Moderator - can change central code (Hanming - clarify)
 3. Contributors - "pull request" suggested code to the project committers (Hanming - clarify)
 
 
-### Git workflow exercises
+### Git workflow tutorials
 
 * [Atlassian Git Workflows](http://www.atlassian.com/git/tutorials/comparing-workflows)
 * [Learn git on Codecademy](http://www.codecademy.com/learn/learn-git)
 
 (for setup, see [Contributor_setup.md](http://github.com/phuse-org/phuse-scripts/blob/master/docs/guides/Contributor_Setup.md))
 
-#### Setup
+#### Setup & Considerations
 
-* "training" folder?
+* What team configuration do we want?
+  * **Open:** Anyone that asks can be a team member and therefore change files in this repository
+  * **Maintained:* Relatively few "maintainers" that must integrate any proposed changes, and can promote engaged contributors to team members.
+* _training_ folder?
 * sequence: contribute-edit-"commit"-"sync"-another_edit
 
 #### GitHub Roles
@@ -28,12 +31,9 @@ Pick a location: Here in GitHub (makes sense), or [in Phusewiki](http://www.phus
 3. phuse-scripts team member
 4. phuse-scripts maintainer
 
-#### New Contributor, new file
+#### GitHub Exercises
 
-
-#### Multiple Contributors, shared files
-
-
-#### Advanced topics
-
-
+1. GitHub browser submits a change
+2. GitHub member submits a change from their local repository, Maintainer reviews and takes 2 actions (Reject / Incorporate)
+3. Active team member contributes independent change
+4. 2 active team member contribute related changes (edit same file, move file, add new files)
