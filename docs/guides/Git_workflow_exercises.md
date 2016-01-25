@@ -21,7 +21,7 @@
 * What team configuration do we want?
   * **Open:** Anyone that asks can be a team member and therefore change files in this repository
   * **Maintained:** Relatively few "maintainers" that must integrate any proposed changes, and can promote engaged contributors to team members. (Maintainers "protect" production-ready state of master branch.)
-* _training_ folder?
+* training folder, for scripted exercises
 * sequence: contribute-edit-"commit"-"sync"-another_edit
 
 #### GitHub Roles
@@ -36,10 +36,11 @@
 ##### Contributors
 
 1. GitHub browser submits a change
-2. GitHub member submits a change from their local repository, Maintainer reviews and takes 2 actions (Reject / Incorporate)
-3. Active team member contributes independent change
-4. 2 active team member contribute related changes (edit same file, move file, add new files)
+2. GitHub member submits isolated changes from their local repository. (Maintainer reviews and either Rejects or Incorporates.)
+3. 2 contributors make related changes (edit same file, move file, etc.). What do they see in GitHub?
 
 ##### Advanced / Maintainers
+
+Advanced topics, as tutorials for project Maintainers.
 
 **NB:** Avoid unnecessary complexity, such as Branches.
