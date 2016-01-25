@@ -1,6 +1,8 @@
 ### GitHub roles
 
-Objective: put together workflow proposal (including Roles) for review by WG leads
+**Objective:** put together workflow proposal (including Roles) for review by WG leads
+
+Pick a location: Here in GitHub (makes sense), or [in Phusewiki](http://www.phusewiki.org/wiki/index.php?title=WG5_Project_02_GitHub_Exercises)?
 
 1. TO DO: Hanming - What can "Owners" or "Team Maintainer" do specifically for the phuse-scripts repository? (Reference: https://help.github.com/articles/repository-permission-levels-for-an-organization/)
 2. Moderator - can change central code (Hanming - clarify)
