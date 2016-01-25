@@ -17,8 +17,16 @@ Pick a location: Here in GitHub (makes sense), or [in Phusewiki](http://www.phus
 (for setup, see [Contributor_setup.md](http://github.com/phuse-org/phuse-scripts/blob/master/docs/guides/Contributor_Setup.md))
 
 #### Setup
+
 * "training" folder?
 * sequence: contribute-edit-"commit"-"sync"-another_edit
+
+#### GitHub Roles
+
+1. GitHub browser, without account
+2. GitHub member, without phuse-scripts membership
+3. phuse-scripts team member
+4. phuse-scripts maintainer
 
 #### New Contributor, new file
 
