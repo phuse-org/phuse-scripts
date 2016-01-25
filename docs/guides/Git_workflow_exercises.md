@@ -33,9 +33,13 @@
 
 #### GitHub Exercises
 
+##### Contributors
+
 1. GitHub browser submits a change
 2. GitHub member submits a change from their local repository, Maintainer reviews and takes 2 actions (Reject / Incorporate)
 3. Active team member contributes independent change
 4. 2 active team member contribute related changes (edit same file, move file, add new files)
+
+##### Advanced / Maintainers
 
 **NB:** Avoid unnecessary complexity, such as Branches.
