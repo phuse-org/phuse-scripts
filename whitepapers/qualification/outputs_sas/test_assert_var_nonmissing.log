@@ -1,0 +1,1234 @@
+NOTE: Copyright (c) 2002-2012 by SAS Institute Inc., Cary, NC, USA.
+NOTE: SAS (r) Proprietary Software 9.4 (TS1M2)
+      Licensed to F. HOFFMANN LA ROCHE AG, Site 50701490.
+NOTE: This session is executing on the X64_7PRO  platform.
+
+
+
+NOTE: Updated analytical products:
+
+      SAS/STAT 13.2
+      SAS/ETS 13.2
+      SAS/IML 13.2
+      SAS/QC 13.2
+
+NOTE: Additional host information:
+
+ X64_7PRO WIN 6.1.7601 Service Pack 1 Workstation
+
+NOTE: SAS initialization used:
+      real time           7.26 seconds
+      cpu time            6.55 seconds
+
+1        OPTIONS mrecall sasautos=(%sysfunc(getoption(sasautos)) "C:\CSS\phuse-scripts\whitepapers\utilities") ls=max ps=max;
+
+2    /***
+3      Qualification tests for PhUSE/CSS utility macro <MACRO-NAME>
+4
+5      SETUP:  Ensure that PhUSE/CSS utilities are in the AUTOCALL path
+6
+7      TEST PLAN:
+8      https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/qualification/testplan_<MACRO-NAME>.docx
+9
+10   ***/
+11
+12
+13   *--- SETUP ---*;
+14
+15     %let macroname = ASSERT_VAR_NONMISSING;
+16
+17     %put WARNING: (TEST_%upcase(&macroname)) User must ensure PhUSE/CSS utilities are in the AUTOCALL path.;
+WARNING: (TEST_ASSERT_VAR_NONMISSING) User must ensure PhUSE/CSS utilities are in the AUTOCALL path.
+18
+19     /*** EXECUTE ONE TIME only as needed
+20
+21       Ensure PhUSE/CSS utilities are in the AUTOCALL path
+22       NB: This line is not necessary if PhUSE/CSS utilities are in your default AUTOCALL paths
+23
+24       OPTIONS mrecall sasautos=(%sysfunc(getoption(sasautos)) "C:\CSS\phuse-scripts\whitepapers\utilities") ls=max ps=max;
+25
+26     ***/
+27
+28
+29     *--- SAVE TEST RESULTS as XML filename  ---*;
+30     *--- NB: if this filename is blank, do NOT save xml test results ---*;
+31
+32       %let XML_FILENAME = .\outputs_sas\testresults_%lowcase(&macroname).xml;
+33
+34
+35   *--- Test Definitions  ---*;
+36     *--- Full Specs for test definitions: https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/utilities/util_passfail.sas ---*;
+37
+38     proc sql;
+39       create table my_test_definitions
+40         (  test_mac        char(32) label='Name of macro to test'
+41          , test_id         char(15) label="Test ID for %upcase(&macroname)"
+42          , test_dsc        char(80) label='Test Description'
+43
+44          , test_type       char(5)  label='Test Type (Macro var, String-<B|C|L|T>, Data set, In data step)'
+45          , Pparm_ds        char(50) label='Test values for the Positional parameter DS'
+46          , Pparm_var       char(50) label='Test values for the Positional parameter VAR'
+47          , Kparm_whr       char(60) label='Test values for the Keyword parameter WHR'
+48
+49          , test_expect     char(50) label="EXPECTED test results for each call to %upcase(&macroname)"
+50         )
+51       ;
+NOTE: Table WORK.MY_TEST_DEFINITIONS created, with 0 rows and 8 columns.
+52
+53       insert into my_test_definitions
+54         values("%lowcase(&macroname)", '1.a.1', 'Missing require DS',              'S', '_NULLPARM_', 'weight',        '',   '0')
+55         values("%lowcase(&macroname)", '1.a.2', 'Missing required VAR',            'S', 'sashelp.heart', '_NULLPARM_', '',   '0')
+56         values("%lowcase(&macroname)", '1.a.3', 'Missing required DS and VAR',     'S', '_NULLPARM_', '_NULLPARM_',    '',   '0')
+57
+58         values("%lowcase(&macroname)", '1.b.1', 'Invalid require DS',              'S', 'sashelp.hearts', 'weight',  '',   '0')
+59         values("%lowcase(&macroname)", '1.b.2', 'Invalid required VAR',            'S', 'sashelp.heart', 'weights',  '',   '0')
+60         values("%lowcase(&macroname)", '1.b.3', 'Invalid required DS and VAR',     'S', 'sashelp.hearts', 'weights', '',   '0')
+61
+62         values("%lowcase(&macroname)", '1.c.1', 'Invalid WHR, invalid var name',            'S', 'sashelp.heart', 'cholesterol', 'weights > 150',        '0')
+63         values("%lowcase(&macroname)", '1.c.2', 'Invlaid WHR, type mismatch for NUM var',   'S', 'sashelp.heart', 'cholesterol', "weight in ('A' 'B')",  '0')
+64         values("%lowcase(&macroname)", '1.c.2', 'Invlaid WHR, type mismatch for CHAR var',  'S', 'sashelp.heart', 'cholesterol', 'bp_status > 5',        '0')
+65
+66         values("%lowcase(&macroname)", '2.a.1', 'Non-missing NUM var, pref/suff vars ENTIRELY missings',   'S', 'test_nonmiss', 'num_val', '',   '1')
+67         values("%lowcase(&macroname)", '2.a.2', 'Non-missing NUM var, pref/suff vars EXACTLY 1 missing',   'S', 'test_1miss',   'num_val', '',   '1')
+68         values("%lowcase(&macroname)", '2.b.1', 'Non-missing CHAR var, pref/suff vars ENTIRELY missings',  'S', 'test_nonmiss', 'chr_val', '',   '1')
+69         values("%lowcase(&macroname)", '2.b.2', 'Non-missing CHAR var, pref/suff vars EXACTLY 1 missing',  'S', 'test_1miss',   'chr_val', '',   '1')
+70
+71         values("%lowcase(&macroname)", '2.c.1', 'NUM var has EXACTLY 1 missing value .',   'S', 'test_1miss', 'd1_num_val', '',   '0')
+72         values("%lowcase(&macroname)", '2.c.2', 'NUM var has EXACTLY 1 missing value ._',  'S', 'test_1miss', 'u1_num_val', '',   '0')
+73         values("%lowcase(&macroname)", '2.c.3', 'NUM var has EXACTLY 1 missing value .m',  'S', 'test_1miss', 'm1_num_val', '',   '0')
+74         values("%lowcase(&macroname)", '2.c.4', 'NUM var has ENTIRELY missing values .',   'S', 'test_nonmiss', 'm_num_val', '',   '0')
+75         values("%lowcase(&macroname)", '2.c.5', 'NUM var has ENTIRELY special missings (., ._, .m)',  'S', 'test_nonmiss', 's_num_val', '',   '0')
+76
+77         values("%lowcase(&macroname)", '2.d.1', 'CHAR var has EXACTLY 1 missing value',  'S', 'test_1miss',   'chr_val_d1', '',  '0')
+78         values("%lowcase(&macroname)", '2.d.2', 'CHAR var has ENTIRELY missing values',  'S', 'test_nonmiss', 'chr_val_m',  '',  '0')
+79
+80         values("%lowcase(&macroname)", '2.e.1', 'WHR clause leaves NON-MISSING NUM values',   'S', 'test_miss_subset', 'num_val', 'desc="non-missing"',   '1')
+81         values("%lowcase(&macroname)", '2.e.2', 'WHR clause leaves NON-MISSING CHAR values',  'S', 'test_miss_subset', 'chr_val', 'desc="non-missing"',   '1')
+82
+83         values("%lowcase(&macroname)", '2.f.1', 'WHR clause leaves EXACTLY 1 NUM missing',     'S', 'test_miss_subset', 'num_val', 'desc in ("missing_1.", "non-missing")',   '0')
+84         values("%lowcase(&macroname)", '2.f.2', 'WHR clause leaves EXACTLY 1 NUM special ._',  'S', 'test_miss_subset', 'num_val', 'desc in ("special_1_", "non-missing")',   '0')
+85         values("%lowcase(&macroname)", '2.f.3', 'WHR clause leaves EXACTLY 1 NUM special .m',  'S', 'test_miss_subset', 'num_val', 'desc in ("special_1m", "non-missing")',   '0')
+86         values("%lowcase(&macroname)", '2.f.4', 'WHR clause leaves MIX of NUM missing vals',   'S', 'test_miss_subset', 'num_val', 'desc contains "missing" or desc contains "special_"',   '0')
+87         values("%lowcase(&macroname)", '2.f.5', 'WHR clause leaves EXACTLY 1 CHAR missing',    'S', 'test_miss_subset', 'chr_val', 'desc in ("missing_1.", "non-missing")',   '0')
+88
+89       ;
+NOTE: 27 rows were inserted into WORK.MY_TEST_DEFINITIONS.
+
+90     quit;
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.45 seconds
+      cpu time            0.45 seconds
+
+
+91
+92
+93   *--- Setup test environment here (dsets, macro vars, etc) ---*;
+94
+95   data test_miss_subset;
+96     *--- USE DESC var to filter test data set for 2.x tests ---*;
+97     do key1 = 1, 2, 3, 4;
+98       do key2 = 'a', 'b', 'c';
+99         desc = 'non-missing'; num_val = 1 + ranuni(1253); chr_val = 'char of '!!put(num_val,best4.-L); OUTPUT;
+100
+101        *--- MISSING char values ---*;
+102        chr_val = ' ';
+103
+104        *--- multiple missings of each NUMERIC type, and EXACTLY ONE default missings ---*;
+105        desc = 'missings'; num_val = . ; OUTPUT;
+106        if (key1 = 1 and key2 = 'c') then do;
+107          desc = 'missing_1.'; OUTPUT;
+108        end;
+109
+110        *--- Special NUM missings, and EXACTLY ONE of each special missing ---*;
+111        do num_val = ._, .a, .j, .m, .z;
+112          desc = 'specials';
+113          OUTPUT;
+114
+115          if (key1 = 2 and key2 = 'b' and num_val = ._) then do;
+116            desc = 'special_1_';
+117            OUTPUT;
+118          end;
+119          else if (key1 = 3 and key2 = 'c' and num_val = .m) then do;
+120            desc = 'special_1m';
+121            OUTPUT;
+122          end;
+123          else if (key1 = 4 and key2 = 'a' and num_val = .z) then do;
+124            desc = 'special_1z';
+125            OUTPUT;
+126          end;
+127        end; *--- special missings ---*;
+128      end;
+129    end;
+130  run;
+
+NOTE: The data set WORK.TEST_MISS_SUBSET has 88 observations and 5 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.29 seconds
+      cpu time            0.29 seconds
+
+
+131
+132  *--- Test NON-MISSING num & char vars, in dset with prefix/suffix vars that are ENTIRELY missing ---*;
+133    data test_nonmiss;
+134      set test_miss_subset (where=(desc='non-missing'));
+135      *--- NUM and CHAR similar-name vars are entirely missing ---*;
+136      attrib m_num_val length=8.;
+137      attrib num_val_m length=8.;
+138      attrib s_num_val length=8.;
+139      attrib num_val_s length=8.;
+140      attrib m_chr_val length=$5;
+141      attrib chr_val_m length=$5;
+142      retain m_num_val num_val_m . m_chr_val chr_val_m ' ';
+143
+144      drop temp;
+145      temp = ranuni(3947);
+146      if temp < 0.33 then s_num_val = ._;
+147      else if temp < 0.67 then s_num_val = .m;
+148      else s_num_val = .z;
+149
+150      num_val_s = s_num_val;
+151    run;
+
+NOTE: There were 12 observations read from the data set WORK.TEST_MISS_SUBSET.
+      WHERE desc='non-missing';
+NOTE: The data set WORK.TEST_NONMISS has 12 observations and 11 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.07 seconds
+      cpu time            0.07 seconds
+
+
+152
+153  *--- Test NON-MISSING num & char vars, in dset with prefix/suffix vars that each have EXACTLY 1 missing value ---*;
+154    data test_1miss;
+155      set test_miss_subset (where=(desc='non-missing'));
+156      *--- NUM and CHAR similar-name vars have EXACTLY 1 missing ---*;
+157
+158      if not (key1 = 2 and key2 = 'a') then do;
+159        d1_num_val = num_val;
+160        num_val_d1 = num_val;
+161
+162        u1_num_val = num_val;
+163        num_val_u1 = num_val;
+164
+165        m1_num_val = num_val;
+166        num_val_m1 = num_val;
+167
+168        z1_num_val = num_val;
+169        num_val_z1 = num_val;
+170
+171        d1_chr_val = chr_val;
+172        chr_val_d1 = chr_val;
+173      end;
+174      else do;
+175        u1_num_val = ._;
+176        num_val_u1 = ._;
+177
+178        m1_num_val = .m;
+179        num_val_m1 = .m;
+180
+181        z1_num_val = .z;
+182        num_val_z1 = .z;
+183
+184      end;
+185    run;
+
+NOTE: There were 12 observations read from the data set WORK.TEST_MISS_SUBSET.
+      WHERE desc='non-missing';
+NOTE: The data set WORK.TEST_1MISS has 12 observations and 15 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.04 seconds
+
+
+186
+187
+188
+189  *--- Create EXPECTED test results ---*;
+190
+191
+192  *--- Execute & evaluate tests, and report & store test results ---*;
+193    %util_passfail (my_test_definitions, savexml=&xml_filename, debug=N);
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.04 seconds
+
+
+
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: There were 27 observations read from the data set WORK.MY_TEST_DEFINITIONS.
+NOTE: The data set WORK.CSS_PASSFAIL has 27 observations and 11 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.04 seconds
+
+
+
+NOTE: (BUILD_MACRO_CALLS) > 1.a.1 , 1 call(s)
+NOTE: (BUILD_MACRO_CALLS)  BUILDING MACRO CALL 1
+NOTE: (BUILD_MACRO_CALLS) GENERATED MACRO CALL 1 %assert_var_nonmissing(  , weight)
+NOTE: (BUILD_MACRO_CALLS) <
+NOTE: (BUILD_MACRO_CALLS) > 1.a.2 , 1 call(s)
+NOTE: (BUILD_MACRO_CALLS)  BUILDING MACRO CALL 1
+NOTE: (BUILD_MACRO_CALLS) GENERATED MACRO CALL 1 %assert_var_nonmissing( sashelp.heart,  )
+NOTE: (BUILD_MACRO_CALLS) <
+NOTE: (BUILD_MACRO_CALLS) > 1.a.3 , 1 call(s)
+NOTE: (BUILD_MACRO_CALLS)  BUILDING MACRO CALL 1
+NOTE: (BUILD_MACRO_CALLS) GENERATED MACRO CALL 1 %assert_var_nonmissing(  ,  )
+NOTE: (BUILD_MACRO_CALLS) <
+NOTE: (BUILD_MACRO_CALLS) > 1.b.1 , 1 call(s)
+NOTE: (BUILD_MACRO_CALLS)  BUILDING MACRO CALL 1
+NOTE: (BUILD_MACRO_CALLS) GENERATED MACRO CALL 1 %assert_var_nonmissing( sashelp.hearts, weight)
+NOTE: (BUILD_MACRO_CALLS) <
+NOTE: (BUILD_MACRO_CALLS) > 1.b.2 , 1 call(s)
+NOTE: (BUILD_MACRO_CALLS)  BUILDING MACRO CALL 1
+NOTE: (BUILD_MACRO_CALLS) GENERATED MACRO CALL 1 %assert_var_nonmissing( sashelp.heart, weights)
+NOTE: (BUILD_MACRO_CALLS) <
+NOTE: (BUILD_MACRO_CALLS) > 1.b.3 , 1 call(s)
+NOTE: (BUILD_MACRO_CALLS)  BUILDING MACRO CALL 1
+NOTE: (BUILD_MACRO_CALLS) GENERATED MACRO CALL 1 %assert_var_nonmissing( sashelp.hearts, weights)
+NOTE: (BUILD_MACRO_CALLS) <
+NOTE: (BUILD_MACRO_CALLS) > 1.c.1 , 1 call(s)
+NOTE: (BUILD_MACRO_CALLS)  BUILDING MACRO CALL 1
+NOTE: (BUILD_MACRO_CALLS) GENERATED MACRO CALL 1 %assert_var_nonmissing( sashelp.heart, cholesterol, whr=weights > 150)
+NOTE: (BUILD_MACRO_CALLS) <
+NOTE: (BUILD_MACRO_CALLS) > 1.c.2 , 1 call(s)
+NOTE: (BUILD_MACRO_CALLS)  BUILDING MACRO CALL 1
+NOTE: (BUILD_MACRO_CALLS) GENERATED MACRO CALL 1 %assert_var_nonmissing( sashelp.heart, cholesterol, whr=weight in ('A' 'B'))
+NOTE: (BUILD_MACRO_CALLS) <
+NOTE: (BUILD_MACRO_CALLS) > 1.c.2 , 1 call(s)
+NOTE: (BUILD_MACRO_CALLS)  BUILDING MACRO CALL 1
+NOTE: (BUILD_MACRO_CALLS) GENERATED MACRO CALL 1 %assert_var_nonmissing( sashelp.heart, cholesterol, whr=bp_status > 5)
+NOTE: (BUILD_MACRO_CALLS) <
+NOTE: (BUILD_MACRO_CALLS) > 2.a.1 , 1 call(s)
+NOTE: (BUILD_MACRO_CALLS)  BUILDING MACRO CALL 1
+NOTE: (BUILD_MACRO_CALLS) GENERATED MACRO CALL 1 %assert_var_nonmissing( test_nonmiss, num_val)
+NOTE: (BUILD_MACRO_CALLS) <
+NOTE: (BUILD_MACRO_CALLS) > 2.a.2 , 1 call(s)
+NOTE: (BUILD_MACRO_CALLS)  BUILDING MACRO CALL 1
+NOTE: (BUILD_MACRO_CALLS) GENERATED MACRO CALL 1 %assert_var_nonmissing( test_1miss, num_val)
+NOTE: (BUILD_MACRO_CALLS) <
+NOTE: (BUILD_MACRO_CALLS) > 2.b.1 , 1 call(s)
+NOTE: (BUILD_MACRO_CALLS)  BUILDING MACRO CALL 1
+NOTE: (BUILD_MACRO_CALLS) GENERATED MACRO CALL 1 %assert_var_nonmissing( test_nonmiss, chr_val)
+NOTE: (BUILD_MACRO_CALLS) <
+NOTE: (BUILD_MACRO_CALLS) > 2.b.2 , 1 call(s)
+NOTE: (BUILD_MACRO_CALLS)  BUILDING MACRO CALL 1
+NOTE: (BUILD_MACRO_CALLS) GENERATED MACRO CALL 1 %assert_var_nonmissing( test_1miss, chr_val)
+NOTE: (BUILD_MACRO_CALLS) <
+NOTE: (BUILD_MACRO_CALLS) > 2.c.1 , 1 call(s)
+NOTE: (BUILD_MACRO_CALLS)  BUILDING MACRO CALL 1
+NOTE: (BUILD_MACRO_CALLS) GENERATED MACRO CALL 1 %assert_var_nonmissing( test_1miss, d1_num_val)
+NOTE: (BUILD_MACRO_CALLS) <
+NOTE: (BUILD_MACRO_CALLS) > 2.c.2 , 1 call(s)
+NOTE: (BUILD_MACRO_CALLS)  BUILDING MACRO CALL 1
+NOTE: (BUILD_MACRO_CALLS) GENERATED MACRO CALL 1 %assert_var_nonmissing( test_1miss, u1_num_val)
+NOTE: (BUILD_MACRO_CALLS) <
+NOTE: (BUILD_MACRO_CALLS) > 2.c.3 , 1 call(s)
+NOTE: (BUILD_MACRO_CALLS)  BUILDING MACRO CALL 1
+NOTE: (BUILD_MACRO_CALLS) GENERATED MACRO CALL 1 %assert_var_nonmissing( test_1miss, m1_num_val)
+NOTE: (BUILD_MACRO_CALLS) <
+NOTE: (BUILD_MACRO_CALLS) > 2.c.4 , 1 call(s)
+NOTE: (BUILD_MACRO_CALLS)  BUILDING MACRO CALL 1
+NOTE: (BUILD_MACRO_CALLS) GENERATED MACRO CALL 1 %assert_var_nonmissing( test_nonmiss, m_num_val)
+NOTE: (BUILD_MACRO_CALLS) <
+NOTE: (BUILD_MACRO_CALLS) > 2.c.5 , 1 call(s)
+NOTE: (BUILD_MACRO_CALLS)  BUILDING MACRO CALL 1
+NOTE: (BUILD_MACRO_CALLS) GENERATED MACRO CALL 1 %assert_var_nonmissing( test_nonmiss, s_num_val)
+NOTE: (BUILD_MACRO_CALLS) <
+NOTE: (BUILD_MACRO_CALLS) > 2.d.1 , 1 call(s)
+NOTE: (BUILD_MACRO_CALLS)  BUILDING MACRO CALL 1
+NOTE: (BUILD_MACRO_CALLS) GENERATED MACRO CALL 1 %assert_var_nonmissing( test_1miss, chr_val_d1)
+NOTE: (BUILD_MACRO_CALLS) <
+NOTE: (BUILD_MACRO_CALLS) > 2.d.2 , 1 call(s)
+NOTE: (BUILD_MACRO_CALLS)  BUILDING MACRO CALL 1
+NOTE: (BUILD_MACRO_CALLS) GENERATED MACRO CALL 1 %assert_var_nonmissing( test_nonmiss, chr_val_m)
+NOTE: (BUILD_MACRO_CALLS) <
+NOTE: (BUILD_MACRO_CALLS) > 2.e.1 , 1 call(s)
+NOTE: (BUILD_MACRO_CALLS)  BUILDING MACRO CALL 1
+NOTE: (BUILD_MACRO_CALLS) GENERATED MACRO CALL 1 %assert_var_nonmissing( test_miss_subset, num_val, whr=desc="non-missing")
+NOTE: (BUILD_MACRO_CALLS) <
+NOTE: (BUILD_MACRO_CALLS) > 2.e.2 , 1 call(s)
+NOTE: (BUILD_MACRO_CALLS)  BUILDING MACRO CALL 1
+NOTE: (BUILD_MACRO_CALLS) GENERATED MACRO CALL 1 %assert_var_nonmissing( test_miss_subset, chr_val, whr=desc="non-missing")
+NOTE: (BUILD_MACRO_CALLS) <
+NOTE: (BUILD_MACRO_CALLS) > 2.f.1 , 1 call(s)
+NOTE: (BUILD_MACRO_CALLS)  BUILDING MACRO CALL 1
+NOTE: (BUILD_MACRO_CALLS) GENERATED MACRO CALL 1 %assert_var_nonmissing( test_miss_subset, num_val, whr=desc in ("missing_1.", "non-missing"))
+NOTE: (BUILD_MACRO_CALLS) <
+NOTE: (BUILD_MACRO_CALLS) > 2.f.2 , 1 call(s)
+NOTE: (BUILD_MACRO_CALLS)  BUILDING MACRO CALL 1
+NOTE: (BUILD_MACRO_CALLS) GENERATED MACRO CALL 1 %assert_var_nonmissing( test_miss_subset, num_val, whr=desc in ("special_1_", "non-missing"))
+NOTE: (BUILD_MACRO_CALLS) <
+NOTE: (BUILD_MACRO_CALLS) > 2.f.3 , 1 call(s)
+NOTE: (BUILD_MACRO_CALLS)  BUILDING MACRO CALL 1
+NOTE: (BUILD_MACRO_CALLS) GENERATED MACRO CALL 1 %assert_var_nonmissing( test_miss_subset, num_val, whr=desc in ("special_1m", "non-missing"))
+NOTE: (BUILD_MACRO_CALLS) <
+NOTE: (BUILD_MACRO_CALLS) > 2.f.4 , 1 call(s)
+NOTE: (BUILD_MACRO_CALLS)  BUILDING MACRO CALL 1
+NOTE: (BUILD_MACRO_CALLS) GENERATED MACRO CALL 1 %assert_var_nonmissing( test_miss_subset, num_val, whr=desc contains "missing" or desc contains "special_")
+NOTE: (BUILD_MACRO_CALLS) <
+NOTE: (BUILD_MACRO_CALLS) > 2.f.5 , 1 call(s)
+NOTE: (BUILD_MACRO_CALLS)  BUILDING MACRO CALL 1
+NOTE: (BUILD_MACRO_CALLS) GENERATED MACRO CALL 1 %assert_var_nonmissing( test_miss_subset, chr_val, whr=desc in ("missing_1.", "non-missing"))
+NOTE: (BUILD_MACRO_CALLS) <
+NOTE: There were 27 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 27 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.09 seconds
+      cpu time            0.09 seconds
+
+
+
+NOTE: There were 1 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD8096_RBAMW049235_\#LN00035,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=27Jan2016:14:03:21,
+      Create Time=27Jan2016:14:03:21
+
+ERROR: (ASSERT_DSET_EXIST) Result is FAIL. Please specify a data set name.
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 27 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 27 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.04 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD8096_RBAMW049235_\#LN00035,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=27Jan2016:14:03:21,
+      Create Time=27Jan2016:14:03:21
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set SASHELP.HEART is accessible.
+ERROR: (ASSERT_VAR_NONMISSING) Please specify a variable on data set SASHELP.HEART.
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 27 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 27 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD8096_RBAMW049235_\#LN00035,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=27Jan2016:14:03:21,
+      Create Time=27Jan2016:14:03:21
+
+ERROR: (ASSERT_DSET_EXIST) Result is FAIL. Please specify a data set name.
+ERROR: (ASSERT_VAR_NONMISSING) Please specify a variable on data set .
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 27 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 27 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD8096_RBAMW049235_\#LN00035,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=27Jan2016:14:03:21,
+      Create Time=27Jan2016:14:03:21
+
+ERROR: (ASSERT_DSET_EXIST) Result is FAIL. Data set SASHELP.HEARTS is NOT accessible. Try another data set.
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 27 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 27 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD8096_RBAMW049235_\#LN00035,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=27Jan2016:14:03:21,
+      Create Time=27Jan2016:14:03:21
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set SASHELP.HEART is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set SASHELP.HEART is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set SASHELP.HEART, try closing data set ID 1
+ERROR: (ASSERT_VAR_EXIST) Result is FAIL. "WEIGHTS" is NOT a variable on data set SASHELP.HEART.
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 27 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 27 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD8096_RBAMW049235_\#LN00035,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=27Jan2016:14:03:21,
+      Create Time=27Jan2016:14:03:21
+
+ERROR: (ASSERT_DSET_EXIST) Result is FAIL. Data set SASHELP.HEARTS is NOT accessible. Try another data set.
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 27 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 27 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.04 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD8096_RBAMW049235_\#LN00035,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=27Jan2016:14:03:21,
+      Create Time=27Jan2016:14:03:21
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set SASHELP.HEART is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set SASHELP.HEART is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set SASHELP.HEART, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. CHOLESTEROL is a variable on data set SASHELP.HEART.
+ERROR: (ASSERT_VAR_NONMISSING) Data set SASHELP.HEART is not accessible. Abort check for variable CHOLESTEROL.
+ERROR: (ASSERT_VAR_NONMISSING) Review your where clause carefully. Test the compound clause: where=(missing(cholesterol) and (weights > 150))
+ERROR: (ASSERT_VAR_NONMISSING) SYSMSG is: ERROR: Variable weights is not on file SASHELP.HEART.
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 27 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 27 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.04 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD8096_RBAMW049235_\#LN00035,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=27Jan2016:14:03:21,
+      Create Time=27Jan2016:14:03:21
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set SASHELP.HEART is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set SASHELP.HEART is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set SASHELP.HEART, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. CHOLESTEROL is a variable on data set SASHELP.HEART.
+ERROR: (ASSERT_VAR_NONMISSING) Data set SASHELP.HEART is not accessible. Abort check for variable CHOLESTEROL.
+ERROR: (ASSERT_VAR_NONMISSING) Review your where clause carefully. Test the compound clause: where=(missing(cholesterol) and (weight in ('A' 'B')))
+ERROR: (ASSERT_VAR_NONMISSING) SYSMSG is: ERROR: WHERE clause operator requires compatible variables.
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 27 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 27 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.06 seconds
+      cpu time            0.06 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD8096_RBAMW049235_\#LN00035,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=27Jan2016:14:03:21,
+      Create Time=27Jan2016:14:03:21
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set SASHELP.HEART is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set SASHELP.HEART is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set SASHELP.HEART, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. CHOLESTEROL is a variable on data set SASHELP.HEART.
+ERROR: (ASSERT_VAR_NONMISSING) Data set SASHELP.HEART is not accessible. Abort check for variable CHOLESTEROL.
+ERROR: (ASSERT_VAR_NONMISSING) Review your where clause carefully. Test the compound clause: where=(missing(cholesterol) and (bp_status > 5))
+ERROR: (ASSERT_VAR_NONMISSING) SYSMSG is: ERROR: WHERE clause operator requires compatible variables.
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 27 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 27 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.06 seconds
+      cpu time            0.06 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD8096_RBAMW049235_\#LN00035,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=27Jan2016:14:03:22,
+      Create Time=27Jan2016:14:03:21
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set TEST_NONMISS is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set TEST_NONMISS is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set TEST_NONMISS, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. NUM_VAL is a variable on data set TEST_NONMISS.
+NOTE: (ASSERT_VAR_NONMISSING) If DMS process locks the data set TEST_NONMISS, try closing data set ID 1
+NOTE: (ASSERT_VAR_NONMISSING) Result is PASS. 0 Missing values for variable "NUM_VAL" on data set "TEST_NONMISS" (where=).
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 27 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 27 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.06 seconds
+      cpu time            0.06 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD8096_RBAMW049235_\#LN00035,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=27Jan2016:14:03:22,
+      Create Time=27Jan2016:14:03:21
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set TEST_1MISS is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set TEST_1MISS is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set TEST_1MISS, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. NUM_VAL is a variable on data set TEST_1MISS.
+NOTE: (ASSERT_VAR_NONMISSING) If DMS process locks the data set TEST_1MISS, try closing data set ID 1
+NOTE: (ASSERT_VAR_NONMISSING) Result is PASS. 0 Missing values for variable "NUM_VAL" on data set "TEST_1MISS" (where=).
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 27 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 27 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.04 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD8096_RBAMW049235_\#LN00035,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=27Jan2016:14:03:22,
+      Create Time=27Jan2016:14:03:21
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set TEST_NONMISS is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set TEST_NONMISS is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set TEST_NONMISS, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. CHR_VAL is a variable on data set TEST_NONMISS.
+NOTE: (ASSERT_VAR_NONMISSING) If DMS process locks the data set TEST_NONMISS, try closing data set ID 1
+NOTE: (ASSERT_VAR_NONMISSING) Result is PASS. 0 Missing values for variable "CHR_VAL" on data set "TEST_NONMISS" (where=).
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 27 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 27 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.04 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD8096_RBAMW049235_\#LN00035,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=27Jan2016:14:03:22,
+      Create Time=27Jan2016:14:03:21
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set TEST_1MISS is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set TEST_1MISS is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set TEST_1MISS, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. CHR_VAL is a variable on data set TEST_1MISS.
+NOTE: (ASSERT_VAR_NONMISSING) If DMS process locks the data set TEST_1MISS, try closing data set ID 1
+NOTE: (ASSERT_VAR_NONMISSING) Result is PASS. 0 Missing values for variable "CHR_VAL" on data set "TEST_1MISS" (where=).
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 27 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 27 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.04 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD8096_RBAMW049235_\#LN00035,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=27Jan2016:14:03:22,
+      Create Time=27Jan2016:14:03:21
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set TEST_1MISS is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set TEST_1MISS is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set TEST_1MISS, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. D1_NUM_VAL is a variable on data set TEST_1MISS.
+NOTE: (ASSERT_VAR_NONMISSING) If DMS process locks the data set TEST_1MISS, try closing data set ID 1
+WARNING: (ASSERT_VAR_NONMISSING) Result is FAIL. 1 Missing values for variable "D1_NUM_VAL" on data set "TEST_1MISS" (where=).
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 27 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 27 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.06 seconds
+      cpu time            0.04 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD8096_RBAMW049235_\#LN00035,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=27Jan2016:14:03:22,
+      Create Time=27Jan2016:14:03:21
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set TEST_1MISS is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set TEST_1MISS is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set TEST_1MISS, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. U1_NUM_VAL is a variable on data set TEST_1MISS.
+NOTE: (ASSERT_VAR_NONMISSING) If DMS process locks the data set TEST_1MISS, try closing data set ID 1
+WARNING: (ASSERT_VAR_NONMISSING) Result is FAIL. 1 Missing values for variable "U1_NUM_VAL" on data set "TEST_1MISS" (where=).
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 27 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 27 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.05 seconds
+      cpu time            0.06 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD8096_RBAMW049235_\#LN00035,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=27Jan2016:14:03:22,
+      Create Time=27Jan2016:14:03:21
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set TEST_1MISS is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set TEST_1MISS is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set TEST_1MISS, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. M1_NUM_VAL is a variable on data set TEST_1MISS.
+NOTE: (ASSERT_VAR_NONMISSING) If DMS process locks the data set TEST_1MISS, try closing data set ID 1
+WARNING: (ASSERT_VAR_NONMISSING) Result is FAIL. 1 Missing values for variable "M1_NUM_VAL" on data set "TEST_1MISS" (where=).
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 27 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 27 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.04 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD8096_RBAMW049235_\#LN00035,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=27Jan2016:14:03:22,
+      Create Time=27Jan2016:14:03:21
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set TEST_NONMISS is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set TEST_NONMISS is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set TEST_NONMISS, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. M_NUM_VAL is a variable on data set TEST_NONMISS.
+NOTE: (ASSERT_VAR_NONMISSING) If DMS process locks the data set TEST_NONMISS, try closing data set ID 1
+WARNING: (ASSERT_VAR_NONMISSING) Result is FAIL. 12 Missing values for variable "M_NUM_VAL" on data set "TEST_NONMISS" (where=).
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 27 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 27 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD8096_RBAMW049235_\#LN00035,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=27Jan2016:14:03:22,
+      Create Time=27Jan2016:14:03:21
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set TEST_NONMISS is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set TEST_NONMISS is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set TEST_NONMISS, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. S_NUM_VAL is a variable on data set TEST_NONMISS.
+NOTE: (ASSERT_VAR_NONMISSING) If DMS process locks the data set TEST_NONMISS, try closing data set ID 1
+WARNING: (ASSERT_VAR_NONMISSING) Result is FAIL. 12 Missing values for variable "S_NUM_VAL" on data set "TEST_NONMISS" (where=).
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 27 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 27 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.04 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD8096_RBAMW049235_\#LN00035,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=27Jan2016:14:03:22,
+      Create Time=27Jan2016:14:03:21
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set TEST_1MISS is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set TEST_1MISS is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set TEST_1MISS, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. CHR_VAL_D1 is a variable on data set TEST_1MISS.
+NOTE: (ASSERT_VAR_NONMISSING) If DMS process locks the data set TEST_1MISS, try closing data set ID 1
+WARNING: (ASSERT_VAR_NONMISSING) Result is FAIL. 1 Missing values for variable "CHR_VAL_D1" on data set "TEST_1MISS" (where=).
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 27 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 27 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.06 seconds
+      cpu time            0.06 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD8096_RBAMW049235_\#LN00035,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=27Jan2016:14:03:23,
+      Create Time=27Jan2016:14:03:21
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set TEST_NONMISS is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set TEST_NONMISS is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set TEST_NONMISS, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. CHR_VAL_M is a variable on data set TEST_NONMISS.
+NOTE: (ASSERT_VAR_NONMISSING) If DMS process locks the data set TEST_NONMISS, try closing data set ID 1
+WARNING: (ASSERT_VAR_NONMISSING) Result is FAIL. 12 Missing values for variable "CHR_VAL_M" on data set "TEST_NONMISS" (where=).
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 27 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 27 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.04 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD8096_RBAMW049235_\#LN00035,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=27Jan2016:14:03:23,
+      Create Time=27Jan2016:14:03:21
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set TEST_MISS_SUBSET is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set TEST_MISS_SUBSET is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set TEST_MISS_SUBSET, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. NUM_VAL is a variable on data set TEST_MISS_SUBSET.
+NOTE: (ASSERT_VAR_NONMISSING) If DMS process locks the data set TEST_MISS_SUBSET, try closing data set ID 1
+NOTE: (ASSERT_VAR_NONMISSING) Result is PASS. 0 Missing values for variable "NUM_VAL" on data set "TEST_MISS_SUBSET" (where=desc="non-missing").
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 27 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 27 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.04 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD8096_RBAMW049235_\#LN00035,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=27Jan2016:14:03:23,
+      Create Time=27Jan2016:14:03:21
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set TEST_MISS_SUBSET is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set TEST_MISS_SUBSET is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set TEST_MISS_SUBSET, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. CHR_VAL is a variable on data set TEST_MISS_SUBSET.
+NOTE: (ASSERT_VAR_NONMISSING) If DMS process locks the data set TEST_MISS_SUBSET, try closing data set ID 1
+NOTE: (ASSERT_VAR_NONMISSING) Result is PASS. 0 Missing values for variable "CHR_VAL" on data set "TEST_MISS_SUBSET" (where=desc="non-missing").
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 27 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 27 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD8096_RBAMW049235_\#LN00035,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=27Jan2016:14:03:23,
+      Create Time=27Jan2016:14:03:21
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set TEST_MISS_SUBSET is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set TEST_MISS_SUBSET is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set TEST_MISS_SUBSET, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. NUM_VAL is a variable on data set TEST_MISS_SUBSET.
+NOTE: (ASSERT_VAR_NONMISSING) If DMS process locks the data set TEST_MISS_SUBSET, try closing data set ID 1
+WARNING: (ASSERT_VAR_NONMISSING) Result is FAIL. 1 Missing values for variable "NUM_VAL" on data set "TEST_MISS_SUBSET" (where=desc in ("missing_1.", "non-missing")).
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 27 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 27 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.04 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD8096_RBAMW049235_\#LN00035,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=27Jan2016:14:03:23,
+      Create Time=27Jan2016:14:03:21
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set TEST_MISS_SUBSET is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set TEST_MISS_SUBSET is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set TEST_MISS_SUBSET, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. NUM_VAL is a variable on data set TEST_MISS_SUBSET.
+NOTE: (ASSERT_VAR_NONMISSING) If DMS process locks the data set TEST_MISS_SUBSET, try closing data set ID 1
+WARNING: (ASSERT_VAR_NONMISSING) Result is FAIL. 1 Missing values for variable "NUM_VAL" on data set "TEST_MISS_SUBSET" (where=desc in ("special_1_", "non-missing")).
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 27 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 27 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD8096_RBAMW049235_\#LN00035,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=27Jan2016:14:03:23,
+      Create Time=27Jan2016:14:03:21
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set TEST_MISS_SUBSET is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set TEST_MISS_SUBSET is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set TEST_MISS_SUBSET, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. NUM_VAL is a variable on data set TEST_MISS_SUBSET.
+NOTE: (ASSERT_VAR_NONMISSING) If DMS process locks the data set TEST_MISS_SUBSET, try closing data set ID 1
+WARNING: (ASSERT_VAR_NONMISSING) Result is FAIL. 1 Missing values for variable "NUM_VAL" on data set "TEST_MISS_SUBSET" (where=desc in ("special_1m", "non-missing")).
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 27 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 27 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.03 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD8096_RBAMW049235_\#LN00035,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=27Jan2016:14:03:23,
+      Create Time=27Jan2016:14:03:21
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set TEST_MISS_SUBSET is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set TEST_MISS_SUBSET is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set TEST_MISS_SUBSET, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. NUM_VAL is a variable on data set TEST_MISS_SUBSET.
+NOTE: (ASSERT_VAR_NONMISSING) If DMS process locks the data set TEST_MISS_SUBSET, try closing data set ID 1
+WARNING: (ASSERT_VAR_NONMISSING) Result is FAIL. 16 Missing values for variable "NUM_VAL" on data set "TEST_MISS_SUBSET" (where=desc contains "missing" or desc contains "special_").
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 27 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 27 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.04 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD8096_RBAMW049235_\#LN00035,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=27Jan2016:14:03:23,
+      Create Time=27Jan2016:14:03:21
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set TEST_MISS_SUBSET is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set TEST_MISS_SUBSET is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set TEST_MISS_SUBSET, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. CHR_VAL is a variable on data set TEST_MISS_SUBSET.
+NOTE: (ASSERT_VAR_NONMISSING) If DMS process locks the data set TEST_MISS_SUBSET, try closing data set ID 1
+WARNING: (ASSERT_VAR_NONMISSING) Result is FAIL. 1 Missing values for variable "CHR_VAL" on data set "TEST_MISS_SUBSET" (where=desc in ("missing_1.", "non-missing")).
+NOTE: 0 records were written to the file PFEXCODE.
+NOTE: There were 27 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 27 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: Non-portable document will be produced. The current settings of FORMCHAR use nonstandard line-drawing characters and the resulting output file will not render correctly unless all readers of the document have the SAS Monospace font installed. To
+      make your document portable, issue the following command:
+      OPTIONS FORMCHAR="|----|+|---+=|-/\<>*";
+
+NOTE: 34 lines were written to file PRINT.
+NOTE: There were 27 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 27 observations and 14 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.10 seconds
+      cpu time            0.09 seconds
+
+
+NOTE: Libref SAVEXML was successfully assigned as follows:
+      Engine:        XML
+      Physical Name: .\outputs_sas\testresults_assert_var_nonmissing.xml
+
+NOTE: SAS variable labels, formats, and lengths are not written to DBMS tables.
+NOTE: There were 27 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set SAVEXML.CSS_PASSFAIL has 27 observations and 14 variables.
+NOTE: DATA statement used (Total process time):
+      real time           3.88 seconds
+      cpu time            1.38 seconds
+
+
+NOTE: Libref SAVEXML has been deassigned.
+

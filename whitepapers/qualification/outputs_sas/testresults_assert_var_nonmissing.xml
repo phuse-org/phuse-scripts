@@ -1,0 +1,435 @@
+<?xml version="1.0" encoding="windows-1252" ?>
+<TABLE>
+   <CSS_PASSFAIL>
+      <test_mac> assert_var_nonmissing </test_mac>
+      <test_id> 1.a.1 </test_id>
+      <test_dsc> Missing require DS </test_dsc>
+      <Pparm_ds> _NULLPARM_ </Pparm_ds>
+      <Pparm_var> weight </Pparm_var>
+      <Kparm_whr missing=" " />
+      <test_expect> 0 </test_expect>
+      <test_result> 0 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_var_nonmissing(  , weight) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_var_nonmissing </test_mac>
+      <test_id> 1.a.2 </test_id>
+      <test_dsc> Missing required VAR </test_dsc>
+      <Pparm_ds> sashelp.heart </Pparm_ds>
+      <Pparm_var> _NULLPARM_ </Pparm_var>
+      <Kparm_whr missing=" " />
+      <test_expect> 0 </test_expect>
+      <test_result> 0 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_var_nonmissing( sashelp.heart,  ) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_var_nonmissing </test_mac>
+      <test_id> 1.a.3 </test_id>
+      <test_dsc> Missing required DS and VAR </test_dsc>
+      <Pparm_ds> _NULLPARM_ </Pparm_ds>
+      <Pparm_var> _NULLPARM_ </Pparm_var>
+      <Kparm_whr missing=" " />
+      <test_expect> 0 </test_expect>
+      <test_result> 0 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_var_nonmissing(  ,  ) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_var_nonmissing </test_mac>
+      <test_id> 1.b.1 </test_id>
+      <test_dsc> Invalid require DS </test_dsc>
+      <Pparm_ds> sashelp.hearts </Pparm_ds>
+      <Pparm_var> weight </Pparm_var>
+      <Kparm_whr missing=" " />
+      <test_expect> 0 </test_expect>
+      <test_result> 0 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_var_nonmissing( sashelp.hearts, weight) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_var_nonmissing </test_mac>
+      <test_id> 1.b.2 </test_id>
+      <test_dsc> Invalid required VAR </test_dsc>
+      <Pparm_ds> sashelp.heart </Pparm_ds>
+      <Pparm_var> weights </Pparm_var>
+      <Kparm_whr missing=" " />
+      <test_expect> 0 </test_expect>
+      <test_result> 0 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_var_nonmissing( sashelp.heart, weights) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_var_nonmissing </test_mac>
+      <test_id> 1.b.3 </test_id>
+      <test_dsc> Invalid required DS and VAR </test_dsc>
+      <Pparm_ds> sashelp.hearts </Pparm_ds>
+      <Pparm_var> weights </Pparm_var>
+      <Kparm_whr missing=" " />
+      <test_expect> 0 </test_expect>
+      <test_result> 0 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_var_nonmissing( sashelp.hearts, weights) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_var_nonmissing </test_mac>
+      <test_id> 1.c.1 </test_id>
+      <test_dsc> Invalid WHR, invalid var name </test_dsc>
+      <Pparm_ds> sashelp.heart </Pparm_ds>
+      <Pparm_var> cholesterol </Pparm_var>
+      <Kparm_whr> weights &gt; 150 </Kparm_whr>
+      <test_expect> 0 </test_expect>
+      <test_result> 0 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_var_nonmissing( sashelp.heart, cholesterol, whr=weights &gt; 150) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_var_nonmissing </test_mac>
+      <test_id> 1.c.2 </test_id>
+      <test_dsc> Invlaid WHR, type mismatch for NUM var </test_dsc>
+      <Pparm_ds> sashelp.heart </Pparm_ds>
+      <Pparm_var> cholesterol </Pparm_var>
+      <Kparm_whr> weight in (&apos;A&apos; &apos;B&apos;) </Kparm_whr>
+      <test_expect> 0 </test_expect>
+      <test_result> 0 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_var_nonmissing( sashelp.heart, cholesterol, whr=weight in (&apos;A&apos; &apos;B&apos;)) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_var_nonmissing </test_mac>
+      <test_id> 1.c.2 </test_id>
+      <test_dsc> Invlaid WHR, type mismatch for CHAR var </test_dsc>
+      <Pparm_ds> sashelp.heart </Pparm_ds>
+      <Pparm_var> cholesterol </Pparm_var>
+      <Kparm_whr> bp_status &gt; 5 </Kparm_whr>
+      <test_expect> 0 </test_expect>
+      <test_result> 0 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_var_nonmissing( sashelp.heart, cholesterol, whr=bp_status &gt; 5) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_var_nonmissing </test_mac>
+      <test_id> 2.a.1 </test_id>
+      <test_dsc> Non-missing NUM var, pref/suff vars ENTIRELY missings </test_dsc>
+      <Pparm_ds> test_nonmiss </Pparm_ds>
+      <Pparm_var> num_val </Pparm_var>
+      <Kparm_whr missing=" " />
+      <test_expect> 1 </test_expect>
+      <test_result> 1 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_var_nonmissing( test_nonmiss, num_val) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_var_nonmissing </test_mac>
+      <test_id> 2.a.2 </test_id>
+      <test_dsc> Non-missing NUM var, pref/suff vars EXACTLY 1 missing </test_dsc>
+      <Pparm_ds> test_1miss </Pparm_ds>
+      <Pparm_var> num_val </Pparm_var>
+      <Kparm_whr missing=" " />
+      <test_expect> 1 </test_expect>
+      <test_result> 1 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_var_nonmissing( test_1miss, num_val) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_var_nonmissing </test_mac>
+      <test_id> 2.b.1 </test_id>
+      <test_dsc> Non-missing CHAR var, pref/suff vars ENTIRELY missings </test_dsc>
+      <Pparm_ds> test_nonmiss </Pparm_ds>
+      <Pparm_var> chr_val </Pparm_var>
+      <Kparm_whr missing=" " />
+      <test_expect> 1 </test_expect>
+      <test_result> 1 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_var_nonmissing( test_nonmiss, chr_val) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_var_nonmissing </test_mac>
+      <test_id> 2.b.2 </test_id>
+      <test_dsc> Non-missing CHAR var, pref/suff vars EXACTLY 1 missing </test_dsc>
+      <Pparm_ds> test_1miss </Pparm_ds>
+      <Pparm_var> chr_val </Pparm_var>
+      <Kparm_whr missing=" " />
+      <test_expect> 1 </test_expect>
+      <test_result> 1 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_var_nonmissing( test_1miss, chr_val) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_var_nonmissing </test_mac>
+      <test_id> 2.c.1 </test_id>
+      <test_dsc> NUM var has EXACTLY 1 missing value . </test_dsc>
+      <Pparm_ds> test_1miss </Pparm_ds>
+      <Pparm_var> d1_num_val </Pparm_var>
+      <Kparm_whr missing=" " />
+      <test_expect> 0 </test_expect>
+      <test_result> 0 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_var_nonmissing( test_1miss, d1_num_val) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_var_nonmissing </test_mac>
+      <test_id> 2.c.2 </test_id>
+      <test_dsc> NUM var has EXACTLY 1 missing value ._ </test_dsc>
+      <Pparm_ds> test_1miss </Pparm_ds>
+      <Pparm_var> u1_num_val </Pparm_var>
+      <Kparm_whr missing=" " />
+      <test_expect> 0 </test_expect>
+      <test_result> 0 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_var_nonmissing( test_1miss, u1_num_val) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_var_nonmissing </test_mac>
+      <test_id> 2.c.3 </test_id>
+      <test_dsc> NUM var has EXACTLY 1 missing value .m </test_dsc>
+      <Pparm_ds> test_1miss </Pparm_ds>
+      <Pparm_var> m1_num_val </Pparm_var>
+      <Kparm_whr missing=" " />
+      <test_expect> 0 </test_expect>
+      <test_result> 0 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_var_nonmissing( test_1miss, m1_num_val) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_var_nonmissing </test_mac>
+      <test_id> 2.c.4 </test_id>
+      <test_dsc> NUM var has ENTIRELY missing values . </test_dsc>
+      <Pparm_ds> test_nonmiss </Pparm_ds>
+      <Pparm_var> m_num_val </Pparm_var>
+      <Kparm_whr missing=" " />
+      <test_expect> 0 </test_expect>
+      <test_result> 0 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_var_nonmissing( test_nonmiss, m_num_val) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_var_nonmissing </test_mac>
+      <test_id> 2.c.5 </test_id>
+      <test_dsc> NUM var has ENTIRELY special missings (., ._, .m) </test_dsc>
+      <Pparm_ds> test_nonmiss </Pparm_ds>
+      <Pparm_var> s_num_val </Pparm_var>
+      <Kparm_whr missing=" " />
+      <test_expect> 0 </test_expect>
+      <test_result> 0 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_var_nonmissing( test_nonmiss, s_num_val) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_var_nonmissing </test_mac>
+      <test_id> 2.d.1 </test_id>
+      <test_dsc> CHAR var has EXACTLY 1 missing value </test_dsc>
+      <Pparm_ds> test_1miss </Pparm_ds>
+      <Pparm_var> chr_val_d1 </Pparm_var>
+      <Kparm_whr missing=" " />
+      <test_expect> 0 </test_expect>
+      <test_result> 0 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_var_nonmissing( test_1miss, chr_val_d1) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_var_nonmissing </test_mac>
+      <test_id> 2.d.2 </test_id>
+      <test_dsc> CHAR var has ENTIRELY missing values </test_dsc>
+      <Pparm_ds> test_nonmiss </Pparm_ds>
+      <Pparm_var> chr_val_m </Pparm_var>
+      <Kparm_whr missing=" " />
+      <test_expect> 0 </test_expect>
+      <test_result> 0 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_var_nonmissing( test_nonmiss, chr_val_m) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_var_nonmissing </test_mac>
+      <test_id> 2.e.1 </test_id>
+      <test_dsc> WHR clause leaves NON-MISSING NUM values </test_dsc>
+      <Pparm_ds> test_miss_subset </Pparm_ds>
+      <Pparm_var> num_val </Pparm_var>
+      <Kparm_whr> desc=&quot;non-missing&quot; </Kparm_whr>
+      <test_expect> 1 </test_expect>
+      <test_result> 1 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_var_nonmissing( test_miss_subset, num_val, whr=desc=&quot;non-missing&quot;) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_var_nonmissing </test_mac>
+      <test_id> 2.e.2 </test_id>
+      <test_dsc> WHR clause leaves NON-MISSING CHAR values </test_dsc>
+      <Pparm_ds> test_miss_subset </Pparm_ds>
+      <Pparm_var> chr_val </Pparm_var>
+      <Kparm_whr> desc=&quot;non-missing&quot; </Kparm_whr>
+      <test_expect> 1 </test_expect>
+      <test_result> 1 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_var_nonmissing( test_miss_subset, chr_val, whr=desc=&quot;non-missing&quot;) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_var_nonmissing </test_mac>
+      <test_id> 2.f.1 </test_id>
+      <test_dsc> WHR clause leaves EXACTLY 1 NUM missing </test_dsc>
+      <Pparm_ds> test_miss_subset </Pparm_ds>
+      <Pparm_var> num_val </Pparm_var>
+      <Kparm_whr> desc in (&quot;missing_1.&quot;, &quot;non-missing&quot;) </Kparm_whr>
+      <test_expect> 0 </test_expect>
+      <test_result> 0 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_var_nonmissing( test_miss_subset, num_val, whr=desc in (&quot;missing_1.&quot;, &quot;non-missing&quot;)) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_var_nonmissing </test_mac>
+      <test_id> 2.f.2 </test_id>
+      <test_dsc> WHR clause leaves EXACTLY 1 NUM special ._ </test_dsc>
+      <Pparm_ds> test_miss_subset </Pparm_ds>
+      <Pparm_var> num_val </Pparm_var>
+      <Kparm_whr> desc in (&quot;special_1_&quot;, &quot;non-missing&quot;) </Kparm_whr>
+      <test_expect> 0 </test_expect>
+      <test_result> 0 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_var_nonmissing( test_miss_subset, num_val, whr=desc in (&quot;special_1_&quot;, &quot;non-missing&quot;)) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_var_nonmissing </test_mac>
+      <test_id> 2.f.3 </test_id>
+      <test_dsc> WHR clause leaves EXACTLY 1 NUM special .m </test_dsc>
+      <Pparm_ds> test_miss_subset </Pparm_ds>
+      <Pparm_var> num_val </Pparm_var>
+      <Kparm_whr> desc in (&quot;special_1m&quot;, &quot;non-missing&quot;) </Kparm_whr>
+      <test_expect> 0 </test_expect>
+      <test_result> 0 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_var_nonmissing( test_miss_subset, num_val, whr=desc in (&quot;special_1m&quot;, &quot;non-missing&quot;)) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_var_nonmissing </test_mac>
+      <test_id> 2.f.4 </test_id>
+      <test_dsc> WHR clause leaves MIX of NUM missing vals </test_dsc>
+      <Pparm_ds> test_miss_subset </Pparm_ds>
+      <Pparm_var> num_val </Pparm_var>
+      <Kparm_whr> desc contains &quot;missing&quot; or desc contains &quot;special_&quot; </Kparm_whr>
+      <test_expect> 0 </test_expect>
+      <test_result> 0 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_var_nonmissing( test_miss_subset, num_val, whr=desc contains &quot;missing&quot; or desc contains &quot;special_&quot;) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+   <CSS_PASSFAIL>
+      <test_mac> assert_var_nonmissing </test_mac>
+      <test_id> 2.f.5 </test_id>
+      <test_dsc> WHR clause leaves EXACTLY 1 CHAR missing </test_dsc>
+      <Pparm_ds> test_miss_subset </Pparm_ds>
+      <Pparm_var> chr_val </Pparm_var>
+      <Kparm_whr> desc in (&quot;missing_1.&quot;, &quot;non-missing&quot;) </Kparm_whr>
+      <test_expect> 0 </test_expect>
+      <test_result> 0 </test_result>
+      <test_pdlim> | </test_pdlim>
+      <test_calls> 1 </test_calls>
+      <macro_call_1> %assert_var_nonmissing( test_miss_subset, chr_val, whr=desc in (&quot;missing_1.&quot;, &quot;non-missing&quot;)) </macro_call_1>
+      <test_type> S </test_type>
+      <test_post missing=" " />
+      <result> PASS </result>
+   </CSS_PASSFAIL>
+</TABLE>

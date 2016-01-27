@@ -1,0 +1,35 @@
+                                                                                                                                                                                                                           14:00 Wednesday, January 27, 2016   1
+
+### -----
+###
+### ASSERT_VAR_NONMISSING Overall: ALL TESTS PASSED - 27
+###
+### -----
+
+   001   1.a.1          Missing require DS
+   002   1.a.2          Missing required VAR
+   003   1.a.3          Missing required DS and VAR
+   004   1.b.1          Invalid require DS
+   005   1.b.2          Invalid required VAR
+   006   1.b.3          Invalid required DS and VAR
+   007   1.c.1          Invalid WHR, invalid var name
+   008   1.c.2          Invlaid WHR, type mismatch for NUM var
+   009   1.c.2          Invlaid WHR, type mismatch for CHAR var
+   010   2.a.1          Non-missing NUM var, pref/suff vars ENTIRELY missings
+   011   2.a.2          Non-missing NUM var, pref/suff vars EXACTLY 1 missing
+   012   2.b.1          Non-missing CHAR var, pref/suff vars ENTIRELY missings
+   013   2.b.2          Non-missing CHAR var, pref/suff vars EXACTLY 1 missing
+   014   2.c.1          NUM var has EXACTLY 1 missing value .
+   015   2.c.2          NUM var has EXACTLY 1 missing value ._
+   016   2.c.3          NUM var has EXACTLY 1 missing value .m
+   017   2.c.4          NUM var has ENTIRELY missing values .
+   018   2.c.5          NUM var has ENTIRELY special missings (., ._, .m)
+   019   2.d.1          CHAR var has EXACTLY 1 missing value
+   020   2.d.2          CHAR var has ENTIRELY missing values
+   021   2.e.1          WHR clause leaves NON-MISSING NUM values
+   022   2.e.2          WHR clause leaves NON-MISSING CHAR values
+   023   2.f.1          WHR clause leaves EXACTLY 1 NUM missing
+   024   2.f.2          WHR clause leaves EXACTLY 1 NUM special ._
+   025   2.f.3          WHR clause leaves EXACTLY 1 NUM special .m
+   026   2.f.4          WHR clause leaves MIX of NUM missing vals
+   027   2.f.5          WHR clause leaves EXACTLY 1 CHAR missing
