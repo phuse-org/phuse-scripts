@@ -6,13 +6,13 @@
 
 #### [White Papers (Project 08)](http://www.phusewiki.org/wiki/index.php?title=WG5_Project_08)
 
-##### Open for Review - White papers that welcome comments and suggestions:
+##### Ongoing development & review - White papers that welcome comments and suggestions:
 
 1. Hepatotoxicity: Clinical Trials and Integrated Summaries [see this paper's phusewiki page](http://www.phusewiki.org/wiki/index.php?title=SS_P08_Hepatotoxicity_White_Paper)
 2. Adverse Events: Clinical Trials and Integrated Summaries [see this paper's phusewiki page](http://www.phusewiki.org/wiki/index.php?title=SS_P08_Adverse_Events_White_Paper)
 3. QT Studies [see this paper's phusewiki page](http://www.phusewiki.org/wiki/index.php?title=SS_P08_QT_Studies_White_Paper)
 
-##### Under Development - White papers that need further contribution and authoring:
+##### Initial planning - White papers that need further contribution and authoring:
 
 1. Questionnaire Data [see this paper's phusewiki page](http://www.phusewiki.org/wiki/index.php?title=SS_P08_Questionnaire_White_Paper)
 2. Events of Special Interest [see this paper's phusewiki page](http://www.phusewiki.org/wiki/index.php?title=SS_P08_Events_of_Special_Interest_White_Paper)
