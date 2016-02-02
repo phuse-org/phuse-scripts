@@ -2,6 +2,9 @@ KeyWords: PK, Dual Box
 Script: 
   Desc   : Script description
   Name   : Script name following the proposed convention: https://github.com/phuse-org/phuse-scripts/blob/master/naming_conventions_proposed.txt
+  GCR    : r135
+  SRV    : Contributed
+  Source : White paper Demographics
   Target : a link to the target or whitepaper
   Title  : YML meta data page example
   Topic  : Metadata example
