@@ -18,6 +18,8 @@ We maintain to-do lists in project directories:
 * [Working Group 5 to-do list](https://github.com/phuse-org/phuse-scripts)
 * [WPCT to-do list](https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/WPCT/TODO.md)
 
+Review the [Script Basics and Programming Conventions](#wpct-package-scripts-conventions), below.
+
 ##### SAS and R versions
 
 * Standard SAS scripts use functionality in **SAS 9.4 M02** or later, utilizing ODS and GTL.<br/>(For users limited to **SAS 9.2**, we provide a SAS 9.2 boxplot approach in the script [WPCT-F.07.01-sas92-QCshewhart.sas](https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/WPCT/WPCT-F.07.01-sas92-QCshewhart.sas))
