@@ -35,6 +35,11 @@ Authors:
   - name   : Jim Boo
     email  : jim.boo@phuse.com
     company: PhUSE
+Qualification: 
+  LastQualDate: MM/DD/YYYY 
+  LastQualBy: FirstName LastName
+  Stage: T
+  Note: C - Contributed; D - Development; T - Testing; Q - Qualified
 Stages: 
   - Date: mm/dd/yyyy
     Name: Jon1 Doo
@@ -42,10 +47,3 @@ Stages:
   - Date: mm/dd/yyyy
     Name: Jon2 Doo
     Stage: D 	
-Qualification: 
-  LastQualDate: MM/DD/YYYY 
-  LastQualBy: FirstName LastName
-  Stage: T
-  Note: C - Contributed; D - Development; T - Testing; Q - Qualified
-
-  

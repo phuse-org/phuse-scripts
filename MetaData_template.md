@@ -46,13 +46,20 @@
 |  LastQualBy: | The name of the person who conducted the qualification; the name format is FirstName LastName |
 |  Stage: | The stage of the qualification such as D
 |  Note: | The description about the qualification such as C - Contributed; D - Development; T - Testing; Q - Qualified |
+|**Stages**: | The historical stages for the script. | 
+|  - Date: | Date the 1st stage of the script in the format of mm/dd/yyyy |
+|    Name: | Name of the person who reviewed and set the stage. | 
+|    Stage: | The 1st Stage of the script at that time. | 
+|  - Date: | Date of the 2nd stage of the script in the format of mm/dd/yyyy | 
+|    Name: | Name of the person who reviewed and set the stage. | 
+|    Stage: | The 2nd stage of the script at that time. |  	
 
 # Simple Index Table
 | Column Name | Explaination | 
 |:--- |:--- |
-| Script | Script file name linked (**Script:URL**) to the script source code with **Script:Title** as popup message |
+| Script | Script file name linked (**Script:URL**) to the script source code with **Script:Title** (**Language:name** [**Language:version**] **Script:GCR** and **Script:SRV**) as popup message |
 | Target | **Script:Source** linked to the **Script:Target** with **Script:Desc** and **Keywords** as popup message |  
-| Stage | **Qualification:Stage** linked to the metadata file with **Language:name** (**Language:version**) **Script:GCR** and **Script:SRV** as popup message |
+| Stage | **Qualification:Stage** linked to the metadata file with **Qualification**, **Author** and **Stages** as popup message |
 
 # Standard Script Index Table
 | Column Name | Explaination |
