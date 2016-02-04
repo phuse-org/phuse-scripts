@@ -13,7 +13,7 @@ Script:
   Title  : MedDRA at a Glance Script Package
   Type   : table
   Subtype  : None
-  Target : 
+  Target : https://github.com/phuse-org/phuse-scripts/tree/master/contributed/MedDRA/MedDRA_at_a_Glance
 Language: 
   name   : SAS
   version: 9.2

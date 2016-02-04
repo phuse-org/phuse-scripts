@@ -13,7 +13,7 @@ Script:
   Title  : AE Analysis Panel
   Type   : table
   Subtype  : AE
-  Target : 
+  Target : https://github.com/phuse-org/phuse-scripts/tree/master/contributed/AE
 Language: 
   name   : SAS
   version: 9.2
