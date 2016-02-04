@@ -6,6 +6,13 @@
               REQUIRED
               Syntax:  template-name
               Example: PhUSEboxplot
+    DESIGNWIDTH &
+    DESIGNHEIGHT: GTL templates do not support default values, or conditional BEGINGRAPH statements.
+                  So use SAS Macro logic to control width & height of resulting GTL graphic. See discussion:
+                  https://communities.sas.com/t5/SAS-GRAPH-and-ODS-Graphics/default-values-for-DYNAMIC-variables/m-p/246946
+
+                  For details on these BEGINGRAPH options:
+                  http://support.sas.com/documentation/cdl/en/grstatgraph/67882/HTML/default/n0j696v6yqkb79n12zed3am3omcx.htm
 
   -OUTPUT:
     <string> return IN-LINE to be used in an AXIS ORDER=(<string>) statement.
@@ -29,7 +36,7 @@
   Author:          Dante Di Tommaso
 ***/
 
-%macro util_proc_template(template);
+%macro util_proc_template(template, designwidth=260mm, designheight=170mm);
 
   *--- Set marker size relative to IQR outlier: MEAN symbol is +1, Normal Range outlier is -1 ---*;
   *--- Box width, Box plot cluster width and Scatter cluster width should all match ---*;
@@ -42,16 +49,15 @@
     proc template;
       define statgraph PhUSEboxplot;
 
-        dynamic _TRT _AVISIT _AVISITN _AVAL _AVALOUTLIE
+        dynamic _DESIGN_WIDTH _DESIGN_HEIGHT
+                _TRT _AVISIT _AVISITN _AVAL _AVALOUTLIE
                 _YLABEL _YMIN _YMAX _YINCR 
                 _REFLINES
                 _N _MEAN _STD _DATAMIN _Q1 _MEDIAN _Q3 _DATAMAX _PVAL
                 ;
 
-        *--- Design dimensions are suitable for landscape A4 and Letter ---*;
-        begingraph / attrpriority=none border=false pad=0
-                     dataskin=none
-                     designwidth=260mm designheight=170mm
+        begingraph / attrpriority=none border=false pad=0 dataskin=none
+                     designwidth=&designwidth designheight=&designheight
                      ;
 
           *--- Define extra legend items for Outlier markers. Define these OUTSIDE the layout block ---*;

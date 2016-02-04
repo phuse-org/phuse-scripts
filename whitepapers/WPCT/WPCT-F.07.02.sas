@@ -95,11 +95,11 @@ end HEADER ***/
     ***/
 
 
-    /*** 2a) ACCESS data, by default PhUSE/CSS test data, and create WORK copy.                ***/
+    /*** 2a) REMOTE ACCESS to data, by default PhUSE/CSS test data, and create WORK copy.                ***/
     /***     NB: If remote access to test data files does not work, see local override, below. ***/
       %util_access_test_data(advs)
 
-      *--- NB: OFFLINE CSS/PhUSE test data, override remote access by providing a local path ---*;
+      *--- NB: LOCAL CSS/PhUSE test data, override remote access by providing a local path ---*;
         %* %util_access_test_data(advs, local=C:\CSS\phuse-scripts\data\adam\cdisc\) ;
 
 
@@ -168,7 +168,7 @@ end HEADER ***/
                                      macros=assert_continue util_labels_from_var util_count_unique_values 
                                             util_proc_template util_get_var_min_max util_value_format
                                             util_boxplot_visit_ranges util_axis_order util_delete_dsets,
-                                     symbols=c_lb c_ds c_var b_visn e_visn p_fl a_fl 
+                                     symbols=c_lb c_ds c_var b_var ref_trtn b_visn e_visn p_fl a_fl
                                              max_boxes_per_page outputs_folder
                                     );
 
@@ -209,11 +209,11 @@ end HEADER ***/
     %*--- Parameters: Number (&PARAMCD_N), Names (&PARAMCD_VAL1 ...) and Labels (&PARAMCD_LAB1 ...) ---*;
       %util_labels_from_var(css_anadata, paramcd, param)
 
-    %*--- Baseline visit: Number (&B_VISN_N), Names (&B_VISN_VAL1 ...) and Labels (&B_VISN_LAB1 ...) ---*;
-      %util_labels_from_var(&c_lb..&c_ds, avisitn, avisit, prefix=b_visn, whr=%str(where avisitn eq &b_visn;))
+    %*--- Baseline visit: Number (&B_VISN_N), Names (&B_VISN_VAL1) and Labels (&B_VISN_LAB1) ---*;
+      %util_labels_from_var(&c_lb..&c_ds, avisitn, avisit, prefix=b_visn, whr=avisitn eq &b_visn)
 
-    %*--- Endpoint visit: Number (&E_VISN_N), Names (&E_VISN_VAL1 ...) and Labels (&E_VISN_LAB1 ...) ---*;
-      %util_labels_from_var(css_anadata, avisitn, avisit, prefix=e_visn, whr=%str(where avisitn eq &e_visn;))
+    %*--- Endpoint visit: Number (&E_VISN_N), Names (&E_VISN_VAL1) and Labels (&E_VISN_LAB1) ---*;
+      %util_labels_from_var(css_anadata, avisitn, avisit, prefix=e_visn, whr=avisitn eq &e_visn)
 
     %*--- Number of planned treatments: Set &TRTN from ana variable TRTP ---*;
       %util_count_unique_values(css_anadata, trtp, trtn)
@@ -249,7 +249,7 @@ end HEADER ***/
           %util_labels_from_var(css_nextparam, atptn, atpt)
 
         %*--- Y-AXIS alternative: Fix Y-Axis MIN/MAX based on all timepoints for PARAM. See Y-AXIS DEFAULT, below. ---*;
-        %*   %util_get_var_min_max(css_nextparam, &c_var, aval_min_max)   *;
+        %*   %util_get_var_min_max(css_nextparam, &c_var, chg_min_max)   *;
 
 
         %do tdx = 1 %to &atptn_n;
@@ -264,7 +264,7 @@ end HEADER ***/
             run;
 
           %*--- Y-AXIS DEFAULT: Set Y-Axis MIN/MAX based on this timepoint. See Y-AXIS alternative, above. ---*;
-            %util_get_var_min_max(css_nexttimept, &c_var, aval_min_max)
+            %util_get_var_min_max(css_nexttimept, &c_var, chg_min_max)
 
           %*--- Number of visits for this parameter and analysis timepoint: &VISN ---*;
             %util_count_unique_values(css_nexttimept, avisitn, visn)
@@ -357,12 +357,12 @@ end HEADER ***/
             ods graphics on / reset=all;
             ods graphics    / border=no attrpriority=COLOR;
 
-            title     justify=left height=1.2 "Box Plot - &&paramcd_lab&pdx Change from Baseline by Visit, Analysis Timepoint: &&atptn_lab&tdx";
+            title     justify=left height=1.2 "Box Plot - &&paramcd_lab&pdx Change from %upcase(&B_VISN_LAB1) to %upcase(&E_VISN_LAB1) by Visit, Analysis Timepoint: &&atptn_lab&tdx";
             footnote1 justify=left height=1.0 'Box plot type is schematic: the box shows median and interquartile range (IQR, the box edges); the whiskers extend to the minimum';
             footnote2 justify=left height=1.0 'and maximum data points within 1.5 IQR below 25% and above 75%, respectively. Values outside the whiskers are shown as outliers.';
             footnote3 justify=left height=1.0 'Means are marked with a different symbol for each treatment. P-value is for the treatment comparison from ANCOVA model Change = Baseline + Treatment.';
 
-            %let y_axis = %util_axis_order( %scan(&aval_min_max,1,%str( )), %scan(&aval_min_max,2,%str( )) );
+            %let y_axis = %util_axis_order( %scan(&chg_min_max,1,%str( )), %scan(&chg_min_max,2,%str( )) );
 
           *--- ODS PDF destination (Traditional Graphics, No ODS or Listing output) ---*;
             ods listing close;
@@ -402,7 +402,11 @@ end HEADER ***/
                         _MEDIAN     = 'median'
                         _Q3         = 'q3'
                         _DATAMAX    = 'datamax'
-                        _PVAL       = 'pval'
+
+                        %if %length(&b_var) > 0 and %length(&ref_trtn) > 0 %then %do;
+                          _PVAL       = 'pval'
+                        %end;
+
                         ;
               run;
 

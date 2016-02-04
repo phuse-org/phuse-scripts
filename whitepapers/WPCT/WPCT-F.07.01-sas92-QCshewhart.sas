@@ -109,11 +109,11 @@ end HEADER ***/
     ***/
 
 
-    /*** 2a) ACCESS data, by default PhUSE/CSS test data, and create WORK copy.                ***/
+    /*** 2a) REMOTE ACCESS data, by default PhUSE/CSS test data, and create WORK copy.                ***/
     /***     NB: If remote access to test data files does not work, see local override, below. ***/
       %util_access_test_data(advs)
 
-      *--- NB: OFFLINE CSS/PhUSE test data, override remote access by providing a local path ---*;
+      *--- NB: LOCAL CSS/PhUSE test data, override remote access by providing a local path ---*;
         %* %util_access_test_data(advs, local=C:\CSS\phuse-scripts\data\adam\cdisc\) ;
 
 

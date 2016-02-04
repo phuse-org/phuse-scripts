@@ -21,10 +21,11 @@
             optional
             Syntax:  prefix text, LETTERS ONLY
             Example: PARAMUNIT
-  WHR     Complete where statement, quoted as necessary, to to subset DS data
+  WHR     Valid WHERE clause to subset DS data
             optional                                                                         
-            Syntax:  %str(where where-expression;)
-            Example: %str(where studyid = 'STUDY01';)
+            Syntax:   where-expression
+            Examples: studyid = 'STUDY01'
+                      avisitn eq 99
 
   -OUTPUT                                                                                  
     &VAR._N    a global symbol containing the number of distinct values in VAR (and typically LAB)
@@ -53,6 +54,8 @@
 
   %if &OK %then %do;
 
+    %if %length(&whr) > 0 %then %let whr = where &whr;
+
     %util_count_unique_values(&ds, &var, &prefix._n, sqlwhr=&whr)
 
     *--- Create paired sequences of symbols containing values and labels ---*;
@@ -63,7 +66,7 @@
       proc sort data=&ds
                 out=css_lfv nodupkey;
         by &var &lab;
-        &whr
+        &whr ;
       run;
 
       data _null_;

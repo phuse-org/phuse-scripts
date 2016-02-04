@@ -11,6 +11,10 @@
 
     Using this program:
 
+      * Figure 7.3 combines analyses from Figures 7.1 and 7.2 as side-by-side graphics.
+        The approach follows SAS Note "Sample 41461: Put multiple PROC SGPLOT outputs on the same PDF page using PROC GREPLAY"
+        http://support.sas.com/kb/41/461.html
+
       * See USER PROCESSING AND SETTINGS, below, to configure this program for your environment and data
       * Program will plot all visits, ordered by AVISITN, with maximum of 20 boxes on a page (default)
         + see user option MAX_BOXES_PER_PAGE, below, to change limit of 20 boxes per page
@@ -62,10 +66,22 @@ end HEADER ***/
        M_DS:   Measuments data set, such as ADVS.
 
        M_VAR:  Variable in M_DS with measurements data, such as AVAL.
+       C_VAR:  Variable in M_DS with change-from-baseline data, such as CHG.
+
        LO_VAR: Variable in M_DS with LOWER LIMIT of reference range, such as ANRLO.
                Required to highlight values outside reference range (RED DOT in box plot), and reference lines
        HI_VAR: Variable in M_DS with UPPER LIMIT of reference range, such as ANRHI.
                Required to highlight values outside reference range (RED DOT in box plot), and reference lines
+
+       OPTIONAL: omit to suppress Endpoint P-VALUE in graphic
+         B_VAR:    Variable in M_DS with baseline measurements
+         REF_TRTN: Numeric value of TRTPN for reference (comparator) treatment
+
+       B_VISN: Visit number that represents Baseline in AVISITN (e.g., 0)
+       E_VISN: Visit number that represents endpoint in AVISITN for chg-from-baseline comparison (e.g., 99)
+               OPTIONAL: Include additional visits BETWEEN baseline and endpoint.
+                         List space-delimited, INCREASING visit numbers in E_VISN.
+                         The LAST (greatest) visit number in E_VISN is the endpoint visit.
 
        P_FL:  Population flag variable. 'Y' indicates record is in population of interest.
        A_FL:  Analysis Flag variable.   'Y' indicates that record is selected for analysis.
@@ -74,9 +90,9 @@ end HEADER ***/
              Option to specify which Normal Range reference lines to include in box plots
              <NONE | UNIFORM | NARROW | ALL | numeric-value(s)> See discussion in Central Tendency White Paper 
              NONE    - No reference lines on box plot
-             UNIFORM - Default. preferred alternative to default. Only plot LOW/HIGH ref lines if uniform for all obs
-             NARROW  - Display only the narrow normal limits: max LOW, and min HIGH limits
-             ALL     - Discouraged, since displaying ALL reference lines confuses review of data display
+             UNIFORM - preferred alternative to default. Only plot LOW/HIGH ref lines if uniform for all obs
+             NARROW  - Default. Display only the narrow normal limits: max LOW, and min HIGH limits
+             ALL     - discouraged since displaying ALL reference lines confuses review our data display
              numeric-values - space-delimited list of reference line values, such as a 0 reference line for displays of change.
 
        MAX_BOXES_PER_PAGE:
@@ -114,8 +130,7 @@ end HEADER ***/
 
       data advs_sub (rename=(trtp_short=trtp));
         set work.advs;
-        where (paramcd in ('DIABP') and atptn in (815)) or 
-              (paramcd in ('SYSBP') and atptn in (816));
+        where (paramcd in ('DIABP') and atptn in (815));
 
         length trtp_short $6;
         select (trtp);
@@ -135,15 +150,23 @@ end HEADER ***/
       %let m_ds   = advs_sub;
 
       %let m_var  = AVAL;
+      %let c_var  = CHG;
+
       %let lo_var = ANRLO;
       %let hi_var = ANRHI;
+
+      %let b_var  = base;
+      %let ref_trtn = 0;
+
+      %let b_visn = 0;
+      %let e_visn = 12 24 99;
 
       %let p_fl = saffl;
       %let a_fl = anl01fl;
 
-      %let ref_lines = UNIFORM;
+      %let ref_lines = NARROW;
 
-      %let max_boxes_per_page = 20;
+      %let max_boxes_per_page = 12;
 
       %let outputs_folder = C:\CSS\phuse-scripts\whitepapers\WPCT\outputs_sas;
 
@@ -164,7 +187,7 @@ end HEADER ***/
 
     options nocenter mautosource mrecall mprint msglevel=I mergenoby=WARN ls=max ps=max;
 
-    %let ana_variables = STUDYID USUBJID &p_fl &a_fl TRTP TRTPN PARAM PARAMCD &m_var &lo_var &hi_var AVISIT AVISITN ATPT ATPTN;
+    %let ana_variables = STUDYID USUBJID &p_fl &a_fl TRTP TRTPN PARAM PARAMCD &m_var &c_var &b_var &lo_var &hi_var AVISIT AVISITN ATPT ATPTN;
 
     %*--- Global boolean symbol CONTINUE, used with macro assert_continue(), warns user of invalid environment. Processing should HALT. ---*;
       %let CONTINUE = %assert_depend(OS=%str(AIX,WIN,HP IPF),
@@ -174,8 +197,8 @@ end HEADER ***/
                                      macros=assert_continue util_labels_from_var util_count_unique_values 
                                             util_get_reference_lines util_proc_template util_get_var_min_max
                                             util_value_format util_boxplot_visit_ranges util_axis_order util_delete_dsets,
-                                     symbols=m_lb m_ds m_var lo_var hi_var ref_lines p_fl a_fl 
-                                             max_boxes_per_page outputs_folder
+                                     symbols=m_lb m_ds m_var c_var lo_var hi_var b_var ref_trtn b_visn e_visn p_fl a_fl 
+                                             ref_lines max_boxes_per_page outputs_folder
                                     );
 
       %assert_continue(After asserting the dependencies of this script)
@@ -185,6 +208,9 @@ end HEADER ***/
       data css_anadata;
         set &m_lb..&m_ds (keep=&ana_variables);
         where &p_fl = 'Y' and &a_fl = 'Y';
+
+        *--- NB: Keep Baseline measures, but DO NOT PLOT these for the CHANGE graphic, below ---*;
+          where also avisitn in (&b_visn &e_visn);
 
         *--- Create a Normal Range Outlier variable, for scatter plot overlay ---*;
           if (2 = n(&m_var, &lo_var) and &m_var < &lo_var) or
@@ -204,10 +230,43 @@ end HEADER ***/
 
     Number of planned treatments - used for handling treatments categories
       &TRTN
+
+    Baseline visit value & label
+      &b_visn_val1
+      &b_visn_lab1
+
+    Endpoint visit value & label
+      &e_visn_val1
+      &e_visn_lab1
+
   ***/
+
+    %*--- User may specify optional intermediate visits in E_VISN. ---*;
+    %*--- Separate these into InterMediate (IM_VISN) visits, and a single EndPoint (EP_VISN) visit ---*;
+      %macro null;
+        %global im_visn ep_visn;
+        %local cnt idx;
+
+        %let im_visn = ;
+        %let cnt = %sysfunc(countw(&e_visn, %str( )));
+
+        %if &cnt > 1 %then %do idx = 1 %to %eval(&cnt - 1);
+          %let im_visn = &im_visn %scan(&e_visn, &idx, %str( ));
+        %end;
+
+        %let ep_visn = %scan(&e_visn, -1, %str( ));
+      %mend null;
+      %null;
+
 
     %*--- Parameters: Number (&PARAMCD_N), Names (&PARAMCD_VAL1 ...) and Labels (&PARAMCD_LAB1 ...) ---*;
       %util_labels_from_var(css_anadata, paramcd, param)
+
+    %*--- Baseline visit: Number (&B_VISN_N), Names (&B_VISN_VAL1) and Labels (&B_VISN_LAB1) ---*;
+      %util_labels_from_var(css_anadata, avisitn, avisit, prefix=b_visn, whr=avisitn eq &b_visn)
+
+    %*--- Endpoint visit: Number (&EP_VISN_N), Names (&E_VISN_VAL1) and Labels (&E_VISN_LAB1) ---*;
+      %util_labels_from_var(css_anadata, avisitn, avisit, prefix=ep_visn, whr=avisitn eq &ep_visn)
 
     %*--- Number of planned treatments: Set &TRTN from ana variable TRTP ---*;
       %util_count_unique_values(css_anadata, trtp, trtn)
@@ -224,11 +283,11 @@ end HEADER ***/
 
   ***/
 
-    %util_proc_template(phuseboxplot)
+    %util_proc_template(phuseboxplot, designwidth=130mm)
 
     %macro boxplot_each_param_tp(plotds=css_anadata, cleanup=1);
 
-      %local pdx tdx ;
+      %local pdx tdx css_pval_ds;
 
       %do pdx = 1 %to &paramcd_n;
 
@@ -250,6 +309,7 @@ end HEADER ***/
         %*--- Y-AXIS alternative: Fix Y-Axis MIN/MAX based on all timepoints for PARAM. See Y-AXIS DEFAULT, below. ---*;
         %*--- NB: EXTRA normal range reference lines could expand Y-AXIS range.                                    ---*;
         %*   %util_get_var_min_max(css_nextparam, &m_var, aval_min_max, extra=&nxt_reflines)   *;
+        %*   %util_get_var_min_max(css_nextparam, &c_var, chg_min_max)   *;
 
 
         %do tdx = 1 %to &atptn_n;
@@ -266,6 +326,7 @@ end HEADER ***/
           %*--- Y-AXIS DEFAULT: Set Y-Axis MIN/MAX based on this timepoint. See Y-AXIS alternative, above. ---*;
           %*--- NB: EXTRA normal range reference lines could expand Y-AXIS range.                          ---*;
             %util_get_var_min_max(css_nexttimept, &m_var, aval_min_max, extra=&nxt_reflines)
+            %util_get_var_min_max(css_nexttimept, &c_var, chg_min_max)
 
           %*--- Number of visits for this parameter and analysis timepoint: &VISN ---*;
             %util_count_unique_values(css_nexttimept, avisitn, visn)
@@ -284,6 +345,52 @@ end HEADER ***/
               output out=css_stats (drop=_type_ _freq_) 
                      n=n mean=mean std=std median=median min=datamin max=datamax q1=q1 q3=q3;
             run;
+
+
+          %*--- Add ANCOVA p-values for Endpoint: CHG = BASE + TRT (if user specified a reference arm) ---*;
+            %if %length(&b_var) > 0 and %length(&ref_trtn) > 0 %then %do;
+              %local endpoint_definition;
+
+              %let css_pval_ds = css_pvalues;
+              %let endpoint_definition = avisitn = &ep_visn;
+
+              ods select parameterestimates;
+              ods output parameterestimates = &css_pval_ds;
+
+              proc glm data=css_nexttimept;
+                where &endpoint_definition;
+                class trtpn (ref="&ref_trtn");
+                model &c_var = &b_var trtpn / solution;
+              run; quit;
+
+              *--- UPDATE CSS_STATS with p-values for active arms, at Endpoint visit ---*;
+                data temp;
+                  *--- We simply need the structure of these vars, for subsequent merge ---*;
+                  set css_stats (keep=avisitn trtpn);
+                  STOP;
+                run;
+
+                data &css_pval_ds;
+                  set temp &css_pval_ds (keep=parameter probt 
+                                         rename=(probt=pval)
+                                         where=(parameter=:'TRTPN'));
+                  label pval="GLM ANCOVA p-value: Reference is TRTPN = &ref_trtn";
+                  &endpoint_definition;
+                  trtpn   = input(scan(parameter,-1,' '), best8.);
+                run;
+
+                proc sort data=&css_pval_ds;
+                  by avisitn trtpn;
+                run;
+
+                data css_stats;
+                  merge css_stats &css_pval_ds (keep=avisitn trtpn pval);
+                  by avisitn trtpn;
+                run;
+
+                %util_delete_dsets(temp);
+            %end;          
+
 
             /***
               STACK statistics (do NOT merge) BELOW the plot data, one obs per TREATMENT/VISIT.
@@ -313,12 +420,13 @@ end HEADER ***/
             ods graphics on / reset=all;
             ods graphics    / border=no attrpriority=COLOR;
 
-            title     justify=left height=1.2 "Box Plot - &&paramcd_lab&pdx Observed Values by Visit, Analysis Timepoint: &&atptn_lab&tdx";
-            footnote1 justify=left height=1.0 'Box plot type is schematic: the box shows median and interquartile range (IQR, the box edges); the whiskers extend to the minimum';
-            footnote2 justify=left height=1.0 'and maximum data points within 1.5 IQR below 25% and above 75%, respectively. Values outside the whiskers are shown as outliers.';
-            footnote3 justify=left height=1.0 'Means are marked with a different symbol for each treatment. Red dots indicate measures outside the normal reference range.';
+            title     justify=left height=1.2 "Box Plot - &&paramcd_lab&pdx Observed Values and Change from %upcase(&B_VISN_LAB1) to %upcase(&EP_VISN_LAB1) by Visit, Analysis Timepoint: &&atptn_lab&tdx";
+            footnote1 justify=left height=1.0 'Box plot type is schematic: the box shows median and interquartile range (IQR, the box edges); the whiskers extend to the minimum and maximum data points';
+            footnote2 justify=left height=1.0 'within 1.5 IQR below 25% and above 75%, respectively. Values outside the whiskers are shown as outliers. Means are marked with a different symbol for each treatment.';
+            footnote3 justify=left height=1.0 'Red dots indicate measures outside the normal reference range. P-value is for the treatment comparison from ANCOVA model Change = Baseline + Treatment.';
 
-            %let y_axis = %util_axis_order( %scan(&aval_min_max,1,%str( )), %scan(&aval_min_max,2,%str( )) );
+            %let aval_axis = %util_axis_order( %scan(&aval_min_max,1,%str( )), %scan(&aval_min_max,2,%str( )) );
+            %let chg_axis  = %util_axis_order( %scan(&chg_min_max,1, %str( )), %scan(&chg_min_max,2, %str( )) );
 
           *--- ODS PDF destination (Traditional Graphics, No ODS or Listing output) ---*;
             ods listing close;
@@ -326,7 +434,7 @@ end HEADER ***/
                     author="(&SYSUSERID) PhUSE/CSS Standard Analysis Library"
                     subject='PhUSE/CSS Measures of Central Tendency'
                     title="Boxplot of &&paramcd_lab&pdx by Visit for Analysis Timepoint &&atptn_lab&tdx"
-                    file="&outputs_folder\WPCT-F.07.01_Box_plot_&&paramcd_val&pdx.._by_visit_for_timepoint_&&atptn_val&tdx...pdf";
+                    file="&outputs_folder\WPCT-F.07.03_Box_plot_&&paramcd_val&pdx.._with_change_by_visit_for_timepoint_&&atptn_val&tdx...pdf";
 
 
           /*** LOOP 3 - FINALLY, A Graph ****************************
@@ -338,32 +446,62 @@ end HEADER ***/
             %do %while (%qscan(&boxplot_visit_ranges,&vdx,|) ne );
               %let nxtvis = %qscan(&boxplot_visit_ranges,&vdx,|);
 
-              proc sgrender data=css_plot (where=( &nxtvis )) template=PhUSEboxplot ;
-                dynamic 
-                        _TRT        = 'trtp'
-                        _AVISITN    = 'avisitn' 
-                        _AVISIT     = 'avisit' 
-                        _AVAL       = "&m_var"
-                        _AVALOUTLIE = 'm_var_outlier'
+              *--- OBSERVED values (left plot) ---*;
+                proc sgrender data=css_plot (where=( &nxtvis )) template=PhUSEboxplot ;
+                  dynamic 
+                          _TRT        = 'trtp'
+                          _AVISITN    = 'avisitn' 
+                          _AVISIT     = 'avisit' 
+                          _AVAL       = "&m_var"
+                          _AVALOUTLIE = 'm_var_outlier'
 
-                        %if %length(&nxt_reflines) > 0 %then %do;
-                          _REFLINES   = "%sysfunc(translate( &nxt_reflines, %str(,), %str( ) ))"
-                        %end;
+                          %if %length(&nxt_reflines) > 0 %then %do;
+                            _REFLINES   = "%sysfunc(translate( &nxt_reflines, %str(,), %str( ) ))"
+                          %end;
 
-                        _YLABEL     = "&&paramcd_lab&pdx"
-                        _YMIN       = %scan(&y_axis, 1, %str( ))
-                        _YMAX       = %scan(&y_axis, 3, %str( ))
-                        _YINCR      = %scan(&y_axis, 5, %str( ))
-                        _N          = 'n'
-                        _MEAN       = 'mean'
-                        _STD        = 'std'
-                        _DATAMIN    = 'datamin'
-                        _Q1         = 'q1'
-                        _MEDIAN     = 'median'
-                        _Q3         = 'q3'
-                        _DATAMAX    = 'datamax'
-                        ;
-              run;
+                          _YLABEL     = "&&paramcd_lab&pdx"
+                          _YMIN       = %scan(&aval_axis, 1, %str( ))
+                          _YMAX       = %scan(&aval_axis, 3, %str( ))
+                          _YINCR      = %scan(&aval_axis, 5, %str( ))
+                          _N          = 'n'
+                          _MEAN       = 'mean'
+                          _STD        = 'std'
+                          _DATAMIN    = 'datamin'
+                          _Q1         = 'q1'
+                          _MEDIAN     = 'median'
+                          _Q3         = 'q3'
+                          _DATAMAX    = 'datamax'
+                          ;
+                run;
+
+              *--- CHANGE values (right plot) DO NOT DISPLAY baseline visit (always zero change) ---*;
+                proc sgrender data=css_plot (where=( avisitn ne &b_visn AND &nxtvis )) template=PhUSEboxplot ;
+                  dynamic 
+                          _TRT        = 'trtp'
+                          _AVISITN    = 'avisitn' 
+                          _AVISIT     = 'avisit' 
+                          _AVAL       = "&c_var"
+                          _AVALOUTLIE = 'm_var_outlier'
+                          _REFLINES   = "0"
+                          _YLABEL     = "&&paramcd_lab&pdx"
+                          _YMIN       = %scan(&chg_axis, 1, %str( ))
+                          _YMAX       = %scan(&chg_axis, 3, %str( ))
+                          _YINCR      = %scan(&chg_axis, 5, %str( ))
+                          _N          = 'n'
+                          _MEAN       = 'mean'
+                          _STD        = 'std'
+                          _DATAMIN    = 'datamin'
+                          _Q1         = 'q1'
+                          _MEDIAN     = 'median'
+                          _Q3         = 'q3'
+                          _DATAMAX    = 'datamax'
+
+                          %if %length(&b_var) > 0 and %length(&ref_trtn) > 0 %then %do;
+                            _PVAL       = 'pval'
+                          %end;
+
+                          ;
+                run;
 
               %let vdx=%eval(&vdx+1);
             %end; %* --- LOOP 3 - Pages of box plots, VDX ---*;
@@ -378,7 +516,7 @@ end HEADER ***/
 
 
       *--- Clean up temp data sets required to create box plots ---*;
-        %if &cleanup %then %util_delete_dsets(css_nextparam css_nexttimept css_stats css_plot);
+        %if &cleanup %then %util_delete_dsets(css_nextparam css_nexttimept &css_pval_ds css_stats css_plot);
 
     %mend boxplot_each_param_tp;
 
