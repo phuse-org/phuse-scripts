@@ -2,14 +2,15 @@
 
 The working group's **2016 goal** is to publish R and SAS scripts that unlock the standard analyses that the [White Paper on Central Tendency](http://www.phusewiki.org/wiki/images/4/48/CSS_WhitePaper_CentralTendency_v1.0.pdf) (**WPCT**) specifies.
 
+For further details, please review the [Central Tendency User Guide](http://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/CentralTendency-UserGuide.md) for further details.
+
+
 #### Task Lists
 
 We maintain Task Lists (to-do lists) for both:
 
   * [Work Group 5, overall](http://github.com/phuse-org/phuse-scripts/blob/master/TODO.md)
   * The [WPCT Standard Script Package](http://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/WPCT/TODO.md)
-
-See the [Central Tendency User Guide](http://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/CentralTendency-UserGuide.md) for further details on using or contributing to this project.
 
 
 #### Folder Structure
