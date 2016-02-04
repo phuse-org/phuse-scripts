@@ -45,14 +45,17 @@
 |  LastQualDate: | The last date the script being qualified; the date format is DD-MON-YYYY |
 |  LastQualBy: | The name of the person who conducted the qualification; the name format is FirstName LastName |
 |  Stage: | The stage of the qualification such as D
+|  Document: | qualification documents | 
 |  Note: | The description about the qualification such as C - Contributed; D - Development; T - Testing; Q - Qualified |
 |**Stages**: | The historical stages for the script. | 
 |  - Date: | Date the 1st stage of the script in the format of mm/dd/yyyy |
 |    Name: | Name of the person who reviewed and set the stage. | 
 |    Stage: | The 1st Stage of the script at that time. | 
+|    Docs: | a link to qualification documents |
 |  - Date: | Date of the 2nd stage of the script in the format of mm/dd/yyyy | 
 |    Name: | Name of the person who reviewed and set the stage. | 
 |    Stage: | The 2nd stage of the script at that time. |  	
+|    Docs: | a link to qualification documents |
 
 # Simple Index Table
 | Column Name | Explaination | 

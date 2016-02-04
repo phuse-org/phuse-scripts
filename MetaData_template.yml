@@ -5,7 +5,7 @@ Script:
   GCR    : r135
   SRV    : 12345
   Source : YML Metadata
-  Target : https://github.com/phuse-org/phuse-scripts/blob/master/MetaData_template.yml
+  Target : https://github.com/phuse-org/phuse-scripts/blob/master/MetaData_template.md
   Title  : YML meta data page example
   Topic  : Metadata example
   Type   : metadata
@@ -39,11 +39,14 @@ Qualification:
   LastQualDate: MM/DD/YYYY 
   LastQualBy: FirstName LastName
   Stage: T
+  Document: a link to latest documentation 
   Note: C - Contributed; D - Development; T - Testing; Q - Qualified
 Stages: 
   - Date: mm/dd/yyyy
     Name: Jon1 Doo
     Stage: C 
+    Docs: a link to qualification documents
   - Date: mm/dd/yyyy
     Name: Jon2 Doo
     Stage: D 	
+    Docs: a link to qualification documents
