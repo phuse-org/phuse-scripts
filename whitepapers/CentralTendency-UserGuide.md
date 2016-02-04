@@ -18,7 +18,7 @@ We maintain to-do lists in project directories:
 * [Working Group 5 to-do list](https://github.com/phuse-org/phuse-scripts)
 * [WPCT to-do list](https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/WPCT/TODO.md)
 
-Review the [Script Basics and Programming Conventions](#wpct-package-scripts-conventions), below.
+Review the [Script Basics and Programming Conventions](#wpct-package-scripts--conventions), below.
 
 ##### SAS and R versions
 
