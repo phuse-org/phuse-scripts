@@ -1,10 +1,10 @@
 KeyWords: central tendencies, change from baseline, boxplot, labs, vital signs, ECGs
 Script: 
-  Desc   : Box plot - Change from Baseline by Analysis Timepoint, Visit and Planned Treatment
-  Name   : WPCT_F.07.02_sas
+  Desc   : Box plot - Measurements and Change from Baseline by Analysis Timepoint, Visit and Planned Treatment
+  Name   : WPCT_F.07.03_sas
   Source : White paper
-  Topic  : Measures of Central Tendency Figure 7.2
-  Title  : Boxplot of analysis timepoint change from baseline by visit and treatment
+  Topic  : Measures of Central Tendency Figure 7.3
+  Title  : Boxplot of analysis timepoint measurements and change from baseline by visit and treatment
   Type   : figure
   Subtype  : boxplot
   Target : http://www.phusewiki.org/wiki/images/4/48/CSS_WhitePaper_CentralTendency_v1.0.pdf
