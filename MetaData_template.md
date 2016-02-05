@@ -70,9 +70,10 @@
 # Simple Index Table
 | Column Name | Explanation | 
 |:--- |:--- |
-| Script | Script file name linked (**Script:URL**) to the script source code with **Script:Title** (**Language:name** [**Language:version**] **Script:GCR** and **Script:SRV**) as popup message |
-| Target | **Script:Source** linked to the **Script:Target** with **Script:Desc** and **Keywords** as popup message |  
-| Stage | **Qualification:Stage** linked to the metadata file with **Qualification**, **Authors** and **Stages** as popup message |
+| Script | Script file name linked (**Script:URL**) to the script source code with **Script:Title** (**Language:name** [**Language:version**] **Script:GCR** and **Script:SRV**) as popup message. |
+| Target | **Script:Source** linked to the **Script:Target** with **Script:Desc** and **Keywords** as popup message. |  
+| Stage | **Qualification:Stage** linked to the metadata file with **Qualification**, **Authors** and **Stages** as popup message. |
+| Rating | **Rating:Stars** linked to metadata tag description page with **Rating** history as popup message. |
 
 # Standard Script Index Table
 | Column Name | Explanation |
