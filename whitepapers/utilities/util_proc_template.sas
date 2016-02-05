@@ -49,7 +49,7 @@
     proc template;
       define statgraph PhUSEboxplot;
 
-        dynamic _DESIGN_WIDTH _DESIGN_HEIGHT
+        dynamic _TITLE _DESIGN_WIDTH _DESIGN_HEIGHT
                 _TRT _AVISIT _AVISITN _AVAL _AVALOUTLIE
                 _YLABEL _YMIN _YMAX _YINCR 
                 _REFLINES
@@ -59,6 +59,10 @@
         begingraph / attrpriority=none border=false pad=0 dataskin=none
                      designwidth=&designwidth designheight=&designheight
                      ;
+
+          IF (EXISTS(_TITLE))
+            entrytitle _TITLE;
+          ENDIF;
 
           *--- Define extra legend items for Outlier markers. Define these OUTSIDE the layout block ---*;
           legenditem type=marker name='IQROutliers' / 
@@ -152,9 +156,7 @@
 
             *--- Normal Range Reference lines, IF PROVIDED ---*;
             IF (EXISTS(_REFLINES))
-
               referenceline y=eval(coln(_REFLINES)) / lineattrs=(color=red) name='Reference Lines';
-
             ENDIF;
 
             *--- KNOWN LIMITATION: 'box' markers work in SAS 9.4 M3 and later. See header notes. ---*;

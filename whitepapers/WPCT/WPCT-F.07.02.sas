@@ -226,7 +226,15 @@ end HEADER ***/
 
     In case of many visits and planned treatments, each box plot will use multiple pages.
 
-    CLEANUP = O, blocks the macro from deleting temp data sets after the last parameter & timepoint loop
+    UTIL_PROC_TEMPLATE parameters:
+      TEMPLATE     Positional parameter, the name of the template to compile.
+      DESIGNWIDTH  Default is 260mm, suitable for one full-page landscap Letter/A4 plot.
+                   130mm is suitable for these 2 side-by-side plots.
+      DESIGNHEIGHT Default is 170mm, suitable for one full-page landscap Letter/A4 plot.
+
+    BOXPLOT_EACH_PARAM_TP parameters:      
+      CLEANUP      Default is 1, delete intermediate data sets. 
+                   Set to 0 (zero) to preserve temp data sets from the final loop.
 
   ***/
 
@@ -366,11 +374,12 @@ end HEADER ***/
 
           *--- ODS PDF destination (Traditional Graphics, No ODS or Listing output) ---*;
             ods listing close;
-            ods pdf dpi=300
+            ods pdf file="&outputs_folder\WPCT-F.07.02_Box_plot_&&paramcd_val&pdx.._Change_by_visit_for_timepoint_&&atptn_val&tdx...pdf"
+                    notoc bookmarklist=none dpi=300
                     author="(&SYSUSERID) PhUSE/CSS Standard Analysis Library"
                     subject='PhUSE/CSS Measures of Central Tendency'
                     title="Boxplot of &&paramcd_lab&pdx Change from Baseline by Visit for Analysis Timepoint &&atptn_lab&tdx"
-                    file="&outputs_folder\WPCT-F.07.02_Box_plot_&&paramcd_val&pdx.._Change_by_visit_for_timepoint_&&atptn_val&tdx...pdf";
+                    ;
 
 
           /*** LOOP 3 - FINALLY, A Graph ****************************
@@ -388,9 +397,8 @@ end HEADER ***/
                         _AVISITN    = 'avisitn' 
                         _AVISIT     = 'avisit' 
                         _AVAL       = "&c_var"
-                        _AVALOUTLIE = 'm_var_outlier'
                         _REFLINES   = "0"
-                        _YLABEL     = "&&paramcd_lab&pdx"
+                        _YLABEL     = "Change in &&paramcd_lab&pdx"
                         _YMIN       = %scan(&y_axis, 1, %str( ))
                         _YMAX       = %scan(&y_axis, 3, %str( ))
                         _YINCR      = %scan(&y_axis, 5, %str( ))

@@ -335,6 +335,7 @@ end HEADER ***/
             ODS GRAPHICS OFF;
             ODS LISTING CLOSE;
             ods pdf author='PhUSE/CSS Standard Analysis Library'
+                    notoc bookmarklist=none dpi=300
                     subject='PhUSE/CSS Measures of Central Tendency'
                     title="Boxplot of &&paramcd_lab&pdx by Visit for Analysis Timepoint &&atptn_lab&tdx"
                     file="&outputs_folder\WPCT-F.07.01-sas92-QCshewhart_Box_plot_&&paramcd_val&pdx.._by_visit_for_timepoint_&&atptn_val&tdx...pdf";

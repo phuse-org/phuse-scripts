@@ -14,6 +14,9 @@
       * Figure 7.3 combines analyses from Figures 7.1 and 7.2 as side-by-side graphics.
         The approach follows SAS Note "Sample 41461: Put multiple PROC SGPLOT outputs on the same PDF page using PROC GREPLAY"
         http://support.sas.com/kb/41/461.html
+          [Step 1] write PNG files to disk (SGRENDER)
+          [Step 2] read PNG files from disk (PROC GSLIDE with the IBACK= and IMAGESTYLE= graphics options)
+          [Step 3] "replay" those graphs to desired layout (PROC GREPLAY)
 
       * See USER PROCESSING AND SETTINGS, below, to configure this program for your environment and data
       * Program will plot all visits, ordered by AVISITN, with maximum of 20 boxes on a page (default)
@@ -29,8 +32,11 @@
 
     TO DO list for program:
 
-      * Q for Reviewer: Should we use ADSL data to report patients, not just obs in stats table?
-          initial reviewer response in "No.", so removed code related to ADSL.
+      * ELIMINATE these warnings in the titles/footnote GSLIDE:
+        WARNING: The specified value of 16.7500 inches for HSIZE= is larger than 14.1667 inches which is the maximum for the device WIN. HSIZE is ignored.
+        WARNING: The specified value of 9.2083 inches for VSIZE= is larger than 7.5833 inches which is the maximum for the device WIN. VSIZE is ignored.
+      * Reduce the title/footnotes font size, to match Fig. 7.1 and Fig. 7.2 (or increase those to match this Fig. 7.3)
+
       * Complete and confirm specifications (see Outliers & Reference limit discussions, below)
           https://github.com/phuse-org/phuse-scripts/tree/master/whitepapers/specification
       * For annotated RED CIRCLEs outside normal range limits
@@ -166,7 +172,7 @@ end HEADER ***/
 
       %let ref_lines = NARROW;
 
-      %let max_boxes_per_page = 12;
+      %let max_boxes_per_page = 10;
 
       %let outputs_folder = C:\CSS\phuse-scripts\whitepapers\WPCT\outputs_sas;
 
@@ -274,18 +280,48 @@ end HEADER ***/
 
   /*** BOXPLOT for each PARAMETER and ANALYSIS TIMEPOINT in selected data
 
-    One box plot for each PARAMETER and ANALYSIS TIMEPOINT.
-    By Visit and Planned Treatment.
+    Two box plots per page for each PARAMETER and ANALYSIS TIMEPOINT.
+    By Visit number and Planned Treatment.
 
-    In case of many visits and planned treatments, each box plot will use multiple pages.
+    In case of many visits and planned treatments, each PARAM/TIMEPOINT will use multiple pages.
 
-    CLEANUP = O, blocks the macro from deleting temp data sets after the last parameter & timepoint loop
+    UTIL_PROC_TEMPLATE parameters:
+      TEMPLATE     Positional parameter, the name of the template to compile.
+      DESIGNWIDTH  Default is 260mm, suitable for one full-page landscap Letter/A4 plot.
+                   130mm is suitable for these 2 side-by-side plots.
+      DESIGNHEIGHT Default is 170mm, suitable for one full-page landscap Letter/A4 plot.
+
+    BOXPLOT_EACH_PARAM_TP parameters:      
+      CLEANUP      Default is 1, delete intermediate data sets. 
+                   Set to 0 (zero) to preserve temp data sets from the final loop.
 
   ***/
 
     %util_proc_template(phuseboxplot, designwidth=130mm)
 
-    %macro boxplot_each_param_tp(plotds=css_anadata, cleanup=1);
+    *--- We need GREPLAY side-by-side template with Titles, Footnotes ---*;
+      proc greplay tc=work.css_template nofs;
+        tdef css_H2 des="Two side-by-side plots, without borders"
+           1 / llx=6   lly=10
+               ulx=6   uly=90
+               urx=47  ury=90
+               lrx=47  lry=10
+
+           2 / llx=53   lly=10
+               ulx=53   uly=90
+               urx=96   ury=90
+               lrx=96   lry=10
+
+           3 / llx=0    lly=0
+               ulx=0    uly=100
+               urx=100  ury=100
+               lrx=100  lry=0
+           ;
+
+      quit;
+
+
+    %macro boxplot_each_param_tp(plotds=css_anadata, cleanup=0);
 
       %local pdx tdx css_pval_ds;
 
@@ -338,12 +374,19 @@ end HEADER ***/
             %util_boxplot_visit_ranges(css_nexttimept, vvisn=avisitn, vtrtn=trtpn);
 
 
-          *--- Calculate summary statistics, KEEP LABELS of VISIT and TRT for plotting, below ---*;
+          *--- Calculate summary statistics for VALUEs and CHANGE. KEEP LABELS of VISIT and TRT for plotting, below ---*;
             proc summary data=css_nexttimept noprint;
               by avisitn trtpn avisit trtp;
               var &m_var;
               output out=css_stats (drop=_type_ _freq_) 
                      n=n mean=mean std=std median=median min=datamin max=datamax q1=q1 q3=q3;
+            run;
+
+            proc summary data=css_nexttimept noprint;
+              by avisitn trtpn avisit trtp;
+              var &c_var;
+              output out=css_c_stats (drop=_type_ _freq_) 
+                     n=c_n mean=c_mean std=c_std median=c_median min=c_datamin max=c_datamax q1=c_q1 q3=c_q3;
             run;
 
 
@@ -398,43 +441,34 @@ end HEADER ***/
             ***/
             data css_plot;
               set css_nexttimept
-                  css_stats;
+                  css_stats
+                  css_c_stats;
 
-              label n         = 'n'
-                    mean      = 'Mean'
-                    std       = 'Std Dev'
-                    datamin   = 'Min'
-                    q1        = 'Q1'
-                    median    = 'Median'
-                    q3        = 'Q3'
-                    datamax   = 'Max'
+              label n         = 'n'        c_n         = 'n'
+                    mean      = 'Mean'     c_mean      = 'Mean'
+                    std       = 'Std Dev'  c_std       = 'Std Dev'
+                    datamin   = 'Min'      c_datamin   = 'Min'
+                    q1        = 'Q1'       c_q1        = 'Q1'
+                    median    = 'Median'   c_median    = 'Median'
+                    q3        = 'Q3'       c_q3        = 'Q3'
+                    datamax   = 'Max'      c_datamax   = 'Max'
                     ;
-              format mean %scan(&util_value_format, 1, %str( )) std %scan(&util_value_format, 2, %str( ));
+              format mean c_mean %scan(&util_value_format, 1, %str( )) std c_std %scan(&util_value_format, 2, %str( ));
             run;
 
 
-          *--- Graphics Settings - Set defaults for all graphs ---*;
-            options orientation=landscape;
+          *--- Graphics Adjustments - Set defaults for all graphs for this PARAMCD/TIMEPOINT ---*;
             goptions reset=all;
 
             ods graphics on / reset=all;
             ods graphics    / border=no attrpriority=COLOR;
-
-            title     justify=left height=1.2 "Box Plot - &&paramcd_lab&pdx Observed Values and Change from %upcase(&B_VISN_LAB1) to %upcase(&EP_VISN_LAB1) by Visit, Analysis Timepoint: &&atptn_lab&tdx";
-            footnote1 justify=left height=1.0 'Box plot type is schematic: the box shows median and interquartile range (IQR, the box edges); the whiskers extend to the minimum and maximum data points';
-            footnote2 justify=left height=1.0 'within 1.5 IQR below 25% and above 75%, respectively. Values outside the whiskers are shown as outliers. Means are marked with a different symbol for each treatment.';
-            footnote3 justify=left height=1.0 'Red dots indicate measures outside the normal reference range. P-value is for the treatment comparison from ANCOVA model Change = Baseline + Treatment.';
 
             %let aval_axis = %util_axis_order( %scan(&aval_min_max,1,%str( )), %scan(&aval_min_max,2,%str( )) );
             %let chg_axis  = %util_axis_order( %scan(&chg_min_max,1, %str( )), %scan(&chg_min_max,2, %str( )) );
 
           *--- ODS PDF destination (Traditional Graphics, No ODS or Listing output) ---*;
             ods listing close;
-            ods pdf dpi=300
-                    author="(&SYSUSERID) PhUSE/CSS Standard Analysis Library"
-                    subject='PhUSE/CSS Measures of Central Tendency'
-                    title="Boxplot of &&paramcd_lab&pdx by Visit for Analysis Timepoint &&atptn_lab&tdx"
-                    file="&outputs_folder\WPCT-F.07.03_Box_plot_&&paramcd_val&pdx.._with_change_by_visit_for_timepoint_&&atptn_val&tdx...pdf";
+            ods html path="%sysfunc(pathname(WORK))" image_dpi=300;
 
 
           /*** LOOP 3 - FINALLY, A Graph ****************************
@@ -446,9 +480,13 @@ end HEADER ***/
             %do %while (%qscan(&boxplot_visit_ranges,&vdx,|) ne );
               %let nxtvis = %qscan(&boxplot_visit_ranges,&vdx,|);
 
+              *--- [Step 1] Create PNGs to disk ---*;
+                ods graphics on / imagename = "&&paramcd_val&pdx.._%sysfunc(putn(&vdx,z3.))_left";
+
               *--- OBSERVED values (left plot) ---*;
                 proc sgrender data=css_plot (where=( &nxtvis )) template=PhUSEboxplot ;
                   dynamic 
+                          _TITLE      = 'Observed Values'
                           _TRT        = 'trtp'
                           _AVISITN    = 'avisitn' 
                           _AVISIT     = 'avisit' 
@@ -474,27 +512,29 @@ end HEADER ***/
                           ;
                 run;
 
+              ods graphics on / imagename = "&&paramcd_val&pdx.._%sysfunc(putn(&vdx,z3.))_right";
+
               *--- CHANGE values (right plot) DO NOT DISPLAY baseline visit (always zero change) ---*;
                 proc sgrender data=css_plot (where=( avisitn ne &b_visn AND &nxtvis )) template=PhUSEboxplot ;
                   dynamic 
+                          _TITLE      = 'Change from Baseline'
                           _TRT        = 'trtp'
                           _AVISITN    = 'avisitn' 
                           _AVISIT     = 'avisit' 
                           _AVAL       = "&c_var"
-                          _AVALOUTLIE = 'm_var_outlier'
                           _REFLINES   = "0"
-                          _YLABEL     = "&&paramcd_lab&pdx"
+                          _YLABEL     = "Change in &&paramcd_lab&pdx"
                           _YMIN       = %scan(&chg_axis, 1, %str( ))
                           _YMAX       = %scan(&chg_axis, 3, %str( ))
                           _YINCR      = %scan(&chg_axis, 5, %str( ))
-                          _N          = 'n'
-                          _MEAN       = 'mean'
-                          _STD        = 'std'
-                          _DATAMIN    = 'datamin'
-                          _Q1         = 'q1'
-                          _MEDIAN     = 'median'
-                          _Q3         = 'q3'
-                          _DATAMAX    = 'datamax'
+                          _N          = 'c_n'
+                          _MEAN       = 'c_mean'
+                          _STD        = 'c_std'
+                          _DATAMIN    = 'c_datamin'
+                          _Q1         = 'c_q1'
+                          _MEDIAN     = 'c_median'
+                          _Q3         = 'c_q3'
+                          _DATAMAX    = 'c_datamax'
 
                           %if %length(&b_var) > 0 and %length(&ref_trtn) > 0 %then %do;
                             _PVAL       = 'pval'
@@ -505,6 +545,60 @@ end HEADER ***/
 
               %let vdx=%eval(&vdx+1);
             %end; %* --- LOOP 3 - Pages of box plots, VDX ---*;
+
+          *--- [Step 2] GSLIDE recovers these images for PDF compilation ---*;
+            ods listing;            
+            ods html close;
+            goptions reset=all device=png300 nodisplay;
+
+            %local gdx;
+            %let vdx = %eval(&vdx-1);
+
+            %do gdx = 1 %to &vdx;
+              goptions iback="%sysfunc(pathname(WORK))\&&paramcd_val&pdx.._%sysfunc(putn(&gdx,z3.))_left.png" imagestyle=fit;
+              proc gslide gout=work.gtlpngs; run; quit;
+
+              goptions iback="%sysfunc(pathname(WORK))\&&paramcd_val&pdx.._%sysfunc(putn(&gdx,z3.))_right.png" imagestyle=fit;
+              proc gslide gout=work.gtlpngs; run; quit;
+            %end;
+
+            *--- One more Title/Footnotes slide ---*;
+              goptions reset=all;
+
+              title1    justify=left height=1.2 "Box Plot - &&paramcd_lab&pdx Observed Values and Change from %upcase(&B_VISN_LAB1) to %upcase(&EP_VISN_LAB1) by Visit,";
+              title2    justify=left height=1.2 "Analysis Timepoint: &&atptn_lab&tdx";
+              footnote1 justify=left height=1.0 'Box plot type is schematic: the box shows median and interquartile range (IQR, the box edges); the whiskers extend to the minimum and maximum data points';
+              footnote2 justify=left height=1.0 'within 1.5 IQR below 25% and above 75%, respectively. Values outside the whiskers are shown as outliers. Means are marked with a different symbol for each treatment.';
+              footnote3 justify=left height=1.0 'Red dots indicate measures outside the normal reference range. P-value is for the treatment comparison from ANCOVA model Change = Baseline + Treatment.';
+
+              proc gslide gout=work.gtlpngs; run; quit;
+
+          *--- [Step 3] GREPLAY to assemble these PARAM/TIMEPOINT ODS plot onto pages of one PDF ---*;
+            goptions reset=all device=sasprtc;
+            options orientation=landscape;
+
+            ods pdf file="&outputs_folder\WPCT-F.07.03_Box_plot_&&paramcd_val&pdx.._with_change_by_visit_for_timepoint_&&atptn_val&tdx...pdf"
+                    notoc bookmarklist=none dpi=300
+                    author="(&SYSUSERID) PhUSE/CSS Standard Analysis Library"
+                    subject='PhUSE/CSS Measures of Central Tendency'
+                    title="Boxplot of &&paramcd_lab&pdx Observed Values and Change from %upcase(&B_VISN_LAB1) to %upcase(&EP_VISN_LAB1) by Visit for Analysis Timepoint &&atptn_lab&tdx"
+                    ;
+
+            %do gdx = 1 %to &vdx;
+              *--- GTL created in pairs, above, per page. So replay 2 at a time. ---*;
+                proc greplay gout=work.gtlpngs igout=work.gtlpngs nofs tc=work.css_template;
+                   template=CSS_H2;
+                   treplay 1:%eval(2*(&gdx-1) + 1) 
+                           2:%eval(2*(&gdx-1) + 2) 
+                           3:%eval(2*&vdx     + 1)
+                           ;
+                run; 
+                quit;
+            %end;
+
+            proc catalog c=work.gtlpngs kill force;
+            run;
+            quit;
 
           *--- Release the PDF output file! ---*;
             ods pdf close;
