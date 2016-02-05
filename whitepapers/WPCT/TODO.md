@@ -9,7 +9,7 @@ The Repository Content team aim to deliver a package of robust, easy to use and 
 
 #### Targets for our WPCT package
 
-Scripts below by default produce outputs based on a specific ADaM domain such as Vital Signs data. The Central Tendency analyses, however, apply equally to Vital Sign, Laboratory and ECG data. ADaM domains differ both in variables (e.g., timing variables) and variable names (e.g., analysis flags). This leads to tasks to complete for this project:
+Scripts below by default produce outputs based on a specific ADaM domain such as Vital Signs. The Central Tendency analyses, however, apply equally to Vital Signs, Laboratory and ECG data. These ADaM domains differ both in variables (e.g., timing variables) and variable names (e.g., analysis flags). This leads to several tasks to complete for this project:
 
 * Establish conventions for providing easy to use and understand Central Tendency scripts that can accomodate at least these three intended data domains: Vital Signs, Laboratory and ECG.
 * Update the [specifications for Central Tendency figures](https://github.com/phuse-org/phuse-scripts/tree/master/whitepapers/specification) to accurately describe domain differences.
