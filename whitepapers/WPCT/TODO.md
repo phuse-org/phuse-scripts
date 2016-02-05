@@ -16,6 +16,8 @@ Scripts below by default produce outputs based on a specific ADaM domain such as
 * Update Central Tendency scripts according to conventions for supporting intended data domains.
 * Update the [WPCT guide for users & contributors](http://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/CentralTendency-UserGuide.md) according to conventions for supporting intended data domains.
 
+#### WPCT Figures & Scripts, with Qualification details
+
 | Target | Specify | Implement | Review | Release |
 |---|---|---|---|---|
 |![Fig. 7.1](../images/wpct/target_07.01.png)<br/>[Ex. SAS](http://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/WPCT/outputs_sas/WPCT-F.07.01_Box_plot_DIABP_by_visit_for_timepoint_815.pdf)<br/>[Ex. R](http://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/WPCT/outputs_r/WPCT-F.07.01%20R%20Output%20Example.PNG)|Review [specs](http://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/specification/WPCT_Fig_7.1_RequirementsSpecification.docx)|[R script](http://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/WPCT/WPCT-F.07.01.R)<br/> [SAS script](http://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/WPCT/WPCT-F.07.01.sas)|Review & Test code on your own data| *release upon successful review*|
