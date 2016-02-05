@@ -56,13 +56,23 @@
 |    Name: | Name of the person who reviewed and set the stage. | 
 |    Stage: | The 2nd stage of the script at that time. |  	
 |    Docs: | a link to qualification documents |
+|**Rating**: | The rating the user provided in the scale of 5.| 
+|  - User: | the first user name | 
+|    Date: | the date the rating was provided.|
+|    Association: | company or organization name |
+|    Stars: | number in the scale of 1 to 5 |
+|  - User: | the 2nd user name | 
+|    Date: | the date the rating was provided.|
+|    Association: | company or organization name |
+|    Stars: | number in the scale of 1 to 5 |
+	
 
 # Simple Index Table
 | Column Name | Explanation | 
 |:--- |:--- |
 | Script | Script file name linked (**Script:URL**) to the script source code with **Script:Title** (**Language:name** [**Language:version**] **Script:GCR** and **Script:SRV**) as popup message |
 | Target | **Script:Source** linked to the **Script:Target** with **Script:Desc** and **Keywords** as popup message |  
-| Stage | **Qualification:Stage** linked to the metadata file with **Qualification**, **Author** and **Stages** as popup message |
+| Stage | **Qualification:Stage** linked to the metadata file with **Qualification**, **Authors** and **Stages** as popup message |
 
 # Standard Script Index Table
 | Column Name | Explanation |
