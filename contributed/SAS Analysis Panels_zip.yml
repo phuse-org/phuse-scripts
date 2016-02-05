@@ -1,0 +1,52 @@
+KeyWords: SAS, Analysis, Panels
+Script: 
+  Desc   : This packages contains a set of scripts to conduct basic analysis on AE, DM, DS, EX, MedDRA, etc. 
+  Name   : 
+  GCR    : 
+  SRV    : 
+  Source : JumpStart
+  Target : https://github.com/phuse-org/phuse-scripts/blob/master/MetaData_template.md
+  Title  : JumpStart Scripts 
+  Topic  : Analysis
+  Type   : TFL
+  Subtype: 
+Package:
+  name : White Paper abbreviation, for example: WPCT
+  title: White Paper title, for example: White Paper on Measures of Central Tendency
+Language: 
+  name   : SAS
+  version: 9.x
+Comments: >
+  This is a set of scripts used by FDA in JumpStart.
+Inputs:
+  datasets: dat1, dat2, dat3
+  P1: String - dataset name
+  P2: Number - depart id
+  P3: String - subject id
+Outputs:
+  datasets: out1, out2, out3
+  O1:
+  O2:
+Authors: 
+  - name   : Austin Taylor
+    email  : 
+    company: FDA
+  - name   : 
+    email  : 
+    company: FDA
+Qualification: 
+  LastQualDate: MM/DD/YYYY 
+  LastQualBy: FirstName LastName
+  Stage: C
+  Document: a link to latest documentation 
+  Note: C - Contributed; D - Development; T - Testing; Q - Qualified
+Stages: 
+  - Date: 
+    Name: 
+    Stage: C 
+    Docs: 
+  - Date: 
+    Name: 
+    Stage: D 
+    Docs: 
+

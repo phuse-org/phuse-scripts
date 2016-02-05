@@ -4,9 +4,9 @@ Script:
   Name   : Script name following the proposed convention: https://code.google.com/p/phuse-scripts/source/browse/trunk/folder_structure_proposed.txt
   GCR    : r135
   SRV    : 
-  Source : White paper, Figure 7.1 Summary of Common Treatment-Emergent Adverse Events by Treatment
+  Source : White paper
   Topic  : Common Treatment-Emergent Adverse Events
-  Title  : Table of Common AEs
+  Title  : Table of Common AEs - Figure 7.1 Summary of Common Treatment-Emergent Adverse Events by Treatment
   Type   : figure
   Subtype  : figure
   Target : http://www.phusewiki.org/wiki/images/8/86/CSS_WhitePaper_Adverse_Events_DRAFT1.docx
@@ -20,8 +20,10 @@ Qualification:
   LastQualDate: 
   LastQualBy: 
   Stage: Contributed
-Rating:   
-  ByUser: 
-  Stars: 3
+Rating: 
+  - User: htu
+    Date: 02/05/2016
+    Association: Accenture
+    Stars: 3 
   
 

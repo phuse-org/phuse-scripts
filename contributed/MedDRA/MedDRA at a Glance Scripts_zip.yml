@@ -13,7 +13,7 @@ Script:
   Title  : MedDRA at a Glance Script Package
   Type   : table
   Subtype  : None
-  Target : 
+  Target : https://github.com/phuse-org/phuse-scripts/tree/master/contributed/MedDRA/MedDRA_at_a_Glance
 Language: 
   name   : SAS
   version: 9.2
@@ -23,9 +23,11 @@ Qualification:
   LastQualDate: na
   LastQualBy: na
   Stage: Contributed
-Rating:   
-  ByUser: 
-  Stars: 5
+Rating: 
+  - User: htu
+    Date: 02/05/2016
+    Association: Accenture
+    Stars: 5 
 Authors: 
   - name   : Shannon Dennis (original author)
     email  : not known

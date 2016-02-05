@@ -21,9 +21,10 @@ Qualification:
   LastQualDate:
   LastQualBy: 
   Stage: Develop
-Rating:   
-  ByUser: 
-  Stars: 5
-
+Rating: 
+  - User: htu
+    Date: 02/05/2016
+    Association: Accenture
+    Stars: 4
 
 

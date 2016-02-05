@@ -13,7 +13,10 @@ See our [WPCT to-do list](./TODO.md) for ways to participate and contribute.
 
 ### Guidelines, Conventions, etc.
 
-See the main [whitepaper](http://github.com/phuse-org/phuse-scripts/tree/master/whitepapers) folder for more background and introductory information.
+For details on participating in this project, either as a user or contributor, please see:
+* Our [Central Tendency Guide for Users and Contributors](http://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/CentralTendency-UserGuide.md) for further details.
+* The main [whitepaper folder](http://github.com/phuse-org/phuse-scripts/tree/master/whitepapers) for background and introductory information.
+* There is also an [overall to-do list for the Standard Analyses working group](../../TODO.md).
 
 ### Caveat
 

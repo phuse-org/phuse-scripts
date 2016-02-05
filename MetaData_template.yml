@@ -2,7 +2,10 @@ KeyWords: PK, Dual Box
 Script: 
   Desc   : Script description
   Name   : Script name following the proposed convention: https://github.com/phuse-org/phuse-scripts/blob/master/naming_conventions_proposed.txt
-  Target : a link to the target or whitepaper
+  GCR    : r135
+  SRV    : 12345
+  Source : YML Metadata
+  Target : https://github.com/phuse-org/phuse-scripts/blob/master/MetaData_template.md
   Title  : YML meta data page example
   Topic  : Metadata example
   Type   : metadata
@@ -35,5 +38,25 @@ Authors:
 Qualification: 
   LastQualDate: MM/DD/YYYY 
   LastQualBy: FirstName LastName
-  Stage: D
+  Stage: T
+  Document: a link to latest documentation 
   Note: C - Contributed; D - Development; T - Testing; Q - Qualified
+Stages: 
+  - Date: mm/dd/yyyy
+    Name: Jon1 Doo
+    Stage: C 
+    Docs: a link to qualification documents
+  - Date: mm/dd/yyyy
+    Name: Jon2 Doo
+    Stage: D 
+    Docs: a link to qualification documents
+Rating: 
+  - User: htu
+    Date: 02/05/2016
+    Association: Accenture
+    Stars: 5 
+  - User: htu 
+    Date: 01/25/2016 
+    Association: Accenture
+    Stars: 4
+
