@@ -1,6 +1,6 @@
 # Metadata Tag Description
 
-| Metadata Tag | Explaination | 
+| Metadata Tag | Explanation | 
 |:--- |:--- |
 |**KeyWords**: | Key words to be used to categorize and search the script.| 
 |**Script**: | Metadata tag group for defining the script.| 
@@ -58,14 +58,14 @@
 |    Docs: | a link to qualification documents |
 
 # Simple Index Table
-| Column Name | Explaination | 
+| Column Name | Explanation | 
 |:--- |:--- |
 | Script | Script file name linked (**Script:URL**) to the script source code with **Script:Title** (**Language:name** [**Language:version**] **Script:GCR** and **Script:SRV**) as popup message |
 | Target | **Script:Source** linked to the **Script:Target** with **Script:Desc** and **Keywords** as popup message |  
 | Stage | **Qualification:Stage** linked to the metadata file with **Qualification**, **Author** and **Stages** as popup message |
 
 # Standard Script Index Table
-| Column Name | Explaination |
+| Column Name | Explanation |
 |:--- |:--- |
 | Name | Script file name linked (**Script:URL**) to the script source code |
 | Title | **Script:Title** |
