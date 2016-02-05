@@ -1,5 +1,5 @@
 ### PhUSE CS Central Tendency Standard Analyses
-##### User Guide
+##### User & Contributor Guide
 ##### Version 0.1
 
 PhUSE CS Central Tendency analyses and displays are described in detail in the [White Paper on Measures of Central Tendency (WPCT)](http://www.phusewiki.org/wiki/images/4/48/CSS_WhitePaper_CentralTendency_v1.0.pdf), which PhUSE have [published in the CS Deliverables Catalog](http://www.phuse.eu/CSS-deliverables.aspx)
