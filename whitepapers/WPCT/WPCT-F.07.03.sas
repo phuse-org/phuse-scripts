@@ -1,13 +1,13 @@
 /*** HEADER
 
-    Display:     Figure 7.1 Box plot - Measurements by Analysis Timepoint, Visit and Planned Treatment
+    Display:     Figure 7.1 Box plot - Measurements by Analysis Timepoint, Visit and Treatment
     White paper: Central Tendency
 
     User Guide:     https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/CentralTendency-UserGuide.txt
     Macro Library:  https://github.com/phuse-org/phuse-scripts/tree/master/whitepapers/utilities
     Specs:          https://github.com/phuse-org/phuse-scripts/tree/master/whitepapers/specification
     Test Data:      https://github.com/phuse-org/phuse-scripts/tree/master/data/adam/cdisc
-    Sample Output:  https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/WPCT/outputs_sas/WPCT-F.07.01_Box_plot_DIABP_by_visit_for_timepoint_815.pdf
+    Sample Output:  https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/WPCT/outputs_sas/WPCT-F.07.03_Box_plot_DIABP_with_change_by_visit_for_timepoint_815.pdf
 
     Using this program:
 
@@ -25,20 +25,18 @@
       * Measurements within each PARAMCD and ATPTN determine precision of statistical results
         + MEAN gets 1 extra decimal, STD DEV gets 2 extra decimals
         + see macro UTIL_VALUE_FORMAT to modify this behavior
-      * If your treatment names are too long for the summary table, change TRTP 
+      * If your treatment names are too long for the summary table, abbreviate them
         in the input data, and add a footnote that explains your short Tx codes
         + This program contains custom code to shorted Tx labels in the PhUSE/CSS test data
         + See "2b) USER SUBSET of data", below
 
     TO DO list for program:
 
-      * ELIMINATE these warnings in the titles/footnote GSLIDE:
-        WARNING: The specified value of 16.7500 inches for HSIZE= is larger than 14.1667 inches which is the maximum for the device WIN. HSIZE is ignored.
-        WARNING: The specified value of 9.2083 inches for VSIZE= is larger than 7.5833 inches which is the maximum for the device WIN. VSIZE is ignored.
       * Reduce the title/footnotes font size, to match Fig. 7.1 and Fig. 7.2 (or increase those to match this Fig. 7.3)
 
       * Complete and confirm specifications (see Outliers & Reference limit discussions, below)
           https://github.com/phuse-org/phuse-scripts/tree/master/whitepapers/specification
+      * The footnote could dynamically describe any normal range lines that appear. See the Fig. 7.1 specifications.
       * For annotated RED CIRCLEs outside normal range limits
           UPDATE the test data so that default outputs have some IQR OUTLIER SQUAREs that are not also RED.
       * LABS & ECG - ADaM VS/LAB/ECG domains have some different variables and variable naming conventions.
@@ -68,9 +66,11 @@ end HEADER ***/
 
     3) REQUIRED - Key user settings (libraries, data sets, variables and box plot options)
        M_LB:   Libname containing ADaM measurement data, such as ADVS.
-               WORK by default, since step (2) creates the desired WORK subsets.
+               WORK by default, since step (2) creates the desired WORK subset.
        M_DS:   Measuments data set, such as ADVS.
 
+       T_VAR:  Variable in M_DS with the Treatment Name, such as TRTP, TRTA.
+       TN_VAR: Variable in M_DS with the Treatment Number (display controls order), such as TRTPN, TRTAN.
        M_VAR:  Variable in M_DS with measurements data, such as AVAL.
        C_VAR:  Variable in M_DS with change-from-baseline data, such as CHG.
 
@@ -79,9 +79,8 @@ end HEADER ***/
        HI_VAR: Variable in M_DS with UPPER LIMIT of reference range, such as ANRHI.
                Required to highlight values outside reference range (RED DOT in box plot), and reference lines
 
-       OPTIONAL: omit to suppress Endpoint P-VALUE in graphic
-         B_VAR:    Variable in M_DS with baseline measurements
-         REF_TRTN: Numeric value of TRTPN for reference (comparator) treatment
+       B_VAR:    (Leave blank to omit p-value from summary table.) Variable in M_DS with baseline measurements
+       REF_TRTN: (Leave blank to omit p-value from summary table.) Numeric value of TN_VAR for reference (comparator) treatment
 
        B_VISN: Visit number that represents Baseline in AVISITN (e.g., 0)
        E_VISN: Visit number that represents endpoint in AVISITN for chg-from-baseline comparison (e.g., 99)
@@ -112,7 +111,7 @@ end HEADER ***/
   ************************************/
 
 
-    %put WARNING: (WPCT-F.07.01) User must ensure PhUSE/CSS utilities are in the AUTOCALL path.;
+    %put WARNING: (WPCT-F.07.03) User must ensure PhUSE/CSS utilities are in the AUTOCALL path.;
 
     /*** 1) PhUSE/CSS utilities in autocall paths (see "Macro Library", above)
 
@@ -134,19 +133,18 @@ end HEADER ***/
 
     /*** 2b) USER SUBSET of data, to limit number of box plot outputs, and to shorten Tx labels ***/
 
-      data advs_sub (rename=(trtp_short=trtp));
+      data advs_sub;
         set work.advs;
         where (paramcd in ('DIABP') and atptn in (815));
 
-        length trtp_short $6;
+        attrib trtp_short length=$6 label='Planned Treatment, abbreviated';
+
         select (trtp);
           when ('Placebo')              trtp_short = 'P';
           when ('Xanomeline High Dose') trtp_short = 'X-high';
           when ('Xanomeline Low Dose')  trtp_short = 'X-low';
           otherwise                     trtp_short = 'UNEXPECTED';
         end;
-
-        drop trtp;
       run;
 
 
@@ -155,17 +153,19 @@ end HEADER ***/
       %let m_lb   = work;
       %let m_ds   = advs_sub;
 
-      %let m_var  = AVAL;
-      %let c_var  = CHG;
+      %let t_var  = trtp_short;
+      %let tn_var = trtpn;
+      %let m_var  = aval;
+      %let c_var  = chg;
 
-      %let lo_var = ANRLO;
-      %let hi_var = ANRHI;
+      %let lo_var = anrlo;
+      %let hi_var = anrhi;
 
       %let b_var  = base;
       %let ref_trtn = 0;
 
       %let b_visn = 0;
-      %let e_visn = 12 24 99;
+      %let e_visn = 12 99;
 
       %let p_fl = saffl;
       %let a_fl = anl01fl;
@@ -193,7 +193,7 @@ end HEADER ***/
 
     options nocenter mautosource mrecall mprint msglevel=I mergenoby=WARN ls=max ps=max;
 
-    %let ana_variables = STUDYID USUBJID &p_fl &a_fl TRTP TRTPN PARAM PARAMCD &m_var &c_var &b_var &lo_var &hi_var AVISIT AVISITN ATPT ATPTN;
+    %let ana_variables = STUDYID USUBJID &p_fl &a_fl &t_var &tn_var PARAM PARAMCD &m_var &c_var &b_var &lo_var &hi_var AVISIT AVISITN ATPT ATPTN;
 
     %*--- Global boolean symbol CONTINUE, used with macro assert_continue(), warns user of invalid environment. Processing should HALT. ---*;
       %let CONTINUE = %assert_depend(OS=%str(AIX,WIN,HP IPF),
@@ -203,7 +203,7 @@ end HEADER ***/
                                      macros=assert_continue util_labels_from_var util_count_unique_values 
                                             util_get_reference_lines util_proc_template util_get_var_min_max
                                             util_value_format util_boxplot_visit_ranges util_axis_order util_delete_dsets,
-                                     symbols=m_lb m_ds m_var c_var lo_var hi_var b_var ref_trtn b_visn e_visn p_fl a_fl 
+                                     symbols=m_lb m_ds t_var tn_var m_var c_var lo_var hi_var b_var ref_trtn b_visn e_visn p_fl a_fl 
                                              ref_lines max_boxes_per_page outputs_folder
                                     );
 
@@ -234,7 +234,7 @@ end HEADER ***/
       &PARAMCD_VAL1 to &&&PARAMCD_VAL&PARAMCD_N series of parameter codes
       &PARAMCD_LAB1 to &&&PARAMCD_LAB&PARAMCD_N series of parameter labels
 
-    Number of planned treatments - used for handling treatments categories
+    Number of treatments - used for handling treatments categories
       &TRTN
 
     Baseline visit value & label
@@ -242,8 +242,8 @@ end HEADER ***/
       &b_visn_lab1
 
     Endpoint visit value & label
-      &e_visn_val1
-      &e_visn_lab1
+      &ep_visn_val1
+      &ep_visn_lab1
 
   ***/
 
@@ -271,19 +271,19 @@ end HEADER ***/
     %*--- Baseline visit: Number (&B_VISN_N), Names (&B_VISN_VAL1) and Labels (&B_VISN_LAB1) ---*;
       %util_labels_from_var(css_anadata, avisitn, avisit, prefix=b_visn, whr=avisitn eq &b_visn)
 
-    %*--- Endpoint visit: Number (&EP_VISN_N), Names (&E_VISN_VAL1) and Labels (&E_VISN_LAB1) ---*;
+    %*--- Endpoint visit: Number (&EP_VISN_N), Names (&EP_VISN_VAL1) and Labels (&EP_VISN_LAB1) ---*;
       %util_labels_from_var(css_anadata, avisitn, avisit, prefix=ep_visn, whr=avisitn eq &ep_visn)
 
-    %*--- Number of planned treatments: Set &TRTN from ana variable TRTP ---*;
-      %util_count_unique_values(css_anadata, trtp, trtn)
+    %*--- Number of treatments: Set &TRTN from ana variable T_VAR ---*;
+      %util_count_unique_values(css_anadata, &t_var, trtn)
 
 
   /*** BOXPLOT for each PARAMETER and ANALYSIS TIMEPOINT in selected data
 
     Two box plots per page for each PARAMETER and ANALYSIS TIMEPOINT.
-    By Visit number and Planned Treatment.
+    By Visit number and Treatment.
 
-    In case of many visits and planned treatments, each PARAM/TIMEPOINT will use multiple pages.
+    In case of many visits and treatments, each PARAM/TIMEPOINT will use multiple pages.
 
     UTIL_PROC_TEMPLATE parameters:
       TEMPLATE     Positional parameter, the name of the template to compile.
@@ -302,14 +302,14 @@ end HEADER ***/
     *--- We need GREPLAY side-by-side template with Titles, Footnotes ---*;
       proc greplay tc=work.css_template nofs;
         tdef css_H2 des="Two side-by-side plots, without borders"
-           1 / llx=6   lly=10
-               ulx=6   uly=90
-               urx=47  ury=90
-               lrx=47  lry=10
+           1 / llx=4   lly=10
+               ulx=4   uly=94
+               urx=48  ury=94
+               lrx=48  lry=10
 
-           2 / llx=53   lly=10
-               ulx=53   uly=90
-               urx=96   ury=90
+           2 / llx=52   lly=10
+               ulx=52   uly=94
+               urx=96   ury=94
                lrx=96   lry=10
 
            3 / llx=0    lly=0
@@ -321,7 +321,7 @@ end HEADER ***/
       quit;
 
 
-    %macro boxplot_each_param_tp(plotds=css_anadata, cleanup=0);
+    %macro boxplot_each_param_tp(plotds=css_anadata, cleanup=1);
 
       %local pdx tdx css_pval_ds;
 
@@ -356,7 +356,7 @@ end HEADER ***/
            *******************************************************************************/
             proc sort data=css_nextparam (where=(atptn = &&atptn_val&tdx))
                        out=css_nexttimept;
-              by avisitn trtpn;
+              by avisitn &tn_var;
             run;
 
           %*--- Y-AXIS DEFAULT: Set Y-Axis MIN/MAX based on this timepoint. See Y-AXIS alternative, above. ---*;
@@ -371,19 +371,19 @@ end HEADER ***/
             %util_value_format(css_nexttimept, &m_var)
 
           %*--- Create macro variable BOXPLOT_VISIT_RANGES, to subset visits into box plot pages ---*;
-            %util_boxplot_visit_ranges(css_nexttimept, vvisn=avisitn, vtrtn=trtpn);
+            %util_boxplot_visit_ranges(css_nexttimept, vvisn=avisitn, vtrtn=&tn_var);
 
 
           *--- Calculate summary statistics for VALUEs and CHANGE. KEEP LABELS of VISIT and TRT for plotting, below ---*;
             proc summary data=css_nexttimept noprint;
-              by avisitn trtpn avisit trtp;
+              by avisitn &tn_var avisit &t_var;
               var &m_var;
               output out=css_stats (drop=_type_ _freq_) 
                      n=n mean=mean std=std median=median min=datamin max=datamax q1=q1 q3=q3;
             run;
 
             proc summary data=css_nexttimept noprint;
-              by avisitn trtpn avisit trtp;
+              by avisitn &tn_var avisit &t_var;
               var &c_var;
               output out=css_c_stats (drop=_type_ _freq_) 
                      n=c_n mean=c_mean std=c_std median=c_median min=c_datamin max=c_datamax q1=c_q1 q3=c_q3;
@@ -402,33 +402,33 @@ end HEADER ***/
 
               proc glm data=css_nexttimept;
                 where &endpoint_definition;
-                class trtpn (ref="&ref_trtn");
-                model &c_var = &b_var trtpn / solution;
+                class &tn_var (ref="&ref_trtn");
+                model &c_var = &b_var &tn_var / solution;
               run; quit;
 
               *--- UPDATE CSS_STATS with p-values for active arms, at Endpoint visit ---*;
                 data temp;
                   *--- We simply need the structure of these vars, for subsequent merge ---*;
-                  set css_stats (keep=avisitn trtpn);
+                  set css_stats (keep=avisitn &tn_var);
                   STOP;
                 run;
 
                 data &css_pval_ds;
                   set temp &css_pval_ds (keep=parameter probt 
                                          rename=(probt=pval)
-                                         where=(parameter=:'TRTPN'));
-                  label pval="GLM ANCOVA p-value: Reference is TRTPN = &ref_trtn";
+                                         where=(parameter=:"%upcase(&tn_var)"));
+                  label pval="GLM ANCOVA p-value: Reference is %upcase(&tn_var) = &ref_trtn";
                   &endpoint_definition;
-                  trtpn   = input(scan(parameter,-1,' '), best8.);
+                  &tn_var = input(scan(parameter,-1,' '), best8.);
                 run;
 
                 proc sort data=&css_pval_ds;
-                  by avisitn trtpn;
+                  by avisitn &tn_var;
                 run;
 
                 data css_stats;
-                  merge css_stats &css_pval_ds (keep=avisitn trtpn pval);
-                  by avisitn trtpn;
+                  merge css_stats &css_pval_ds (keep=avisitn &tn_var pval);
+                  by avisitn &tn_var;
                 run;
 
                 %util_delete_dsets(temp);
@@ -487,7 +487,7 @@ end HEADER ***/
                 proc sgrender data=css_plot (where=( &nxtvis )) template=PhUSEboxplot ;
                   dynamic 
                           _TITLE      = 'Observed Values'
-                          _TRT        = 'trtp'
+                          _TRT        = "&t_var"
                           _AVISITN    = 'avisitn' 
                           _AVISIT     = 'avisit' 
                           _AVAL       = "&m_var"
@@ -518,7 +518,7 @@ end HEADER ***/
                 proc sgrender data=css_plot (where=( avisitn ne &b_visn AND &nxtvis )) template=PhUSEboxplot ;
                   dynamic 
                           _TITLE      = 'Change from Baseline'
-                          _TRT        = 'trtp'
+                          _TRT        = "&t_var"
                           _AVISITN    = 'avisitn' 
                           _AVISIT     = 'avisit' 
                           _AVAL       = "&c_var"
@@ -555,26 +555,26 @@ end HEADER ***/
             %let vdx = %eval(&vdx-1);
 
             %do gdx = 1 %to &vdx;
-              goptions iback="%sysfunc(pathname(WORK))\&&paramcd_val&pdx.._%sysfunc(putn(&gdx,z3.))_left.png" imagestyle=fit;
+              goptions iback="%sysfunc(pathname(WORK))\&&paramcd_val&pdx.._%sysfunc(putn(&gdx,z3.))_left.png" imagestyle=fit nodisplay;
               proc gslide gout=work.gtlpngs; run; quit;
 
-              goptions iback="%sysfunc(pathname(WORK))\&&paramcd_val&pdx.._%sysfunc(putn(&gdx,z3.))_right.png" imagestyle=fit;
+              goptions iback="%sysfunc(pathname(WORK))\&&paramcd_val&pdx.._%sysfunc(putn(&gdx,z3.))_right.png" imagestyle=fit nodisplay;
               proc gslide gout=work.gtlpngs; run; quit;
             %end;
 
             *--- One more Title/Footnotes slide ---*;
-              goptions reset=all;
+              goptions reset=all device=png300 nodisplay;
 
-              title1    justify=left height=1.2 "Box Plot - &&paramcd_lab&pdx Observed Values and Change from %upcase(&B_VISN_LAB1) to %upcase(&EP_VISN_LAB1) by Visit,";
-              title2    justify=left height=1.2 "Analysis Timepoint: &&atptn_lab&tdx";
-              footnote1 justify=left height=1.0 'Box plot type is schematic: the box shows median and interquartile range (IQR, the box edges); the whiskers extend to the minimum and maximum data points';
-              footnote2 justify=left height=1.0 'within 1.5 IQR below 25% and above 75%, respectively. Values outside the whiskers are shown as outliers. Means are marked with a different symbol for each treatment.';
-              footnote3 justify=left height=1.0 'Red dots indicate measures outside the normal reference range. P-value is for the treatment comparison from ANCOVA model Change = Baseline + Treatment.';
+              title1    justify=left height=1.1 "Box Plot - &&paramcd_lab&pdx Observed Values and Change from %upcase(&B_VISN_LAB1) to %upcase(&EP_VISN_LAB1) by Visit";
+              title2    justify=left height=1.1 "Analysis Timepoint: &&atptn_lab&tdx";
+              footnote1 justify=left height=0.9 'Box plot type is schematic: the box shows median and interquartile range (IQR, the box edges); the whiskers extend to the minimum and maximum data points';
+              footnote2 justify=left height=0.9 'within 1.5 IQR below 25% and above 75%, respectively. Values outside the whiskers are shown as outliers. Means are marked with a different symbol for each treatment.';
+              footnote3 justify=left height=0.9 'Red dots indicate measures outside the normal reference range. P-value is for the treatment comparison from ANCOVA model Change = Baseline + Treatment.';
 
               proc gslide gout=work.gtlpngs; run; quit;
 
-          *--- [Step 3] GREPLAY to assemble these PARAM/TIMEPOINT ODS plot onto pages of one PDF ---*;
-            goptions reset=all device=sasprtc;
+          *--- [Step 3] GREPLAY to assemble these PARAM/TIMEPOINT ODS plot onto pages of one PDF (HSIZE & VSIZE fit A4 and Letter) ---*;
+            goptions reset=all hsize=10.5in vsize=7.5in;
             options orientation=landscape;
 
             ods pdf file="&outputs_folder\WPCT-F.07.03_Box_plot_&&paramcd_val&pdx.._with_change_by_visit_for_timepoint_&&atptn_val&tdx...pdf"

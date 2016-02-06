@@ -1,6 +1,6 @@
 /*** HEADER
 
-    Display:     Figure 7.2 Box plot - Change from Baseline by Analysis Timepoint, Visit and Planned Treatment
+    Display:     Figure 7.2 Box plot - Change from Baseline by Analysis Timepoint, Visit and Treatment
     White paper: Central Tendency
 
     User Guide:     https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/CentralTendency-UserGuide.txt
@@ -18,7 +18,7 @@
       * Measurements within each PARAMCD and ATPTN determine precision of statistical results
         + MEAN gets 1 extra decimal, STD DEV gets 2 extra decimals
         + see macro UTIL_VALUE_FORMAT to modify this behavior
-      * If your treatment names are too long for the summary table, change TRTP 
+      * If your treatment names are too long for the summary table, abbreviate them
         in the input data, and add a footnote that explains your short Tx codes
         + This program contains custom code to shorted Tx labels in the PhUSE/CSS test data
         + See "2b) USER SUBSET of data", below
@@ -56,34 +56,36 @@ end HEADER ***/
          - Analysis Timepoints
          - Visits
 
-    3a) REQUIRED - Key user settings (libraries, data sets, variables and box plot options)
-        C_LB:     Libname containing ADaM measurement data, such as ADVS.
-                  WORK by default, since step (2) creates the desired WORK subsets.
-        C_DS:     Measuments data set including derived Change-from-baseline, such as ADVS.
-        C_VAR:    Variable in C_DS with change-from-baseline data, such as CHG.
+    3) REQUIRED - Key user settings (libraries, data sets, variables and box plot options)
+       M_LB:     Libname containing ADaM data, such as ADVS.
+                 WORK by default, since step (2) creates the desired WORK subset.
+       M_DS:     Measuments data set including derived Change-from-baseline, such as ADVS.
 
-        OPTIONAL: omit to suppress Endpoint P-VALUE in graphic
-          B_VAR:    Variable in C_DS with baseline measurements
-          REF_TRTN: Numeric value of TRTPN for reference (comparator) treatment
+       T_VAR:   Variable in M_DS with the Treatment Name, such as TRTP, TRTA.
+       TN_VAR:  Variable in M_DS with the Treatment Number (display controls order), such as TRTPN, TRTAN.
+       C_VAR:   Variable in M_DS with change-from-baseline data, such as CHG.
 
-        B_VISN:   Visit number that represents Baseline in AVISITN (e.g., 0)
-        E_VISN:   Visit number that represents endpoint in AVISITN for chg-from-baseline comparison (e.g., 99)
+       B_VAR:    (Leave blank to omit p-value from summary table.) Variable in M_DS with baseline measurements
+       REF_TRTN: (Leave blank to omit p-value from summary table.) Numeric value of TN_VAR for reference (comparator) treatment
 
-        P_FL:     Population flag variable. 'Y' indicates record is in population of interest.
-        A_FL:     Analysis Flag variable.   'Y' indicates that record is selected for analysis.
+       B_VISN:   Visit number that represents Baseline in AVISITN (e.g., 0)
+       E_VISN:   Visit number that represents endpoint in AVISITN for chg-from-baseline comparison (e.g., 99)
 
-        MAX_BOXES_PER_PAGE:
-              Maximum number of boxes to display per plot page (see "Notes", above)
+       P_FL:     Population flag variable. 'Y' indicates record is in population of interest.
+       A_FL:     Analysis Flag variable.   'Y' indicates that record is selected for analysis.
 
-        OUTPUTS_FOLDER:
-              Location to write PDF outputs (WITHOUT final back- or forward-slash)
+       MAX_BOXES_PER_PAGE:
+             Maximum number of boxes to display per plot page (see "Notes", above)
+
+       OUTPUTS_FOLDER:
+             Location to write PDF outputs (WITHOUT final back- or forward-slash)
 
   ************************************
   *** user processing and settings ***
   ************************************/
 
 
-    %put WARNING: (WPCT-F.07.01) User must ensure PhUSE/CSS utilities are in the AUTOCALL path.;
+    %put WARNING: (WPCT-F.07.02) User must ensure PhUSE/CSS utilities are in the AUTOCALL path.;
 
     /*** 1) PhUSE/CSS utilities in autocall paths (see "Macro Library", above)
 
@@ -105,27 +107,29 @@ end HEADER ***/
 
     /*** 2b) USER SUBSET of data, to limit number of box plot outputs, and to shorten Tx labels ***/
 
-      data advs_sub (rename=(trtp_short=trtp));
+      data advs_sub;
         set work.advs;
         where (paramcd in ('DIABP') and atptn in (815)) or 
               (paramcd in ('SYSBP') and atptn in (816));
 
-        length trtp_short $6;
+        attrib trtp_short length=$6 label='Planned Treatment, abbreviated';
+
         select (trtp);
           when ('Placebo')              trtp_short = 'P';
           when ('Xanomeline High Dose') trtp_short = 'X-high';
           when ('Xanomeline Low Dose')  trtp_short = 'X-low';
           otherwise                     trtp_short = 'UNEXPECTED';
         end;
-
-        drop trtp;
       run;
 
 
     %*--- 3) Key user settings ---*;
 
-      %let c_lb   = work;
-      %let c_ds   = advs_sub;
+      %let m_lb   = work;
+      %let m_ds   = advs_sub;
+
+      %let t_var  = trtp_short;
+      %let tn_var = trtpn;
       %let c_var  = chg;
 
       %let b_var  = base;
@@ -158,17 +162,17 @@ end HEADER ***/
 
     options nocenter mautosource mrecall mprint msglevel=I mergenoby=WARN ls=max ps=max;
 
-    %let ana_variables = STUDYID USUBJID &p_fl &a_fl TRTP TRTPN PARAM PARAMCD &c_var &b_var AVISIT AVISITN ATPT ATPTN;
+    %let ana_variables = STUDYID USUBJID &p_fl &a_fl &t_var &tn_var PARAM PARAMCD &c_var &b_var AVISIT AVISITN ATPT ATPTN;
 
     %*--- Global boolean symbol CONTINUE, used with macro assert_continue(), warns user of invalid environment. Processing should HALT. ---*;
       %let CONTINUE = %assert_depend(OS=%str(AIX,WIN,HP IPF),
                                      SASV=9.4M2,
                                      SYSPROD=,
-                                     vars=%str(&c_lb..&c_ds : &ana_variables),
+                                     vars=%str(&m_lb..&m_ds : &ana_variables),
                                      macros=assert_continue util_labels_from_var util_count_unique_values 
                                             util_proc_template util_get_var_min_max util_value_format
                                             util_boxplot_visit_ranges util_axis_order util_delete_dsets,
-                                     symbols=c_lb c_ds c_var b_var ref_trtn b_visn e_visn p_fl a_fl
+                                     symbols=m_lb m_ds t_var tn_var c_var b_var ref_trtn b_visn e_visn p_fl a_fl
                                              max_boxes_per_page outputs_folder
                                     );
 
@@ -177,7 +181,7 @@ end HEADER ***/
 
     *--- Restrict analysis to SAFETY POP and ANALYSIS RECORDS (&a_fl) ---*;
       data css_anadata;
-        set &c_lb..&c_ds (keep=&ana_variables);
+        set &m_lb..&m_ds (keep=&ana_variables);
         where &p_fl = 'Y' and &a_fl = 'Y';
 
         *--- DO NOT display the baseline change, which is always zero ---*;
@@ -193,7 +197,7 @@ end HEADER ***/
       &PARAMCD_VAL1 to &&&PARAMCD_VAL&PARAMCD_N series of parameter codes
       &PARAMCD_LAB1 to &&&PARAMCD_LAB&PARAMCD_N series of parameter labels
 
-    Number of planned treatments - used for handling treatments categories
+    Number of treatments - used for handling treatments categories
       &TRTN
 
     Baseline visit value & label
@@ -210,21 +214,21 @@ end HEADER ***/
       %util_labels_from_var(css_anadata, paramcd, param)
 
     %*--- Baseline visit: Number (&B_VISN_N), Names (&B_VISN_VAL1) and Labels (&B_VISN_LAB1) ---*;
-      %util_labels_from_var(&c_lb..&c_ds, avisitn, avisit, prefix=b_visn, whr=avisitn eq &b_visn)
+      %util_labels_from_var(&m_lb..&m_ds, avisitn, avisit, prefix=b_visn, whr=avisitn eq &b_visn)
 
     %*--- Endpoint visit: Number (&E_VISN_N), Names (&E_VISN_VAL1) and Labels (&E_VISN_LAB1) ---*;
       %util_labels_from_var(css_anadata, avisitn, avisit, prefix=e_visn, whr=avisitn eq &e_visn)
 
-    %*--- Number of planned treatments: Set &TRTN from ana variable TRTP ---*;
-      %util_count_unique_values(css_anadata, trtp, trtn)
+    %*--- Number of treatments: Set &TRTN from ana variable T_VAR ---*;
+      %util_count_unique_values(css_anadata, &t_var, trtn)
 
 
   /*** BOXPLOT for each PARAMETER and ANALYSIS TIMEPOINT in selected data
 
     One box plot for each PARAMETER and ANALYSIS TIMEPOINT.
-    By Visit and Planned Treatment.
+    By Visit and Treatment.
 
-    In case of many visits and planned treatments, each box plot will use multiple pages.
+    In case of many visits and treatments, each box plot will use multiple pages.
 
     UTIL_PROC_TEMPLATE parameters:
       TEMPLATE     Positional parameter, the name of the template to compile.
@@ -268,7 +272,7 @@ end HEADER ***/
            *******************************************************************************/
             proc sort data=css_nextparam (where=(atptn = &&atptn_val&tdx))
                        out=css_nexttimept;
-              by avisitn trtpn;
+              by avisitn &tn_var;
             run;
 
           %*--- Y-AXIS DEFAULT: Set Y-Axis MIN/MAX based on this timepoint. See Y-AXIS alternative, above. ---*;
@@ -281,12 +285,12 @@ end HEADER ***/
             %util_value_format(css_nexttimept, &c_var)
 
           %*--- Create macro variable BOXPLOT_VISIT_RANGES, to subset visits into box plot pages ---*;
-            %util_boxplot_visit_ranges(css_nexttimept, vvisn=avisitn, vtrtn=trtpn);
+            %util_boxplot_visit_ranges(css_nexttimept, vvisn=avisitn, vtrtn=&tn_var);
 
 
           *--- Calculate summary statistics, KEEP LABELS of VISIT and TRT for plotting, below ---*;
             proc summary data=css_nexttimept noprint;
-              by avisitn trtpn avisit trtp;
+              by avisitn &tn_var avisit &t_var;
               var &c_var;
               output out=css_stats (drop=_type_ _freq_) 
                      n=n mean=mean std=std median=median min=datamin max=datamax q1=q1 q3=q3;
@@ -305,33 +309,33 @@ end HEADER ***/
 
               proc glm data=css_nexttimept;
                 where &endpoint_definition;
-                class trtpn (ref="&ref_trtn");
-                model &c_var = &b_var trtpn / solution;
+                class &tn_var (ref="&ref_trtn");
+                model &c_var = &b_var &tn_var / solution;
               run; quit;
 
               *--- UPDATE CSS_STATS with p-values for active arms, at Endpoint visit ---*;
                 data temp;
                   *--- We simply need the structure of these vars, for subsequent merge ---*;
-                  set css_stats (keep=avisitn trtpn);
+                  set css_stats (keep=avisitn &tn_var);
                   STOP;
                 run;
 
                 data &css_pval_ds;
                   set temp &css_pval_ds (keep=parameter probt 
                                          rename=(probt=pval)
-                                         where=(parameter=:'TRTPN'));
-                  label pval="GLM ANCOVA p-value: Reference is TRTPN = &ref_trtn";
+                                         where=(parameter=:"%upcase(&tn_var)"));
+                  label pval="GLM ANCOVA p-value: Reference is %upcase(&tn_var) = &ref_trtn";
                   &endpoint_definition;
-                  trtpn   = input(scan(parameter,-1,' '), best8.);
+                  &tn_var = input(scan(parameter,-1,' '), best8.);
                 run;
 
                 proc sort data=&css_pval_ds;
-                  by avisitn trtpn;
+                  by avisitn &tn_var;
                 run;
 
                 data css_stats;
-                  merge css_stats &css_pval_ds (keep=avisitn trtpn pval);
-                  by avisitn trtpn;
+                  merge css_stats &css_pval_ds (keep=avisitn &tn_var pval);
+                  by avisitn &tn_var;
                 run;
 
                 %util_delete_dsets(temp);
@@ -393,7 +397,7 @@ end HEADER ***/
 
               proc sgrender data=css_plot (where=( &nxtvis )) template=PhUSEboxplot ;
                 dynamic 
-                        _TRT        = 'trtp'
+                        _TRT        = "&t_var"
                         _AVISITN    = 'avisitn' 
                         _AVISIT     = 'avisit' 
                         _AVAL       = "&c_var"

@@ -26,17 +26,18 @@
       * Measurements within each PARAMCD and ATPTN determine precision of statistical results
         + MEAN gets 1 extra decimal, STD DEV gets 2 extra decimals
         + see macro UTIL_VALUE_FORMAT to modify this behavior
-      * If your treatment names are too long for the summary table, change TRTP 
+      * If your treatment names are too long for the summary table, abbreviate them
         in the input data, and add a footnote that explains your short Tx codes
+        + This program contains custom code to shorted Tx labels in the PhUSE/CSS test data
+        + See "2b) USER SUBSET of data", below
 
     TO DO list for program:
 
-      * Q for Reviewer: Should we use ADSL data to report patients, not just obs in stats table?
-          initial reviewer response in "No.", so removed code related to ADSL.
       * Complete and confirm specifications (see Outliers & Reference limit discussions, below)
           https://github.com/phuse-org/phuse-scripts/tree/master/whitepapers/specification
       * For annotated RED CIRCLEs outside normal range limits
           UPDATE the test data so that default outputs have some IQR OUTLIER SQUAREs that are not also RED.
+      * The footnote could dynamically describe any normal range lines that appear. See the Fig. 7.1 specifications.
       * LABS & ECG - ADaM VS/LAB/ECG domains have some different variables and variable naming conventions.
           - What variables are used for LAB/ECG box plots?
           - What visits/time-points are relevant to LAB/ECG box plots?
@@ -66,7 +67,11 @@ end HEADER ***/
        M_LB:   Libname containing ADaM measurement data, such as ADVS.
                WORK by default, since step (2) creates the desired WORK subsets.
        M_DS:   Measuments data set, such as ADVS.
+
+       T_VAR:  Variable in M_DS with the Treatment Name, such as TRTP, TRTA.
+       TN_VAR: Variable in M_DS with the Treatment Number (display controls order), such as TRTPN, TRTAN.
        M_VAR:  Variable in M_DS with measurements data, such as AVAL.
+
        LO_VAR: Variable in M_DS with LOWER LIMIT of reference range, such as ANRLO.
                Required to highlight values outside reference range (RED DOT in box plot), and reference lines
        HI_VAR: Variable in M_DS with UPPER LIMIT of reference range, such as ANRHI.
@@ -119,20 +124,19 @@ end HEADER ***/
 
     /*** 2b) USER SUBSET of data, to limit number of box plot outputs, and to shorten Tx labels ***/
 
-      data advs_sub (rename=(trtp_short=trtp));
+      data advs_sub;
         set work.advs;
         where (paramcd in ('DIABP') and atptn in (815)) or 
               (paramcd in ('SYSBP') and atptn in (816));
 
-        length trtp_short $6;
+        attrib trtp_short length=$6 label='Planned Treatment, abbreviated';
+
         select (trtp);
           when ('Placebo')              trtp_short = 'P';
           when ('Xanomeline High Dose') trtp_short = 'X-high';
           when ('Xanomeline Low Dose')  trtp_short = 'X-low';
           otherwise                     trtp_short = 'UNEXPECTED';
         end;
-
-        drop trtp;
       run;
 
 
@@ -141,9 +145,11 @@ end HEADER ***/
       %let m_lb   = work;
       %let m_ds   = advs_sub;
 
-      %let m_var  = AVAL;
-      %let lo_var = ANRLO;
-      %let hi_var = ANRHI;
+      %let t_var  = trtp_short;
+      %let tn_var = trtpn;
+      %let m_var  = aval;
+      %let lo_var = anrlo;
+      %let hi_var = anrhi;
 
       %let jitter = Y;
       %let ref_lines = UNIFORM;
@@ -174,7 +180,7 @@ end HEADER ***/
     goptions reset=all;
     ods show;
 
-    %let ana_variables = STUDYID USUBJID &p_fl &a_fl TRTP TRTPN PARAM PARAMCD &m_var &lo_var &hi_var AVISIT AVISITN ATPT ATPTN;
+    %let ana_variables = STUDYID USUBJID &p_fl &a_fl &t_var &tn_var PARAM PARAMCD &m_var &lo_var &hi_var AVISIT AVISITN ATPT ATPTN;
 
     *--- Restrict analysis to SAFETY POP and ANALYSIS RECORDS (&a_fl) ---*;
       data css_anadata;
@@ -190,7 +196,7 @@ end HEADER ***/
                                             util_get_var_min_max util_value_format obsolete_prep_shewhart_data
                                             obsolete_annotate_outliers util_axis_order 
                                             util_get_reference_lines util_delete_dsets,
-                                     symbols=m_lb m_ds m_var lo_var hi_var jitter ref_lines p_fl a_fl 
+                                     symbols=m_lb m_ds t_var tn_var m_var lo_var hi_var jitter ref_lines p_fl a_fl 
                                              max_boxes_per_page outputs_folder
                                     );
 
@@ -212,8 +218,8 @@ end HEADER ***/
     %*--- Parameters: Number (&PARAMCD_N), Names (&PARAMCD_NAM1 ...) and Labels (&PARAMCD_LAB1 ...) ---*;
       %util_labels_from_var(css_anadata, paramcd, param)
 
-    %*--- Number of planned treatments: Set &TRTN from ana variable TRTP ---*;
-      %util_count_unique_values(css_anadata, trtp, trtn)
+    %*--- Number of planned treatments: Set &TRTN from ana variable T_VAR ---*;
+      %util_count_unique_values(css_anadata, &t_var, trtn)
 
 
   /*** BOXPLOT for each PARAMETER and ANALYSIS TIMEPOINT in selected data
@@ -260,7 +266,7 @@ end HEADER ***/
            *******************************************************************************/
             proc sort data=css_nextparam (where=(atptn = &&atptn_val&tdx))
                        out=css_nexttimept;
-              by avisitn trtpn;
+              by avisitn &tn_var;
             run;
 
           %*--- Y-AXIS DEFAULT: Fix Y-Axis MIN/MAX based on this timepoint. See Y-AXIS alternative, above. ---*;
@@ -275,7 +281,7 @@ end HEADER ***/
 
           *--- Calculate summary statistics, and merge onto measurement data for use as "block" variables ---*;
             proc summary data=css_nexttimept noprint;
-              by avisitn trtpn;
+              by avisitn &tn_var;
               var &m_var;
               output out=css_stats (drop=_type_) 
                      n=n mean=mean std=std median=median min=min max=max q1=q1 q3=q3;
@@ -285,7 +291,7 @@ end HEADER ***/
             data css_plot (rename=(avisit=_PHASE_));
               merge css_nexttimept (in=in_paramcd)
                     css_stats (in=in_stats);
-              by avisitn trtpn;
+              by avisitn &tn_var;
               label n      = 'n'
                     mean   = 'Mean'
                     std    = 'Std Dev'
@@ -306,7 +312,7 @@ end HEADER ***/
           ***/
 
             %obsolete_prep_shewhart_data(css_plot, 
-                                         vvisn=avisitn, vtrtn=trtpn, vtrt=trtp, vval=&m_var,
+                                         vvisn=avisitn, vtrtn=&tn_var, vtrt=&t_var, vval=&m_var,
                                          numtrt=&trtn, numvis=&visn,
                                          alsokeep=&lo_var &hi_var)
 
@@ -356,7 +362,7 @@ end HEADER ***/
                                         ref_lines=&ref_lines)
 
               proc shewhart data=css_plot_tp (where=( &nxtvis ));
-                boxchart &m_var * timept (max q3 median q1 min std mean n trtp) = trtp /
+                boxchart &m_var * timept (max q3 median q1 min std mean n &t_var) = &t_var /
                          annotate = css_annotate (where=( %sysfunc(tranwrd(&nxtvis, timept, x)) ))
                          boxstyle = schematic
                          notches
@@ -382,7 +388,7 @@ end HEADER ***/
 
                 label &m_var  = "&&paramcd_lab&pdx"
                       timept  = 'Visit'
-                      trtp    = 'Treatment'
+                      &t_var  = 'Treatment'
                       n       = 'n'
                       mean    = 'Mean'
                       std     = 'Std'

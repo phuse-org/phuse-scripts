@@ -70,12 +70,15 @@
                                  markerattrs=(color=CX000000 
                                               symbol=square 
                                               size=&iqr_size);
-          legenditem type=marker name='NormalRangeOutliers' / 
-                                 label='Normal Range Outliers'
-                                 markerattrs=(color=CXFF0000 
-                                              symbol=circlefilled 
-                                              size=%eval(&iqr_size - 1)
-                                             );
+
+          IF (EXISTS(_AVALOUTLIE))
+            legenditem type=marker name='NormalRangeOutliers' / 
+                                   label='Normal Range Outliers'
+                                   markerattrs=(color=CXFF0000 
+                                                symbol=circlefilled 
+                                                size=%eval(&iqr_size - 1)
+                                               );
+          ENDIF;
 
           layout overlay /
                  walldisplay=none
