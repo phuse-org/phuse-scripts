@@ -28,4 +28,4 @@ Scripts below by default produce outputs based on a specific ADaM domain such as
 | Fig. 7.7 [![Fig. 7.7](../images/wpct/target_07.07.png)](../images/wpct/target_07.07_full.png)<br/>|Create specs|R script<br/>SAS script|from SAS<br/>from R|Review & Test code on your own data| *release upon successful review*|
 | Fig. 7.8 [![Fig. 7.8](../images/wpct/target_07.08.png)](../images/wpct/target_07.08_full.png)<br/>|Create specs|R script<br/>SAS script|from SAS<br/>from R|Review & Test code on your own data| *release upon successful review*|
 | | | | | |*a template row follows*|
-| Fig. A.b [![Fig. A.b](../images/wpct/target_A.b.png)](../images/wpct/target_A.b_full.png)|from SAS<br/>from R|Review [specs]()|[R script]()<br/>[SAS script]()|Review & Test code on your own data| *release upon successful review*|
+| Fig. A.b [![Fig. A.b](../images/wpct/target_A.b.png)](../images/wpct/target_A.b_full.png)|Create specs|R script<br/>SAS script|from SAS<br/>from R|Review & Test code on your own data| *release upon successful review*|
