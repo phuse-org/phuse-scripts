@@ -48,7 +48,7 @@ Each Central Tendency data display will have a same-name script in SAS and R in 
 
 ##### Project conventions
 
-  *The [whitepapers README file](https://github.com/phuse-org/phuse-scripts/tree/master/whitepapers) describes our directory structure.
+  * The [whitepapers README file](https://github.com/phuse-org/phuse-scripts/tree/master/whitepapers) describes our directory structure.
 
   * Programming Guidelines for this project are in [our PhUSE Wiki](http://www.phusewiki.org/wiki/index.php?title=WG5_P02_Programming_Guidelines)
 
