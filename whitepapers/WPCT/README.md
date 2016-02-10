@@ -1,6 +1,6 @@
 ### About
 
-This folder contains Standard Scripts in SAS and R, to produce data displays as specified in the [CSS/PhUSE White Paper on Central Tendencies](http://www.phuse.eu/publications.aspx).
+This folder contains Standard Scripts in SAS and R, to produce data displays as specified in the [PhUSE CS White Paper on Central Tendencies](http://www.phuse.eu/publications.aspx).
 
 See our [WPCT to-do list](./TODO.md) for ways to participate and contribute.
 
