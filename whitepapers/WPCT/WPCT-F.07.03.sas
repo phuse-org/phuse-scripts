@@ -11,12 +11,7 @@
 
     Using this program:
 
-      * Figure 7.3 combines analyses from Figures 7.1 and 7.2 as side-by-side graphics.
-        The approach follows SAS Note "Sample 41461: Put multiple PROC SGPLOT outputs on the same PDF page using PROC GREPLAY"
-        http://support.sas.com/kb/41/461.html
-          [Step 1] write PNG files to disk (SGRENDER)
-          [Step 2] read PNG files from disk (PROC GSLIDE with the IBACK= and IMAGESTYLE= graphics options)
-          [Step 3] "replay" those graphs to desired layout (PROC GREPLAY)
+      * Figure 7.3 combines analyses from Figures 7.1 and 7.2 as side-by-side graphics on a PDF page.
 
       * See USER PROCESSING AND SETTINGS, below, to configure this program for your environment and data
       * Program will plot all visits, ordered by AVISITN, with maximum of 20 boxes on a page (default)
@@ -27,7 +22,7 @@
         + see macro UTIL_VALUE_FORMAT to modify this behavior
       * If your treatment names are too long for the summary table, abbreviate them
         in the input data, and add a footnote that explains your short Tx codes
-        + This program contains custom code to shorted Tx labels in the PhUSE/CSS test data
+        + This program contains custom code to shorted Tx labels in the PhUSE CS test data
         + See "2b) USER SUBSET of data", below
 
     TO DO list for program:
@@ -54,10 +49,10 @@ end HEADER ***/
    *** USER PROCESSING AND SETTINGS ***
    ************************************
 
-    1) REQUIRED - PhUSE/CSS Utilities macro library.
-       These templates require the PhUSE/CSS macro utilities:
+    1) REQUIRED - PhUSE CS Utilities macro library.
+       These templates require the PhUSE CS macro utilities:
          https://github.com/phuse-org/phuse-scripts/tree/master/whitepapers/utilities
-       User must ensure that SAS can find PhUSE/CSS macros in the SASAUTOS path (see EXECUTE ONE TIME, below)
+       User must ensure that SAS can find PhUSE CS macros in the SASAUTOS path (see EXECUTE ONE TIME, below)
 
     2) OPTIONAL - Subset measurement data, to limit resulting plots to specific
          - Parameters
@@ -111,23 +106,23 @@ end HEADER ***/
   ************************************/
 
 
-    %put WARNING: (WPCT-F.07.03) User must ensure PhUSE/CSS utilities are in the AUTOCALL path.;
+    %put WARNING: (WPCT-F.07.03) User must ensure PhUSE CS utilities are in the AUTOCALL path.;
 
-    /*** 1) PhUSE/CSS utilities in autocall paths (see "Macro Library", above)
+    /*** 1) PhUSE CS utilities in autocall paths (see "Macro Library", above)
 
       EXECUTE ONE TIME only as needed
-      NB: The following line is necessary only when PhUSE/CSS utilities are NOT in your default AUTOCALL paths
+      NB: The following line is necessary only when PhUSE CS utilities are NOT in your default AUTOCALL paths
 
       OPTIONS sasautos=(%sysfunc(getoption(sasautos)) "C:\CSS\phuse-scripts\whitepapers\utilities");
 
     ***/
 
 
-    /*** 2a) REMOTE ACCESS data, by default PhUSE/CSS test data, and create WORK copy.                ***/
+    /*** 2a) REMOTE ACCESS data, by default PhUSE CS test data, and create WORK copy.                ***/
     /***     NB: If remote access to test data files does not work, see local override, below. ***/
       %util_access_test_data(advs)
 
-      *--- NB: LOCAL CSS/PhUSE test data, override remote access by providing a local path ---*;
+      *--- NB: LOCAL PhUSE CS test data, override remote access by providing a local path ---*;
         %* %util_access_test_data(advs, local=C:\CSS\phuse-scripts\data\adam\cdisc\) ;
 
 
@@ -287,9 +282,9 @@ end HEADER ***/
 
     UTIL_PROC_TEMPLATE parameters:
       TEMPLATE     Positional parameter, the name of the template to compile.
-      DESIGNWIDTH  Default is 260mm, suitable for one full-page landscap Letter/A4 plot.
+      DESIGNWIDTH  Default is 260mm, suitable for one full-page landscape Letter/A4 plot.
                    130mm is suitable for these 2 side-by-side plots.
-      DESIGNHEIGHT Default is 170mm, suitable for one full-page landscap Letter/A4 plot.
+      DESIGNHEIGHT Default is 170mm, suitable for one full-page landscape Letter/A4 plot.
 
     BOXPLOT_EACH_PARAM_TP parameters:      
       CLEANUP      Default is 1, delete intermediate data sets. 
@@ -298,28 +293,6 @@ end HEADER ***/
   ***/
 
     %util_proc_template(phuseboxplot, designwidth=130mm)
-
-    *--- We need GREPLAY side-by-side template with Titles, Footnotes ---*;
-      proc greplay tc=work.css_template nofs;
-        tdef css_H2 des="Two side-by-side plots, without borders"
-           1 / llx=4   lly=10
-               ulx=4   uly=94
-               urx=48  ury=94
-               lrx=48  lry=10
-
-           2 / llx=52   lly=10
-               ulx=52   uly=94
-               urx=96   ury=94
-               lrx=96   lry=10
-
-           3 / llx=0    lly=0
-               ulx=0    uly=100
-               urx=100  ury=100
-               lrx=100  lry=0
-           ;
-
-      quit;
-
 
     %macro boxplot_each_param_tp(plotds=css_anadata, cleanup=1);
 
@@ -458,17 +431,30 @@ end HEADER ***/
 
 
           *--- Graphics Adjustments - Set defaults for all graphs for this PARAMCD/TIMEPOINT ---*;
+            options orientation=landscape;
             goptions reset=all;
 
             ods graphics on / reset=all;
             ods graphics    / border=no attrpriority=COLOR;
+
+            title1    justify=left height=1.2 "Box Plot - &&paramcd_lab&pdx Observed Values and Change from %upcase(&B_VISN_LAB1) to %upcase(&EP_VISN_LAB1) by Visit";
+            title2    justify=left height=1.2 "Analysis Timepoint: &&atptn_lab&tdx";
+            footnote1 justify=left height=1.0 'Box plot type is schematic: the box shows median and interquartile range (IQR, the box edges); the whiskers extend to the minimum and maximum data points';
+            footnote2 justify=left height=1.0 'within 1.5 IQR below 25% and above 75%, respectively. Values outside the whiskers are shown as outliers. Means are marked with a different symbol for each treatment.';
+            footnote3 justify=left height=1.0 'Red dots indicate measures outside the normal reference range. P-value is for the treatment comparison from ANCOVA model Change = Baseline + Treatment.';
 
             %let aval_axis = %util_axis_order( %scan(&aval_min_max,1,%str( )), %scan(&aval_min_max,2,%str( )) );
             %let chg_axis  = %util_axis_order( %scan(&chg_min_max,1, %str( )), %scan(&chg_min_max,2, %str( )) );
 
           *--- ODS PDF destination (Traditional Graphics, No ODS or Listing output) ---*;
             ods listing close;
-            ods html path="%sysfunc(pathname(WORK))" image_dpi=300;
+
+            ods pdf file="&outputs_folder\WPCT-F.07.03_Box_plot_&&paramcd_val&pdx.._with_change_by_visit_for_timepoint_&&atptn_val&tdx...pdf"
+                    notoc bookmarklist=none columns=2 dpi=300 startpage=no 
+                    author="(&SYSUSERID) PhUSE CS Standard Analysis Library"
+                    subject='PhUSE CS Measures of Central Tendency'
+                    title="Boxplot of &&paramcd_lab&pdx Observed Values and Change from %upcase(&B_VISN_LAB1) to %upcase(&EP_VISN_LAB1) by Visit for Analysis Timepoint &&atptn_lab&tdx"
+                    ;
 
 
           /*** LOOP 3 - FINALLY, A Graph ****************************
@@ -480,8 +466,10 @@ end HEADER ***/
             %do %while (%qscan(&boxplot_visit_ranges,&vdx,|) ne );
               %let nxtvis = %qscan(&boxplot_visit_ranges,&vdx,|);
 
-              *--- [Step 1] Create PNGs to disk ---*;
-                ods graphics on / imagename = "&&paramcd_val&pdx.._%sysfunc(putn(&vdx,z3.))_left";
+              %*--- After page 1, force a new page in the PDF (see ODS PDF option STARTPAGE=NO, above) ---*;
+                %if &vdx > 1 %then %do;
+                  ods pdf startpage=now;
+                %end;
 
               *--- OBSERVED values (left plot) ---*;
                 proc sgrender data=css_plot (where=( &nxtvis )) template=PhUSEboxplot ;
@@ -511,8 +499,6 @@ end HEADER ***/
                           _DATAMAX    = 'datamax'
                           ;
                 run;
-
-              ods graphics on / imagename = "&&paramcd_val&pdx.._%sysfunc(putn(&vdx,z3.))_right";
 
               *--- CHANGE values (right plot) DO NOT DISPLAY baseline visit (always zero change) ---*;
                 proc sgrender data=css_plot (where=( avisitn ne &b_visn AND &nxtvis )) template=PhUSEboxplot ;
@@ -545,60 +531,6 @@ end HEADER ***/
 
               %let vdx=%eval(&vdx+1);
             %end; %* --- LOOP 3 - Pages of box plots, VDX ---*;
-
-          *--- [Step 2] GSLIDE recovers these images for PDF compilation ---*;
-            ods listing;            
-            ods html close;
-            goptions reset=all device=png300 nodisplay;
-
-            %local gdx;
-            %let vdx = %eval(&vdx-1);
-
-            %do gdx = 1 %to &vdx;
-              goptions iback="%sysfunc(pathname(WORK))\&&paramcd_val&pdx.._%sysfunc(putn(&gdx,z3.))_left.png" imagestyle=fit nodisplay;
-              proc gslide gout=work.gtlpngs; run; quit;
-
-              goptions iback="%sysfunc(pathname(WORK))\&&paramcd_val&pdx.._%sysfunc(putn(&gdx,z3.))_right.png" imagestyle=fit nodisplay;
-              proc gslide gout=work.gtlpngs; run; quit;
-            %end;
-
-            *--- One more Title/Footnotes slide ---*;
-              goptions reset=all device=png300 nodisplay;
-
-              title1    justify=left height=1.1 "Box Plot - &&paramcd_lab&pdx Observed Values and Change from %upcase(&B_VISN_LAB1) to %upcase(&EP_VISN_LAB1) by Visit";
-              title2    justify=left height=1.1 "Analysis Timepoint: &&atptn_lab&tdx";
-              footnote1 justify=left height=0.9 'Box plot type is schematic: the box shows median and interquartile range (IQR, the box edges); the whiskers extend to the minimum and maximum data points';
-              footnote2 justify=left height=0.9 'within 1.5 IQR below 25% and above 75%, respectively. Values outside the whiskers are shown as outliers. Means are marked with a different symbol for each treatment.';
-              footnote3 justify=left height=0.9 'Red dots indicate measures outside the normal reference range. P-value is for the treatment comparison from ANCOVA model Change = Baseline + Treatment.';
-
-              proc gslide gout=work.gtlpngs; run; quit;
-
-          *--- [Step 3] GREPLAY to assemble these PARAM/TIMEPOINT ODS plot onto pages of one PDF (HSIZE & VSIZE fit A4 and Letter) ---*;
-            goptions reset=all hsize=10.5in vsize=7.5in;
-            options orientation=landscape;
-
-            ods pdf file="&outputs_folder\WPCT-F.07.03_Box_plot_&&paramcd_val&pdx.._with_change_by_visit_for_timepoint_&&atptn_val&tdx...pdf"
-                    notoc bookmarklist=none dpi=300
-                    author="(&SYSUSERID) PhUSE/CSS Standard Analysis Library"
-                    subject='PhUSE/CSS Measures of Central Tendency'
-                    title="Boxplot of &&paramcd_lab&pdx Observed Values and Change from %upcase(&B_VISN_LAB1) to %upcase(&EP_VISN_LAB1) by Visit for Analysis Timepoint &&atptn_lab&tdx"
-                    ;
-
-            %do gdx = 1 %to &vdx;
-              *--- GTL created in pairs, above, per page. So replay 2 at a time. ---*;
-                proc greplay gout=work.gtlpngs igout=work.gtlpngs nofs tc=work.css_template;
-                   template=CSS_H2;
-                   treplay 1:%eval(2*(&gdx-1) + 1) 
-                           2:%eval(2*(&gdx-1) + 2) 
-                           3:%eval(2*&vdx     + 1)
-                           ;
-                run; 
-                quit;
-            %end;
-
-            proc catalog c=work.gtlpngs kill force;
-            run;
-            quit;
 
           *--- Release the PDF output file! ---*;
             ods pdf close;
