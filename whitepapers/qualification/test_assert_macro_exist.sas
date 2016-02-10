@@ -1,7 +1,7 @@
 /***
-  Qualification tests for PhUSE/CSS utility macro ASSERT_MACRO_EXIST
+  Qualification tests for PhUSE CS utility macro ASSERT_MACRO_EXIST
 
-  SETUP:  Ensure that PhUSE/CSS utilities are in the AUTOCALL path
+  SETUP:  Ensure that PhUSE CS utilities are in the AUTOCALL path
 
   TEST PLAN:
   https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/qualification/testplan_assert_dset_exist.docx
@@ -13,12 +13,12 @@
 
   %let macroname = ASSERT_MACRO_EXIST;
 
-  %put WARNING: (TEST_%upcase(&macroname)) User must ensure PhUSE/CSS utilities are in the AUTOCALL path.;
+  %put WARNING: (TEST_%upcase(&macroname)) User must ensure PhUSE CS utilities are in the AUTOCALL path.;
 
   /*** EXECUTE ONE TIME only as needed
 
-    Ensure PhUSE/CSS utilities are in the AUTOCALL path
-    NB: This line is not necessary if PhUSE/CSS utilities are in your default AUTOCALL paths
+    Ensure PhUSE CS utilities are in the AUTOCALL path
+    NB: This line is not necessary if PhUSE CS utilities are in your default AUTOCALL paths
 
     OPTIONS mrecall sasautos=(%sysfunc(getoption(sasautos)) "C:\CSS\phuse-scripts\whitepapers\utilities");
 
@@ -64,9 +64,9 @@
              'S', '_NULLPARM_',       '0')
 
 
-      values("%lowcase(&macroname)", 'me.2.a.1', 'Find CSS/PhUSE macro ASSERT_CONTINUE',
+      values("%lowcase(&macroname)", 'me.2.a.1', 'Find PhUSE CS macro ASSERT_CONTINUE',
              'S', 'Assert_CONTINUE',   '1')
-      values("%lowcase(&macroname)", 'me.2.a.2', 'Find CSS/PhUSE macro UTIL_DELETE_DSETS',
+      values("%lowcase(&macroname)", 'me.2.a.2', 'Find PhUSE CS macro UTIL_DELETE_DSETS',
              'S', 'UTIL_delete_DSETS', '1')
 
       values("%lowcase(&macroname)", 'me.3.a', 'Find macro written on the fly: CSS_ONTHEFLY',

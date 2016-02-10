@@ -2,7 +2,7 @@
   Assertion that records in DS are unique according to KEYS
 
   INPUTS
-    CONTINUE  Global symbol created prior to macro invocation in PhUSE/CSS template program.
+    CONTINUE  Global symbol created prior to macro invocation in PhUSE CStemplate program.
               NB: The calling program ensures that this global macro var exists.
 
   Usage:

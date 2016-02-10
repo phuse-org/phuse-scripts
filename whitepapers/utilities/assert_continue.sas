@@ -1,6 +1,6 @@
 /***
 
-  This defines the error handling of the PhUSE/CSS template programs.
+  This defines the error handling of the PhUSE CS template programs.
   In case of error, continue checking syntax, but do not waste time or effort to process data.
 
   The template program creates global symbol CONTINUE, a boolean:
@@ -10,7 +10,7 @@
   This macro checks the value of global symbol &CONTINUE, and forces syntax-checking mode when indicated.
 
   INPUTS
-    CONTINUE  Global symbol created prior to macro invocation in PhUSE/CSS template program
+    CONTINUE  Global symbol created prior to macro invocation in PhUSE CS template program
     MSG       Positional parameter for free-text, quoted as needed, to allow the calling program
               to indicate the reason for or timing of this check. This message appears in the log.
 

@@ -1,7 +1,7 @@
 /***
-  Qualification tests for PhUSE/CSS utility macro UTIL_ACCESS_TEST_DATA
+  Qualification tests for PhUSE CS utility macro UTIL_ACCESS_TEST_DATA
 
-  SETUP:  Ensure that PhUSE/CSS utilities are in the AUTOCALL path
+  SETUP:  Ensure that PhUSE CS utilities are in the AUTOCALL path
 
   TEST PLAN:
   https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/qualification/testplan_util_access_test_data.docx
@@ -13,12 +13,12 @@
 
   %let macroname = UTIL_ACCESS_TEST_DATA;
 
-  %put WARNING: (TEST_%upcase(&macroname)) User must ensure PhUSE/CSS utilities are in the AUTOCALL path.;
+  %put WARNING: (TEST_%upcase(&macroname)) User must ensure PhUSE CS utilities are in the AUTOCALL path.;
 
   /*** EXECUTE ONE TIME only as needed
 
-    Ensure PhUSE/CSS utilities are in the AUTOCALL path
-    NB: This line is not necessary if PhUSE/CSS utilities are in your default AUTOCALL paths
+    Ensure PhUSE CS utilities are in the AUTOCALL path
+    NB: This line is not necessary if PhUSE CS utilities are in your default AUTOCALL paths
 
     OPTIONS mrecall sasautos=(%sysfunc(getoption(sasautos)) "C:\CSS\phuse-scripts\whitepapers\utilities") ls=max ps=max;
 
@@ -79,7 +79,7 @@
 
 
 *--- Setup test environment here (dsets, macro vars, etc) ---*;
-  *--- Create a small XPT containing 2 data sets. Store in central location of CSS/PhUSE test data ---*;
+  *--- Create a small XPT containing 2 data sets. Store in central location of PhUSE CS test data ---*;
     %util_access_test_data(adsl);
 
   *--- NB: IF YOU CHANGE THIS DATA SET, you need to also change the XPT in the central location ---*;
@@ -94,7 +94,7 @@
     run;
 
   /*** XPORT format for central test data repository
-   The following XPORT container, including 2 data sets, should be on the CSS/PhUSE central test data repository
+   The following XPORT container, including 2 data sets, should be on the PhUSE CS central test data repository
    ***/
 
     libname csstest xport "%sysfunc(pathname(WORK))/test.xpt";

@@ -16,7 +16,7 @@
 
   Outputs:
     CONTINUE  global symbol indicating PASS (1) or FAIL (0) results.
-              CSS/PhUSE calling program can decide whether or not to continue processing.
+              PhUSE CS calling program can decide whether or not to continue processing.
     FAIL_CRDS Data set that macro creates only in case on invalid keys.
               It contains a list of keys only in the related, measurement data sets.
               It does not include all unique keys in the reference data set.

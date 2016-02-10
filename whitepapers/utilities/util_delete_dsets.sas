@@ -1,7 +1,7 @@
 /***
   Delete WORK DATA SETS
 
-  This is a simple CSS/PhUSE clean-up utility to delete WORK DATA SETS
+  This is a simple PhUSE CS clean-up utility to delete WORK DATA SETS
   (not views, and not from other libraries)
 
   INPUTS:

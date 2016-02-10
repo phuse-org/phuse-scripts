@@ -20,7 +20,7 @@
         + see macro UTIL_VALUE_FORMAT to modify this behavior
       * If your treatment names are too long for the summary table, abbreviate them
         in the input data, and add a footnote that explains your short Tx codes
-        + This program contains custom code to shorted Tx labels in the PhUSE/CSS test data
+        + This program contains custom code to shorted Tx labels in the PhUSE CS test data
         + See "2b) USER SUBSET of data", below
 
     TO DO list:
@@ -46,10 +46,10 @@ end HEADER ***/
    *** USER PROCESSING AND SETTINGS ***
    ************************************
 
-    1) REQUIRED - PhUSE/CSS Utilities macro library.
-       These templates require the PhUSE/CSS macro utilities:
+    1) REQUIRED - PhUSE CS Utilities macro library.
+       These templates require the PhUSE CS macro utilities:
          https://github.com/phuse-org/phuse-scripts/tree/master/whitepapers/utilities
-       User must ensure that SAS can find PhUSE/CSS macros in the SASAUTOS path (see EXECUTE ONE TIME, below)
+       User must ensure that SAS can find PhUSE CS macros in the SASAUTOS path (see EXECUTE ONE TIME, below)
 
     2) OPTIONAL - Subset measurement data, to limit resulting plots to specific
          - Parameters
@@ -85,23 +85,23 @@ end HEADER ***/
   ************************************/
 
 
-    %put WARNING: (WPCT-F.07.02) User must ensure PhUSE/CSS utilities are in the AUTOCALL path.;
+    %put WARNING: (WPCT-F.07.02) User must ensure PhUSE CS utilities are in the AUTOCALL path.;
 
-    /*** 1) PhUSE/CSS utilities in autocall paths (see "Macro Library", above)
+    /*** 1) PhUSE CS utilities in autocall paths (see "Macro Library", above)
 
       EXECUTE ONE TIME only as needed
-      NB: The following line is necessary only when PhUSE/CSS utilities are NOT in your default AUTOCALL paths
+      NB: The following line is necessary only when PhUSE CS utilities are NOT in your default AUTOCALL paths
 
       OPTIONS sasautos=(%sysfunc(getoption(sasautos)) "C:\CSS\phuse-scripts\whitepapers\utilities");
 
     ***/
 
 
-    /*** 2a) REMOTE ACCESS to data, by default PhUSE/CSS test data, and create WORK copy.                ***/
+    /*** 2a) REMOTE ACCESS to data, by default PhUSE CS test data, and create WORK copy.                ***/
     /***     NB: If remote access to test data files does not work, see local override, below. ***/
       %util_access_test_data(advs)
 
-      *--- NB: LOCAL CSS/PhUSE test data, override remote access by providing a local path ---*;
+      *--- NB: LOCAL PhUSE CS test data, override remote access by providing a local path ---*;
         %* %util_access_test_data(advs, local=C:\CSS\phuse-scripts\data\adam\cdisc\) ;
 
 
@@ -232,9 +232,9 @@ end HEADER ***/
 
     UTIL_PROC_TEMPLATE parameters:
       TEMPLATE     Positional parameter, the name of the template to compile.
-      DESIGNWIDTH  Default is 260mm, suitable for one full-page landscap Letter/A4 plot.
+      DESIGNWIDTH  Default is 260mm, suitable for one full-page landscape Letter/A4 plot.
                    130mm is suitable for these 2 side-by-side plots.
-      DESIGNHEIGHT Default is 170mm, suitable for one full-page landscap Letter/A4 plot.
+      DESIGNHEIGHT Default is 170mm, suitable for one full-page landscape Letter/A4 plot.
 
     BOXPLOT_EACH_PARAM_TP parameters:      
       CLEANUP      Default is 1, delete intermediate data sets. 
@@ -380,8 +380,8 @@ end HEADER ***/
             ods listing close;
             ods pdf file="&outputs_folder\WPCT-F.07.02_Box_plot_&&paramcd_val&pdx.._Change_by_visit_for_timepoint_&&atptn_val&tdx...pdf"
                     notoc bookmarklist=none dpi=300
-                    author="(&SYSUSERID) PhUSE/CSS Standard Analysis Library"
-                    subject='PhUSE/CSS Measures of Central Tendency'
+                    author="(&SYSUSERID) PhUSE CS Standard Analysis Library"
+                    subject='PhUSE CS Measures of Central Tendency'
                     title="Boxplot of &&paramcd_lab&pdx Change from Baseline by Visit for Analysis Timepoint &&atptn_lab&tdx"
                     ;
 

@@ -1,4 +1,4 @@
-/*** Access PhUSE/CSS test data, XPT containers
+/*** Access PhUSE CS test data, XPT containers
 
   See explaination in the PhUSE Wiki of this FILENAME/LIBNAME access to XPORT files
     http://www.phusewiki.org/wiki/index.php?title=WG5_Code_to_Retrieve_CSS/PhUSE_Test_Data
@@ -7,15 +7,15 @@
   download data sets to a local folder. These users can specify a local folder, to override
   the default, remote access method. See LOCAL parameter, below.
 
-  This utility macro isolates access to PhUSE/CSS test data xport archives. Any future change
+  This utility macro isolates access to PhUSE CS test data xport archives. Any future change
   to this interface can be implemented in one place, here, without requiring changes to
-  remaining PhUSE/CSS template programs.
+  remaining PhUSE CS template programs.
 
-  See the PhUSE Repository in Github for available PhUSE/CSS test data sets
+  See the PhUSE Repository in Github for available PhUSE CS test data sets
     https://github.com/phuse-org/phuse-scripts/tree/master/data/adam/cdisc
 
   INPUT
-    DS    name of PhUSE/CSS test data set
+    DS    name of PhUSE CS test data set
       REQUIRED positional
       Syntax:  One-level name
       Example: ADVS
@@ -23,7 +23,7 @@
       optional keyword
       Syntax:  Filename of XPORT archive that includes DS. If missing, set to DS
       Example: ADVS_CONTAINER
-    LOCAL path to a local folder that contains the CSS test data sets, to override remote access
+    LOCAL path to a local folder that contains the PhUSE CS test data sets, to override remote access
       optional keyword
       Syntax:  Local path to folder with test data, quoted as needed
       Example: C:\CSS\phuse-scripts\data\adam\cdisc
@@ -32,7 +32,7 @@
     WORK data set with name &DS
 
   TO DO
-    * Implement some way of warning the user that a specified PhUSE/CSS data set does not exist.
+    * Implement some way of warning the user that a specified PhUSE CS data set does not exist.
 ***/
 
 %macro util_access_test_data(ds, xport=, local=);

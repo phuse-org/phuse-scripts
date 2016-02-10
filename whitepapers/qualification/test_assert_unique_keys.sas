@@ -1,7 +1,7 @@
 /***
-  Qualification tests for PhUSE/CSS utility macro ASSERT_UNIQUE_KEYS
+  Qualification tests for PhUSE CS utility macro ASSERT_UNIQUE_KEYS
 
-  SETUP:  Ensure that PhUSE/CSS utilities are in the AUTOCALL path
+  SETUP:  Ensure that PhUSE CS utilities are in the AUTOCALL path
 
   TEST PLAN:
   https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/qualification/testplan_assert_unique_keys.docx
@@ -13,12 +13,12 @@
 
   %let macroname = ASSERT_UNIQUE_KEYS;
 
-  %put WARNING: (TEST_%upcase(&macroname)) User must ensure PhUSE/CSS utilities are in the AUTOCALL path.;
+  %put WARNING: (TEST_%upcase(&macroname)) User must ensure PhUSE CS utilities are in the AUTOCALL path.;
 
   /*** EXECUTE ONE TIME only as needed
 
-    Ensure PhUSE/CSS utilities are in the AUTOCALL path
-    NB: This line is not necessary if PhUSE/CSS utilities are in your default AUTOCALL paths
+    Ensure PhUSE CS utilities are in the AUTOCALL path
+    NB: This line is not necessary if PhUSE CS utilities are in your default AUTOCALL paths
 
     OPTIONS mrecall sasautos=(%sysfunc(getoption(sasautos)) "C:\CSS\phuse-scripts\whitepapers\utilities") ls=max ps=max;
 

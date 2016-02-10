@@ -1,5 +1,5 @@
 /***
-  Access a PhUSE/CSS GTL template.
+  Access a PhUSE CS GTL template.
 
   -INPUT:
     TEMPLATE  Name of the 
