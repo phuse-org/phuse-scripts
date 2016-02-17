@@ -17,14 +17,12 @@ NOTE: Additional host information:
  X64_7PRO WIN 6.1.7601 Service Pack 1 Workstation
 
 NOTE: SAS initialization used:
-      real time           13.61 seconds
-      cpu time            2.26 seconds
+      real time           18.65 seconds
+      cpu time            2.62 seconds
 
-SASAUTOS
 1          OPTIONS sasautos=(%sysfunc(getoption(sasautos))
 1  ! "C:\CSS\phuse-scripts\whitepapers\utilities");
 
-(SASAUTOS "C:\CSS\phuse-scripts\whitepapers\utilities")
 2    %util_access_test_data(advs, local=C:\CSS\phuse-scripts\data\adam\cdisc\)
 NOTE: Libref SOURCE was successfully assigned as follows:
       Engine:        XPORT
@@ -33,8 +31,8 @@ NOTE: Libref SOURCE was successfully assigned as follows:
 NOTE: There were 32139 observations read from the data set SOURCE.ADVS.
 NOTE: The data set WORK.ADVS has 32139 observations and 44 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.20 seconds
-      cpu time            0.20 seconds
+      real time           0.29 seconds
+      cpu time            0.29 seconds
 
 
 NOTE: Fileref SOURCE has been deassigned.
@@ -64,8 +62,8 @@ NOTE: There were 5925 observations read from the data set WORK.ADVS.
       WHERE ((paramcd='DIABP') and (atptn=815)) or ((paramcd='SYSBP') and (atptn=816));
 NOTE: The data set WORK.ADVS_SUB has 5925 observations and 45 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.07 seconds
-      cpu time            0.07 seconds
+      real time           0.09 seconds
+      cpu time            0.09 seconds
 
 
 21
@@ -123,8 +121,8 @@ NOTE: There were 4054 observations read from the data set WORK.ADVS_SUB.
       WHERE (saffl='Y') and (anl01fl='Y');
 NOTE: The data set WORK.CSS_ANADATA has 4054 observations and 15 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
+      real time           0.03 seconds
+      cpu time            0.04 seconds
 
 
 70
@@ -136,7 +134,7 @@ NOTE: DATA statement used (Total process time):
 76                                               util_get_var_min_max util_value_format obsolete_prep_shewhart_data
 77                                               obsolete_annotate_outliers util_axis_order
 78                                               util_get_reference_lines util_delete_dsets,
-79                                        symbols=m_lb m_ds m_var lo_var hi_var jitter ref_lines p_fl a_fl
+79                                        symbols=m_lb m_ds t_var tn_var m_var lo_var hi_var jitter ref_lines p_fl a_fl
 80                                                max_boxes_per_page outputs_folder
 81                                       );
 NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CSS_ANADATA is accessible.
@@ -197,6 +195,8 @@ NOTE: (ASSERT_MACRO_EXIST) PASS, found macro UTIL_GET_REFERENCE_LINES in "C:\CSS
 NOTE: (ASSERT_MACRO_EXIST) PASS, found macro UTIL_DELETE_DSETS in "C:\CSS\phuse-scripts\whitepapers\utilities\util_delete_dsets.sas".
 NOTE: (ASSERT_DEPEND) PASS, found mac var M_LB with value "work"
 NOTE: (ASSERT_DEPEND) PASS, found mac var M_DS with value "advs_sub"
+NOTE: (ASSERT_DEPEND) PASS, found mac var T_VAR with value "trtp_short"
+NOTE: (ASSERT_DEPEND) PASS, found mac var TN_VAR with value "trtpn"
 NOTE: (ASSERT_DEPEND) PASS, found mac var M_VAR with value "aval"
 NOTE: (ASSERT_DEPEND) PASS, found mac var LO_VAR with value "anrlo"
 NOTE: (ASSERT_DEPEND) PASS, found mac var HI_VAR with value "anrhi"
@@ -241,7 +241,7 @@ MPRINT(UTIL_COUNT_UNIQUE_VALUES):   proc sql noprint;
 MPRINT(UTIL_COUNT_UNIQUE_VALUES):   select count(unique(paramcd)) into: paramcd_n from css_anadata ;
 MPRINT(UTIL_COUNT_UNIQUE_VALUES):   quit;
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.01 seconds
+      real time           0.00 seconds
       cpu time            0.01 seconds
 
 
@@ -274,8 +274,8 @@ MPRINT(UTIL_LABELS_FROM_VAR):   run;
 
 NOTE: There were 2 observations read from the data set WORK.CSS_LFV.
 NOTE: DATA statement used (Total process time):
-      real time           0.03 seconds
-      cpu time            0.03 seconds
+      real time           0.01 seconds
+      cpu time            0.01 seconds
 
 
 MPRINT(UTIL_LABELS_FROM_VAR):   proc datasets library=WORK memtype=DATA nolist nodetails;
@@ -283,8 +283,8 @@ MPRINT(UTIL_LABELS_FROM_VAR):   delete css_lfv;
 MPRINT(UTIL_LABELS_FROM_VAR):   quit;
 NOTE: Deleting WORK.CSS_LFV (memtype=DATA).
 NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.18 seconds
-      cpu time            0.06 seconds
+      real time           0.23 seconds
+      cpu time            0.04 seconds
 
 
 NOTE: (UTIL_LABELS_FROM_VAR) Successfully created symbols for Values and Labels from PARAMCD and PARAM
@@ -299,7 +299,7 @@ MPRINT(UTIL_COUNT_UNIQUE_VALUES):   proc sql noprint;
 MPRINT(UTIL_COUNT_UNIQUE_VALUES):   select count(unique(trtp_short)) into: trtn from css_anadata ;
 MPRINT(UTIL_COUNT_UNIQUE_VALUES):   quit;
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.01 seconds
+      real time           0.00 seconds
       cpu time            0.01 seconds
 
 
@@ -414,8 +414,8 @@ NOTE: (UTIL_COUNT_UNIQUE_VALUES) Successfully created symbol TRTN = 3
 210              goptions reset=all device=pdf;
 211
 212              title     justify=left height=1.2 "Box Plot - &&paramcd_lab&pdx by Visit, Analysis Timepoint: &&atptn_lab&tdx";
-213              footnote1 justify=left height=1.0 'Box plot type is schematic: the box shows median and interquartile range (IQR, the box edges); the whiskers extend to the minimum';
-214              footnote2 justify=left height=1.0 'and maximum data points within 1.5 IQR below 25% and above 75%, respectively. Values outside the whiskers are shown as outliers.';
+213              footnote1 justify=left height=1.0 'Box plot type is schematic: the box shows median and interquartile range (IQR, the box height); the whiskers extend to the minimum';
+214              footnote2 justify=left height=1.0 'and maximum data points within 1.5 IQR of the lower and upper quartiles, respectively. Values outside the whiskers are shown as outliers.';
 215              footnote3 justify=left height=1.0 'Means are marked with a different symbol for each treatment. Red dots indicate measures outside the normal reference range.';
 216
 217              axis1     value=none label=none major=none minor=none;
@@ -424,9 +424,9 @@ NOTE: (UTIL_COUNT_UNIQUE_VALUES) Successfully created symbol TRTN = 3
 220            *--- ODS PDF destination (Traditional Graphics, No ODS or Listing output) ---*;
 221              ODS GRAPHICS OFF;
 222              ODS LISTING CLOSE;
-223              ods pdf author='PhUSE/CSS Standard Analysis Library'
+223              ods pdf author='PhUSE CS Standard Analysis Library'
 224                      notoc bookmarklist=none dpi=300
-225                      subject='PhUSE/CSS Measures of Central Tendency'
+225                      subject='PhUSE CS Measures of Central Tendency'
 226                      title="Boxplot of &&paramcd_lab&pdx by Visit for Analysis Timepoint &&atptn_lab&tdx"
 227                      file="&outputs_folder\WPCT-F.07.01-sas92-QCshewhart_Box_plot_&&paramcd_val&pdx.._by_visit_for_timepoint_&&atptn_val&tdx...pdf";
 228
@@ -511,7 +511,7 @@ NOTE: There were 2027 observations read from the data set WORK.CSS_ANADATA.
 NOTE: The data set WORK.CSS_NEXTPARAM has 2027 observations and 15 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.01 seconds
-      cpu time            0.01 seconds
+      cpu time            0.03 seconds
 
 
 NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CSS_NEXTPARAM is accessible.
@@ -530,7 +530,7 @@ MPRINT(UTIL_COUNT_UNIQUE_VALUES):   select count(unique(atptn)) into: atptn_n fr
 MPRINT(UTIL_COUNT_UNIQUE_VALUES):   quit;
 NOTE: PROCEDURE SQL used (Total process time):
       real time           0.00 seconds
-      cpu time            0.00 seconds
+      cpu time            0.01 seconds
 
 
 NOTE: (UTIL_COUNT_UNIQUE_VALUES) Successfully created symbol ATPTN_N = 1
@@ -545,8 +545,8 @@ NOTE: SAS sort was used.
 NOTE: 2026 observations with duplicate key values were deleted.
 NOTE: The data set WORK.CSS_LFV has 1 observations and 15 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.03 seconds
-      cpu time            0.03 seconds
+      real time           0.02 seconds
+      cpu time            0.01 seconds
 
 
 MPRINT(UTIL_LABELS_FROM_VAR):   data _null_;
@@ -564,7 +564,7 @@ NOTE: Numeric values have been converted to character values at the places given
       1:1
 NOTE: There were 1 observations read from the data set WORK.CSS_LFV.
 NOTE: DATA statement used (Total process time):
-      real time           0.03 seconds
+      real time           0.02 seconds
       cpu time            0.03 seconds
 
 
@@ -573,8 +573,8 @@ MPRINT(UTIL_LABELS_FROM_VAR):   delete css_lfv;
 MPRINT(UTIL_LABELS_FROM_VAR):   quit;
 NOTE: Deleting WORK.CSS_LFV (memtype=DATA).
 NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.03 seconds
-      cpu time            0.03 seconds
+      real time           0.01 seconds
+      cpu time            0.01 seconds
 
 
 NOTE: (UTIL_LABELS_FROM_VAR) Successfully created symbols for Values and Labels from ATPTN and ATPT
@@ -587,8 +587,8 @@ NOTE: There were 2027 observations read from the data set WORK.CSS_NEXTPARAM.
 NOTE: SAS sort was used.
 NOTE: The data set WORK.CSS_NEXTTIMEPT has 2027 observations and 15 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.03 seconds
-      cpu time            0.03 seconds
+      real time           0.02 seconds
+      cpu time            0.01 seconds
 
 
 NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CSS_NEXTTIMEPT is accessible.
@@ -612,8 +612,8 @@ MPRINT(UTIL_COUNT_UNIQUE_VALUES):   proc sql noprint;
 MPRINT(UTIL_COUNT_UNIQUE_VALUES):   select count(unique(avisitn)) into: visn from css_nexttimept ;
 MPRINT(UTIL_COUNT_UNIQUE_VALUES):   quit;
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
+      real time           0.00 seconds
+      cpu time            0.00 seconds
 
 
 NOTE: (UTIL_COUNT_UNIQUE_VALUES) Successfully created symbol VISN = 11
@@ -640,8 +640,8 @@ MPRINT(UTIL_VALUE_FORMAT):   run;
 NOTE: There were 2027 observations read from the data set WORK.CSS_NEXTTIMEPT.
 NOTE: The data set WORK.CSS_FMT has 2027 observations and 22 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.04 seconds
-      cpu time            0.04 seconds
+      real time           0.02 seconds
+      cpu time            0.03 seconds
 
 
 MPRINT(UTIL_VALUE_FORMAT):   proc datasets library=WORK memtype=DATA nolist nodetails;
@@ -651,7 +651,7 @@ MPRINT(UTIL_VALUE_FORMAT):   quit;
 NOTE: Deleting WORK.CSS_FMT (memtype=DATA).
 NOTE: PROCEDURE DATASETS used (Total process time):
       real time           0.01 seconds
-      cpu time            0.01 seconds
+      cpu time            0.00 seconds
 
 
 NOTE: (UTIL_VALUE_FORMAT) Successfully created symbol UTIL_VALUE_FORMAT = 5.1 6.2
@@ -665,7 +665,7 @@ MPRINT(BOXPLOT_EACH_PARAM_TP):   run;
 NOTE: There were 2027 observations read from the data set WORK.CSS_NEXTTIMEPT.
 NOTE: The data set WORK.CSS_STATS has 33 observations and 11 variables.
 NOTE: PROCEDURE SUMMARY used (Total process time):
-      real time           0.03 seconds
+      real time           0.02 seconds
       cpu time            0.03 seconds
 
 
@@ -680,8 +680,8 @@ NOTE: There were 2027 observations read from the data set WORK.CSS_NEXTTIMEPT.
 NOTE: There were 33 observations read from the data set WORK.CSS_STATS.
 NOTE: The data set WORK.CSS_PLOT has 2027 observations and 24 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.03 seconds
-      cpu time            0.03 seconds
+      real time           0.01 seconds
+      cpu time            0.01 seconds
 
 
 NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CSS_PLOT is accessible.
@@ -751,8 +751,8 @@ MPRINT(OBSOLETE_PREP_SHEWHART_DATA):   run;
 NOTE: There were 2027 observations read from the data set WORK.CSS_PLOT.
 NOTE: The data set WORK.CSS_PLOT_TP has 2027 observations and 15 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.04 seconds
-      cpu time            0.04 seconds
+      real time           0.03 seconds
+      cpu time            0.03 seconds
 
 
 Note: (UTIL_PREP_SHEWHART_DATA) Default TIMEPT ranges for each plot produces, limiting to 20 boxes max per page.
@@ -799,8 +799,8 @@ MPRINT(OBSOLETE_ANNOTATE_OUTLIERS):   run;
 NOTE: There were 2027 observations read from the data set WORK.CSS_PLOT_TP.
 NOTE: The data set WORK.CSS_ANNOTATE has 160 observations and 9 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.10 seconds
-      cpu time            0.10 seconds
+      real time           0.08 seconds
+      cpu time            0.07 seconds
 
 
 NOTE: (UTIL_ANNOTATE_OUTLIERS) Successfully created annotate data set CSS_ANNOTATE.
@@ -810,9 +810,9 @@ MPRINT(BOXPLOT_EACH_PARAM_TP):   goptions reset=all device=pdf;
 MPRINT(BOXPLOT_EACH_PARAM_TP):   title justify=left height=1.2 "Box Plot - Diastolic Blood Pressure (mmHg) by Visit, Analysis
 Timepoint: AFTER LYING DOWN FOR 5 MINUTES";
 MPRINT(BOXPLOT_EACH_PARAM_TP):   footnote1 justify=left height=1.0 'Box plot type is schematic: the box shows median and
-interquartile range (IQR, the box edges); the whiskers extend to the minimum';
-MPRINT(BOXPLOT_EACH_PARAM_TP):   footnote2 justify=left height=1.0 'and maximum data points within 1.5 IQR below 25% and above
-75%, respectively. Values outside the whiskers are shown as outliers.';
+interquartile range (IQR, the box height); the whiskers extend to the minimum';
+MPRINT(BOXPLOT_EACH_PARAM_TP):   footnote2 justify=left height=1.0 'and maximum data points within 1.5 IQR of the lower and
+upper quartiles, respectively. Values outside the whiskers are shown as outliers.';
 MPRINT(BOXPLOT_EACH_PARAM_TP):   footnote3 justify=left height=1.0 'Means are marked with a different symbol for each
 treatment. Red dots indicate measures outside the normal reference range.';
 MPRINT(BOXPLOT_EACH_PARAM_TP):   axis1 value=none label=none major=none minor=none;
@@ -822,8 +822,8 @@ MPRINT(BOXPLOT_EACH_PARAM_TP):   );
 MPRINT(BOXPLOT_EACH_PARAM_TP):   *--- ODS PDF destination (Traditional Graphics, No ODS or Listing output) ---*;
 MPRINT(BOXPLOT_EACH_PARAM_TP):   ODS GRAPHICS OFF;
 MPRINT(BOXPLOT_EACH_PARAM_TP):   ODS LISTING CLOSE;
-MPRINT(BOXPLOT_EACH_PARAM_TP):   ods pdf author='PhUSE/CSS Standard Analysis Library' notoc bookmarklist=none dpi=300
-subject='PhUSE/CSS Measures of Central Tendency' title="Boxplot of Diastolic Blood Pressure (mmHg) by Visit for Analysis
+MPRINT(BOXPLOT_EACH_PARAM_TP):   ods pdf author='PhUSE CS Standard Analysis Library' notoc bookmarklist=none dpi=300
+subject='PhUSE CS Measures of Central Tendency' title="Boxplot of Diastolic Blood Pressure (mmHg) by Visit for Analysis
 Timepoint AFTER LYING DOWN FOR 5 MINUTES"
 file="C:\CSS\phuse-scripts\whitepapers\WPCT\outputs_sas\WPCT-F.07.01-sas92-QCshewhart_Box_plot_DIABP_by_visit_for_timepoint_815.
 pdf";
@@ -844,8 +844,8 @@ group by anrlo, anrhi;
 NOTE: SAS threaded sort was used.
 MPRINT(UTIL_GET_REFERENCE_LINES):   quit;
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.23 seconds
-      cpu time            0.21 seconds
+      real time           0.05 seconds
+      cpu time            0.04 seconds
 
 
 NOTE: (UTIL_GET_REFERENCE_LINES) 1 distinct reference ranges in css_plot_tp (where=( 0 <= timept < 7 )).
@@ -862,8 +862,8 @@ MPRINT(UTIL_GET_REFERENCE_LINES):   run;
 
 NOTE: The data set WORK.GRL_TEMP has 2 observations and 1 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
+      real time           0.02 seconds
+      cpu time            0.03 seconds
 
 
 MPRINT(UTIL_GET_REFERENCE_LINES):   proc sql noprint;
@@ -881,8 +881,8 @@ MPRINT(UTIL_GET_REFERENCE_LINES):   quit;
 
 NOTE: Deleting WORK.GRL_TEMP (memtype=DATA).
 NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
+      real time           0.00 seconds
+      cpu time            0.00 seconds
 
 
 NOTE: (UTIL_GET_REFERENCE_LINES) Successfully created macro var NXT_VREFS with reference values (60 90).
@@ -906,8 +906,8 @@ NOTE: There were 1298 observations read from the data set WORK.CSS_PLOT_TP.
 NOTE: There were 108 observations read from the data set WORK.CSS_ANNOTATE.
       WHERE (x>=0 and x<7);
 NOTE: PROCEDURE SHEWHART used (Total process time):
-      real time           0.68 seconds
-      cpu time            0.60 seconds
+      real time           0.75 seconds
+      cpu time            0.65 seconds
 
 
 NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CSS_PLOT_TP is accessible.
@@ -925,7 +925,7 @@ NOTE: SAS threaded sort was used.
 MPRINT(UTIL_GET_REFERENCE_LINES):   quit;
 NOTE: PROCEDURE SQL used (Total process time):
       real time           0.03 seconds
-      cpu time            0.03 seconds
+      cpu time            0.04 seconds
 
 
 NOTE: (UTIL_GET_REFERENCE_LINES) 1 distinct reference ranges in css_plot_tp (where=( 7 <= timept < 12 )).
@@ -942,8 +942,8 @@ MPRINT(UTIL_GET_REFERENCE_LINES):   run;
 
 NOTE: The data set WORK.GRL_TEMP has 2 observations and 1 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.03 seconds
-      cpu time            0.03 seconds
+      real time           0.00 seconds
+      cpu time            0.00 seconds
 
 
 MPRINT(UTIL_GET_REFERENCE_LINES):   proc sql noprint;
@@ -951,7 +951,7 @@ MPRINT(UTIL_GET_REFERENCE_LINES):   select distinct val into :nxt_vrefs separate
 order by val;
 MPRINT(UTIL_GET_REFERENCE_LINES):   quit;
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.01 seconds
+      real time           0.00 seconds
       cpu time            0.01 seconds
 
 
@@ -961,7 +961,7 @@ MPRINT(UTIL_GET_REFERENCE_LINES):   quit;
 
 NOTE: Deleting WORK.GRL_TEMP (memtype=DATA).
 NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.01 seconds
+      real time           0.00 seconds
       cpu time            0.01 seconds
 
 
@@ -986,8 +986,8 @@ NOTE: There were 729 observations read from the data set WORK.CSS_PLOT_TP.
 NOTE: There were 52 observations read from the data set WORK.CSS_ANNOTATE.
       WHERE (x>=7 and x<12);
 NOTE: PROCEDURE SHEWHART used (Total process time):
-      real time           0.21 seconds
-      cpu time            0.26 seconds
+      real time           0.14 seconds
+      cpu time            0.14 seconds
 
 
 MPRINT(BOXPLOT_EACH_PARAM_TP):   *--- Release the PDF output file! ---*;
@@ -1004,7 +1004,7 @@ NOTE: There were 2027 observations read from the data set WORK.CSS_ANADATA.
       WHERE paramcd='SYSBP';
 NOTE: The data set WORK.CSS_NEXTPARAM has 2027 observations and 15 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.01 seconds
+      real time           0.02 seconds
       cpu time            0.03 seconds
 
 
@@ -1023,7 +1023,7 @@ MPRINT(UTIL_COUNT_UNIQUE_VALUES):   proc sql noprint;
 MPRINT(UTIL_COUNT_UNIQUE_VALUES):   select count(unique(atptn)) into: atptn_n from css_nextparam ;
 MPRINT(UTIL_COUNT_UNIQUE_VALUES):   quit;
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.00 seconds
+      real time           0.01 seconds
       cpu time            0.00 seconds
 
 
@@ -1039,8 +1039,8 @@ NOTE: SAS sort was used.
 NOTE: 2026 observations with duplicate key values were deleted.
 NOTE: The data set WORK.CSS_LFV has 1 observations and 15 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.03 seconds
-      cpu time            0.06 seconds
+      real time           0.02 seconds
+      cpu time            0.03 seconds
 
 
 MPRINT(UTIL_LABELS_FROM_VAR):   data _null_;
@@ -1059,7 +1059,7 @@ NOTE: Numeric values have been converted to character values at the places given
       1:1
 NOTE: There were 1 observations read from the data set WORK.CSS_LFV.
 NOTE: DATA statement used (Total process time):
-      real time           0.01 seconds
+      real time           0.00 seconds
       cpu time            0.01 seconds
 
 
@@ -1069,7 +1069,7 @@ MPRINT(UTIL_LABELS_FROM_VAR):   quit;
 NOTE: Deleting WORK.CSS_LFV (memtype=DATA).
 NOTE: PROCEDURE DATASETS used (Total process time):
       real time           0.01 seconds
-      cpu time            0.01 seconds
+      cpu time            0.00 seconds
 
 
 NOTE: (UTIL_LABELS_FROM_VAR) Successfully created symbols for Values and Labels from ATPTN and ATPT
@@ -1082,8 +1082,8 @@ NOTE: There were 2027 observations read from the data set WORK.CSS_NEXTPARAM.
 NOTE: SAS sort was used.
 NOTE: The data set WORK.CSS_NEXTTIMEPT has 2027 observations and 15 variables.
 NOTE: PROCEDURE SORT used (Total process time):
-      real time           0.03 seconds
-      cpu time            0.04 seconds
+      real time           0.02 seconds
+      cpu time            0.03 seconds
 
 
 NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CSS_NEXTTIMEPT is accessible.
@@ -1094,8 +1094,8 @@ MPRINT(UTIL_GET_VAR_MIN_MAX):   proc sql noprint;
 MPRINT(UTIL_GET_VAR_MIN_MAX):   select min(aval), max(aval) into :minval, :maxval from css_nexttimept ;
 MPRINT(UTIL_GET_VAR_MIN_MAX):   quit;
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
+      real time           0.00 seconds
+      cpu time            0.00 seconds
 
 
 NOTE: (UTIL_GET_VAR_MIN_MAX) Successfully created symbol AVAL_MIN_MAX = 80 202.
@@ -1107,8 +1107,8 @@ MPRINT(UTIL_COUNT_UNIQUE_VALUES):   proc sql noprint;
 MPRINT(UTIL_COUNT_UNIQUE_VALUES):   select count(unique(avisitn)) into: visn from css_nexttimept ;
 MPRINT(UTIL_COUNT_UNIQUE_VALUES):   quit;
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.03 seconds
+      real time           0.00 seconds
+      cpu time            0.01 seconds
 
 
 NOTE: (UTIL_COUNT_UNIQUE_VALUES) Successfully created symbol VISN = 11
@@ -1135,8 +1135,8 @@ MPRINT(UTIL_VALUE_FORMAT):   run;
 NOTE: There were 2027 observations read from the data set WORK.CSS_NEXTTIMEPT.
 NOTE: The data set WORK.CSS_FMT has 2027 observations and 22 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.03 seconds
-      cpu time            0.03 seconds
+      real time           0.02 seconds
+      cpu time            0.04 seconds
 
 
 MPRINT(UTIL_VALUE_FORMAT):   proc datasets library=WORK memtype=DATA nolist nodetails;
@@ -1145,7 +1145,7 @@ MPRINT(UTIL_VALUE_FORMAT):   quit;
 
 NOTE: Deleting WORK.CSS_FMT (memtype=DATA).
 NOTE: PROCEDURE DATASETS used (Total process time):
-      real time           0.01 seconds
+      real time           0.00 seconds
       cpu time            0.01 seconds
 
 
@@ -1162,8 +1162,8 @@ MPRINT(BOXPLOT_EACH_PARAM_TP):   run;
 NOTE: There were 2027 observations read from the data set WORK.CSS_NEXTTIMEPT.
 NOTE: The data set WORK.CSS_STATS has 33 observations and 11 variables.
 NOTE: PROCEDURE SUMMARY used (Total process time):
-      real time           0.03 seconds
-      cpu time            0.04 seconds
+      real time           0.02 seconds
+      cpu time            0.03 seconds
 
 
 MPRINT(BOXPLOT_EACH_PARAM_TP):   *--- Reminder: PROC SHEWHART reads "phases" (visits) from a special _PHASE_ variable ---*;
@@ -1178,7 +1178,7 @@ NOTE: There were 2027 observations read from the data set WORK.CSS_NEXTTIMEPT.
 NOTE: There were 33 observations read from the data set WORK.CSS_STATS.
 NOTE: The data set WORK.CSS_PLOT has 2027 observations and 24 variables.
 NOTE: DATA statement used (Total process time):
-      real time           0.01 seconds
+      real time           0.03 seconds
       cpu time            0.01 seconds
 
 
@@ -1302,7 +1302,7 @@ NOTE: There were 2027 observations read from the data set WORK.CSS_PLOT_TP.
 NOTE: The data set WORK.CSS_ANNOTATE has 0 observations and 9 variables.
 NOTE: DATA statement used (Total process time):
       real time           0.03 seconds
-      cpu time            0.03 seconds
+      cpu time            0.04 seconds
 
 
 NOTE: (UTIL_ANNOTATE_OUTLIERS) Successfully created annotate data set CSS_ANNOTATE.
@@ -1312,9 +1312,9 @@ MPRINT(BOXPLOT_EACH_PARAM_TP):   goptions reset=all device=pdf;
 MPRINT(BOXPLOT_EACH_PARAM_TP):   title justify=left height=1.2 "Box Plot - Systolic Blood Pressure (mmHg) by Visit, Analysis
 Timepoint: AFTER STANDING FOR 1 MINUTE";
 MPRINT(BOXPLOT_EACH_PARAM_TP):   footnote1 justify=left height=1.0 'Box plot type is schematic: the box shows median and
-interquartile range (IQR, the box edges); the whiskers extend to the minimum';
-MPRINT(BOXPLOT_EACH_PARAM_TP):   footnote2 justify=left height=1.0 'and maximum data points within 1.5 IQR below 25% and above
-75%, respectively. Values outside the whiskers are shown as outliers.';
+interquartile range (IQR, the box height); the whiskers extend to the minimum';
+MPRINT(BOXPLOT_EACH_PARAM_TP):   footnote2 justify=left height=1.0 'and maximum data points within 1.5 IQR of the lower and
+upper quartiles, respectively. Values outside the whiskers are shown as outliers.';
 MPRINT(BOXPLOT_EACH_PARAM_TP):   footnote3 justify=left height=1.0 'Means are marked with a different symbol for each
 treatment. Red dots indicate measures outside the normal reference range.';
 MPRINT(BOXPLOT_EACH_PARAM_TP):   axis1 value=none label=none major=none minor=none;
@@ -1324,8 +1324,8 @@ MPRINT(BOXPLOT_EACH_PARAM_TP):   );
 MPRINT(BOXPLOT_EACH_PARAM_TP):   *--- ODS PDF destination (Traditional Graphics, No ODS or Listing output) ---*;
 MPRINT(BOXPLOT_EACH_PARAM_TP):   ODS GRAPHICS OFF;
 MPRINT(BOXPLOT_EACH_PARAM_TP):   ODS LISTING CLOSE;
-MPRINT(BOXPLOT_EACH_PARAM_TP):   ods pdf author='PhUSE/CSS Standard Analysis Library' notoc bookmarklist=none dpi=300
-subject='PhUSE/CSS Measures of Central Tendency' title="Boxplot of Systolic Blood Pressure (mmHg) by Visit for Analysis
+MPRINT(BOXPLOT_EACH_PARAM_TP):   ods pdf author='PhUSE CS Standard Analysis Library' notoc bookmarklist=none dpi=300
+subject='PhUSE CS Measures of Central Tendency' title="Boxplot of Systolic Blood Pressure (mmHg) by Visit for Analysis
 Timepoint AFTER STANDING FOR 1 MINUTE"
 file="C:\CSS\phuse-scripts\whitepapers\WPCT\outputs_sas\WPCT-F.07.01-sas92-QCshewhart_Box_plot_SYSBP_by_visit_for_timepoint_816.
 pdf";
@@ -1376,8 +1376,8 @@ NOTE: ANNOTATE= DATASET PROCESSING ERROR. NO OBSERVATIONS IN INPUT DATASET. ANNO
 NOTE: There were 1298 observations read from the data set WORK.CSS_PLOT_TP.
       WHERE (timept>=0 and timept<7);
 NOTE: PROCEDURE SHEWHART used (Total process time):
-      real time           0.20 seconds
-      cpu time            0.20 seconds
+      real time           0.25 seconds
+      cpu time            0.23 seconds
 
 
 NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set CSS_PLOT_TP is accessible.
@@ -1395,8 +1395,8 @@ NOTE: SAS threaded sort was used.
 NOTE: No rows were selected.
 MPRINT(UTIL_GET_REFERENCE_LINES):   quit;
 NOTE: PROCEDURE SQL used (Total process time):
-      real time           0.01 seconds
-      cpu time            0.01 seconds
+      real time           0.02 seconds
+      cpu time            0.04 seconds
 
 
 NOTE: (UTIL_GET_REFERENCE_LINES) 0 distinct reference ranges in css_plot_tp (where=( 7 <= timept < 12 )).
@@ -1424,8 +1424,8 @@ NOTE: ANNOTATE= DATASET PROCESSING ERROR. NO OBSERVATIONS IN INPUT DATASET. ANNO
 NOTE: There were 729 observations read from the data set WORK.CSS_PLOT_TP.
       WHERE (timept>=7 and timept<12);
 NOTE: PROCEDURE SHEWHART used (Total process time):
-      real time           0.12 seconds
-      cpu time            0.12 seconds
+      real time           0.15 seconds
+      cpu time            0.14 seconds
 
 
 MPRINT(BOXPLOT_EACH_PARAM_TP):   *--- Release the PDF output file! ---*;

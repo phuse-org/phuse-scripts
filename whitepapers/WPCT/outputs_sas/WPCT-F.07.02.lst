@@ -1,4 +1,4 @@
-The SAS System                                                                                                                                                                                                              10:22 Saturday, February 6, 2016   1
+The SAS System                                                                                                                                                                                                            16:49 Wednesday, February 17, 2016   1
 
 The GLM Procedure
 
@@ -13,7 +13,7 @@ TRTPN     54      -1.29895697 B      1.25848618      -1.03      0.3031
 TRTPN     81      -1.35496023 B      1.25345307      -1.08      0.2809
 TRTPN     0        0.00000000 B       .                .         .
 Box Plot - Diastolic Blood Pressure (mmHg) Change from BASELINE to END OF TREATMENT by Visit, Analysis Timepoint: AFTER LYING  2
-                                                                                                10:22 Saturday, February 6, 2016
+                                                                                              16:49 Wednesday, February 17, 2016
 
 The GLM Procedure
 
@@ -26,7 +26,7 @@ Intercept         65.22524443 B      7.46577357       8.74      <.0001
 BASE              -0.51737994        0.05370400      -9.63      <.0001
 TRTPN     54       0.53010081 B      2.43466899       0.22      0.8278
 TRTPN     81      -4.16039704 B      2.42781490      -1.71      0.0880
-TRTPN     0        0.00000000 B       .                .         .
+TRTPN     0        0.00000000 B
 
 
 
@@ -51,6 +51,6 @@ TRTPN     0        0.00000000 B       .                .         .
 
 
 
-Box plot type is schematic: the box shows median and interquartile range (IQR, the box edges); the whiskers extend to the minimu
-and maximum data points within 1.5 IQR below 25% and above 75%, respectively. Values outside the whiskers are shown as outliers.
+Box plot type is schematic: the box shows median and interquartile range (IQR, the box height); the whiskers extend to the minim
+and maximum data points within 1.5 IQR of the lower and upper quartiles, respectively. Values outside the whiskers are shown as
 Means are marked with a different symbol for each treatment. P-value is for the treatment comparison from ANCOVA model Change =

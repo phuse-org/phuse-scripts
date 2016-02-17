@@ -90,9 +90,9 @@ end HEADER ***/
              Option to specify which Normal Range reference lines to include in box plots
              <NONE | UNIFORM | NARROW | ALL | numeric-value(s)> See discussion in Central Tendency White Paper 
              NONE    - No reference lines on box plot
-             UNIFORM - preferred alternative to default. Only plot LOW/HIGH ref lines if uniform for all obs
+             UNIFORM - Preferred alternative to default. Only plot LOW/HIGH ref lines if they are uniform for all measurements
              NARROW  - Default. Display only the narrow normal limits: max LOW, and min HIGH limits
-             ALL     - discouraged since displaying ALL reference lines confuses review our data display
+             ALL     - Discouraged, since displaying ALL reference lines confuses review of data display
              numeric-values - space-delimited list of reference line values, such as a 0 reference line for displays of change.
 
        MAX_BOXES_PER_PAGE:
@@ -417,21 +417,12 @@ end HEADER ***/
                   css_stats
                   css_c_stats;
 
-              label n         = 'n'        c_n         = 'n'
-                    mean      = 'Mean'     c_mean      = 'Mean'
-                    std       = 'Std Dev'  c_std       = 'Std Dev'
-                    datamin   = 'Min'      c_datamin   = 'Min'
-                    q1        = 'Q1'       c_q1        = 'Q1'
-                    median    = 'Median'   c_median    = 'Median'
-                    q3        = 'Q3'       c_q3        = 'Q3'
-                    datamax   = 'Max'      c_datamax   = 'Max'
-                    ;
               format mean c_mean %scan(&util_value_format, 1, %str( )) std c_std %scan(&util_value_format, 2, %str( ));
             run;
 
 
-          *--- Graphics Adjustments - Set defaults for all graphs for this PARAMCD/TIMEPOINT ---*;
-            options orientation=landscape;
+          *--- Graphics Adjustments - Set defaults for all graphs, MISSING=' ' since most P-VALUEs are missing ---*;
+            options orientation=landscape missing=' ';
             goptions reset=all;
 
             ods graphics on / reset=all;
@@ -439,8 +430,8 @@ end HEADER ***/
 
             title1    justify=left height=1.2 "Box Plot - &&paramcd_lab&pdx Observed Values and Change from %upcase(&B_VISN_LAB1) to %upcase(&EP_VISN_LAB1) by Visit";
             title2    justify=left height=1.2 "Analysis Timepoint: &&atptn_lab&tdx";
-            footnote1 justify=left height=1.0 'Box plot type is schematic: the box shows median and interquartile range (IQR, the box edges); the whiskers extend to the minimum and maximum data points';
-            footnote2 justify=left height=1.0 'within 1.5 IQR below 25% and above 75%, respectively. Values outside the whiskers are shown as outliers. Means are marked with a different symbol for each treatment.';
+            footnote1 justify=left height=1.0 'Box plot type is schematic: the box shows median and interquartile range (IQR, the box height); the whiskers extend to the minimum and maximum data points';
+            footnote2 justify=left height=1.0 'within 1.5 IQR of the lower and upper quartiles, respectively. Values outside the whiskers are shown as outliers. Means are marked with a different symbol for each treatment.';
             footnote3 justify=left height=1.0 'Red dots indicate measures outside the normal reference range. P-value is for the treatment comparison from ANCOVA model Change = Baseline + Treatment.';
 
             %let aval_axis = %util_axis_order( %scan(&aval_min_max,1,%str( )), %scan(&aval_min_max,2,%str( )) );
@@ -475,11 +466,11 @@ end HEADER ***/
                 proc sgrender data=css_plot (where=( &nxtvis )) template=PhUSEboxplot ;
                   dynamic 
                           _TITLE      = 'Observed Values'
-                          _TRT        = "&t_var"
-                          _AVISITN    = 'avisitn' 
-                          _AVISIT     = 'avisit' 
-                          _AVAL       = "&m_var"
-                          _AVALOUTLIE = 'm_var_outlier'
+                          _MARKERS    = "&t_var"
+                          _XVAR       = 'avisitn' 
+                          _BLOCKLABEL = 'avisit' 
+                          _YVAR       = "&m_var"
+                          _YOUTLIERS  = 'm_var_outlier'
 
                           %if %length(&nxt_reflines) > 0 %then %do;
                             _REFLINES   = "%sysfunc(translate( &nxt_reflines, %str(,), %str( ) ))"
@@ -504,10 +495,10 @@ end HEADER ***/
                 proc sgrender data=css_plot (where=( avisitn ne &b_visn AND &nxtvis )) template=PhUSEboxplot ;
                   dynamic 
                           _TITLE      = 'Change from Baseline'
-                          _TRT        = "&t_var"
-                          _AVISITN    = 'avisitn' 
-                          _AVISIT     = 'avisit' 
-                          _AVAL       = "&c_var"
+                          _MARKERS    = "&t_var"
+                          _XVAR       = 'avisitn' 
+                          _BLOCKLABEL = 'avisit' 
+                          _YVAR       = "&c_var"
                           _REFLINES   = "0"
                           _YLABEL     = "Change in &&paramcd_lab&pdx"
                           _YMIN       = %scan(&chg_axis, 1, %str( ))

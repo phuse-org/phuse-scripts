@@ -23,6 +23,11 @@
       optional keyword
       Syntax:  Filename of XPORT archive that includes DS. If missing, set to DS
       Example: ADVS_CONTAINER
+    FOLDER name of data/adam subfolder in github from which to retrieve data
+      optional keyword
+      Syntax:  Folder name, case-sensitive, as it appears in https://github.com/phuse-org/phuse-scripts/tree/master/data/adam
+               Default "cdisc" contains single-study data
+      Example: cdisc-split
     LOCAL path to a local folder that contains the PhUSE CS test data sets, to override remote access
       optional keyword
       Syntax:  Local path to folder with test data, quoted as needed
@@ -35,7 +40,7 @@
     * Implement some way of warning the user that a specified PhUSE CS data set does not exist.
 ***/
 
-%macro util_access_test_data(ds, xport=, local=);
+%macro util_access_test_data(ds, xport=, folder=cdisc, local=);
 
   %if %length(&xport) = 0 %then %let xport = &ds;
 
@@ -51,7 +56,7 @@
     filename source "&local.&xport..xpt";
   %end;
   %else %do;
-    filename source url "https://github.com/phuse-org/phuse-scripts/raw/master/data/adam/cdisc/&xport..xpt";
+    filename source url "https://github.com/phuse-org/phuse-scripts/raw/master/data/adam/&folder/&xport..xpt";
   %end;
 
   libname source xport access=READONLY;

@@ -1,13 +1,13 @@
 /*** HEADER
 
-    Display:     Figure 7.1 Box plot - Measurements by Analysis Timepoint, Visit and Treatment
+    Display:     Figure 7.6 Box plot - Measurements at Last Baseline and Last Post-baseline, Multiple Studies
     White paper: Central Tendency
 
     User Guide:     https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/CentralTendency-UserGuide.txt
     Macro Library:  https://github.com/phuse-org/phuse-scripts/tree/master/whitepapers/utilities
     Specs:          https://github.com/phuse-org/phuse-scripts/tree/master/whitepapers/specification
     Test Data:      https://github.com/phuse-org/phuse-scripts/tree/master/data/adam/cdisc
-    Sample Output:  https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/WPCT/outputs_sas/WPCT-F.07.01_Box_plot_DIABP_by_visit_for_timepoint_815.pdf
+    Sample Output:  https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/WPCT/outputs_sas/WPCT-F.07.06_Box_plot_DIABP_last_base_post_by_study_for_timepoint_815.pdf
 
     Using this program:
 
@@ -68,6 +68,12 @@ end HEADER ***/
        HI_VAR: Variable in M_DS with UPPER LIMIT of reference range, such as ANRHI.
                Required to highlight values outside reference range (RED DOT in box plot), and reference lines
 
+       B_VISN: Visit number that represents Baseline in AVISITN (e.g., 0)
+       E_VISN: Visit number that represents endpoint in AVISITN for chg-from-baseline comparison (e.g., 99)
+               OPTIONAL: Include additional visits BETWEEN baseline and endpoint.
+                         List space-delimited, INCREASING visit numbers in E_VISN.
+                         The LAST (greatest) visit number in E_VISN is the endpoint visit.
+
        P_FL:  Population flag variable. 'Y' indicates record is in population of interest.
        A_FL:  Analysis Flag variable.   'Y' indicates that record is selected for analysis.
 
@@ -75,8 +81,8 @@ end HEADER ***/
              Option to specify which Normal Range reference lines to include in box plots
              <NONE | UNIFORM | NARROW | ALL | numeric-value(s)> See discussion in Central Tendency White Paper 
              NONE    - No reference lines on box plot
-             UNIFORM - Default. preferred alternative to default. Only plot LOW/HIGH ref lines if uniform for all obs
-             NARROW  - Display only the narrow normal limits: max LOW, and min HIGH limits
+             UNIFORM - Preferred alternative to default. Only plot LOW/HIGH ref lines if they are uniform for all measurements
+             NARROW  - Default. Display only the narrow normal limits: max LOW, and min HIGH limits
              ALL     - Discouraged, since displaying ALL reference lines confuses review of data display
              numeric-values - space-delimited list of reference line values, such as a 0 reference line for displays of change.
 
@@ -91,7 +97,7 @@ end HEADER ***/
   ************************************/
 
 
-    %put WARNING: (WPCT-F.07.01) User must ensure PhUSE CS utilities are in the AUTOCALL path.;
+    %put WARNING: (WPCT-F.07.06) User must ensure PhUSE CS utilities are in the AUTOCALL path.;
 
     /*** 1) PhUSE CS utilities in autocall paths (see "Macro Library", above)
 
@@ -105,10 +111,10 @@ end HEADER ***/
 
     /*** 2a) REMOTE ACCESS data, by default PhUSE CS test data, and create WORK copy.                ***/
     /***     NB: If remote access to test data files does not work, see local override, below. ***/
-      %util_access_test_data(advs)
+      %util_access_test_data(advs, folder=cdisc-split)
 
       *--- NB: LOCAL PhUSE CS test data, override remote access by providing a local path ---*;
-        %* %util_access_test_data(advs, local=C:\CSS\phuse-scripts\data\adam\cdisc\) ;
+        %* %util_access_test_data(advs, local=C:\CSS\phuse-scripts\data\adam\cdisc-split\) ;
 
 
     /*** 2b) USER SUBSET of data, to limit number of box plot outputs, and to shorten Tx labels ***/
@@ -116,7 +122,7 @@ end HEADER ***/
       data advs_sub;
         set work.advs;
         where (paramcd in ('DIABP') and atptn in (815)) or 
-              (paramcd in ('SYSBP') and atptn in (816));
+              (paramcd in ('SYSBP') and atptn in (816)) ;
 
         attrib trtp_short length=$6 label='Planned Treatment, abbreviated';
 
@@ -140,10 +146,13 @@ end HEADER ***/
       %let lo_var = anrlo;
       %let hi_var = anrhi;
 
+      %let b_visn = 0;
+      %let e_visn = 99;
+
       %let p_fl = saffl;
       %let a_fl = anl01fl;
 
-      %let ref_lines = UNIFORM;
+      %let ref_lines = NARROW;
 
       %let max_boxes_per_page = 20;
 
@@ -166,7 +175,7 @@ end HEADER ***/
 
     options nocenter mautosource mrecall mprint msglevel=I mergenoby=WARN ls=max ps=max;
 
-    %let ana_variables = STUDYID USUBJID &p_fl &a_fl &t_var &tn_var PARAM PARAMCD &m_var &lo_var &hi_var AVISIT AVISITN ATPT ATPTN;
+    %let ana_variables = STUDYID USUBJID &p_fl &a_fl &t_var &tn_var PARAM PARAMCD &m_var &lo_var &hi_var AVISITN ATPT ATPTN;
 
     %*--- Global boolean symbol CONTINUE, used with macro assert_continue(), warns user of invalid environment. Processing should HALT. ---*;
       %let CONTINUE = %assert_depend(OS=%str(AIX,WIN,HP IPF),
@@ -176,24 +185,85 @@ end HEADER ***/
                                      macros=assert_continue util_labels_from_var util_count_unique_values 
                                             util_get_reference_lines util_proc_template util_get_var_min_max
                                             util_value_format util_boxplot_visit_ranges util_axis_order util_delete_dsets,
-                                     symbols=m_lb m_ds t_var tn_var m_var lo_var hi_var p_fl a_fl 
+                                     symbols=m_lb m_ds t_var tn_var m_var lo_var hi_var b_visn e_visn p_fl a_fl 
                                              ref_lines max_boxes_per_page outputs_folder
                                     );
 
       %assert_continue(After asserting the dependencies of this script)
 
 
-    *--- Restrict analysis to SAFETY POP and ANALYSIS RECORDS (&a_fl) ---*;
-      data css_anadata;
-        set &m_lb..&m_ds (keep=&ana_variables);
-        where &p_fl = 'Y' and &a_fl = 'Y';
+    %*--- Figure 7.6 supports exactly 1 baseline and exactly 1 post-baseline visit. Ignore extra user-specified visits. ---*;
+      %macro null;
+        %if %scan(&b_visn, 1, %str( )) ne %scan(&b_visn,-1, %str( )) %then %do;
+          %*--- Use just the first user-specified baseline visit number ---*;
+          %let b_visn = %scan(&b_visn, 1, %str( ));
+          %put WARNING: (WPCT-F.07.06) Exactly one baseline visit number needed. Using AVISITN = &b_visn;
+        %end;
 
-        *--- Create a Normal Range Outlier variable, for scatter plot overlay ---*;
+        %if %scan(&e_visn, 1, %str( )) ne %scan(&e_visn,-1, %str( )) %then %do;
+          %*--- Use just the last user-specified post-baseline visit number ---*;
+          %let e_visn = %scan(&e_visn,-1, %str( ));
+          %put WARNING: (WPCT-F.07.06) Exactly one post-baseline visit number needed. Using AVISITN = &e_visn;
+        %end;
+      %mend null;
+      %null;
+
+
+    /*** Data Prep
+      1. Restrict analysis to SAFETY POP (&p_fl) and ANALYSIS RECORDS (&a_fl)
+      2. Plot requires 'Pooled' data with UNIQUE USUBJID for across-study results
+      3. Plot requires a Study-Visit variable for the X-Axis, to cluster boxes and stats
+    ***/
+      data css_safana;
+        set &m_lb..&m_ds (keep=&ana_variables 
+                          where=(&p_fl = 'Y' and &a_fl = 'Y' and avisitn in (&b_visn &e_visn)));
+      run;
+
+      data css_pooled;
+        set css_safana
+            css_safana (in=in_pool);
+        if in_pool then do;
+          *--- Leading hex-char 'A0'x forces 'Pooled' results to follow individual studies ---*;
+          studyid = 'A0'x !! 'Pooled';
+          substr(usubjid,1,1) = 'P';
+        end;
+      run;
+
+      proc sort data=css_pooled;
+        by studyid avisitn &tn_var;
+      run;
+
+      data css_anadata;
+        set css_pooled;
+        by studyid avisitn &tn_var;
+
+        *--- Replace AVISIT with plot-specific text, based on user-specified visit numbers ---*;
+          attrib avisit length=$4 label='BASE or POST, to match user-specified Baseline and Post-baseline visits';
+
+          if avisitn = &b_visn then avisit = 'BASE';
+          else if avisitn = &e_visn then avisit = 'POST';
+          else avisit = 'UNK';
+
+        *--- Create STUDYVISITN with plot-specific DISCRETE VALUEs for X-Axis, based on Study ID and AVISIT ---*;
+          attrib studyvisitn label='X-Axis discrete numeric values for plot, from (Study Seq).(Visit Seq)';
+          if first.studyid then do;
+            studyvisitn = floor(studyvisitn);
+            studyvisitn + 1;
+          end;
+          if first.avisitn then studyvisitn + 0.1;
+      run;
+
+
+    *--- Create a Normal Range Outlier variable, for scatter plot overlay ---*;
+      data css_anadata;
+        set css_anadata;
           if (2 = n(&m_var, &lo_var) and &m_var < &lo_var) or
              (2 = n(&m_var, &hi_var) and &m_var > &hi_var) then m_var_outlier = &m_var;
           else m_var_outlier = .;
-
       run;
+
+    %*--- Expect 1 obs per U-Subject per visit number, parameter, and analysis timepoint ---*;
+      %assert_unique_keys (css_anadata, studyid usubjid paramcd avisitn atptn);
 
 
   /*** GATHER INFO for data-driven processing
@@ -270,7 +340,7 @@ end HEADER ***/
            *******************************************************************************/
             proc sort data=css_nextparam (where=(atptn = &&atptn_val&tdx))
                        out=css_nexttimept;
-              by avisitn &tn_var;
+              by studyid avisitn &tn_var;
             run;
 
           %*--- Y-AXIS DEFAULT: Set Y-Axis MIN/MAX based on this timepoint. See Y-AXIS alternative, above. ---*;
@@ -284,12 +354,12 @@ end HEADER ***/
             %util_value_format(css_nexttimept, &m_var)
 
           %*--- Create macro variable BOXPLOT_VISIT_RANGES, to subset visits into box plot pages ---*;
-            %util_boxplot_visit_ranges(css_nexttimept, vvisn=avisitn, vtrtn=&tn_var);
+            %util_boxplot_visit_ranges(css_nexttimept, vvisn=studyvisitn, vtrtn=&tn_var);
 
 
           *--- Calculate summary statistics, KEEP LABELS of VISIT and TRT for plotting, below ---*;
             proc summary data=css_nexttimept noprint;
-              by avisitn &tn_var avisit &t_var;
+              by studyid avisitn &tn_var studyvisitn avisit &t_var;
               var &m_var;
               output out=css_stats (drop=_type_ _freq_) 
                      n=n mean=mean std=std median=median min=datamin max=datamax q1=q1 q3=q3;
@@ -314,22 +384,21 @@ end HEADER ***/
             ods graphics on / reset=all;
             ods graphics    / border=no attrpriority=COLOR;
 
-            title     justify=left height=1.2 "Box Plot - &&paramcd_lab&pdx Observed Values by Visit, Analysis Timepoint: &&atptn_lab&tdx";
-
-
+            title     justify=left height=1.2 "Box Plot - &&paramcd_lab&pdx at Last Baseline and Last Post-Baseline for Multiple Studies and Analysis Timepoint &&atptn_lab&tdx";
             footnote1 justify=left height=1.0 'Box plot type is schematic: the box shows median and interquartile range (IQR, the box height); the whiskers extend to the minimum';
             footnote2 justify=left height=1.0 'and maximum data points within 1.5 IQR of the lower and upper quartiles, respectively. Values outside the whiskers are shown as outliers.';
             footnote3 justify=left height=1.0 'Means are marked with a different symbol for each treatment. Red dots indicate measures outside the normal reference range.';
+            footnote4 justify=left height=1.0 'Baseline and post-baseline blocks have different background colors. BASE = baseline, POST = post-baseline.';
 
             %let y_axis = %util_axis_order( %scan(&aval_min_max,1,%str( )), %scan(&aval_min_max,2,%str( )) );
 
           *--- ODS PDF destination (Traditional Graphics, No ODS or Listing output) ---*;
             ods listing close;
-            ods pdf file="&outputs_folder\WPCT-F.07.01_Box_plot_&&paramcd_val&pdx.._by_visit_for_timepoint_&&atptn_val&tdx...pdf"
+            ods pdf file="&outputs_folder\WPCT-F.07.06_Box_plot_&&paramcd_val&pdx.._last_base_post_by_study_for_timepoint_&&atptn_val&tdx...pdf"
                     notoc bookmarklist=none dpi=300
                     author="(&SYSUSERID) PhUSE CS Standard Analysis Library"
                     subject='PhUSE CS Measures of Central Tendency'
-                    title="Boxplot of &&paramcd_lab&pdx by Visit for Analysis Timepoint &&atptn_lab&tdx"
+                    title="Boxplot of &&paramcd_lab&pdx at Last Baseline and Last Post-baseline for Multiple Studies and Analysis Timepoint &&atptn_lab&tdx"
                     ;
 
 
@@ -345,8 +414,8 @@ end HEADER ***/
               proc sgrender data=css_plot (where=( &nxtvis )) template=PhUSEboxplot ;
                 dynamic 
                         _MARKERS    = "&t_var"
-                        _XVAR       = 'avisitn' 
-                        _BLOCKLABEL = 'avisit' 
+                        _BLOCKLABEL = 'studyid' 
+                        _XVAR       = 'studyvisitn' 
                         _YVAR       = "&m_var"
                         _YOUTLIERS  = 'm_var_outlier'
 
@@ -358,6 +427,7 @@ end HEADER ***/
                         _YMIN       = %scan(&y_axis, 1, %str( ))
                         _YMAX       = %scan(&y_axis, 3, %str( ))
                         _YINCR      = %scan(&y_axis, 5, %str( ))
+                        _PERIOD     = 'avisit'
                         _N          = 'n'
                         _MEAN       = 'mean'
                         _STD        = 'std'

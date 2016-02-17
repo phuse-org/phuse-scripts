@@ -349,29 +349,20 @@ end HEADER ***/
               set css_nexttimept
                   css_stats;
 
-              label n         = 'n'
-                    mean      = 'Mean'
-                    std       = 'Std Dev'
-                    datamin   = 'Min'
-                    q1        = 'Q1'
-                    median    = 'Median'
-                    q3        = 'Q3'
-                    datamax   = 'Max'
-                    ;
               format mean %scan(&util_value_format, 1, %str( )) std %scan(&util_value_format, 2, %str( ));
             run;
 
 
-          *--- Graphics Settings - Set defaults for all graphs ---*;
-            options orientation=landscape;
+          *--- Graphics Settings - Set defaults for all graphs, MISSING=' ' since most P-VALUEs are missing ---*;
+            options orientation=landscape missing=' ';
             goptions reset=all;
 
             ods graphics on / reset=all;
             ods graphics    / border=no attrpriority=COLOR;
 
             title     justify=left height=1.2 "Box Plot - &&paramcd_lab&pdx Change from %upcase(&B_VISN_LAB1) to %upcase(&E_VISN_LAB1) by Visit, Analysis Timepoint: &&atptn_lab&tdx";
-            footnote1 justify=left height=1.0 'Box plot type is schematic: the box shows median and interquartile range (IQR, the box edges); the whiskers extend to the minimum';
-            footnote2 justify=left height=1.0 'and maximum data points within 1.5 IQR below 25% and above 75%, respectively. Values outside the whiskers are shown as outliers.';
+            footnote1 justify=left height=1.0 'Box plot type is schematic: the box shows median and interquartile range (IQR, the box height); the whiskers extend to the minimum';
+            footnote2 justify=left height=1.0 'and maximum data points within 1.5 IQR of the lower and upper quartiles, respectively. Values outside the whiskers are shown as outliers.';
             footnote3 justify=left height=1.0 'Means are marked with a different symbol for each treatment. P-value is for the treatment comparison from ANCOVA model Change = Baseline + Treatment.';
 
             %let y_axis = %util_axis_order( %scan(&chg_min_max,1,%str( )), %scan(&chg_min_max,2,%str( )) );
@@ -397,10 +388,10 @@ end HEADER ***/
 
               proc sgrender data=css_plot (where=( &nxtvis )) template=PhUSEboxplot ;
                 dynamic 
-                        _TRT        = "&t_var"
-                        _AVISITN    = 'avisitn' 
-                        _AVISIT     = 'avisit' 
-                        _AVAL       = "&c_var"
+                        _MARKERS    = "&t_var"
+                        _XVAR       = 'avisitn' 
+                        _BLOCKLABEL = 'avisit' 
+                        _YVAR       = "&c_var"
                         _REFLINES   = "0"
                         _YLABEL     = "Change in &&paramcd_lab&pdx"
                         _YMIN       = %scan(&y_axis, 1, %str( ))

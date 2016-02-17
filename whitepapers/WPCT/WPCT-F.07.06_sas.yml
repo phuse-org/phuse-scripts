@@ -1,0 +1,26 @@
+KeyWords: central tendencies, baseline, post-baseline, pooled, boxplot, labs, vital signs, ECGs
+Script: 
+  Desc   : Box plot - Measurements at Last Baseline and Last Post-baseline for Multiple Studies and Analysis Timepoint
+  Name   : WPCT_F.07.06_sas
+  Source : White paper
+  Topic  : Measures of Central Tendency Figure 7.6
+  Title  : Measurements at Last Baseline and Last Post-baseline for Multiple Studies and Analysis Timepoint
+  Type   : figure
+  Subtype  : boxplot
+  Target : http://www.phusewiki.org/wiki/images/4/48/CSS_WhitePaper_CentralTendency_v1.0.pdf
+Package:
+  name : WPCT
+  label: White Paper on Measures of Central Tendency
+Language: 
+  name   : SAS
+  version: 9.4M2
+Comments : >
+Qualification: 
+  LastQualDate:
+  LastQualBy: 
+  Stage: Review
+Rating: 
+  - User: 
+    Date: 
+    Association: 
+    Stars: 

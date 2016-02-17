@@ -50,10 +50,10 @@
       define statgraph PhUSEboxplot;
 
         dynamic _TITLE _DESIGN_WIDTH _DESIGN_HEIGHT
-                _TRT _AVISIT _AVISITN _AVAL _AVALOUTLIE
+                _MARKERS _BLOCKLABEL _XVAR _YVAR _YOUTLIERS
                 _YLABEL _YMIN _YMAX _YINCR 
                 _REFLINES
-                _N _MEAN _STD _DATAMIN _Q1 _MEDIAN _Q3 _DATAMAX _PVAL
+                _PERIOD _N _MEAN _STD _DATAMIN _Q1 _MEDIAN _Q3 _DATAMAX _PVAL
                 ;
 
         begingraph / attrpriority=none border=false pad=0 dataskin=none
@@ -71,7 +71,7 @@
                                               symbol=square 
                                               size=&iqr_size);
 
-          IF (EXISTS(_AVALOUTLIE))
+          IF (EXISTS(_YOUTLIERS))
             legenditem type=marker name='NormalRangeOutliers' / 
                                    label='Normal Range Outliers'
                                    markerattrs=(color=CXFF0000 
@@ -101,7 +101,7 @@
             innermargin / align=top 
                           separator=false 
                           pad=0;
-              blockplot x=_AVISITN block=_AVISIT /
+              blockplot x=_XVAR block=_BLOCKLABEL /
                         display=(outline 
                                  values)
                         valuefitpolicy=split
@@ -113,9 +113,9 @@
             *--- MAIN BOX PLOT: Including IQR outliers.
                  Cluster width must match that of Scatter plot, and the Box plot width. 
                  By default, they do not match! ---*;
-            boxplot x=_AVISITN y=_AVAL /
+            boxplot x=_XVAR y=_YVAR /
                     name='box'
-                    group=_TRT
+                    group=_MARKERS
                     groupdisplay=cluster
                     clusterwidth=&clusterwidth
                     capshape=serif
@@ -140,11 +140,11 @@
                  Cluster width must match that of Box plot. 
                  By default, they do not match! ---*;
 
-            IF ( MEAN(_AVALOUTLIE) NE . )
+            IF ( MEAN(_YOUTLIERS) NE . )
 
-              scatterplot x=_AVISITN y=_AVALOUTLIE /
+              scatterplot x=_XVAR y=_YOUTLIERS /
                           name='scatter'
-                          group=_TRT
+                          group=_MARKERS
                           groupdisplay=cluster
                           clusterwidth=&clusterwidth
                           jitter=auto
@@ -172,18 +172,38 @@
                            ;
 
             innermargin / align=bottom separator=false pad=(bottom=0);
-                  axistable x=_AVISITN value=_TRT     / class=_TRT label='Treatment' classdisplay=cluster colorgroup=_TRT;
-                  axistable x=_AVISITN value=_N       / class=_TRT label='n'         classdisplay=cluster colorgroup=_TRT;
-                  axistable x=_AVISITN value=_MEAN    / class=_TRT label='Mean'      classdisplay=cluster colorgroup=_TRT;
-                  axistable x=_AVISITN value=_STD     / class=_TRT label='Std Dev'   classdisplay=cluster colorgroup=_TRT;
-                  axistable x=_AVISITN value=_DATAMIN / class=_TRT label='Min'       classdisplay=cluster colorgroup=_TRT;
-                  axistable x=_AVISITN value=_Q1      / class=_TRT label='Q1'        classdisplay=cluster colorgroup=_TRT;
-                  axistable x=_AVISITN value=_MEDIAN  / class=_TRT label='Median'    classdisplay=cluster colorgroup=_TRT;
-                  axistable x=_AVISITN value=_Q3      / class=_TRT label='Q3'        classdisplay=cluster colorgroup=_TRT;
-                  axistable x=_AVISITN value=_DATAMAX / class=_TRT label='Max'       classdisplay=cluster colorgroup=_TRT;
-
+                  IF (EXISTS(_PERIOD))
+                    axistable x=_XVAR value=_PERIOD  / class=_MARKERS label='Period'    classdisplay=cluster colorgroup=_MARKERS;
+                  ENDIF;
+                  IF (EXISTS(_MARKERS))
+                    axistable x=_XVAR value=_MARKERS / class=_MARKERS label='Treatment' classdisplay=cluster colorgroup=_MARKERS;
+                  ENDIF;
+                  IF (EXISTS(_N))
+                    axistable x=_XVAR value=_N       / class=_MARKERS label='n'         classdisplay=cluster colorgroup=_MARKERS;
+                  ENDIF;
+                  IF (EXISTS(_MEAN))
+                    axistable x=_XVAR value=_MEAN    / class=_MARKERS label='Mean'      classdisplay=cluster colorgroup=_MARKERS;
+                  ENDIF;
+                  IF (EXISTS(_STD))
+                    axistable x=_XVAR value=_STD     / class=_MARKERS label='Std Dev'   classdisplay=cluster colorgroup=_MARKERS;
+                  ENDIF;
+                  IF (EXISTS(_DATAMIN))
+                    axistable x=_XVAR value=_DATAMIN / class=_MARKERS label='Min'       classdisplay=cluster colorgroup=_MARKERS;
+                  ENDIF;
+                  IF (EXISTS(_Q1))
+                    axistable x=_XVAR value=_Q1      / class=_MARKERS label='Q1'        classdisplay=cluster colorgroup=_MARKERS;
+                  ENDIF;
+                  IF (EXISTS(_MEDIAN))
+                    axistable x=_XVAR value=_MEDIAN  / class=_MARKERS label='Median'    classdisplay=cluster colorgroup=_MARKERS;
+                  ENDIF;
+                  IF (EXISTS(_Q3))
+                    axistable x=_XVAR value=_Q3      / class=_MARKERS label='Q3'        classdisplay=cluster colorgroup=_MARKERS;
+                  ENDIF;
+                  IF (EXISTS(_DATAMAX))
+                    axistable x=_XVAR value=_DATAMAX / class=_MARKERS label='Max'       classdisplay=cluster colorgroup=_MARKERS;
+                  ENDIF;
                   IF (EXISTS(_PVAL))
-                    axistable x=_AVISITN value=_PVAL  / class=_TRT label='P Value'   classdisplay=cluster colorgroup=_TRT;
+                    axistable x=_XVAR value=_PVAL    / class=_MARKERS label='P Value'   classdisplay=cluster colorgroup=_MARKERS;
                   ENDIF;
             endinnermargin;
 
