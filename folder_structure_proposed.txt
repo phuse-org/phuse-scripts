@@ -13,7 +13,11 @@ MM/DD/YYYY (developer) - Description
 */
 
 ; Folder structure
-We need to establish a folder structure so that we can organize the files (scripts, metadata files, documents and data sets) in a meaningful way. Here is the result of the discussion from the P03 - RGI: Repository governance and infrastructure:  http://www.phusewiki.org/wiki/index.php?title=SS_P03_31AUG2015. 
+We need to establish a folder structure so that we can organize the files 
+(scripts, metadata files, documents and data sets) in a meaningful way. 
+Here is the result of the discussion from the P03 - RGI: Repository 
+governance and infrastructure:  
+http://www.phusewiki.org/wiki/index.php?title=SS_P03_31AUG2015. 
 
 We've reached a consensus on the folder structure within github. Here's an example:
 ; for scripts
