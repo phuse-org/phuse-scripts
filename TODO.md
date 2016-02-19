@@ -45,6 +45,7 @@ There are several general topics to resolve, especially between the Standard Ana
   * [General Output & Formatting Requirements](https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/specification/CS_General_OutputandFormattingRequirements.docx), which should apply to Standard Analyses *across* white papers, and
   * [WPCT General Requirements](https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/specification/CS_General_CentralTendencyRequirements.docx), which should apply across **WPCT** displays.
   * Do the White Paper team endorse this approach, and want to finalize these?
+
 * Otherwise, what is the best way to specify and document analysis-specific details such as the following from **WPCT**?
   * Does the team accept the revised footnotes in the scripts and outputs, below. How/where do we document these?
   * WPCT Scripts currently restrict data to the safety population (SAFFL = 'Y'). Is this correct; should we specify/document this for each analysis?
