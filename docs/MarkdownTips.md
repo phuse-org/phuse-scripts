@@ -23,7 +23,7 @@ Making a TOC -- automatic anchors for header text (anchor text is all lower-case
 
 ###### Lists
 
-1. Ordered are aligned with numbers.
+1. Ordered are aligned with numbers
   1. ordered sub-lists simply have leading spaces
   2. like this
 
