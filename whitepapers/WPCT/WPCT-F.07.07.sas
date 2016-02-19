@@ -7,7 +7,7 @@
     Macro Library:  https://github.com/phuse-org/phuse-scripts/tree/master/whitepapers/utilities
     Specs:          https://github.com/phuse-org/phuse-scripts/tree/master/whitepapers/specification
     Test Data:      https://github.com/phuse-org/phuse-scripts/tree/master/data/adam/cdisc
-    Sample Output:  https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/WPCT/outputs_sas/WPCT-F.07.07_Box_plot_DIABP_change_base_post_by_study_for_timepoint_815.pdf
+    Sample Output:  https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/WPCT/outputs_sas/WPCT-F.07.07_Box_plot_DIABP_change_LAST_base_post_by_study_for_timepoint_815.pdf
 
     Using this program:
 
