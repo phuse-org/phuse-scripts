@@ -49,7 +49,7 @@ There are several general topics to resolve, especially between the Standard Ana
   * More generally, should we establish basic ADaM requirements that the Standard Analyses fully support, such as variable names for flags, common derivations, etc?
 
 * Otherwise, what is the best way to specify and document analysis-specific details such as the following from **WPCT**?
-  * Does the team accept the revised footnotes in the scripts and outputs (accessible via our (WPCT task list](https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/WPCT/TODO.md#wpct-figures--scripts-with-qualification-details)). How/where do we document these?
+  * Does the team accept the revised footnotes in the scripts and outputs (accessible via our [WPCT task list](https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/WPCT/TODO.md#wpct-figures--scripts-with-qualification-details)). How/where do we document these?
   * WPCT Scripts currently restrict data to the safety population (SAFFL = 'Y'). Is this correct; should we specify/document this for each analysis?
   * Most WPCT scripts currently restrict data to "analysis" measurements (e.g., ANL01FL = 'Y'). Is this correct; should we specify/docuemnt this for each analysis?
   * Do we need more detailed specification of the ANCOVA models for pvalues?
