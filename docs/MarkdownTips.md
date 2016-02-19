@@ -32,14 +32,14 @@ Making a TOC -- automatic anchors for header text (anchor text is all lower-case
 
 ###### Code blocks with language-specific syntax highlighting
 
-* SAS highlighting using a back-tick blocks like <code>```SAS</code> ...lines of code... <code>```</code>
+* SAS highlighting using a 3-back-tick block like <code>```SAS</code> which ends, as well, with a line of 3 back-ticks
 
 ```SAS
 put "Hello, World!";
 * code block with SAS syntax highlighting;
 ```
 
-* R highlighting using a back-tick blocks like <code>```R</code> ...lines of code... <code>```</code>
+* R highlighting using a back-tick blocks like <code>```R</code> which ends, as well, with a line of 3 back-ticks
 
 ```R
 cat("Hello", "World", sep = ", ")
