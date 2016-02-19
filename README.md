@@ -14,7 +14,7 @@
 
 We maintain Task Lists (to-do lists) for both:
 
-  * [Work Group 5, overall](http://github.com/phuse-org/phuse-scripts/blob/master/TODO.md)
+  * [Working Group 5, overall](http://github.com/phuse-org/phuse-scripts/blob/master/TODO.md)
   * The [WPCT Standard Script Package](http://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/WPCT/TODO.md)
 
 ### Git and GitHub help
