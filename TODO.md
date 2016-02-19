@@ -42,8 +42,7 @@ Finalizing and implementing an overall project GitHub structure is the main acti
 There are several general topics to resolve, especially between the Standard Analyses (P08) and Standard Scripts (P03) teams. These arose while implementing **WPCT** analyses, so we use these analyses to illustrate the general topics.
 
 * We have drafted:
-
-..* [General Output & Formatting Requirements](https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/specification/CS_General_OutputandFormattingRequirements.docx), which should apply to Standard Analyses *across* white papers, and
+⋅⋅* [General Output & Formatting Requirements](https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/specification/CS_General_OutputandFormattingRequirements.docx), which should apply to Standard Analyses *across* white papers, and
 
 ..* [WPCT General Requirements](https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/specification/CS_General_CentralTendencyRequirements.docx), which should apply across **WPCT** displays.
 
