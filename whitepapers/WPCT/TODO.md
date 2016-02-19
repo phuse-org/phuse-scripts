@@ -11,21 +11,11 @@ The Repository Content team aim to deliver a package of robust, easy to use and 
 
 Scripts below by default produce outputs based on a specific ADaM domain such as Vital Signs. The Central Tendency analyses, however, apply equally to Vital Signs, Laboratory and ECG data. These ADaM domains differ both in variables (e.g., timing variables) and variable names (e.g., analysis flags). This leads to several tasks to complete for this project:
 
+* There are several WPCT details to discuss and resolve with the White Paper Team (Project 08) and are listed on our [WG5 Task List](http://github.com/phuse-org/phuse-scripts/blob/master/TODO.md).
 * Establish conventions for providing easy to use and understand Central Tendency scripts that can accomodate at least these three intended data domains: Vital Signs, Laboratory and ECG.
 * Update the [specifications for Central Tendency figures](http://github.com/phuse-org/phuse-scripts/tree/master/whitepapers/specification) to accurately describe domain differences.
 * Update Central Tendency scripts according to conventions for supporting intended data domains.
 * Update the [WPCT guide for users & contributors](http://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/CentralTendency-UserGuide.md) according to conventions for supporting intended data domains.
-
-There are several topics to resolve with the [White Paper team, Project 08](http://github.com/phuse-org/phuse-scripts/blob/master/TODO.md). Most concern a implementation details which are not explicit in the Central Tendency white paper. 
-
-* What is the best way to specify and document analysis and display details such as the following?
-* Does the team accept the revised footnotes in the scripts and outputs, below. How/where do we document these?
-* Scripts currently restrict data to the safety population (SAFFL = 'Y'). Is this correct; should we specify/document this for each analysis?
-* Scripts currently restrict data to "analysis" measurements (e.g., ANL01FL = 'Y'). Is this correct; should we specify/docuemnt this for each analysis?
-* Do we need more detailed specification of the ANCOVA models for pvalues?
-* Section 8.2 mentions that Figures 7.1 & 7.2 could contain additional statistics. Should we implements any specific, optional, stats?
-* Fig. 7.7 in the white paper includes least square means, otherwise not discussed in the paper. Should these be included? By default? Only optional? ...
-* Fig. 7.8 in the white paper includes additional results otherwise not discussed in the paper: "TE High n(%)" and "TE Low n(%)". What are these? Should these be included? By default? Only optional? ...
 
 #### WPCT Figures & Scripts, with Qualification details
 
