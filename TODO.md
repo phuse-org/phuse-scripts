@@ -42,24 +42,14 @@ Finalizing and implementing an overall project GitHub structure is the main acti
 There are several general topics to resolve, especially between the Standard Analyses (P08) and Standard Scripts (P03) teams. These arose while implementing **WPCT** analyses, so we use these analyses to illustrate the general topics.
 
 * We have drafted:
-⋅⋅* [General Output & Formatting Requirements](https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/specification/CS_General_OutputandFormattingRequirements.docx), which should apply to Standard Analyses *across* white papers, and
-
-..* [WPCT General Requirements](https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/specification/CS_General_CentralTendencyRequirements.docx), which should apply across **WPCT** displays.
-
-..* Do the White Paper team endorse this approach, and want to finalize these?
-
+  * [General Output & Formatting Requirements](https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/specification/CS_General_OutputandFormattingRequirements.docx), which should apply to Standard Analyses *across* white papers, and
+  * [WPCT General Requirements](https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/specification/CS_General_CentralTendencyRequirements.docx), which should apply across **WPCT** displays.
+  * Do the White Paper team endorse this approach, and want to finalize these?
 * Otherwise, what is the best way to specify and document analysis-specific details such as the following from **WPCT**?
-
-..* Does the team accept the revised footnotes in the scripts and outputs, below. How/where do we document these?
-
-..* WPCT Scripts currently restrict data to the safety population (SAFFL = 'Y'). Is this correct; should we specify/document this for each analysis?
-
-..* Most WPCT scripts currently restrict data to "analysis" measurements (e.g., ANL01FL = 'Y'). Is this correct; should we specify/docuemnt this for each analysis?
-
-..* Do we need more detailed specification of the ANCOVA models for pvalues?
-
-..* Section 8.2 mentions that Figures 7.1 & 7.2 could contain additional statistics. Should we implements any specific, optional, stats?
-
-..* Fig. 7.7 in the white paper includes least square means, otherwise not discussed in the paper. Should these be included? By default? Only optional? ...
-
-..* Fig. 7.8 in the white paper includes additional results otherwise not discussed in the paper: "TE High n(%)" and "TE Low n(%)". What are these? Should these be included? By default? Only optional? ...
+  * Does the team accept the revised footnotes in the scripts and outputs, below. How/where do we document these?
+  * WPCT Scripts currently restrict data to the safety population (SAFFL = 'Y'). Is this correct; should we specify/document this for each analysis?
+  * Most WPCT scripts currently restrict data to "analysis" measurements (e.g., ANL01FL = 'Y'). Is this correct; should we specify/docuemnt this for each analysis?
+  * Do we need more detailed specification of the ANCOVA models for pvalues?
+  * Section 8.2 mentions that Figures 7.1 & 7.2 could contain additional statistics. Should we implements any specific, optional, stats?
+  * Fig. 7.7 in the white paper includes least square means, otherwise not discussed in the paper. Should these be included? By default? Only optional?
+  * Fig. 7.8 in the white paper includes additional results otherwise not discussed in the paper: "TE High n(%)" and "TE Low n(%)". What are these? Should these be included? By default? Only optional?
