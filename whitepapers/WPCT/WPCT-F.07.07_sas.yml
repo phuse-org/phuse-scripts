@@ -1,0 +1,26 @@
+KeyWords: central tendencies, post-baseline, change from baseline, pooled, boxplot, labs, vital signs, ECGs
+Script: 
+  Desc   : Box plot - Change from Last/Min/Max Baseline and Last/Min/Max Post-baseline for Multiple Studies and Analysis Timepoint
+  Name   : WPCT_F.07.07_sas
+  Source : White paper
+  Topic  : Measures of Central Tendency Figure 7.7
+  Title  : Change from Last/Min/Max Baseline and Last/Min/Max Post-baseline for Multiple Studies and Analysis Timepoint
+  Type   : figure
+  Subtype  : boxplot
+  Target : http://www.phusewiki.org/wiki/images/4/48/CSS_WhitePaper_CentralTendency_v1.0.pdf
+Package:
+  name : WPCT
+  label: White Paper on Measures of Central Tendency
+Language: 
+  name   : SAS
+  version: 9.4M2
+Comments : >
+Qualification: 
+  LastQualDate:
+  LastQualBy: 
+  Stage: Review
+Rating: 
+  - User: 
+    Date: 
+    Association: 
+    Stars: 

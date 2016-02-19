@@ -296,7 +296,7 @@ end HEADER ***/
 
     %macro boxplot_each_param_tp(plotds=css_anadata, cleanup=1);
 
-      %local pdx tdx css_pval_ds;
+      %local pdx tdx chg_value_format css_pval_ds;
 
       %do pdx = 1 %to &paramcd_n;
 
@@ -340,7 +340,9 @@ end HEADER ***/
           %*--- Number of visits for this parameter and analysis timepoint: &VISN ---*;
             %util_count_unique_values(css_nexttimept, avisitn, visn)
 
-          %*--- Create format string to display MEAN and STDDEV to default sig-digs: &UTIL_VALUE_FORMAT ---*;
+          %*--- Create format string to display MEAN and STDDEV to default sig-digs: &UTIL_VALUE_FORMAT for measures, &CHG_VALUE_FORMAT for change ---*;
+            %util_value_format(css_nexttimept, &c_var)
+            %let chg_value_format = &util_value_format;
             %util_value_format(css_nexttimept, &m_var)
 
           %*--- Create macro variable BOXPLOT_VISIT_RANGES, to subset visits into box plot pages ---*;
@@ -417,7 +419,8 @@ end HEADER ***/
                   css_stats
                   css_c_stats;
 
-              format mean c_mean %scan(&util_value_format, 1, %str( )) std c_std %scan(&util_value_format, 2, %str( ));
+              format mean %scan(&util_value_format, 1, %str( )) std %scan(&util_value_format, 2, %str( ));
+              format c_mean %scan(&chg_value_format, 1, %str( )) c_std %scan(&chg_value_format, 2, %str( ));
             run;
 
 

@@ -9,10 +9,11 @@
           REQUIRED
           Syntax:  variable-name
           Example: AVALN
-  WHR   complete data step where statement, quoted as necessary, to restrict data
-          optional
-          Syntax:  %str(where where-expression;)
-          Example: %str(where paramcd = 'DIABP';)
+  WHR   valid WHERE clause to subset DS data
+          optional                                                                         
+          Syntax:   where-expression
+          Examples: studyid = 'STUDY01'
+                    avisitn eq 99
 
   -OUTPUT
   UTIL_VALUE_FORMAT, a global symbol containing a space-delim string of exactly 2 parts:
@@ -33,7 +34,9 @@
   %if &OK %then %do;
     data css_fmt;
       set &DS end=NoMore;
-      %unquote(&whr)
+
+      %if %length(&whr) > 0 %then where &whr;
+      ;
 
       retain max_int 0 max_dec 0;
 
