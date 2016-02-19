@@ -15,7 +15,7 @@ Making a TOC -- automatic anchors for header text (anchor text is all lower-case
 * *italics*
 * `monospace`
 * ~~strikethrough~~
-* in-line `code` has back-ticks around it like <code>`code`</code>
+* in-line `code` has back-ticks around it like <code>`code ...</code>, and ends with a 2nd back-tick
 
 ###### Links
 * More Markdown details in [GitHub's Markdown Basics](http://help.github.com/articles/markdown-basics/)
