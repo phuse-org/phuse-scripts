@@ -53,4 +53,5 @@ There are several general topics to resolve, especially between the Standard Ana
   * Do we need more detailed specification of the ANCOVA models for pvalues?
   * Section 8.2 mentions that Figures 7.1 & 7.2 could contain additional statistics. Should we implements any specific, optional, stats?
   * Fig. 7.7 in the white paper includes least square means, otherwise not discussed in the paper. Should these be included? By default? Only optional?
+  * Fig. 7.7 footnote describes the ANCOVA model as "Change = Baseline + Treatment + Study", but the table presents a p-value for each study. Is this right? Does running the model by study conflict with "study" as an independent effect?
   * Fig. 7.8 in the white paper includes additional results otherwise not discussed in the paper: "TE High n(%)" and "TE Low n(%)". What are these? Should these be included? By default? Only optional?
