@@ -26,6 +26,7 @@ Making a TOC -- automatic anchors for header text (anchor text is all lower-case
 1. Ordered are aligned with numbers.
   1. ordered sub-lists simply have leading spaces
   2. like this
+
 * Unordered lists are aligned with `*`, `+` or `-` characters
   + and again sub-lists have leading spaces
   - and it seems that you can mix `*`, `+` and `-` characters
