@@ -32,6 +32,7 @@
 Currently, our main objective is to deliver robust, easy to use and understand SAS and R scripts for **WPCT** analyses and displays. There are several steps in this process, and therefore several ways that people can participate, learn and contribute.
 
 For details, see our [WPCT Task List](http://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/WPCT/TODO.md).
+See also the [topics below for P08/P02 discussion](#wg5-principles-and-conventions).
 
 #### [Repository Infrastructure (Project 03)](http://www.phusewiki.org/wiki/index.php?title=WG5_Project_03)
 
