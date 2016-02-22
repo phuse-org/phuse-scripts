@@ -54,7 +54,7 @@
   * WPCT Scripts currently restrict data to the safety population (SAFFL = 'Y'). Is this correct; should we specify/document this for each analysis?
   * Most WPCT scripts currently restrict data to "analysis" measurements (e.g., ANL01FL = 'Y'). Is this correct; should we specify/docuemnt this for each analysis?
   * Do we need more detailed specification of the ANCOVA models for pvalues?
-  * Section 8.2 mentions that Figures 7.1 & 7.2 could contain additional statistics. Should we implements any specific, optional, stats?
+  * **Section 8.2** mentions that Figures 7.1 & 7.2 could contain additional statistics. Should we implements any specific, optional, stats?
   * Figs. 7.7 & 7.8 should include all subjects with a baseline and post-baseline (see discussion in **Section 8.1**). What about Fig. 7.6? Does this need clarification? Should the left-hand plot in Fig. 7.8 (which includes right-hand plot of *change*) repeat & match Fig. 7.6 (which otherwise does not mention *change*)?
   * Fig. 7.7 in the white paper includes least square means, otherwise not discussed in the paper. Should these be included? By default? Only optional?
   * Fig. 7.7 footnote describes the ANCOVA model as "Change = Baseline + Treatment + Study", but the table presents a p-value for each study. Is this right? Does running the model by study conflict with "study" as an independent effect? Or is the by-study model different from the "Pooled" model (which includes "study" effect)?
