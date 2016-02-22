@@ -29,18 +29,18 @@
 
 ##### White Paper on Measures of Central Tendency (WPCT)
 
-Currently, our main objective is to deliver robust, easy to use and understand SAS and R scripts for **WPCT** analyses and displays. There are several steps in this process, and therefore several ways that people can participate, learn and contribute.
+  Currently, our main objective is to deliver robust, easy to use and understand SAS and R scripts for **WPCT** analyses and displays.   There are several steps in this process, and therefore several ways that people can participate, learn and contribute.
 
-For details, see our [WPCT Task List](http://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/WPCT/TODO.md).
-See also the [topics below for P08/P02 discussion](#wg5-principles-and-conventions).
+  For details, see our [WPCT Task List](http://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/WPCT/TODO.md).
+  See also the [topics below for P08/P02 discussion](#wg5-principles-and-conventions).
 
 #### [Repository Infrastructure (Project 03)](http://www.phusewiki.org/wiki/index.php?title=WG5_Project_03)
 
-Finalizing and implementing an overall project GitHub structure is the main activity for Project 03.
+  Finalizing and implementing an overall project GitHub structure is the main activity for Project 03.
 
 #### WG5 Principles and Conventions
 
-There are several general topics to resolve, especially between the Standard Analyses (P08) and Standard Scripts (P03) teams. These arose while implementing **WPCT** analyses, so we use these analyses to illustrate the general topics.
+  There are several general topics to resolve, especially between the Standard Analyses (P08) and Standard Scripts (P03) teams. These arose while implementing **WPCT** analyses, so we use these analyses to illustrate the general topics.
 
 * We have drafted:
   * [General Output & Formatting Requirements](https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/specification/CS_General_OutputandFormattingRequirements.docx), which should apply to Standard Analyses *across* white papers, and
