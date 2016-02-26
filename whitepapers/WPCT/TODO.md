@@ -12,12 +12,19 @@ The Repository Content team aim to deliver a package of robust, easy to use and 
 Scripts below by default produce outputs based on a specific ADaM domain such as Vital Signs. The Central Tendency analyses, however, apply equally to Vital Signs, Laboratory and ECG data. These ADaM domains differ both in variables (e.g., timing variables) and variable names (e.g., analysis flags). This leads to several tasks to complete for this project:
 
 * There are several WPCT details to discuss and resolve with the White Paper Team (Project 08) and are listed on our [WG5 Task List](http://github.com/phuse-org/phuse-scripts/blob/master/TODO.md).
-* Establish conventions for providing easy to use and understand Central Tendency scripts that can accomodate at least these three intended data domains: Vital Signs, Laboratory and ECG.
-* Update the [specifications for Central Tendency figures](http://github.com/phuse-org/phuse-scripts/tree/master/whitepapers/specification) to accurately describe domain differences.
-* Update Central Tendency scripts according to conventions for supporting intended data domains.
-* Update the [WPCT guide for users & contributors](http://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/CentralTendency-UserGuide.md) according to conventions for supporting intended data domains.
-* Update [PhUSE CS test data](http://github.com/phuse-org/phuse-scripts/tree/master/data/adam) to adequately test a variety of scenarios (e.g., non-uniform normal range limits, extreme values that squish box plots, integrated summaries etc.). 
+* Handling multiple data domains:
+  * Establish conventions for providing easy to use and understand Central Tendency scripts that can accomodate at least these three intended data domains: Vital Signs, Laboratory and ECG.
+  * Update the [specifications for Central Tendency figures](http://github.com/phuse-org/phuse-scripts/tree/master/whitepapers/specification) to accurately describe domain differences.
+  * Update Central Tendency scripts according to conventions for supporting intended data domains.
+  * Update the [WPCT guide for users & contributors](http://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/CentralTendency-UserGuide.md) according to conventions for supporting intended data domains.
+* Improve test data:
+  * Update [PhUSE CS test data](http://github.com/phuse-org/phuse-scripts/tree/master/data/adam) to adequately test a variety of scenarios (e.g., non-uniform normal range limits, extreme values that squish box plots, integrated summaries etc.). 
+  * Improve support of multiple studies, especially studies with different assessment schedules & durations
 * SAS programs currently do not modify the y-axis for extreme values. White Paper section **7.3 Discussion** recommends a "slash-method", which GTL does support. But this is not yet implemented in any SAS program.
+* Test Automation:
+  * testing Standard Scripts on various data, in various environments
+  * testing SAS utility macros in various environments
+  * can me make testing automatic rather than rather manual?
 
 #### WPCT Figures & Scripts, with Qualification details
 
