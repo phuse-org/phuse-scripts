@@ -1,4 +1,4 @@
-The SAS System                                                                                                                                                                                                               18:19 Friday, February 19, 2016   1
+The SAS System                                                                                                                                                                                                               16:38 Friday, February 26, 2016   1
 
 The GLM Procedure
 
@@ -12,3 +12,45 @@ BASE              -0.46079578        0.05043555      -9.14      <.0001
 TRTPN     54      -1.29895697 B      1.25848618      -1.03      0.3031
 TRTPN     81      -1.35496023 B      1.25345307      -1.08      0.2809
 TRTPN     0        0.00000000 B       .                .         .
+Box Plot - Diastolic Blood Pressure (mmHg) Observed Values and Change from BASELINE to END OF TREATMENT by Visit               2
+Analysis Timepoint: AFTER LYING DOWN FOR 5 MINUTES                                               16:38 Friday, February 26, 2016
+
+The GLM Procedure
+
+Dependent Variable: CHG   Change from Baseline
+
+                                       Standard
+Parameter            Estimate             Error    t Value    Pr > |t|
+
+Intercept         29.43008992 B      4.20991501       6.99      <.0001
+BASE              -0.42838667        0.05276458      -8.12      <.0001
+TRTPN     54       0.52195570 B      1.39771995       0.37      0.7092
+TRTPN     81       0.89965041 B      1.39529350       0.64      0.5197
+TRTPN     0        0.00000000 B
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Box plot type is schematic: the box shows median and interquartile range (IQR, the box height); the whiskers extend to the minim
+within 1.5 IQR of the lower and upper quartiles, respectively. Values outside the whiskers are shown as outliers. Means are mark
+Red dots indicate measures outside the normal reference range. P-value is for the treatment comparison from ANCOVA model Change

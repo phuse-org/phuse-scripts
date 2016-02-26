@@ -1,11 +1,11 @@
 /***
   Count the number of unique values in a variable, and assign the result to a global symbol
                                                                                            
-  DSET    data set containing the variable with discrete values to count
+  DS      data set containing the variable with discrete values to count
             REQUIRED                                                                         
             Syntax:  (libname.)memname                                                       
             Example: ANA.ADVS                                                                
-  VAR     variable on DSET containing discrete values to count
+  VAR     variable on DS containing discrete values to count
             REQUIRED                                                                         
             Syntax:  variable-name                                                           
             Example: TRTP

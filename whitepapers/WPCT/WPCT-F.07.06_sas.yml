@@ -1,10 +1,10 @@
 KeyWords: central tendencies, baseline, post-baseline, pooled, boxplot, labs, vital signs, ECGs
 Script: 
-  Desc   : Box plot - Measurements at Last/Min/Max Baseline and Last/Min/Max Post-baseline for Multiple Studies and Analysis Timepoint
+  Desc   : Box plot - Measurements at Last/Min/Max Baseline and Last/Min/Max Post-baseline by Treatment and Analysis Timepoint, Multiple Studies
   Name   : WPCT_F.07.06_sas
   Source : White paper
   Topic  : Measures of Central Tendency Figure 7.6
-  Title  : Measurements at Last/Min/Max Baseline and Last/Min/Max Post-baseline for Multiple Studies and Analysis Timepoint
+  Title  : Measurements at Last/Min/Max Baseline and Last/Min/Max Post-baseline by Treatment and Analysis Timepoint, Multiple Studies
   Type   : figure
   Subtype  : boxplot
   Target : http://www.phusewiki.org/wiki/images/4/48/CSS_WhitePaper_CentralTendency_v1.0.pdf

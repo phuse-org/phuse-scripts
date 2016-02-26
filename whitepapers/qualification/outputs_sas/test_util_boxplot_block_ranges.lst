@@ -1,0 +1,33 @@
+                                                                                                                                                                                                                             18:16 Friday, February 26, 2016   1
+
+### -----
+###
+### UTIL_BOXPLOT_BLOCK_RANGES Overall:  ALL TESTS PASSED - 25
+###
+### -----
+
+   001   1.a.1          Invalid DSet
+   002   1.a.2          Invalid VIS var
+   003   1.a.3          Invalid TRT var
+   004   1.a.4          Invalid VIS and TRT vars
+   005   1.b.1          Missing CHAR VISIT values
+   006   1.b.2          Missing CHAR TREATMENT values
+   007   1.b.3          Missing CHAR VISIT and TREATMENT values
+   008   1.c.1          Missing NUM VISIT values
+   009   1.c.2          Missing NUM TREATMENT values
+   010   1.c.3          Missing NUM VISIT and TREATMENT values
+   011   2.a.1          MBPP=3, numeric vars, consistent visits x treatments
+   012   2.a.2          MBPP=3, char vars, consistent visits x treatments
+   013   2.b.1          MBPP=3, numeric vars, some missing visits & treatments
+   014   2.b.2          MBPP=3, char vars, some missing visits & treatments
+   015   2.c.1          MBPP=3, numeric vars, consistent visits x treatments
+   016   2.c.2          MBPP=3, char vars, consistent visits x treatments
+   017   2.d.1          MBPP=3, numeric vars, some missing visits & treatments
+   018   2.d.2          MBPP=3, char vars, some missing visits & treatments
+   019   2.e.1          MBPP=20, numeric vars, consistent visits x treatments
+   020   2.e.2          MBPP=20, char vars, consistent visits x treatments
+   021   2.f.1          MBPP=20, numeric vars, some missing visits & treatments
+   022   2.f.2          MBPP=20, char vars, some missing visits & treatments
+   023   2.g.1          2 CAT vars, missing CHAR VISIT vals
+   024   2.g.2          2 CAT vars, missing CHAR TREATMENT values
+   025   2.g.3          2 CAT vars, missing CHAR VISIT and TREATMENT values

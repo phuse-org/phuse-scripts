@@ -355,13 +355,13 @@ end HEADER ***/
             %do %while (%qscan(&boxplot_timept_ranges,&vdx,|) ne );
               %let nxtvis = %qscan(&boxplot_timept_ranges,&vdx,|);
 
-              %util_get_reference_lines(css_plot_tp (where=( &nxtvis )),
+              %util_get_reference_lines(css_plot_tp (where=( %unquote(&nxtvis) )),
                                         nxt_vrefs,
                                         low_var  =&lo_var,
                                         high_var =&hi_var,
                                         ref_lines=&ref_lines)
 
-              proc shewhart data=css_plot_tp (where=( &nxtvis ));
+              proc shewhart data=css_plot_tp (where=( %unquote(&nxtvis)));
                 boxchart &m_var * timept (max q3 median q1 min std mean n &t_var) = &t_var /
                          annotate = css_annotate (where=( %sysfunc(tranwrd(&nxtvis, timept, x)) ))
                          boxstyle = schematic

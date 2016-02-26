@@ -41,7 +41,7 @@
        , test_dsc        char(80) label='Test Description'
 
        , test_type       char(5)  label='Test Type (Macro var, String-<B|C|L|T>, Data set, In data step)'
-       , Pparm_macname   char(50) label='Test values for the Positional parameter MACNAME'
+       , Pparm_sym       char(50) label='Test values for the Positional parameter SYM'
 
        , test_expect     char(50) label="EXPECTED test results for each call to %upcase(&macroname)"
       )

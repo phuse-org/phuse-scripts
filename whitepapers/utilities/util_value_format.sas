@@ -1,16 +1,20 @@
 /***
   Determine format for MEAN and STDDEV based on sig-digs of measured values
 
-  DSET  data set containing the measurement values to summarize as MEAN and STDDEV
-          REQUIRED
+  DS    data set containing the measurement values to summarize as MEAN and STDDEV
+          REQUIRED positional
           Syntax:  (libname.)memname
           Example: ANA.ADVS
-  VAR   variable on DSET containing numeric result values
-          REQUIRED
+  VAR   variable on DS containing numeric result values
+          REQUIRED positional
           Syntax:  variable-name
           Example: AVALN
+  SYM   name of global macro variable to create with resulting space-delimited formats
+          optional keyword
+          Syntax:   valid macro variable name. Default symbol is UTIL_VALUE_FORMAT
+          Examples: util_value_format
   WHR   valid WHERE clause to subset DS data
-          optional                                                                         
+          optional keyword
           Syntax:   where-expression
           Examples: studyid = 'STUDY01'
                     avisitn eq 99
@@ -24,8 +28,8 @@
   Author:          Dante Di Tommaso
 ***/
 
-%macro util_value_format(ds, var, whr=);
-  %global util_value_format;
+%macro util_value_format(ds, var, sym=util_value_format, whr=);
+  %global &sym;
   %local OK;
 
   %let OK = %assert_dset_exist(&ds);
@@ -56,7 +60,7 @@
       if NoMore then do;
         meanfmt = strip(put(max_int+max_dec+2,8.-L))!!'.'!!strip(put(max_dec+1,8.-L));
         stdvfmt = strip(put(max_int+max_dec+3,8.-L))!!'.'!!strip(put(max_dec+2,8.-L));
-        call symput('util_value_format', strip(meanfmt)!!' '!!strip(stdvfmt));
+        call symput("&sym", strip(meanfmt)!!' '!!strip(stdvfmt));
       end;
     run;
 
@@ -65,10 +69,10 @@
     quit;
 
 
-    %put NOTE: (UTIL_VALUE_FORMAT) Successfully created symbol UTIL_VALUE_FORMAT = &util_value_format;
+    %put NOTE: (UTIL_VALUE_FORMAT) Successfully created symbol %upcase(&sym) = &&&sym;
   %end;
   %else %do;
-    %let util_value_format=;
+    %let &sym=;
     %put ERROR: (UTIL_VALUE_FORMAT) Result is FAIL. Unable to read values from variable %upcase(&var) on data set %upcase(&ds).;
   %end;
 

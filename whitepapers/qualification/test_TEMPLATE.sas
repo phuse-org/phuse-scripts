@@ -36,7 +36,7 @@
 
   proc sql;
     create table my_test_definitions
-      (  test_mac        char(32) label='Name of macro to test'
+      (  test_mac        char(32) label='Name of macro to test, MAX 32 CHAR'
        , test_id         char(15) label="Test ID for %upcase(&macroname)"
        , test_dsc        char(80) label='Test Description'
 

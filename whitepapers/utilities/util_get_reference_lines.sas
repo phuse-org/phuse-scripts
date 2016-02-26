@@ -5,11 +5,11 @@
   Example of return value: 50 75 100
 
   INPUTS                                                                              
-    DSET      data set containing the measurement values and normal range values. data set options OK.
+    DS        data set containing the measurement values and normal range values. data set options OK.
               REQUIRED - positional
               Syntax:  (libname.)memname
               Example: CSS_PLOT_TP (where=( 0 <= timept < 7 ))
-    MACVAR    global macro variable to create with resulting reference line values from DSET
+    SYM       global macro variable to create with resulting reference line values from DS
               REQUIRED - positional
               Syntax:  (libname.)memname
               Example: CSS_ANNOTATE
@@ -35,7 +35,7 @@
               Example: -5 0 5
 
   OUTPUT
-    Global macro var specified in MACVAR with numeric values for reference lines, as required by
+    Global macro var specified in SYM with numeric values for reference lines, as required by
     VREF= option in PROC SHEWHART BOXCHART statement:
     http://support.sas.com/documentation/cdl/en/qcug/63922/HTML/default/qcug_shewhart_a0000003887.htm
 
@@ -45,25 +45,25 @@
   Author:          Dante Di Tommaso
 ***/
 
-%macro util_get_reference_lines(dset,
-                                macvar,
+%macro util_get_reference_lines(ds,
+                                sym,
                                 low_var=,
                                 high_var=,
                                 ref_lines=NONE)
        / minoperator;
 
-  %if %symexist(&macvar) %then %symdel &macvar;
-  %global &macvar;
+  %if %symexist(&sym) %then %symdel &sym;
+  %global &sym;
 
   %local OK idx ref_nums lo_vals hi_vals val_counts range_count;
 
-  %let OK = %assert_dset_exist( %scan(&dset,1,%str( %()) );
+  %let OK = %assert_dset_exist( %scan(&ds,1,%str( %()) );
 
   %if 1 = &OK and %length(&low_var) > 0 %then
-      %let OK = %assert_var_exist(%scan(&dset,1,%str( %()), &low_var);
+      %let OK = %assert_var_exist(%scan(&ds,1,%str( %()), &low_var);
   
   %if 1 = &OK and %length(&high_var) > 0 %then
-      %let OK = %assert_var_exist(%scan(&dset,1,%str( %()), &high_var);
+      %let OK = %assert_var_exist(%scan(&ds,1,%str( %()), &high_var);
   
   %*--- ALWAYS PROCESS 2 VARS to keep code simple, even if this mean processing just a LOW or HIGH reference twice ---*;
     %if %length(&low_var) > 0 and %length(&high_var) > 0 %then %let lhb = B;
@@ -96,7 +96,7 @@
 
 
   %if 1 = &OK and 1 = &ref_nums %then %do;
-    %let &macvar = &ref_lines;
+    %let &sym = &ref_lines;
   %end;
   %else %if 1 = &OK and
             &lhb in (L H B) and 
@@ -105,7 +105,7 @@
     proc sql noprint;
       select distinct &low_var, &high_var, count(&low_var)+nmiss(&low_var)
              into :lo_vals separated by ', ', :hi_vals separated by ', ', :val_counts separated by ' '
-      from &dset
+      from %unquote(&ds)
       where n(&low_var, &high_var) > 0
       group by &low_var, &high_var;
     quit;
@@ -115,7 +115,7 @@
 
     %let range_count = &sqlobs;
 
-    %put NOTE: (UTIL_GET_REFERENCE_LINES) &range_count distinct reference ranges in &dset..;
+    %put NOTE: (UTIL_GET_REFERENCE_LINES) &range_count distinct reference ranges in &ds..;
     %put NOTE: (UTIL_GET_REFERENCE_LINES) LOW , HIGH (number of observations);
     %let idx = 1;
     %do %while (%scan(&val_counts, &idx, %str( )) ne );
@@ -161,23 +161,23 @@
         run;
 
         proc sql noprint;
-          select distinct val into :&macvar separated by ' '
+          select distinct val into :&sym separated by ' '
           from grl_temp
           where not missing(val)
           order by val;
         quit;
-        %let &macvar = &&&macvar;
+        %let &sym = &&&sym;
 
         proc datasets library=WORK memtype=DATA nolist nodetails;
           delete grl_temp;
         quit;
       %end;
       %else %do;
-        %let &macvar=;
+        %let &sym=;
         %put NOTE: (UTIL_GET_REFERENCE_LINES) Non-uniform reference limits detected, so suppressing reference lines.;
       %end;
       
-    %put NOTE: (UTIL_GET_REFERENCE_LINES) Successfully created macro var %upcase(&MACVAR) with reference values (&&&MACVAR).;
+    %put NOTE: (UTIL_GET_REFERENCE_LINES) Successfully created macro var %upcase(&SYM) with reference values (&&&SYM).;
   %end;
   %else %if 0 = &OK %then %do;
 

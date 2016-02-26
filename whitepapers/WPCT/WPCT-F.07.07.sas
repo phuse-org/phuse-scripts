@@ -1,13 +1,13 @@
 /*** HEADER
 
-    Display:     Figure 7.7 Box plot - Change from Last Baseline to Last Post-baseline, Multiple Studies
+    Display:     Figure 7.7 Box plot - Change from Last Baseline to Last Post-baseline by Treatment and Analysis Timepoint, Multiple Studies
     White paper: Central Tendency
 
     User Guide:     https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/CentralTendency-UserGuide.txt
     Macro Library:  https://github.com/phuse-org/phuse-scripts/tree/master/whitepapers/utilities
     Specs:          https://github.com/phuse-org/phuse-scripts/tree/master/whitepapers/specification
-    Test Data:      https://github.com/phuse-org/phuse-scripts/tree/master/data/adam/cdisc
-    Sample Output:  https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/WPCT/outputs_sas/WPCT-F.07.07_Box_plot_DIABP_change_LAST_base_post_by_study_for_timepoint_815.pdf
+    Test Data:      https://github.com/phuse-org/phuse-scripts/tree/master/data/adam/cdisc-split
+    Sample Output:  https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/WPCT/outputs_sas/WPCT-F.07.07_Box_plot_DIABP_change_base_post_by_study_for_timepoint_815.pdf
 
     Using this program:
 
@@ -69,11 +69,12 @@ end HEADER ***/
        REF_TRTN: (Leave blank to omit p-value from summary table.) Numeric value of TN_VAR for reference (comparator) treatment
 
        P_FL:  Population flag variable. 'Y' indicates record is in population of interest.
-       A_FL:  Analysis Flag variable.   'Y' indicates observations that contain:
-                * A post-baseline obs                   (either LAST, MIN or MAX measurement post-baseline)
-                * which includes a baseline measurement (LAST, MIN or MAX to match the post-baseline measurement)
-                * and includes change from baseline     (based on the above baseline & post-baseline measurements)
+       A_FL:  Analysis Flag variable.   'Y' indicates POST-BASELINE obs that contain:
+                * A non-missing post-baseline measure   (either LAST, MIN or MAX measurement post-baseline)
+                * including a non-missing baseline val  (LAST, MIN or MAX to match the post-baseline measurement)
+                * and a non-missing chg from baseline   (based on the above baseline & post-baseline measurements)
               For an example, see the PhUSE CS derivation in ADaM/derive_lastminmax_measure.sas
+              But then remove Baseline obs.
 
        C_MODE: Change Mode label. This is merely a label that describes the obs flagged by user-specified A_FL
                 * LAST: Default. Change from LAST baseline to LAST post-baseline analysis measurement
@@ -98,7 +99,7 @@ end HEADER ***/
       EXECUTE ONE TIME only as needed
       NB: The following line is necessary only when PhUSE CS utilities are NOT in your default AUTOCALL paths
 
-      OPTIONS sasautos=(%sysfunc(getoption(sasautos)) "C:\CSS\phuse-scripts\whitepapers\utilities" "C:\CSS\phuse-scripts\whitepapers\ADaM" );
+      OPTIONS sasautos=("C:\CSS\phuse-scripts\whitepapers\utilities" "C:\CSS\phuse-scripts\whitepapers\ADaM" %sysfunc(getoption(sasautos)));
 
     ***/
 
@@ -115,8 +116,7 @@ end HEADER ***/
 
       data advs_sub;
         set work.advs;
-        where (paramcd in ('DIABP') and atptn in (815)) /*or 
-              (paramcd in ('SYSBP') and atptn in (816)) */;
+        where (paramcd in ('DIABP') and atptn in (815 817));
 
         attrib trtp_short length=$6 label='Planned Treatment, abbreviated';
 
@@ -128,14 +128,19 @@ end HEADER ***/
         end;
       run;
 
-      %*--- Use PhUSE CS derivation of LAST, MIN or MAX Baseline and Post-Baseline measures, and Change from Baseline ---*;
-        %let lmm = LAST;
+      %*--- Use PhUSE CS derivation of LAST, MIN or MAX Post-Baseline measures, with Change from corresponding Baseline ---*;
+        %let lmm = MIN;
         %derive_lastminmax_measure(advs_sub, &LMM, 
-                                   flvar=anl02fl, 
+                                   flvars=anl02fl, 
                                    grpvars=studyid usubjid trtpn paramcd atptn, 
                                    ordvars=avisitn, 
                                    incl=trtp_short saffl param atpt,
                                    dsout=advs_&LMM)
+        *--- but program requires ONLY POST-BASELINE obs ---*;
+          data advs_&LMM;
+            set advs_&LMM;
+            where avisit =: 'Post-baseline';
+          run;
 
 
     %*--- 3) Key user settings ---*;
@@ -186,7 +191,7 @@ end HEADER ***/
                                      vars=%str(&m_lb..&m_ds : &ana_variables),
                                      macros=assert_continue assert_var_nonmissing assert_unique_keys util_labels_from_var 
                                             util_count_unique_values util_proc_template util_get_var_min_max util_value_format
-                                            util_boxplot_visit_ranges util_axis_order util_delete_dsets,
+                                            util_boxplot_block_ranges util_axis_order util_delete_dsets,
                                      symbols=m_lb m_ds t_var tn_var c_var b_var ref_trtn p_fl c_mode a_fl
                                              max_boxes_per_page outputs_folder
                                     );
@@ -195,7 +200,7 @@ end HEADER ***/
 
 
     /*** Data Prep
-      1. Restrict analysis to SAFETY POP (&p_fl) and ANALYSIS OBS (&a_fl)
+      1. Restrict analysis to SAFETY POP (&p_fl) and ANALYSIS OBS (&a_fl) -- Confirm NO MISSING change-from-baselines.
       2. Plot requires 'Pooled' data with UNIQUE USUBJID for across-study results
       3. Plot requires a Study Number variable for the X-Axis, to cluster boxes and stats
     ***/
@@ -203,9 +208,11 @@ end HEADER ***/
         set &m_lb..&m_ds (keep=&ana_variables where=(&p_fl = 'Y' and &a_fl = 'Y'));
       run;
 
-      %let CONTINUE = %assert_var_nonmissing(css_safana, &c_var);
       %let c_mode = %upcase(&c_mode);
-      %assert_continue(After restricting analysis data - CHANGE FROM BASELINE (&c_mode) values in %upcase(&c_var) are non-missing)
+
+      %*--- Expect non-missing change-from-baseline values ---*;
+        %let CONTINUE = %assert_var_nonmissing(css_safana, &c_var);
+        %assert_continue(After restricting analysis data - No missing values for "&c_mode" change-from-baseline in %upcase(&c_var))
 
       data css_anadata;
         set css_safana
@@ -228,8 +235,9 @@ end HEADER ***/
           if first.studyid then studynum+1;
         run;
 
-    %*--- Expect 1 obs per U-Subject per parameter, and analysis timepoint ---*;
-      %assert_unique_keys (css_anadata, studyid usubjid paramcd atptn);
+    %*--- Expect exactly 1 obs per U-Subject per parameter, and analysis timepoint ---*;
+      %assert_unique_keys(css_anadata, studyid usubjid paramcd atptn)
+      %assert_continue(After creating pooled data - Unique records.)
 
 
   /*** GATHER INFO for data-driven processing
@@ -240,18 +248,13 @@ end HEADER ***/
       &PARAMCD_VAL1 to &&&PARAMCD_VAL&PARAMCD_N series of parameter codes
       &PARAMCD_LAB1 to &&&PARAMCD_LAB&PARAMCD_N series of parameter labels
 
-    Number of treatments - used for handling treatments categories
-      &TRTN
   ***/
 
     %*--- Parameters: Number (&PARAMCD_N), Names (&PARAMCD_VAL1 ...) and Labels (&PARAMCD_LAB1 ...) ---*;
       %util_labels_from_var(css_anadata, paramcd, param)
 
-    %*--- Number of treatments: Set &TRTN from ana variable T_VAR ---*;
-      %util_count_unique_values(css_anadata, &t_var, trtn)
-
-    %*--- Number of studys: Set &STDYN from ana variable T_VAR ---*;
-      %util_count_unique_values(css_anadata, studynum, stdyn)
+    %*--- Number of studys: Set &STDYN from ana variable STUDYID (Include POOLED data) ---*;
+      %util_count_unique_values(css_anadata, studyid, stdyn)
 
 
   /*** BOXPLOT for each PARAMETER and ANALYSIS TIMEPOINT in selected data
@@ -313,8 +316,8 @@ end HEADER ***/
           %*--- Create format string to display MEAN and STDDEV to default sig-digs: &UTIL_VALUE_FORMAT ---*;
             %util_value_format(css_nexttimept, &c_var)
 
-          %*--- Create macro variable BOXPLOT_VISIT_RANGES, to subset visits into box plot pages ---*;
-            %util_boxplot_visit_ranges(css_nexttimept, vvisn=studynum, vtrtn=&tn_var);
+          %*--- Create macro variable BOXPLOT_BLOCK_RANGES, to subset visits into box plot pages ---*;
+            %util_boxplot_block_ranges(css_nexttimept, blockvar=studynum, catvars=&tn_var);
 
 
           *--- Calculate summary statistics, KEEP STUDYNUM and TRT LABELS for plotting, below ---*;
@@ -431,10 +434,10 @@ end HEADER ***/
 
             %local vdx nxtvis;
             %let vdx=1;
-            %do %while (%qscan(&boxplot_visit_ranges,&vdx,|) ne );
-              %let nxtvis = %qscan(&boxplot_visit_ranges,&vdx,|);
+            %do %while (%qscan(&boxplot_block_ranges,&vdx,|) ne );
+              %let nxtvis = %qscan(&boxplot_block_ranges,&vdx,|);
 
-              proc sgrender data=css_plot (where=( &nxtvis )) template=PhUSEboxplot ;
+              proc sgrender data=css_plot (where=( %unquote(&nxtvis) )) template=PhUSEboxplot ;
                 dynamic 
                         _MARKERS    = "&t_var"
                         _BLOCKLABEL = 'studyid' 

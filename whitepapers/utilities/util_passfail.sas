@@ -730,8 +730,7 @@
     set &dsout nobs=TestTot end=NoMore;
     file print;
 
-    drop overall pass fail idx;
-    overall= ' ALL TESTS PASSED - ';
+    drop pass fail idx;
 
     %if &use_te %then %do;
       if test_expect = test_result then
@@ -762,13 +761,14 @@
         put '  Expected Global Syms: ' test_expect_sym;
         put '  Returned Global Syms: ' test_result_sym;
       %end;
-      overall = ' Passed - ';
     end;
 
     if NoMore then do;
       put / '### -----' / "###" / "### %upcase(&test_mac_name) Overall: " @;
-      put overall pass @;
-      if fail > 0 then put ' but  Failed - ' fail ' test(s)!' @;
+
+      if fail > 0 then put ' Passed - ' pass ' but  Failed - ' fail ' test(s)!' @;
+      else put ' ALL TESTS PASSED - ' pass @;
+
       put / '###' / '### -----' / ' ';
 
       do idx = 1 to TestTot;

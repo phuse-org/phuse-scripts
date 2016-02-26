@@ -1,0 +1,171 @@
+The SAS System                                                                                                                                                                                                               17:38 Friday, February 26, 2016   1
+
+chgtypen=1 Analysis Visit (N)=2 X-Axis discrete numeric values for plot, from (Change Mode).(Visit Seq)=1.2
+
+The GLM Procedure
+
+Dependent Variable: chg
+
+                                       Standard
+Parameter            Estimate             Error    t Value    Pr > |t|
+
+Intercept         33.81058142 B      4.96057410       6.82      <.0001
+base              -0.47649659        0.06435683      -7.40      <.0001
+TRTPN     81      -0.69171636 B      1.34288532      -0.52      0.6072
+TRTPN     0        0.00000000 B       .                .         .
+The SAS System                                                                                                                                                                                                               17:38 Friday, February 26, 2016   2
+
+chgtypen=2 Analysis Visit (N)=2 X-Axis discrete numeric values for plot, from (Change Mode).(Visit Seq)=2.2
+
+The GLM Procedure
+
+Dependent Variable: chg
+
+                                       Standard
+Parameter            Estimate             Error    t Value    Pr > |t|
+
+Intercept         19.28947550 B      3.84408255       5.02      <.0001
+base              -0.35778967        0.05278107      -6.78      <.0001
+TRTPN     81       1.23306793 B      1.02352454       1.20      0.2301
+TRTPN     0        0.00000000 B       .                .         .
+The SAS System                                                                                                                                                                                                               17:38 Friday, February 26, 2016   3
+
+chgtypen=3 Analysis Visit (N)=2 X-Axis discrete numeric values for plot, from (Change Mode).(Visit Seq)=3.2
+
+The GLM Procedure
+
+Dependent Variable: chg
+
+                                       Standard
+Parameter            Estimate             Error    t Value    Pr > |t|
+
+Intercept         30.81163890 B      4.82905305       6.38      <.0001
+base              -0.36367570        0.05866657      -6.20      <.0001
+TRTPN     81      -0.44033579 B      1.08364657      -0.41      0.6850
+TRTPN     0        0.00000000 B       .                .         .
+Box Plot - Diastolic Blood Pressure (mmHg) Last/Min/Max Baseline versus Last/Min/Max Post-baseline by Treatment                4
+Analysis Timepoint: AFTER LYING DOWN FOR 5 MINUTES                                               17:38 Friday, February 26, 2016
+
+chgtypen=1 Analysis Visit (N)=2 X-Axis discrete numeric values for plot, from (Change Mode).(Visit Seq)=1.2
+
+The GLM Procedure
+
+Dependent Variable: chg
+
+                                       Standard
+Parameter            Estimate             Error    t Value    Pr > |t|
+
+Intercept         25.37011041 B      5.08665782       4.99      <.0001
+base              -0.38449958        0.06420788      -5.99      <.0001
+TRTPN     81       0.57511576 B      1.36828278       0.42      0.6748
+TRTPN     0        0.00000000 B
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Box plot type is schematic: the box shows median and interquartile range (IQR, the box height); the whiskers extend to the minim
+within 1.5 IQR of the lower and upper quartiles, respectively. Values outside the whiskers are shown as outliers. Means are mark
+Red dots indicate measures outside the normal reference range. P-value is for the treatment comparison from ANCOVA model Change
+Box Plot - Diastolic Blood Pressure (mmHg) Last/Min/Max Baseline versus Last/Min/Max Post-baseline by Treatment                5
+Analysis Timepoint: AFTER LYING DOWN FOR 5 MINUTES                                               17:38 Friday, February 26, 2016
+
+chgtypen=2 Analysis Visit (N)=2 X-Axis discrete numeric values for plot, from (Change Mode).(Visit Seq)=2.2
+
+The GLM Procedure
+
+Dependent Variable: chg
+
+                                       Standard
+Parameter            Estimate             Error    t Value    Pr > |t|
+
+Intercept         19.75186646 B      3.72122369       5.31      <.0001
+base              -0.36121875        0.05033707      -7.18      <.0001
+TRTPN     81       0.63949506 B      0.98748595       0.65      0.5182
+TRTPN     0        0.00000000 B
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Box plot type is schematic: the box shows median and interquartile range (IQR, the box height); the whiskers extend to the minim
+within 1.5 IQR of the lower and upper quartiles, respectively. Values outside the whiskers are shown as outliers. Means are mark
+Red dots indicate measures outside the normal reference range. P-value is for the treatment comparison from ANCOVA model Change
+Box Plot - Diastolic Blood Pressure (mmHg) Last/Min/Max Baseline versus Last/Min/Max Post-baseline by Treatment                6
+Analysis Timepoint: AFTER LYING DOWN FOR 5 MINUTES                                               17:38 Friday, February 26, 2016
+
+chgtypen=3 Analysis Visit (N)=2 X-Axis discrete numeric values for plot, from (Change Mode).(Visit Seq)=3.2
+
+The GLM Procedure
+
+Dependent Variable: chg
+
+                                       Standard
+Parameter            Estimate             Error    t Value    Pr > |t|
+
+Intercept         24.44402831 B      5.53737340       4.41      <.0001
+base              -0.27982976        0.06621734      -4.23      <.0001
+TRTPN     81       0.52003998 B      1.21564335       0.43      0.6694
+TRTPN     0        0.00000000 B
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Box plot type is schematic: the box shows median and interquartile range (IQR, the box height); the whiskers extend to the minim
+within 1.5 IQR of the lower and upper quartiles, respectively. Values outside the whiskers are shown as outliers. Means are mark
+Red dots indicate measures outside the normal reference range. P-value is for the treatment comparison from ANCOVA model Change

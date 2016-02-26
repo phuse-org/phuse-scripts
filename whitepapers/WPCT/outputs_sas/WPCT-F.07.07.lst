@@ -1,4 +1,4 @@
-The SAS System                                                                                                                                                                                                               18:09 Friday, February 19, 2016   1
+The SAS System                                                                                                                                                                                                               17:32 Friday, February 26, 2016   1
 
 studynum=1
 
@@ -9,12 +9,12 @@ Dependent Variable: chg
                                        Standard
 Parameter            Estimate             Error    t Value    Pr > |t|
 
-Intercept         30.65794059 B      5.61368088       5.46      <.0001
-base              -0.45374220        0.07524110      -6.03      <.0001
-TRTPN     54       1.93756655 B      1.88440725       1.03      0.3059
-TRTPN     81      -0.49627362 B      1.87942102      -0.26      0.7922
+Intercept         15.75244923 B      4.36419465       3.61      0.0004
+base              -0.31053675        0.06185448      -5.02      <.0001
+TRTPN     54       2.80528530 B      1.43665370       1.95      0.0532
+TRTPN     81       1.18013419 B      1.43947011       0.82      0.4139
 TRTPN     0        0.00000000 B       .                .         .
-The SAS System                                                                                                                                                                                                               18:09 Friday, February 19, 2016   2
+The SAS System                                                                                                                                                                                                               17:32 Friday, February 26, 2016   2
 
 studynum=2
 
@@ -25,12 +25,12 @@ Dependent Variable: chg
                                        Standard
 Parameter            Estimate             Error    t Value    Pr > |t|
 
-Intercept         41.56391075 B      6.17293179       6.73      <.0001
-base              -0.55681092        0.07668126      -7.26      <.0001
-TRTPN     54      -4.18841127 B      1.84319001      -2.27      0.0248
-TRTPN     81      -0.88805742 B      1.87217289      -0.47      0.6361
+Intercept         21.38299546 B      5.48028297       3.90      0.0002
+base              -0.38218673        0.07228203      -5.29      <.0001
+TRTPN     54       0.94439174 B      1.54434326       0.61      0.5420
+TRTPN     81       1.10341752 B      1.56204177       0.71      0.4813
 TRTPN     0        0.00000000 B       .                .         .
-The SAS System                                                                                                                                                                                                               18:09 Friday, February 19, 2016   3
+The SAS System                                                                                                                                                                                                               17:32 Friday, February 26, 2016   3
 
 The GLM Procedure
 
@@ -39,9 +39,135 @@ Dependent Variable: chg
                                        Standard
 Parameter            Estimate             Error    t Value    Pr > |t|
 
-Intercept         34.68907294 B      4.13498765       8.39      <.0001
-base              -0.48810479        0.05322524      -9.17      <.0001
-TRTPN     54      -1.07850906 B      1.32193851      -0.82      0.4154
-TRTPN     81      -0.67425351 B      1.33200144      -0.51      0.6132
+Intercept         18.15533627 B      3.39592981       5.35      <.0001
+base              -0.34193814        0.04633025      -7.38      <.0001
+TRTPN     54       1.94462248 B      1.04357442       1.86      0.0636
+TRTPN     81       1.21700468 B      1.05076701       1.16      0.2479
 TRTPN     0        0.00000000 B       .                .         .
 studynum           0.00000000 B       .                .         .
+Box Plot - Diastolic Blood Pressure (mmHg) Change from MIN Baseline to MIN Post-Baseline Measure for Multiple Studies and Anal 4
+                                                                                                 17:32 Friday, February 26, 2016
+
+studynum=1
+
+The GLM Procedure
+
+Dependent Variable: chg
+
+                                       Standard
+Parameter            Estimate             Error    t Value    Pr > |t|
+
+Intercept         20.55095420 B      4.43571607       4.63      <.0001
+base              -0.37573046        0.06181915      -6.08      <.0001
+TRTPN     54       0.00134690 B      1.48321417       0.00      0.9993
+TRTPN     81       0.86114576 B      1.47436875       0.58      0.5603
+TRTPN     0        0.00000000 B
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Box plot type is schematic: the box shows median and interquartile range (IQR, the box height); the whiskers extend to the minim
+within 1.5 IQR of the lower and upper quartiles, respectively. Values outside the whiskers are shown as outliers. Means are mark
+for each treatment. P-value is for the treatment comparison from ANCOVA model Change = Baseline + Treatment (+ Study for "Pooled
+Box Plot - Diastolic Blood Pressure (mmHg) Change from MIN Baseline to MIN Post-Baseline Measure for Multiple Studies and Anal 5
+                                                                                                 17:32 Friday, February 26, 2016
+
+studynum=2
+
+The GLM Procedure
+
+Dependent Variable: chg
+
+                                       Standard
+Parameter            Estimate             Error    t Value    Pr > |t|
+
+Intercept         23.13858592 B      4.97748811       4.65      <.0001
+base              -0.40344207        0.06466107      -6.24      <.0001
+TRTPN     54       3.67788578 B      1.43370903       2.57      0.0115
+TRTPN     81       0.49404411 B      1.44767567       0.34      0.7335
+TRTPN     0        0.00000000 B
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Box plot type is schematic: the box shows median and interquartile range (IQR, the box height); the whiskers extend to the minim
+within 1.5 IQR of the lower and upper quartiles, respectively. Values outside the whiskers are shown as outliers. Means are mark
+for each treatment. P-value is for the treatment comparison from ANCOVA model Change = Baseline + Treatment (+ Study for "Pooled
+Box Plot - Diastolic Blood Pressure (mmHg) Change from MIN Baseline to MIN Post-Baseline Measure for Multiple Studies and Anal 6
+                                                                                                 17:32 Friday, February 26, 2016
+
+The GLM Procedure
+
+Dependent Variable: chg
+
+                                       Standard
+Parameter            Estimate             Error    t Value    Pr > |t|
+
+Intercept         21.28566588 B      3.27904285       6.49      <.0001
+base              -0.38233299        0.04400844      -8.69      <.0001
+TRTPN     54       1.94854669 B      1.03496892       1.88      0.0609
+TRTPN     81       0.66710743 B      1.04256192       0.64      0.5229
+TRTPN     0        0.00000000 B
+studynum           0.00000000 B
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Box plot type is schematic: the box shows median and interquartile range (IQR, the box height); the whiskers extend to the minim
+within 1.5 IQR of the lower and upper quartiles, respectively. Values outside the whiskers are shown as outliers. Means are mark
+for each treatment. P-value is for the treatment comparison from ANCOVA model Change = Baseline + Treatment (+ Study for "Pooled

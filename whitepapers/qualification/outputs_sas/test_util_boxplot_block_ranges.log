@@ -1,0 +1,2739 @@
+NOTE: Copyright (c) 2002-2012 by SAS Institute Inc., Cary, NC, USA.
+NOTE: SAS (r) Proprietary Software 9.4 (TS1M2)
+      Licensed to F. HOFFMANN LA ROCHE AG, Site 50701490.
+NOTE: This session is executing on the X64_7PRO  platform.
+
+
+
+NOTE: Updated analytical products:
+
+      SAS/STAT 13.2
+      SAS/ETS 13.2
+      SAS/IML 13.2
+      SAS/QC 13.2
+
+NOTE: Additional host information:
+
+ X64_7PRO WIN 6.1.7601 Service Pack 1 Workstation
+
+NOTE: SAS initialization used:
+      real time           18.74 seconds
+      cpu time            2.58 seconds
+
+1        OPTIONS mrecall sasautos=(%sysfunc(getoption(sasautos)) "C:\CSS\phuse-scripts\whitepapers\utilities") ls=max ps=max;
+
+2    /***
+3      Qualification tests for PhUSE CS utility macro <MACRO-NAME>
+4
+5      SETUP:  Ensure that PhUSE CS utilities are in the AUTOCALL path
+6
+7      TEST PLAN:
+8      https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/qualification/testplan_<MACRO-NAME>.docx
+9
+10   ***/
+11
+12
+13   *--- SETUP ---*;
+14
+15     *--- Expected response strings can be quite long, so avoid meaningless log warnings ---*;
+16       OPTIONS NOQUOTELENMAX;
+17
+18
+19     %let macroname = util_boxplot_block_ranges;
+20
+21     %put WARNING: (TEST_%upcase(&macroname)) User must ensure PhUSE CS utilities are in the AUTOCALL path.;
+WARNING: (TEST_UTIL_BOXPLOT_BLOCK_RANGES) User must ensure PhUSE CS utilities are in the AUTOCALL path.
+22
+23     /*** EXECUTE ONE TIME only as needed
+24
+25       Ensure PhUSE CS utilities are in the AUTOCALL path
+26       NB: This line is not necessary if PhUSE CS utilities are in your default AUTOCALL paths
+27
+28       OPTIONS mrecall sasautos=(%sysfunc(getoption(sasautos)) "C:\CSS\phuse-scripts\whitepapers\utilities") ls=max ps=max;
+29
+30     ***/
+31
+32
+33     *--- SAVE TEST RESULTS as XML filename  ---*;
+34     *--- NB: if this filename is blank, do NOT save xml test results ---*;
+35
+36       %let XML_FILENAME = .\outputs_sas\testresults_%lowcase(&macroname).xml;
+37
+38
+39   *--- Test Definitions  ---*;
+40     *--- Full Specs for test definitions: https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/utilities/util_passfail.sas ---*;
+41
+42     proc sql;
+43       create table my_test_definitions
+44         (  test_mac        char(32) label='Name of macro to test'
+45          , test_id         char(15) label="Test ID for %upcase(&macroname)"
+46          , test_dsc        char(80) label='Test Description'
+47
+48          , test_type       char(1)  label='Test Type (Macro var, String-<B|C|L|T>, Data set, In data step)'
+49
+50          , Pparm_ds        char(50) label='Test values for the Positional parameter DS'
+51          , Kparm_blockvar  char(50) label='Test values for the Keyword parameter BLOCKVAR'
+52          , Kparm_catvars   char(50) label='Test values for the Keyword parameter CATVARS'
+53
+54          , test_expect     char(1)   label="EXPECTED test results for each call to %upcase(&macroname)"
+55          , test_expect_sym char(500) label='TEST_PDLIM-delim Name=Value pairs of EXPECTED global syms created'
+56          , test_wrap       char(120) label="Set MAX_BOXES_PER_PAGE and symdel BEFORE/AFTER each call to %upcase(&macroname)"
+57          , test_pdlim      char(1)   label="OVERRIDE default test delimiter (|) which %upcase(&macroname) also uses in results"
+58         )
+59       ;
+NOTE: Table WORK.MY_TEST_DEFINITIONS created, with 0 rows and 11 columns.
+60
+61
+62         *--- TEST 1 (invalid/missing values): SASHELP.HEART var BP_STATUS has no missing values, but SMOKING_STATUS does. ---*;
+63
+64       insert into my_test_definitions
+65
+66         values("%lowcase(&macroname)", '1.a.1', 'Invalid DSet',              'M',   'dset_DNE', 'visvar', 'trtvar',
+67                '', 'BOXPLOT_BLOCK_RANGES=',
+68                '%GLOBAL MAX_BOXES_PER_PAGE; %LET MAX_BOXES_PER_PAGE=10; _MACCALL1_; %SYMDEL MAX_BOXES_PER_PAGE;',
+69                '~')
+70         values("%lowcase(&macroname)", '1.a.2', 'Invalid VIS var',           'M',   'sashelp.heart', 'visvar_DNE', 'bp_status',
+71                '', 'BOXPLOT_BLOCK_RANGES=',
+72                '%GLOBAL MAX_BOXES_PER_PAGE; %LET MAX_BOXES_PER_PAGE=10; _MACCALL1_; %SYMDEL MAX_BOXES_PER_PAGE;',
+73                '~')
+74         values("%lowcase(&macroname)", '1.a.3', 'Invalid TRT var',           'M',   'sashelp.heart', 'bp_status', 'trtvar_DNE',
+75                '', 'BOXPLOT_BLOCK_RANGES=',
+76                '%GLOBAL MAX_BOXES_PER_PAGE; %LET MAX_BOXES_PER_PAGE=10; _MACCALL1_; %SYMDEL MAX_BOXES_PER_PAGE;',
+77                '~')
+78         values("%lowcase(&macroname)", '1.a.4', 'Invalid VIS and TRT vars',  'M',   'sashelp.heart', 'visvar_DNE', 'trtvar_DNE',
+79                '', 'BOXPLOT_BLOCK_RANGES=',
+80                '%GLOBAL MAX_BOXES_PER_PAGE; %LET MAX_BOXES_PER_PAGE=10; _MACCALL1_; %SYMDEL MAX_BOXES_PER_PAGE;',
+81                '~')
+82
+83         values("%lowcase(&macroname)", '1.b.1', 'Missing CHAR VISIT values',                'M',  'sashelp.heart', 'smoking_status', 'bp_status',
+84                '', 'BOXPLOT_BLOCK_RANGES=""<=smoking_status<="Light (1-5)"|"Moderate (6-15)"<=smoking_status<="Very Heavy (> 25)"',
+85                '%GLOBAL MAX_BOXES_PER_PAGE; %LET MAX_BOXES_PER_PAGE=10; _MACCALL1_; %SYMDEL MAX_BOXES_PER_PAGE;',
+86                '~')
+87         values("%lowcase(&macroname)", '1.b.2', 'Missing CHAR TREATMENT values',            'M',  'sashelp.heart', 'bp_status', 'smoking_status',
+88                '', 'BOXPLOT_BLOCK_RANGES="High"<=bp_status<="High"|"Normal"<=bp_status<="Normal"|"Optimal"<=bp_status<="Optimal"',
+89                '%GLOBAL MAX_BOXES_PER_PAGE; %LET MAX_BOXES_PER_PAGE=10; _MACCALL1_; %SYMDEL MAX_BOXES_PER_PAGE;',
+90                '~')
+91         values("%lowcase(&macroname)", '1.b.3', 'Missing CHAR VISIT and TREATMENT values',  'M',  'sashelp.heart', 'weight_status', 'smoking_status',
+92                '', 'BOXPLOT_BLOCK_RANGES=""<=weight_status<="Normal"|"Overweight"<=weight_status<="Overweight"|"Underweight"<=weight_status<="Underweight"',
+93                '%GLOBAL MAX_BOXES_PER_PAGE; %LET MAX_BOXES_PER_PAGE=10; _MACCALL1_; %SYMDEL MAX_BOXES_PER_PAGE;',
+94                '~')
+95
+96         values("%lowcase(&macroname)", '1.c.1', 'Missing NUM VISIT values',                'M',  'rectangular', 'visnum_miss', 'treatnum',
+97                '', 'BOXPLOT_BLOCK_RANGES=.<=visnum_miss<=10|13<=visnum_miss<=16|19<=visnum_miss<=25|28<=visnum_miss<=34|37<=visnum_miss<=40',
+98                '%GLOBAL MAX_BOXES_PER_PAGE; %LET MAX_BOXES_PER_PAGE=10; _MACCALL1_; %SYMDEL MAX_BOXES_PER_PAGE;',
+99                '~')
+100        values("%lowcase(&macroname)", '1.c.2', 'Missing NUM TREATMENT values',            'M',  'rectangular', 'visitnum', 'trtnum_miss',
+101               '', 'BOXPLOT_BLOCK_RANGES=10<=visitnum<=13|16<=visitnum<=19|22<=visitnum<=25|28<=visitnum<=31|34<=visitnum<=37|40<=visitnum<=40',
+102               '%GLOBAL MAX_BOXES_PER_PAGE; %LET MAX_BOXES_PER_PAGE=10; _MACCALL1_; %SYMDEL MAX_BOXES_PER_PAGE;',
+103               '~')
+104        values("%lowcase(&macroname)", '1.c.3', 'Missing NUM VISIT and TREATMENT values',  'M',  'rectangular', 'visnum_miss', 'trtnum_miss',
+105               '', 'BOXPLOT_BLOCK_RANGES=.<=visnum_miss<=10|13<=visnum_miss<=16|19<=visnum_miss<=25|28<=visnum_miss<=34|37<=visnum_miss<=40',
+106               '%GLOBAL MAX_BOXES_PER_PAGE; %LET MAX_BOXES_PER_PAGE=10; _MACCALL1_; %SYMDEL MAX_BOXES_PER_PAGE;',
+107               '~')
+108
+109        values("%lowcase(&macroname)", '2.a.1', 'MBPP=3, numeric vars, consistent visits x treatments', 'M',   'rectangular', 'visitnum', 'treatnum',
+110               '', 'BOXPLOT_BLOCK_RANGES=10<=visitnum<=13|16<=visitnum<=19|22<=visitnum<=25|28<=visitnum<=31|34<=visitnum<=37|40<=visitnum<=40',
+111               '%GLOBAL MAX_BOXES_PER_PAGE; %LET MAX_BOXES_PER_PAGE=10; _MACCALL1_; %SYMDEL MAX_BOXES_PER_PAGE;',
+112               '~')
+113        values("%lowcase(&macroname)", '2.a.2', 'MBPP=3, char vars, consistent visits x treatments',    'M',   'alph_rec',    'visitcd', 'treatcd',
+114               '', 'BOXPLOT_BLOCK_RANGES="eight"<=visitcd<="five"|"four"<=visitcd<="nine"|"one"<=visitcd<="seven"|"six"<=visitcd<="ten"|"three"<=visitcd<="two"',
+115               '%GLOBAL MAX_BOXES_PER_PAGE; %LET MAX_BOXES_PER_PAGE=10; _MACCALL1_; %SYMDEL MAX_BOXES_PER_PAGE;',
+116               '~')
+117        values("%lowcase(&macroname)", '2.b.1', 'MBPP=3, numeric vars, some missing visits & treatments', 'M',   'gaps', 'visitnum', 'treatnum',
+118               '', 'BOXPLOT_BLOCK_RANGES=10<=visitnum<=13|16<=visitnum<=22|25<=visitnum<=28|31<=visitnum<=37|40<=visitnum<=40',
+119               '%GLOBAL MAX_BOXES_PER_PAGE; %LET MAX_BOXES_PER_PAGE=10; _MACCALL1_; %SYMDEL MAX_BOXES_PER_PAGE;',
+120               '~')
+121        values("%lowcase(&macroname)", '2.b.2', 'MBPP=3, char vars, some missing visits & treatments',    'M',   'alph_gap',    'visitcd', 'treatcd',
+122               '', 'BOXPLOT_BLOCK_RANGES="eight"<=visitcd<="four"|"nine"<=visitcd<="seven"|"six"<=visitcd<="three"|"two"<=visitcd<="two"',
+123               '%GLOBAL MAX_BOXES_PER_PAGE; %LET MAX_BOXES_PER_PAGE=10; _MACCALL1_; %SYMDEL MAX_BOXES_PER_PAGE;',
+124               '~')
+125
+126        values("%lowcase(&macroname)", '2.c.1', 'MBPP=3, numeric vars, consistent visits x treatments', 'M',   'rectangular', 'visitnum', 'treatnum',
+127               '', 'BOXPLOT_BLOCK_RANGES=10<=visitnum<=10|13<=visitnum<=13|16<=visitnum<=16|19<=visitnum<=19|22<=visitnum<=22|
+128  25<=visitnum<=25|28<=visitnum<=28|31<=visitnum<=31|34<=visitnum<=34|37<=visitnum<=37|40<=visitnum<=40',
+129               '%GLOBAL MAX_BOXES_PER_PAGE; %LET MAX_BOXES_PER_PAGE=3; _MACCALL1_; %SYMDEL MAX_BOXES_PER_PAGE;',
+130               '~')
+131        values("%lowcase(&macroname)", '2.c.2', 'MBPP=3, char vars, consistent visits x treatments',    'M',   'alph_rec',    'visitcd', 'treatcd',
+132               '', 'BOXPLOT_BLOCK_RANGES="eight"<=visitcd<="eight"|"five"<=visitcd<="five"|"four"<=visitcd<="four"|"nine"<=visitcd<="nine"|
+133  "one"<=visitcd<="one"|"seven"<=visitcd<="seven"|"six"<=visitcd<="six"|"ten"<=visitcd<="ten"|"three"<=visitcd<="three"|"two"<=visitcd<="two"',
+134               '%GLOBAL MAX_BOXES_PER_PAGE; %LET MAX_BOXES_PER_PAGE=3; _MACCALL1_; %SYMDEL MAX_BOXES_PER_PAGE;',
+135               '~')
+136        values("%lowcase(&macroname)", '2.d.1', 'MBPP=3, numeric vars, some missing visits & treatments', 'M',   'gaps', 'visitnum', 'treatnum',
+137               '', 'BOXPLOT_BLOCK_RANGES=10<=visitnum<=10|13<=visitnum<=13|16<=visitnum<=16|19<=visitnum<=19|22<=visitnum<=22|
+138  25<=visitnum<=25|28<=visitnum<=28|31<=visitnum<=31|34<=visitnum<=34|37<=visitnum<=37|40<=visitnum<=40',
+139               '%GLOBAL MAX_BOXES_PER_PAGE; %LET MAX_BOXES_PER_PAGE=3; _MACCALL1_; %SYMDEL MAX_BOXES_PER_PAGE;',
+140               '~')
+141        values("%lowcase(&macroname)", '2.d.2', 'MBPP=3, char vars, some missing visits & treatments',    'M',   'alph_gap',    'visitcd', 'treatcd',
+142               '', 'BOXPLOT_BLOCK_RANGES="eight"<=visitcd<="eight"|"five"<=visitcd<="five"|"four"<=visitcd<="four"|"nine"<=visitcd<="nine"|
+143  "one"<=visitcd<="one"|"seven"<=visitcd<="seven"|"six"<=visitcd<="six"|"ten"<=visitcd<="ten"|"three"<=visitcd<="three"|"two"<=visitcd<="two"',
+144               '%GLOBAL MAX_BOXES_PER_PAGE; %LET MAX_BOXES_PER_PAGE=3; _MACCALL1_; %SYMDEL MAX_BOXES_PER_PAGE;',
+145               '~')
+146
+147        values("%lowcase(&macroname)", '2.e.1', 'MBPP=20, numeric vars, consistent visits x treatments', 'M',   'rectangular', 'visitnum', 'treatnum',
+148               '', 'BOXPLOT_BLOCK_RANGES=10<=visitnum<=22|25<=visitnum<=37|40<=visitnum<=40',
+149               '%GLOBAL MAX_BOXES_PER_PAGE; %LET MAX_BOXES_PER_PAGE=20; _MACCALL1_; %SYMDEL MAX_BOXES_PER_PAGE;',
+150               '~')
+151        values("%lowcase(&macroname)", '2.e.2', 'MBPP=20, char vars, consistent visits x treatments',    'M',   'alph_rec',    'visitcd', 'treatcd',
+152               '', 'BOXPLOT_BLOCK_RANGES="eight"<=visitcd<="one"|"seven"<=visitcd<="two"',
+153               '%GLOBAL MAX_BOXES_PER_PAGE; %LET MAX_BOXES_PER_PAGE=20; _MACCALL1_; %SYMDEL MAX_BOXES_PER_PAGE;',
+154               '~')
+155        values("%lowcase(&macroname)", '2.f.1', 'MBPP=20, numeric vars, some missing visits & treatments', 'M',   'gaps', 'visitnum', 'treatnum',
+156               '', 'BOXPLOT_BLOCK_RANGES=10<=visitnum<=22|25<=visitnum<=40',
+157               '%GLOBAL MAX_BOXES_PER_PAGE; %LET MAX_BOXES_PER_PAGE=20; _MACCALL1_; %SYMDEL MAX_BOXES_PER_PAGE;',
+158               '~')
+159        values("%lowcase(&macroname)", '2.f.2', 'MBPP=20, char vars, some missing visits & treatments',    'M',   'alph_gap',    'visitcd', 'treatcd',
+160               '', 'BOXPLOT_BLOCK_RANGES="eight"<=visitcd<="seven"|"six"<=visitcd<="two"',
+161               '%GLOBAL MAX_BOXES_PER_PAGE; %LET MAX_BOXES_PER_PAGE=20; _MACCALL1_; %SYMDEL MAX_BOXES_PER_PAGE;',
+162               '~')
+163
+164        values("%lowcase(&macroname)", '2.g.1', '2 CAT vars, missing CHAR VISIT vals',                  'M',  'sashelp.heart', 'smoking_status', 'bp_status status',
+165               '', 'BOXPLOT_BLOCK_RANGES=""<=smoking_status<="Heavy (16-25)"|"Light (1-5)"<=smoking_status<="Moderate (6-15)"|"Non-smoker"<=smoking_status<="Very Heavy (> 25)"',
+166               '%GLOBAL MAX_BOXES_PER_PAGE; %LET MAX_BOXES_PER_PAGE=15; _MACCALL1_; %SYMDEL MAX_BOXES_PER_PAGE;',
+167               '~')
+168
+169        values("%lowcase(&macroname)", '2.g.2', '2 CAT vars, missing CHAR TREATMENT values',            'M',  'sashelp.heart', 'bp_status', 'smoking_status status',
+170               '', 'BOXPLOT_BLOCK_RANGES="High"<=bp_status<="High"|"Normal"<=bp_status<="Normal"|"Optimal"<=bp_status<="Optimal"',
+171               '%GLOBAL MAX_BOXES_PER_PAGE; %LET MAX_BOXES_PER_PAGE=10; _MACCALL1_; %SYMDEL MAX_BOXES_PER_PAGE;',
+172               '~')
+173
+174        values("%lowcase(&macroname)", '2.g.3', '2 CAT vars, missing CHAR VISIT and TREATMENT values',  'M',  'sashelp.heart', 'weight_status', 'smoking_status status',
+175               '', 'BOXPLOT_BLOCK_RANGES=""<=weight_status<="Normal"|"Overweight"<=weight_status<="Overweight"|"Underweight"<=weight_status<="Underweight"',
+176               '%GLOBAL MAX_BOXES_PER_PAGE; %LET MAX_BOXES_PER_PAGE=20; _MACCALL1_; %SYMDEL MAX_BOXES_PER_PAGE;',
+177               '~')
+178
+179  /* NB: UTIL_BOXPLOT_BLOCK_RANGES creates a |-delim string. So override the default UTIL_PASSFAIL delimiter | with ~
+180
+181        values("%lowcase(&macroname)", '', '',  'M',  '', '', '',
+182               '', 'BOXPLOT_BLOCK_RANGES=',
+183               '~')
+184        values("%lowcase(&macroname)", '', '',  'M',  '', '', '',
+185               '', 'BOXPLOT_BLOCK_RANGES=',
+186               '~')
+187        values("%lowcase(&macroname)", '', '',  'M',  '', '', '',
+188               '', 'BOXPLOT_BLOCK_RANGES=',
+189               '~')
+190        values("%lowcase(&macroname)", '', '',  'M',  '', '', '',
+191               '', 'BOXPLOT_BLOCK_RANGES=',
+192               '~')
+193  */
+194
+195      ;
+NOTE: 25 rows were inserted into WORK.MY_TEST_DEFINITIONS.
+
+196    quit;
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.21 seconds
+      cpu time            0.21 seconds
+
+
+197
+198
+199  *--- Setup test environment here (dsets, macro vars, etc) ---*;
+200    data rectangular;
+201      *--- 44 vis*trt combinations ---*;
+202      do visitnum = 10 to 40 by 3;
+203        do treatnum = 1, 2, 3, 4;
+204
+205          if ranuni(64785) < 0.1 then visnum_miss = .;
+206          else visnum_miss = visitnum;
+207
+208          if ranuni(16047) < 0.1 then trtnum_miss = .;
+209          else trtnum_miss = treatnum;
+210
+211          output;
+212        end;
+213      end;
+214    run;
+
+NOTE: The data set WORK.RECTANGULAR has 44 observations and 4 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+215
+216    data gaps;
+217      set rectangular;
+218
+219      if (13 = visitnum and 3 = treatnum) or
+220         (19 = visitnum and treatnum in (2, 3)) or
+221         (28 = visitnum and 1 = treatnum) or
+222         (37 = visitnum and treatnum in (3, 4)) or
+223         (40 = visitnum and treatnum in (1, 2))
+224         then delete;
+225    run;
+
+NOTE: There were 44 observations read from the data set WORK.RECTANGULAR.
+NOTE: The data set WORK.GAPS has 36 observations and 4 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+226
+227    *--- TEST BEHAVIOR GIVEN ALPHANUMERIC VARS, as well ---*;
+228      data alph_rec;
+229        *--- 40 vis*trt combinations ---*;
+230        length visitcd $ 5;
+231        do visitcd = 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten';
+232          do treatcd = 'a1', 'a2', 'b1', 'b2';
+233            output;
+234          end;
+235        end;
+236      run;
+
+NOTE: The data set WORK.ALPH_REC has 40 observations and 2 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+237
+238      data alph_gap;
+239        set alph_rec;
+240
+241        if ('two' = visitcd and 'b1' = treatcd) or
+242           ('four' = visitcd and treatcd in ('a2', 'b1')) or
+243           ('seven' = visitcd and 'a1' = treatcd) or
+244           ('nine' = visitcd and treatcd in ('b1', 'b2')) or
+245           ('ten' = visitcd and treatcd in ('a1', 'a2'))
+246           then delete;
+247      run;
+
+NOTE: There were 40 observations read from the data set WORK.ALPH_REC.
+NOTE: The data set WORK.ALPH_GAP has 32 observations and 2 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+248
+249
+250  *--- Create EXPECTED test results ---*;
+251
+252
+253  *--- Execute & evaluate tests, and report & store test results ---*;
+254    %util_passfail (my_test_definitions, savexml= &xml_filename, debug=N);
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: There were 25 observations read from the data set WORK.MY_TEST_DEFINITIONS.
+NOTE: The data set WORK.CSS_PASSFAIL has 25 observations and 16 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: (BUILD_MACRO_CALLS) > 1.a.1 , 1 call(s)
+NOTE: (BUILD_MACRO_CALLS)  BUILDING MACRO CALL 1
+NOTE: (BUILD_MACRO_CALLS) GENERATED MACRO CALL 1 %util_boxplot_block_ranges( dset_DNE, blockvar=visvar, catvars=trtvar)
+NOTE: (BUILD_MACRO_CALLS) <
+NOTE: (BUILD_MACRO_CALLS) > 1.a.2 , 1 call(s)
+NOTE: (BUILD_MACRO_CALLS)  BUILDING MACRO CALL 1
+NOTE: (BUILD_MACRO_CALLS) GENERATED MACRO CALL 1 %util_boxplot_block_ranges( sashelp.heart, blockvar=visvar_DNE, catvars=bp_status)
+NOTE: (BUILD_MACRO_CALLS) <
+NOTE: (BUILD_MACRO_CALLS) > 1.a.3 , 1 call(s)
+NOTE: (BUILD_MACRO_CALLS)  BUILDING MACRO CALL 1
+NOTE: (BUILD_MACRO_CALLS) GENERATED MACRO CALL 1 %util_boxplot_block_ranges( sashelp.heart, blockvar=bp_status, catvars=trtvar_DNE)
+NOTE: (BUILD_MACRO_CALLS) <
+NOTE: (BUILD_MACRO_CALLS) > 1.a.4 , 1 call(s)
+NOTE: (BUILD_MACRO_CALLS)  BUILDING MACRO CALL 1
+NOTE: (BUILD_MACRO_CALLS) GENERATED MACRO CALL 1 %util_boxplot_block_ranges( sashelp.heart, blockvar=visvar_DNE, catvars=trtvar_DNE)
+NOTE: (BUILD_MACRO_CALLS) <
+NOTE: (BUILD_MACRO_CALLS) > 1.b.1 , 1 call(s)
+NOTE: (BUILD_MACRO_CALLS)  BUILDING MACRO CALL 1
+NOTE: (BUILD_MACRO_CALLS) GENERATED MACRO CALL 1 %util_boxplot_block_ranges( sashelp.heart, blockvar=smoking_status, catvars=bp_status)
+NOTE: (BUILD_MACRO_CALLS) <
+NOTE: (BUILD_MACRO_CALLS) > 1.b.2 , 1 call(s)
+NOTE: (BUILD_MACRO_CALLS)  BUILDING MACRO CALL 1
+NOTE: (BUILD_MACRO_CALLS) GENERATED MACRO CALL 1 %util_boxplot_block_ranges( sashelp.heart, blockvar=bp_status, catvars=smoking_status)
+NOTE: (BUILD_MACRO_CALLS) <
+NOTE: (BUILD_MACRO_CALLS) > 1.b.3 , 1 call(s)
+NOTE: (BUILD_MACRO_CALLS)  BUILDING MACRO CALL 1
+NOTE: (BUILD_MACRO_CALLS) GENERATED MACRO CALL 1 %util_boxplot_block_ranges( sashelp.heart, blockvar=weight_status, catvars=smoking_status)
+NOTE: (BUILD_MACRO_CALLS) <
+NOTE: (BUILD_MACRO_CALLS) > 1.c.1 , 1 call(s)
+NOTE: (BUILD_MACRO_CALLS)  BUILDING MACRO CALL 1
+NOTE: (BUILD_MACRO_CALLS) GENERATED MACRO CALL 1 %util_boxplot_block_ranges( rectangular, blockvar=visnum_miss, catvars=treatnum)
+NOTE: (BUILD_MACRO_CALLS) <
+NOTE: (BUILD_MACRO_CALLS) > 1.c.2 , 1 call(s)
+NOTE: (BUILD_MACRO_CALLS)  BUILDING MACRO CALL 1
+NOTE: (BUILD_MACRO_CALLS) GENERATED MACRO CALL 1 %util_boxplot_block_ranges( rectangular, blockvar=visitnum, catvars=trtnum_miss)
+NOTE: (BUILD_MACRO_CALLS) <
+NOTE: (BUILD_MACRO_CALLS) > 1.c.3 , 1 call(s)
+NOTE: (BUILD_MACRO_CALLS)  BUILDING MACRO CALL 1
+NOTE: (BUILD_MACRO_CALLS) GENERATED MACRO CALL 1 %util_boxplot_block_ranges( rectangular, blockvar=visnum_miss, catvars=trtnum_miss)
+NOTE: (BUILD_MACRO_CALLS) <
+NOTE: (BUILD_MACRO_CALLS) > 2.a.1 , 1 call(s)
+NOTE: (BUILD_MACRO_CALLS)  BUILDING MACRO CALL 1
+NOTE: (BUILD_MACRO_CALLS) GENERATED MACRO CALL 1 %util_boxplot_block_ranges( rectangular, blockvar=visitnum, catvars=treatnum)
+NOTE: (BUILD_MACRO_CALLS) <
+NOTE: (BUILD_MACRO_CALLS) > 2.a.2 , 1 call(s)
+NOTE: (BUILD_MACRO_CALLS)  BUILDING MACRO CALL 1
+NOTE: (BUILD_MACRO_CALLS) GENERATED MACRO CALL 1 %util_boxplot_block_ranges( alph_rec, blockvar=visitcd, catvars=treatcd)
+NOTE: (BUILD_MACRO_CALLS) <
+NOTE: (BUILD_MACRO_CALLS) > 2.b.1 , 1 call(s)
+NOTE: (BUILD_MACRO_CALLS)  BUILDING MACRO CALL 1
+NOTE: (BUILD_MACRO_CALLS) GENERATED MACRO CALL 1 %util_boxplot_block_ranges( gaps, blockvar=visitnum, catvars=treatnum)
+NOTE: (BUILD_MACRO_CALLS) <
+NOTE: (BUILD_MACRO_CALLS) > 2.b.2 , 1 call(s)
+NOTE: (BUILD_MACRO_CALLS)  BUILDING MACRO CALL 1
+NOTE: (BUILD_MACRO_CALLS) GENERATED MACRO CALL 1 %util_boxplot_block_ranges( alph_gap, blockvar=visitcd, catvars=treatcd)
+NOTE: (BUILD_MACRO_CALLS) <
+NOTE: (BUILD_MACRO_CALLS) > 2.c.1 , 1 call(s)
+NOTE: (BUILD_MACRO_CALLS)  BUILDING MACRO CALL 1
+NOTE: (BUILD_MACRO_CALLS) GENERATED MACRO CALL 1 %util_boxplot_block_ranges( rectangular, blockvar=visitnum, catvars=treatnum)
+NOTE: (BUILD_MACRO_CALLS) <
+NOTE: (BUILD_MACRO_CALLS) > 2.c.2 , 1 call(s)
+NOTE: (BUILD_MACRO_CALLS)  BUILDING MACRO CALL 1
+NOTE: (BUILD_MACRO_CALLS) GENERATED MACRO CALL 1 %util_boxplot_block_ranges( alph_rec, blockvar=visitcd, catvars=treatcd)
+NOTE: (BUILD_MACRO_CALLS) <
+NOTE: (BUILD_MACRO_CALLS) > 2.d.1 , 1 call(s)
+NOTE: (BUILD_MACRO_CALLS)  BUILDING MACRO CALL 1
+NOTE: (BUILD_MACRO_CALLS) GENERATED MACRO CALL 1 %util_boxplot_block_ranges( gaps, blockvar=visitnum, catvars=treatnum)
+NOTE: (BUILD_MACRO_CALLS) <
+NOTE: (BUILD_MACRO_CALLS) > 2.d.2 , 1 call(s)
+NOTE: (BUILD_MACRO_CALLS)  BUILDING MACRO CALL 1
+NOTE: (BUILD_MACRO_CALLS) GENERATED MACRO CALL 1 %util_boxplot_block_ranges( alph_gap, blockvar=visitcd, catvars=treatcd)
+NOTE: (BUILD_MACRO_CALLS) <
+NOTE: (BUILD_MACRO_CALLS) > 2.e.1 , 1 call(s)
+NOTE: (BUILD_MACRO_CALLS)  BUILDING MACRO CALL 1
+NOTE: (BUILD_MACRO_CALLS) GENERATED MACRO CALL 1 %util_boxplot_block_ranges( rectangular, blockvar=visitnum, catvars=treatnum)
+NOTE: (BUILD_MACRO_CALLS) <
+NOTE: (BUILD_MACRO_CALLS) > 2.e.2 , 1 call(s)
+NOTE: (BUILD_MACRO_CALLS)  BUILDING MACRO CALL 1
+NOTE: (BUILD_MACRO_CALLS) GENERATED MACRO CALL 1 %util_boxplot_block_ranges( alph_rec, blockvar=visitcd, catvars=treatcd)
+NOTE: (BUILD_MACRO_CALLS) <
+NOTE: (BUILD_MACRO_CALLS) > 2.f.1 , 1 call(s)
+NOTE: (BUILD_MACRO_CALLS)  BUILDING MACRO CALL 1
+NOTE: (BUILD_MACRO_CALLS) GENERATED MACRO CALL 1 %util_boxplot_block_ranges( gaps, blockvar=visitnum, catvars=treatnum)
+NOTE: (BUILD_MACRO_CALLS) <
+NOTE: (BUILD_MACRO_CALLS) > 2.f.2 , 1 call(s)
+NOTE: (BUILD_MACRO_CALLS)  BUILDING MACRO CALL 1
+NOTE: (BUILD_MACRO_CALLS) GENERATED MACRO CALL 1 %util_boxplot_block_ranges( alph_gap, blockvar=visitcd, catvars=treatcd)
+NOTE: (BUILD_MACRO_CALLS) <
+NOTE: (BUILD_MACRO_CALLS) > 2.g.1 , 1 call(s)
+NOTE: (BUILD_MACRO_CALLS)  BUILDING MACRO CALL 1
+NOTE: (BUILD_MACRO_CALLS) GENERATED MACRO CALL 1 %util_boxplot_block_ranges( sashelp.heart, blockvar=smoking_status, catvars=bp_status status)
+NOTE: (BUILD_MACRO_CALLS) <
+NOTE: (BUILD_MACRO_CALLS) > 2.g.2 , 1 call(s)
+NOTE: (BUILD_MACRO_CALLS)  BUILDING MACRO CALL 1
+NOTE: (BUILD_MACRO_CALLS) GENERATED MACRO CALL 1 %util_boxplot_block_ranges( sashelp.heart, blockvar=bp_status, catvars=smoking_status status)
+NOTE: (BUILD_MACRO_CALLS) <
+NOTE: (BUILD_MACRO_CALLS) > 2.g.3 , 1 call(s)
+NOTE: (BUILD_MACRO_CALLS)  BUILDING MACRO CALL 1
+NOTE: (BUILD_MACRO_CALLS) GENERATED MACRO CALL 1 %util_boxplot_block_ranges( sashelp.heart, blockvar=weight_status, catvars=smoking_status status)
+NOTE: (BUILD_MACRO_CALLS) <
+NOTE: There were 25 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 25 observations and 18 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.10 seconds
+      cpu time            0.09 seconds
+
+
+
+NOTE: There were 1 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD7712_RBAMW049235_\#LN00035,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=26Feb2016:18:16:51,
+      Create Time=26Feb2016:18:16:51
+
+NOTE: 1 record was written to the file PFEXCODE.
+      The minimum record length was 155.
+      The maximum record length was 155.
+NOTE: There were 25 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 25 observations and 16 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.01 seconds
+
+
+ERROR: (ASSERT_DSET_EXIST) Result is FAIL. Data set DSET_DNE is NOT accessible. Try another data set.
+ERROR: (ASSERT_DEPEND) Data set DSET_DNE is not available.
+NOTE: (ASSERT_DEPEND) PASS, found mac var MAX_BOXES_PER_PAGE with value "10"
+ERROR: (ASSERT_DEPEND) Result is FAIL. Dependencies for this program not met. Expect problems.
+
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+NOTE: There were 25 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 25 observations rewritten, 0 observations added and 0 observations deleted.
+
+NOTE: CALL EXECUTE routine executed successfully, but no SAS statements were generated.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD7712_RBAMW049235_\#LN00035,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=26Feb2016:18:16:51,
+      Create Time=26Feb2016:18:16:51
+
+NOTE: 1 record was written to the file PFEXCODE.
+      The minimum record length was 167.
+      The maximum record length was 167.
+NOTE: There were 25 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 25 observations and 16 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set SASHELP.HEART is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set SASHELP.HEART is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set SASHELP.HEART, try closing data set ID 1
+ERROR: (ASSERT_VAR_EXIST) Result is FAIL. "VISVAR_DNE" is NOT a variable on data set SASHELP.HEART.
+ERROR: (ASSERT_DEPEND) Data set SASHELP.HEART does not contain required variable VISVAR_DNE.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set SASHELP.HEART is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set SASHELP.HEART, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. BP_STATUS is a variable on data set SASHELP.HEART.
+NOTE: (ASSERT_DEPEND) PASS, found mac var MAX_BOXES_PER_PAGE with value "10"
+ERROR: (ASSERT_DEPEND) Result is FAIL. Dependencies for this program not met. Expect problems.
+
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+NOTE: There were 25 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 25 observations rewritten, 0 observations added and 0 observations deleted.
+
+NOTE: CALL EXECUTE routine executed successfully, but no SAS statements were generated.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD7712_RBAMW049235_\#LN00035,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=26Feb2016:18:16:52,
+      Create Time=26Feb2016:18:16:51
+
+NOTE: 1 record was written to the file PFEXCODE.
+      The minimum record length was 167.
+      The maximum record length was 167.
+NOTE: There were 25 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 25 observations and 16 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set SASHELP.HEART is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set SASHELP.HEART is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set SASHELP.HEART, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. BP_STATUS is a variable on data set SASHELP.HEART.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set SASHELP.HEART is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set SASHELP.HEART, try closing data set ID 1
+ERROR: (ASSERT_VAR_EXIST) Result is FAIL. "TRTVAR_DNE" is NOT a variable on data set SASHELP.HEART.
+ERROR: (ASSERT_DEPEND) Data set SASHELP.HEART does not contain required variable TRTVAR_DNE.
+NOTE: (ASSERT_DEPEND) PASS, found mac var MAX_BOXES_PER_PAGE with value "10"
+ERROR: (ASSERT_DEPEND) Result is FAIL. Dependencies for this program not met. Expect problems.
+
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+NOTE: There were 25 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 25 observations rewritten, 0 observations added and 0 observations deleted.
+
+NOTE: CALL EXECUTE routine executed successfully, but no SAS statements were generated.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD7712_RBAMW049235_\#LN00035,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=26Feb2016:18:16:52,
+      Create Time=26Feb2016:18:16:51
+
+NOTE: 1 record was written to the file PFEXCODE.
+      The minimum record length was 168.
+      The maximum record length was 168.
+NOTE: There were 25 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 25 observations and 16 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.04 seconds
+
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set SASHELP.HEART is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set SASHELP.HEART is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set SASHELP.HEART, try closing data set ID 1
+ERROR: (ASSERT_VAR_EXIST) Result is FAIL. "VISVAR_DNE" is NOT a variable on data set SASHELP.HEART.
+ERROR: (ASSERT_DEPEND) Data set SASHELP.HEART does not contain required variable VISVAR_DNE.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set SASHELP.HEART is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set SASHELP.HEART, try closing data set ID 1
+ERROR: (ASSERT_VAR_EXIST) Result is FAIL. "TRTVAR_DNE" is NOT a variable on data set SASHELP.HEART.
+ERROR: (ASSERT_DEPEND) Data set SASHELP.HEART does not contain required variable TRTVAR_DNE.
+NOTE: (ASSERT_DEPEND) PASS, found mac var MAX_BOXES_PER_PAGE with value "10"
+ERROR: (ASSERT_DEPEND) Result is FAIL. Dependencies for this program not met. Expect problems.
+
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+NOTE: There were 25 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 25 observations rewritten, 0 observations added and 0 observations deleted.
+
+NOTE: CALL EXECUTE routine executed successfully, but no SAS statements were generated.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD7712_RBAMW049235_\#LN00035,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=26Feb2016:18:16:52,
+      Create Time=26Feb2016:18:16:51
+
+NOTE: 1 record was written to the file PFEXCODE.
+      The minimum record length was 171.
+      The maximum record length was 171.
+NOTE: There were 25 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 25 observations and 16 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.04 seconds
+
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set SASHELP.HEART is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set SASHELP.HEART is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set SASHELP.HEART, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. SMOKING_STATUS is a variable on data set SASHELP.HEART.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set SASHELP.HEART is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set SASHELP.HEART, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. BP_STATUS is a variable on data set SASHELP.HEART.
+NOTE: (ASSERT_DEPEND) PASS, found mac var MAX_BOXES_PER_PAGE with value "10"
+NOTE: (ASSERT_DEPEND) Result is PASS.
+
+NOTE: There were 5209 observations read from the data set SASHELP.HEART.
+NOTE: 5191 observations with duplicate key values were deleted.
+NOTE: The data set WORK.BBR_CATS has 18 observations and 2 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.04 seconds
+
+
+
+NOTE: There were 18 observations read from the data set WORK.BBR_CATS.
+NOTE: The data set WORK.BRR_COUNTS has 6 observations and 2 variables.
+NOTE: PROCEDURE FREQ used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: Numeric values have been converted to character values at the places given by: (Line):(Column).
+      8:195
+NOTE: There were 6 observations read from the data set WORK.BRR_COUNTS.
+NOTE: The data set WORK.BRR_PAGES has 6 observations and 4 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: There were 6 observations read from the data set WORK.BRR_PAGES.
+NOTE: The data set WORK.BRR_RANGES has 2 observations and 5 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: Deleting WORK.BBR_CATS (memtype=DATA).
+NOTE: Deleting WORK.BRR_COUNTS (memtype=DATA).
+NOTE: Deleting WORK.BRR_PAGES (memtype=DATA).
+NOTE: Deleting WORK.BRR_RANGES (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.20 seconds
+      cpu time            0.07 seconds
+
+
+NOTE: (UTIL_BOXPLOT_BLOCK_RANGES) Default block ranges for each plot produces, limiting to 10 boxes max per page.
+NOTE: (UTIL_BOXPLOT_BLOCK_RANGES) BOXPLOT_BLOCK_RANGES set to: ""<=smoking_status<="Light (1-5)"|"Moderate (6-15)"<=smoking_status<="Very Heavy (> 25)"
+
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+NOTE: There were 25 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 25 observations rewritten, 0 observations added and 0 observations deleted.
+
+NOTE: CALL EXECUTE routine executed successfully, but no SAS statements were generated.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD7712_RBAMW049235_\#LN00035,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=26Feb2016:18:16:52,
+      Create Time=26Feb2016:18:16:51
+
+NOTE: 1 record was written to the file PFEXCODE.
+      The minimum record length was 171.
+      The maximum record length was 171.
+NOTE: There were 25 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 25 observations and 16 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.04 seconds
+
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set SASHELP.HEART is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set SASHELP.HEART is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set SASHELP.HEART, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. BP_STATUS is a variable on data set SASHELP.HEART.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set SASHELP.HEART is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set SASHELP.HEART, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. SMOKING_STATUS is a variable on data set SASHELP.HEART.
+NOTE: (ASSERT_DEPEND) PASS, found mac var MAX_BOXES_PER_PAGE with value "10"
+NOTE: (ASSERT_DEPEND) Result is PASS.
+
+NOTE: There were 5209 observations read from the data set SASHELP.HEART.
+NOTE: 5191 observations with duplicate key values were deleted.
+NOTE: The data set WORK.BBR_CATS has 18 observations and 2 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+
+NOTE: There were 18 observations read from the data set WORK.BBR_CATS.
+NOTE: The data set WORK.BRR_COUNTS has 3 observations and 2 variables.
+NOTE: PROCEDURE FREQ used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+
+NOTE: Numeric values have been converted to character values at the places given by: (Line):(Column).
+      8:195
+NOTE: There were 3 observations read from the data set WORK.BRR_COUNTS.
+NOTE: The data set WORK.BRR_PAGES has 3 observations and 4 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: There were 3 observations read from the data set WORK.BRR_PAGES.
+NOTE: The data set WORK.BRR_RANGES has 3 observations and 5 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: Deleting WORK.BBR_CATS (memtype=DATA).
+NOTE: Deleting WORK.BRR_COUNTS (memtype=DATA).
+NOTE: Deleting WORK.BRR_PAGES (memtype=DATA).
+NOTE: Deleting WORK.BRR_RANGES (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+NOTE: (UTIL_BOXPLOT_BLOCK_RANGES) Default block ranges for each plot produces, limiting to 10 boxes max per page.
+NOTE: (UTIL_BOXPLOT_BLOCK_RANGES) BOXPLOT_BLOCK_RANGES set to: "High"<=bp_status<="High"|"Normal"<=bp_status<="Normal"|"Optimal"<=bp_status<="Optimal"
+
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+NOTE: There were 25 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 25 observations rewritten, 0 observations added and 0 observations deleted.
+
+NOTE: CALL EXECUTE routine executed successfully, but no SAS statements were generated.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD7712_RBAMW049235_\#LN00035,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=26Feb2016:18:16:53,
+      Create Time=26Feb2016:18:16:51
+
+NOTE: 1 record was written to the file PFEXCODE.
+      The minimum record length was 175.
+      The maximum record length was 175.
+NOTE: There were 25 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 25 observations and 16 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.04 seconds
+
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set SASHELP.HEART is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set SASHELP.HEART is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set SASHELP.HEART, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. WEIGHT_STATUS is a variable on data set SASHELP.HEART.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set SASHELP.HEART is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set SASHELP.HEART, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. SMOKING_STATUS is a variable on data set SASHELP.HEART.
+NOTE: (ASSERT_DEPEND) PASS, found mac var MAX_BOXES_PER_PAGE with value "10"
+NOTE: (ASSERT_DEPEND) Result is PASS.
+
+NOTE: There were 5209 observations read from the data set SASHELP.HEART.
+NOTE: 5187 observations with duplicate key values were deleted.
+NOTE: The data set WORK.BBR_CATS has 22 observations and 2 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+
+NOTE: There were 22 observations read from the data set WORK.BBR_CATS.
+NOTE: The data set WORK.BRR_COUNTS has 4 observations and 2 variables.
+NOTE: PROCEDURE FREQ used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: Numeric values have been converted to character values at the places given by: (Line):(Column).
+      8:195
+NOTE: There were 4 observations read from the data set WORK.BRR_COUNTS.
+NOTE: The data set WORK.BRR_PAGES has 4 observations and 4 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: There were 4 observations read from the data set WORK.BRR_PAGES.
+NOTE: The data set WORK.BRR_RANGES has 3 observations and 5 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: Deleting WORK.BBR_CATS (memtype=DATA).
+NOTE: Deleting WORK.BRR_COUNTS (memtype=DATA).
+NOTE: Deleting WORK.BRR_PAGES (memtype=DATA).
+NOTE: Deleting WORK.BRR_RANGES (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+NOTE: (UTIL_BOXPLOT_BLOCK_RANGES) Default block ranges for each plot produces, limiting to 10 boxes max per page.
+NOTE: (UTIL_BOXPLOT_BLOCK_RANGES) BOXPLOT_BLOCK_RANGES set to: ""<=weight_status<="Normal"|"Overweight"<=weight_status<="Overweight"|"Underweight"<=weight_status<="Underweight"
+
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+NOTE: There were 25 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 25 observations rewritten, 0 observations added and 0 observations deleted.
+
+NOTE: CALL EXECUTE routine executed successfully, but no SAS statements were generated.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD7712_RBAMW049235_\#LN00035,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=26Feb2016:18:16:53,
+      Create Time=26Feb2016:18:16:51
+
+NOTE: 1 record was written to the file PFEXCODE.
+      The minimum record length was 165.
+      The maximum record length was 165.
+NOTE: There were 25 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 25 observations and 16 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set RECTANGULAR is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set RECTANGULAR is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set RECTANGULAR, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. VISNUM_MISS is a variable on data set RECTANGULAR.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set RECTANGULAR is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set RECTANGULAR, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. TREATNUM is a variable on data set RECTANGULAR.
+NOTE: (ASSERT_DEPEND) PASS, found mac var MAX_BOXES_PER_PAGE with value "10"
+NOTE: (ASSERT_DEPEND) Result is PASS.
+
+NOTE: There were 44 observations read from the data set WORK.RECTANGULAR.
+NOTE: 6 observations with duplicate key values were deleted.
+NOTE: The data set WORK.BBR_CATS has 38 observations and 2 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: There were 38 observations read from the data set WORK.BBR_CATS.
+NOTE: The data set WORK.BRR_COUNTS has 12 observations and 2 variables.
+NOTE: PROCEDURE FREQ used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: Numeric values have been converted to character values at the places given by: (Line):(Column).
+      8:195
+NOTE: There were 12 observations read from the data set WORK.BRR_COUNTS.
+NOTE: The data set WORK.BRR_PAGES has 12 observations and 4 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: There were 12 observations read from the data set WORK.BRR_PAGES.
+NOTE: The data set WORK.BRR_RANGES has 5 observations and 5 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: Deleting WORK.BBR_CATS (memtype=DATA).
+NOTE: Deleting WORK.BRR_COUNTS (memtype=DATA).
+NOTE: Deleting WORK.BRR_PAGES (memtype=DATA).
+NOTE: Deleting WORK.BRR_RANGES (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: (UTIL_BOXPLOT_BLOCK_RANGES) Default block ranges for each plot produces, limiting to 10 boxes max per page.
+NOTE: (UTIL_BOXPLOT_BLOCK_RANGES) BOXPLOT_BLOCK_RANGES set to: .<=visnum_miss<=10|13<=visnum_miss<=16|19<=visnum_miss<=25|28<=visnum_miss<=34|37<=visnum_miss<=40
+
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+NOTE: There were 25 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 25 observations rewritten, 0 observations added and 0 observations deleted.
+
+NOTE: CALL EXECUTE routine executed successfully, but no SAS statements were generated.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD7712_RBAMW049235_\#LN00035,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=26Feb2016:18:16:53,
+      Create Time=26Feb2016:18:16:51
+
+NOTE: 1 record was written to the file PFEXCODE.
+      The minimum record length was 165.
+      The maximum record length was 165.
+NOTE: There were 25 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 25 observations and 16 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set RECTANGULAR is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set RECTANGULAR is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set RECTANGULAR, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. VISITNUM is a variable on data set RECTANGULAR.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set RECTANGULAR is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set RECTANGULAR, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. TRTNUM_MISS is a variable on data set RECTANGULAR.
+NOTE: (ASSERT_DEPEND) PASS, found mac var MAX_BOXES_PER_PAGE with value "10"
+NOTE: (ASSERT_DEPEND) Result is PASS.
+
+NOTE: There were 44 observations read from the data set WORK.RECTANGULAR.
+NOTE: 0 observations with duplicate key values were deleted.
+NOTE: The data set WORK.BBR_CATS has 44 observations and 2 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: There were 44 observations read from the data set WORK.BBR_CATS.
+NOTE: The data set WORK.BRR_COUNTS has 11 observations and 2 variables.
+NOTE: PROCEDURE FREQ used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: Numeric values have been converted to character values at the places given by: (Line):(Column).
+      8:195
+NOTE: There were 11 observations read from the data set WORK.BRR_COUNTS.
+NOTE: The data set WORK.BRR_PAGES has 11 observations and 4 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: There were 11 observations read from the data set WORK.BRR_PAGES.
+NOTE: The data set WORK.BRR_RANGES has 6 observations and 5 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: Deleting WORK.BBR_CATS (memtype=DATA).
+NOTE: Deleting WORK.BRR_COUNTS (memtype=DATA).
+NOTE: Deleting WORK.BRR_PAGES (memtype=DATA).
+NOTE: Deleting WORK.BRR_RANGES (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+NOTE: (UTIL_BOXPLOT_BLOCK_RANGES) Default block ranges for each plot produces, limiting to 10 boxes max per page.
+NOTE: (UTIL_BOXPLOT_BLOCK_RANGES) BOXPLOT_BLOCK_RANGES set to: 10<=visitnum<=13|16<=visitnum<=19|22<=visitnum<=25|28<=visitnum<=31|34<=visitnum<=37|40<=visitnum<=40
+
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+NOTE: There were 25 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 25 observations rewritten, 0 observations added and 0 observations deleted.
+
+NOTE: CALL EXECUTE routine executed successfully, but no SAS statements were generated.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD7712_RBAMW049235_\#LN00035,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=26Feb2016:18:16:54,
+      Create Time=26Feb2016:18:16:51
+
+NOTE: 1 record was written to the file PFEXCODE.
+      The minimum record length was 168.
+      The maximum record length was 168.
+NOTE: There were 25 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 25 observations and 16 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set RECTANGULAR is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set RECTANGULAR is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set RECTANGULAR, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. VISNUM_MISS is a variable on data set RECTANGULAR.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set RECTANGULAR is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set RECTANGULAR, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. TRTNUM_MISS is a variable on data set RECTANGULAR.
+NOTE: (ASSERT_DEPEND) PASS, found mac var MAX_BOXES_PER_PAGE with value "10"
+NOTE: (ASSERT_DEPEND) Result is PASS.
+
+NOTE: There were 44 observations read from the data set WORK.RECTANGULAR.
+NOTE: 6 observations with duplicate key values were deleted.
+NOTE: The data set WORK.BBR_CATS has 38 observations and 2 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+
+NOTE: There were 38 observations read from the data set WORK.BBR_CATS.
+NOTE: The data set WORK.BRR_COUNTS has 12 observations and 2 variables.
+NOTE: PROCEDURE FREQ used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+
+NOTE: Numeric values have been converted to character values at the places given by: (Line):(Column).
+      8:195
+NOTE: There were 12 observations read from the data set WORK.BRR_COUNTS.
+NOTE: The data set WORK.BRR_PAGES has 12 observations and 4 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: There were 12 observations read from the data set WORK.BRR_PAGES.
+NOTE: The data set WORK.BRR_RANGES has 5 observations and 5 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: Deleting WORK.BBR_CATS (memtype=DATA).
+NOTE: Deleting WORK.BRR_COUNTS (memtype=DATA).
+NOTE: Deleting WORK.BRR_PAGES (memtype=DATA).
+NOTE: Deleting WORK.BRR_RANGES (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+NOTE: (UTIL_BOXPLOT_BLOCK_RANGES) Default block ranges for each plot produces, limiting to 10 boxes max per page.
+NOTE: (UTIL_BOXPLOT_BLOCK_RANGES) BOXPLOT_BLOCK_RANGES set to: .<=visnum_miss<=10|13<=visnum_miss<=16|19<=visnum_miss<=25|28<=visnum_miss<=34|37<=visnum_miss<=40
+
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+NOTE: There were 25 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 25 observations rewritten, 0 observations added and 0 observations deleted.
+
+NOTE: CALL EXECUTE routine executed successfully, but no SAS statements were generated.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD7712_RBAMW049235_\#LN00035,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=26Feb2016:18:16:54,
+      Create Time=26Feb2016:18:16:51
+
+NOTE: 1 record was written to the file PFEXCODE.
+      The minimum record length was 162.
+      The maximum record length was 162.
+NOTE: There were 25 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 25 observations and 16 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set RECTANGULAR is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set RECTANGULAR is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set RECTANGULAR, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. VISITNUM is a variable on data set RECTANGULAR.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set RECTANGULAR is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set RECTANGULAR, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. TREATNUM is a variable on data set RECTANGULAR.
+NOTE: (ASSERT_DEPEND) PASS, found mac var MAX_BOXES_PER_PAGE with value "10"
+NOTE: (ASSERT_DEPEND) Result is PASS.
+
+NOTE: There were 44 observations read from the data set WORK.RECTANGULAR.
+NOTE: 0 observations with duplicate key values were deleted.
+NOTE: The data set WORK.BBR_CATS has 44 observations and 2 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+
+NOTE: There were 44 observations read from the data set WORK.BBR_CATS.
+NOTE: The data set WORK.BRR_COUNTS has 11 observations and 2 variables.
+NOTE: PROCEDURE FREQ used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: Numeric values have been converted to character values at the places given by: (Line):(Column).
+      8:195
+NOTE: There were 11 observations read from the data set WORK.BRR_COUNTS.
+NOTE: The data set WORK.BRR_PAGES has 11 observations and 4 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: There were 11 observations read from the data set WORK.BRR_PAGES.
+NOTE: The data set WORK.BRR_RANGES has 6 observations and 5 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: Deleting WORK.BBR_CATS (memtype=DATA).
+NOTE: Deleting WORK.BRR_COUNTS (memtype=DATA).
+NOTE: Deleting WORK.BRR_PAGES (memtype=DATA).
+NOTE: Deleting WORK.BRR_RANGES (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: (UTIL_BOXPLOT_BLOCK_RANGES) Default block ranges for each plot produces, limiting to 10 boxes max per page.
+NOTE: (UTIL_BOXPLOT_BLOCK_RANGES) BOXPLOT_BLOCK_RANGES set to: 10<=visitnum<=13|16<=visitnum<=19|22<=visitnum<=25|28<=visitnum<=31|34<=visitnum<=37|40<=visitnum<=40
+
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+NOTE: There were 25 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 25 observations rewritten, 0 observations added and 0 observations deleted.
+
+NOTE: CALL EXECUTE routine executed successfully, but no SAS statements were generated.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD7712_RBAMW049235_\#LN00035,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=26Feb2016:18:16:54,
+      Create Time=26Feb2016:18:16:51
+
+NOTE: 1 record was written to the file PFEXCODE.
+      The minimum record length was 157.
+      The maximum record length was 157.
+NOTE: There were 25 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 25 observations and 16 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.04 seconds
+
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set ALPH_REC is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set ALPH_REC is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set ALPH_REC, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. VISITCD is a variable on data set ALPH_REC.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set ALPH_REC is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set ALPH_REC, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. TREATCD is a variable on data set ALPH_REC.
+NOTE: (ASSERT_DEPEND) PASS, found mac var MAX_BOXES_PER_PAGE with value "10"
+NOTE: (ASSERT_DEPEND) Result is PASS.
+
+NOTE: There were 40 observations read from the data set WORK.ALPH_REC.
+NOTE: 0 observations with duplicate key values were deleted.
+NOTE: The data set WORK.BBR_CATS has 40 observations and 2 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: There were 40 observations read from the data set WORK.BBR_CATS.
+NOTE: The data set WORK.BRR_COUNTS has 10 observations and 2 variables.
+NOTE: PROCEDURE FREQ used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+
+NOTE: Numeric values have been converted to character values at the places given by: (Line):(Column).
+      8:195
+NOTE: There were 10 observations read from the data set WORK.BRR_COUNTS.
+NOTE: The data set WORK.BRR_PAGES has 10 observations and 4 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+
+NOTE: There were 10 observations read from the data set WORK.BRR_PAGES.
+NOTE: The data set WORK.BRR_RANGES has 5 observations and 5 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: Deleting WORK.BBR_CATS (memtype=DATA).
+NOTE: Deleting WORK.BRR_COUNTS (memtype=DATA).
+NOTE: Deleting WORK.BRR_PAGES (memtype=DATA).
+NOTE: Deleting WORK.BRR_RANGES (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+NOTE: (UTIL_BOXPLOT_BLOCK_RANGES) Default block ranges for each plot produces, limiting to 10 boxes max per page.
+NOTE: (UTIL_BOXPLOT_BLOCK_RANGES) BOXPLOT_BLOCK_RANGES set to: "eight"<=visitcd<="five"|"four"<=visitcd<="nine"|"one"<=visitcd<="seven"|"six"<=visitcd<="ten"|"three"<=visitcd<="two"
+
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+NOTE: There were 25 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 25 observations rewritten, 0 observations added and 0 observations deleted.
+
+NOTE: CALL EXECUTE routine executed successfully, but no SAS statements were generated.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD7712_RBAMW049235_\#LN00035,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=26Feb2016:18:16:54,
+      Create Time=26Feb2016:18:16:51
+
+NOTE: 1 record was written to the file PFEXCODE.
+      The minimum record length was 155.
+      The maximum record length was 155.
+NOTE: There were 25 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 25 observations and 16 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.04 seconds
+
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set GAPS is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set GAPS is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set GAPS, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. VISITNUM is a variable on data set GAPS.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set GAPS is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set GAPS, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. TREATNUM is a variable on data set GAPS.
+NOTE: (ASSERT_DEPEND) PASS, found mac var MAX_BOXES_PER_PAGE with value "10"
+NOTE: (ASSERT_DEPEND) Result is PASS.
+
+NOTE: There were 36 observations read from the data set WORK.GAPS.
+NOTE: 0 observations with duplicate key values were deleted.
+NOTE: The data set WORK.BBR_CATS has 36 observations and 2 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+
+NOTE: There were 36 observations read from the data set WORK.BBR_CATS.
+NOTE: The data set WORK.BRR_COUNTS has 11 observations and 2 variables.
+NOTE: PROCEDURE FREQ used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: Numeric values have been converted to character values at the places given by: (Line):(Column).
+      8:195
+NOTE: There were 11 observations read from the data set WORK.BRR_COUNTS.
+NOTE: The data set WORK.BRR_PAGES has 11 observations and 4 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: There were 11 observations read from the data set WORK.BRR_PAGES.
+NOTE: The data set WORK.BRR_RANGES has 5 observations and 5 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: Deleting WORK.BBR_CATS (memtype=DATA).
+NOTE: Deleting WORK.BRR_COUNTS (memtype=DATA).
+NOTE: Deleting WORK.BRR_PAGES (memtype=DATA).
+NOTE: Deleting WORK.BRR_RANGES (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+NOTE: (UTIL_BOXPLOT_BLOCK_RANGES) Default block ranges for each plot produces, limiting to 10 boxes max per page.
+NOTE: (UTIL_BOXPLOT_BLOCK_RANGES) BOXPLOT_BLOCK_RANGES set to: 10<=visitnum<=13|16<=visitnum<=22|25<=visitnum<=28|31<=visitnum<=37|40<=visitnum<=40
+
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+NOTE: There were 25 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 25 observations rewritten, 0 observations added and 0 observations deleted.
+
+NOTE: CALL EXECUTE routine executed successfully, but no SAS statements were generated.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD7712_RBAMW049235_\#LN00035,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=26Feb2016:18:16:55,
+      Create Time=26Feb2016:18:16:51
+
+NOTE: 1 record was written to the file PFEXCODE.
+      The minimum record length was 157.
+      The maximum record length was 157.
+NOTE: There were 25 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 25 observations and 16 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set ALPH_GAP is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set ALPH_GAP is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set ALPH_GAP, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. VISITCD is a variable on data set ALPH_GAP.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set ALPH_GAP is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set ALPH_GAP, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. TREATCD is a variable on data set ALPH_GAP.
+NOTE: (ASSERT_DEPEND) PASS, found mac var MAX_BOXES_PER_PAGE with value "10"
+NOTE: (ASSERT_DEPEND) Result is PASS.
+
+NOTE: There were 32 observations read from the data set WORK.ALPH_GAP.
+NOTE: 0 observations with duplicate key values were deleted.
+NOTE: The data set WORK.BBR_CATS has 32 observations and 2 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: There were 32 observations read from the data set WORK.BBR_CATS.
+NOTE: The data set WORK.BRR_COUNTS has 10 observations and 2 variables.
+NOTE: PROCEDURE FREQ used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: Numeric values have been converted to character values at the places given by: (Line):(Column).
+      8:195
+NOTE: There were 10 observations read from the data set WORK.BRR_COUNTS.
+NOTE: The data set WORK.BRR_PAGES has 10 observations and 4 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: There were 10 observations read from the data set WORK.BRR_PAGES.
+NOTE: The data set WORK.BRR_RANGES has 4 observations and 5 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: Deleting WORK.BBR_CATS (memtype=DATA).
+NOTE: Deleting WORK.BRR_COUNTS (memtype=DATA).
+NOTE: Deleting WORK.BRR_PAGES (memtype=DATA).
+NOTE: Deleting WORK.BRR_RANGES (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: (UTIL_BOXPLOT_BLOCK_RANGES) Default block ranges for each plot produces, limiting to 10 boxes max per page.
+NOTE: (UTIL_BOXPLOT_BLOCK_RANGES) BOXPLOT_BLOCK_RANGES set to: "eight"<=visitcd<="four"|"nine"<=visitcd<="seven"|"six"<=visitcd<="three"|"two"<=visitcd<="two"
+
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+NOTE: There were 25 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 25 observations rewritten, 0 observations added and 0 observations deleted.
+
+NOTE: CALL EXECUTE routine executed successfully, but no SAS statements were generated.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD7712_RBAMW049235_\#LN00035,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=26Feb2016:18:16:55,
+      Create Time=26Feb2016:18:16:51
+
+NOTE: 1 record was written to the file PFEXCODE.
+      The minimum record length was 161.
+      The maximum record length was 161.
+NOTE: There were 25 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 25 observations and 16 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.03 seconds
+
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set RECTANGULAR is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set RECTANGULAR is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set RECTANGULAR, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. VISITNUM is a variable on data set RECTANGULAR.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set RECTANGULAR is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set RECTANGULAR, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. TREATNUM is a variable on data set RECTANGULAR.
+NOTE: (ASSERT_DEPEND) PASS, found mac var MAX_BOXES_PER_PAGE with value "3"
+NOTE: (ASSERT_DEPEND) Result is PASS.
+
+NOTE: There were 44 observations read from the data set WORK.RECTANGULAR.
+NOTE: 0 observations with duplicate key values were deleted.
+NOTE: The data set WORK.BBR_CATS has 44 observations and 2 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+
+NOTE: There were 44 observations read from the data set WORK.BBR_CATS.
+NOTE: The data set WORK.BRR_COUNTS has 11 observations and 2 variables.
+NOTE: PROCEDURE FREQ used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: Numeric values have been converted to character values at the places given by: (Line):(Column).
+      8:195
+WARNING: (UTIL_BOXPLOT_BLOCK_RANGES) MAX_BOXES_PER_PAGE (3) is too small for this blocking: visitnum=10 COUNT=4
+WARNING: (UTIL_BOXPLOT_BLOCK_RANGES) MAX_BOXES_PER_PAGE (3) is too small for this blocking: visitnum=13 COUNT=4
+WARNING: (UTIL_BOXPLOT_BLOCK_RANGES) MAX_BOXES_PER_PAGE (3) is too small for this blocking: visitnum=16 COUNT=4
+WARNING: (UTIL_BOXPLOT_BLOCK_RANGES) MAX_BOXES_PER_PAGE (3) is too small for this blocking: visitnum=19 COUNT=4
+WARNING: (UTIL_BOXPLOT_BLOCK_RANGES) MAX_BOXES_PER_PAGE (3) is too small for this blocking: visitnum=22 COUNT=4
+WARNING: (UTIL_BOXPLOT_BLOCK_RANGES) MAX_BOXES_PER_PAGE (3) is too small for this blocking: visitnum=25 COUNT=4
+WARNING: (UTIL_BOXPLOT_BLOCK_RANGES) MAX_BOXES_PER_PAGE (3) is too small for this blocking: visitnum=28 COUNT=4
+WARNING: (UTIL_BOXPLOT_BLOCK_RANGES) MAX_BOXES_PER_PAGE (3) is too small for this blocking: visitnum=31 COUNT=4
+WARNING: (UTIL_BOXPLOT_BLOCK_RANGES) MAX_BOXES_PER_PAGE (3) is too small for this blocking: visitnum=34 COUNT=4
+WARNING: (UTIL_BOXPLOT_BLOCK_RANGES) MAX_BOXES_PER_PAGE (3) is too small for this blocking: visitnum=37 COUNT=4
+WARNING: (UTIL_BOXPLOT_BLOCK_RANGES) MAX_BOXES_PER_PAGE (3) is too small for this blocking: visitnum=40 COUNT=4
+NOTE: There were 11 observations read from the data set WORK.BRR_COUNTS.
+NOTE: The data set WORK.BRR_PAGES has 11 observations and 4 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+
+NOTE: There were 11 observations read from the data set WORK.BRR_PAGES.
+NOTE: The data set WORK.BRR_RANGES has 11 observations and 5 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: Deleting WORK.BBR_CATS (memtype=DATA).
+NOTE: Deleting WORK.BRR_COUNTS (memtype=DATA).
+NOTE: Deleting WORK.BRR_PAGES (memtype=DATA).
+NOTE: Deleting WORK.BRR_RANGES (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+NOTE: (UTIL_BOXPLOT_BLOCK_RANGES) Default block ranges for each plot produces, limiting to 3 boxes max per page.
+NOTE: (UTIL_BOXPLOT_BLOCK_RANGES) BOXPLOT_BLOCK_RANGES set to: 10<=visitnum<=10|13<=visitnum<=13|16<=visitnum<=16|19<=visitnum<=19|22<=visitnum<=22|25<=visitnum<=25|28<=visitnum<=28|31<=visitnum<=31|34<=visitnum<=34|37<=visitnum<=37|40<=visitnum<=40
+
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+NOTE: There were 25 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 25 observations rewritten, 0 observations added and 0 observations deleted.
+
+NOTE: CALL EXECUTE routine executed successfully, but no SAS statements were generated.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD7712_RBAMW049235_\#LN00035,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=26Feb2016:18:16:55,
+      Create Time=26Feb2016:18:16:51
+
+NOTE: 1 record was written to the file PFEXCODE.
+      The minimum record length was 156.
+      The maximum record length was 156.
+NOTE: There were 25 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 25 observations and 16 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set ALPH_REC is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set ALPH_REC is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set ALPH_REC, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. VISITCD is a variable on data set ALPH_REC.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set ALPH_REC is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set ALPH_REC, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. TREATCD is a variable on data set ALPH_REC.
+NOTE: (ASSERT_DEPEND) PASS, found mac var MAX_BOXES_PER_PAGE with value "3"
+NOTE: (ASSERT_DEPEND) Result is PASS.
+
+NOTE: There were 40 observations read from the data set WORK.ALPH_REC.
+NOTE: 0 observations with duplicate key values were deleted.
+NOTE: The data set WORK.BBR_CATS has 40 observations and 2 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+
+NOTE: There were 40 observations read from the data set WORK.BBR_CATS.
+NOTE: The data set WORK.BRR_COUNTS has 10 observations and 2 variables.
+NOTE: PROCEDURE FREQ used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+
+NOTE: Numeric values have been converted to character values at the places given by: (Line):(Column).
+      8:195
+WARNING: (UTIL_BOXPLOT_BLOCK_RANGES) MAX_BOXES_PER_PAGE (3) is too small for this blocking: visitcd=eight COUNT=4
+WARNING: (UTIL_BOXPLOT_BLOCK_RANGES) MAX_BOXES_PER_PAGE (3) is too small for this blocking: visitcd=five COUNT=4
+WARNING: (UTIL_BOXPLOT_BLOCK_RANGES) MAX_BOXES_PER_PAGE (3) is too small for this blocking: visitcd=four COUNT=4
+WARNING: (UTIL_BOXPLOT_BLOCK_RANGES) MAX_BOXES_PER_PAGE (3) is too small for this blocking: visitcd=nine COUNT=4
+WARNING: (UTIL_BOXPLOT_BLOCK_RANGES) MAX_BOXES_PER_PAGE (3) is too small for this blocking: visitcd=one COUNT=4
+WARNING: (UTIL_BOXPLOT_BLOCK_RANGES) MAX_BOXES_PER_PAGE (3) is too small for this blocking: visitcd=seven COUNT=4
+WARNING: (UTIL_BOXPLOT_BLOCK_RANGES) MAX_BOXES_PER_PAGE (3) is too small for this blocking: visitcd=six COUNT=4
+WARNING: (UTIL_BOXPLOT_BLOCK_RANGES) MAX_BOXES_PER_PAGE (3) is too small for this blocking: visitcd=ten COUNT=4
+WARNING: (UTIL_BOXPLOT_BLOCK_RANGES) MAX_BOXES_PER_PAGE (3) is too small for this blocking: visitcd=three COUNT=4
+WARNING: (UTIL_BOXPLOT_BLOCK_RANGES) MAX_BOXES_PER_PAGE (3) is too small for this blocking: visitcd=two COUNT=4
+NOTE: There were 10 observations read from the data set WORK.BRR_COUNTS.
+NOTE: The data set WORK.BRR_PAGES has 10 observations and 4 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+
+NOTE: There were 10 observations read from the data set WORK.BRR_PAGES.
+NOTE: The data set WORK.BRR_RANGES has 10 observations and 5 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: Deleting WORK.BBR_CATS (memtype=DATA).
+NOTE: Deleting WORK.BRR_COUNTS (memtype=DATA).
+NOTE: Deleting WORK.BRR_PAGES (memtype=DATA).
+NOTE: Deleting WORK.BRR_RANGES (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: (UTIL_BOXPLOT_BLOCK_RANGES) Default block ranges for each plot produces, limiting to 3 boxes max per page.
+NOTE: (UTIL_BOXPLOT_BLOCK_RANGES) BOXPLOT_BLOCK_RANGES set to:
+"eight"<=visitcd<="eight"|"five"<=visitcd<="five"|"four"<=visitcd<="four"|"nine"<=visitcd<="nine"|"one"<=visitcd<="one"|"seven"<=visitcd<="seven"|"six"<=visitcd<="six"|"ten"<=visitcd<="ten"|"three"<=visitcd<="three"|"two"<=visitcd<="two"
+
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+NOTE: There were 25 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 25 observations rewritten, 0 observations added and 0 observations deleted.
+
+NOTE: CALL EXECUTE routine executed successfully, but no SAS statements were generated.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD7712_RBAMW049235_\#LN00035,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=26Feb2016:18:16:56,
+      Create Time=26Feb2016:18:16:51
+
+NOTE: 1 record was written to the file PFEXCODE.
+      The minimum record length was 154.
+      The maximum record length was 154.
+NOTE: There were 25 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 25 observations and 16 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.04 seconds
+
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set GAPS is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set GAPS is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set GAPS, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. VISITNUM is a variable on data set GAPS.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set GAPS is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set GAPS, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. TREATNUM is a variable on data set GAPS.
+NOTE: (ASSERT_DEPEND) PASS, found mac var MAX_BOXES_PER_PAGE with value "3"
+NOTE: (ASSERT_DEPEND) Result is PASS.
+
+NOTE: There were 36 observations read from the data set WORK.GAPS.
+NOTE: 0 observations with duplicate key values were deleted.
+NOTE: The data set WORK.BBR_CATS has 36 observations and 2 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: There were 36 observations read from the data set WORK.BBR_CATS.
+NOTE: The data set WORK.BRR_COUNTS has 11 observations and 2 variables.
+NOTE: PROCEDURE FREQ used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: Numeric values have been converted to character values at the places given by: (Line):(Column).
+      8:195
+WARNING: (UTIL_BOXPLOT_BLOCK_RANGES) MAX_BOXES_PER_PAGE (3) is too small for this blocking: visitnum=10 COUNT=4
+WARNING: (UTIL_BOXPLOT_BLOCK_RANGES) MAX_BOXES_PER_PAGE (3) is too small for this blocking: visitnum=16 COUNT=4
+WARNING: (UTIL_BOXPLOT_BLOCK_RANGES) MAX_BOXES_PER_PAGE (3) is too small for this blocking: visitnum=22 COUNT=4
+WARNING: (UTIL_BOXPLOT_BLOCK_RANGES) MAX_BOXES_PER_PAGE (3) is too small for this blocking: visitnum=25 COUNT=4
+WARNING: (UTIL_BOXPLOT_BLOCK_RANGES) MAX_BOXES_PER_PAGE (3) is too small for this blocking: visitnum=31 COUNT=4
+WARNING: (UTIL_BOXPLOT_BLOCK_RANGES) MAX_BOXES_PER_PAGE (3) is too small for this blocking: visitnum=34 COUNT=4
+NOTE: There were 11 observations read from the data set WORK.BRR_COUNTS.
+NOTE: The data set WORK.BRR_PAGES has 11 observations and 4 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+
+NOTE: There were 11 observations read from the data set WORK.BRR_PAGES.
+NOTE: The data set WORK.BRR_RANGES has 11 observations and 5 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: Deleting WORK.BBR_CATS (memtype=DATA).
+NOTE: Deleting WORK.BRR_COUNTS (memtype=DATA).
+NOTE: Deleting WORK.BRR_PAGES (memtype=DATA).
+NOTE: Deleting WORK.BRR_RANGES (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+NOTE: (UTIL_BOXPLOT_BLOCK_RANGES) Default block ranges for each plot produces, limiting to 3 boxes max per page.
+NOTE: (UTIL_BOXPLOT_BLOCK_RANGES) BOXPLOT_BLOCK_RANGES set to: 10<=visitnum<=10|13<=visitnum<=13|16<=visitnum<=16|19<=visitnum<=19|22<=visitnum<=22|25<=visitnum<=25|28<=visitnum<=28|31<=visitnum<=31|34<=visitnum<=34|37<=visitnum<=37|40<=visitnum<=40
+
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+NOTE: There were 25 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 25 observations rewritten, 0 observations added and 0 observations deleted.
+
+NOTE: CALL EXECUTE routine executed successfully, but no SAS statements were generated.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD7712_RBAMW049235_\#LN00035,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=26Feb2016:18:16:56,
+      Create Time=26Feb2016:18:16:51
+
+NOTE: 1 record was written to the file PFEXCODE.
+      The minimum record length was 156.
+      The maximum record length was 156.
+NOTE: There were 25 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 25 observations and 16 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.03 seconds
+
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set ALPH_GAP is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set ALPH_GAP is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set ALPH_GAP, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. VISITCD is a variable on data set ALPH_GAP.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set ALPH_GAP is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set ALPH_GAP, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. TREATCD is a variable on data set ALPH_GAP.
+NOTE: (ASSERT_DEPEND) PASS, found mac var MAX_BOXES_PER_PAGE with value "3"
+NOTE: (ASSERT_DEPEND) Result is PASS.
+
+NOTE: There were 32 observations read from the data set WORK.ALPH_GAP.
+NOTE: 0 observations with duplicate key values were deleted.
+NOTE: The data set WORK.BBR_CATS has 32 observations and 2 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: There were 32 observations read from the data set WORK.BBR_CATS.
+NOTE: The data set WORK.BRR_COUNTS has 10 observations and 2 variables.
+NOTE: PROCEDURE FREQ used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: Numeric values have been converted to character values at the places given by: (Line):(Column).
+      8:195
+WARNING: (UTIL_BOXPLOT_BLOCK_RANGES) MAX_BOXES_PER_PAGE (3) is too small for this blocking: visitcd=eight COUNT=4
+WARNING: (UTIL_BOXPLOT_BLOCK_RANGES) MAX_BOXES_PER_PAGE (3) is too small for this blocking: visitcd=five COUNT=4
+WARNING: (UTIL_BOXPLOT_BLOCK_RANGES) MAX_BOXES_PER_PAGE (3) is too small for this blocking: visitcd=one COUNT=4
+WARNING: (UTIL_BOXPLOT_BLOCK_RANGES) MAX_BOXES_PER_PAGE (3) is too small for this blocking: visitcd=six COUNT=4
+WARNING: (UTIL_BOXPLOT_BLOCK_RANGES) MAX_BOXES_PER_PAGE (3) is too small for this blocking: visitcd=three COUNT=4
+NOTE: There were 10 observations read from the data set WORK.BRR_COUNTS.
+NOTE: The data set WORK.BRR_PAGES has 10 observations and 4 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: There were 10 observations read from the data set WORK.BRR_PAGES.
+NOTE: The data set WORK.BRR_RANGES has 10 observations and 5 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: Deleting WORK.BBR_CATS (memtype=DATA).
+NOTE: Deleting WORK.BRR_COUNTS (memtype=DATA).
+NOTE: Deleting WORK.BRR_PAGES (memtype=DATA).
+NOTE: Deleting WORK.BRR_RANGES (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: (UTIL_BOXPLOT_BLOCK_RANGES) Default block ranges for each plot produces, limiting to 3 boxes max per page.
+NOTE: (UTIL_BOXPLOT_BLOCK_RANGES) BOXPLOT_BLOCK_RANGES set to:
+"eight"<=visitcd<="eight"|"five"<=visitcd<="five"|"four"<=visitcd<="four"|"nine"<=visitcd<="nine"|"one"<=visitcd<="one"|"seven"<=visitcd<="seven"|"six"<=visitcd<="six"|"ten"<=visitcd<="ten"|"three"<=visitcd<="three"|"two"<=visitcd<="two"
+
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+NOTE: There were 25 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 25 observations rewritten, 0 observations added and 0 observations deleted.
+
+NOTE: CALL EXECUTE routine executed successfully, but no SAS statements were generated.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD7712_RBAMW049235_\#LN00035,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=26Feb2016:18:16:56,
+      Create Time=26Feb2016:18:16:51
+
+NOTE: 1 record was written to the file PFEXCODE.
+      The minimum record length was 162.
+      The maximum record length was 162.
+NOTE: There were 25 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 25 observations and 16 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set RECTANGULAR is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set RECTANGULAR is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set RECTANGULAR, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. VISITNUM is a variable on data set RECTANGULAR.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set RECTANGULAR is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set RECTANGULAR, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. TREATNUM is a variable on data set RECTANGULAR.
+NOTE: (ASSERT_DEPEND) PASS, found mac var MAX_BOXES_PER_PAGE with value "20"
+NOTE: (ASSERT_DEPEND) Result is PASS.
+
+NOTE: There were 44 observations read from the data set WORK.RECTANGULAR.
+NOTE: 0 observations with duplicate key values were deleted.
+NOTE: The data set WORK.BBR_CATS has 44 observations and 2 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: There were 44 observations read from the data set WORK.BBR_CATS.
+NOTE: The data set WORK.BRR_COUNTS has 11 observations and 2 variables.
+NOTE: PROCEDURE FREQ used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: Numeric values have been converted to character values at the places given by: (Line):(Column).
+      8:195
+NOTE: There were 11 observations read from the data set WORK.BRR_COUNTS.
+NOTE: The data set WORK.BRR_PAGES has 11 observations and 4 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: There were 11 observations read from the data set WORK.BRR_PAGES.
+NOTE: The data set WORK.BRR_RANGES has 3 observations and 5 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: Deleting WORK.BBR_CATS (memtype=DATA).
+NOTE: Deleting WORK.BRR_COUNTS (memtype=DATA).
+NOTE: Deleting WORK.BRR_PAGES (memtype=DATA).
+NOTE: Deleting WORK.BRR_RANGES (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: (UTIL_BOXPLOT_BLOCK_RANGES) Default block ranges for each plot produces, limiting to 20 boxes max per page.
+NOTE: (UTIL_BOXPLOT_BLOCK_RANGES) BOXPLOT_BLOCK_RANGES set to: 10<=visitnum<=22|25<=visitnum<=37|40<=visitnum<=40
+
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+NOTE: There were 25 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 25 observations rewritten, 0 observations added and 0 observations deleted.
+
+NOTE: CALL EXECUTE routine executed successfully, but no SAS statements were generated.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD7712_RBAMW049235_\#LN00035,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=26Feb2016:18:16:57,
+      Create Time=26Feb2016:18:16:51
+
+NOTE: 1 record was written to the file PFEXCODE.
+      The minimum record length was 157.
+      The maximum record length was 157.
+NOTE: There were 25 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 25 observations and 16 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.04 seconds
+
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set ALPH_REC is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set ALPH_REC is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set ALPH_REC, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. VISITCD is a variable on data set ALPH_REC.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set ALPH_REC is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set ALPH_REC, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. TREATCD is a variable on data set ALPH_REC.
+NOTE: (ASSERT_DEPEND) PASS, found mac var MAX_BOXES_PER_PAGE with value "20"
+NOTE: (ASSERT_DEPEND) Result is PASS.
+
+NOTE: There were 40 observations read from the data set WORK.ALPH_REC.
+NOTE: 0 observations with duplicate key values were deleted.
+NOTE: The data set WORK.BBR_CATS has 40 observations and 2 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: There were 40 observations read from the data set WORK.BBR_CATS.
+NOTE: The data set WORK.BRR_COUNTS has 10 observations and 2 variables.
+NOTE: PROCEDURE FREQ used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: Numeric values have been converted to character values at the places given by: (Line):(Column).
+      8:195
+NOTE: There were 10 observations read from the data set WORK.BRR_COUNTS.
+NOTE: The data set WORK.BRR_PAGES has 10 observations and 4 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: There were 10 observations read from the data set WORK.BRR_PAGES.
+NOTE: The data set WORK.BRR_RANGES has 2 observations and 5 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: Deleting WORK.BBR_CATS (memtype=DATA).
+NOTE: Deleting WORK.BRR_COUNTS (memtype=DATA).
+NOTE: Deleting WORK.BRR_PAGES (memtype=DATA).
+NOTE: Deleting WORK.BRR_RANGES (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: (UTIL_BOXPLOT_BLOCK_RANGES) Default block ranges for each plot produces, limiting to 20 boxes max per page.
+NOTE: (UTIL_BOXPLOT_BLOCK_RANGES) BOXPLOT_BLOCK_RANGES set to: "eight"<=visitcd<="one"|"seven"<=visitcd<="two"
+
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+NOTE: There were 25 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 25 observations rewritten, 0 observations added and 0 observations deleted.
+
+NOTE: CALL EXECUTE routine executed successfully, but no SAS statements were generated.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD7712_RBAMW049235_\#LN00035,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=26Feb2016:18:16:57,
+      Create Time=26Feb2016:18:16:51
+
+NOTE: 1 record was written to the file PFEXCODE.
+      The minimum record length was 155.
+      The maximum record length was 155.
+NOTE: There were 25 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 25 observations and 16 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set GAPS is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set GAPS is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set GAPS, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. VISITNUM is a variable on data set GAPS.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set GAPS is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set GAPS, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. TREATNUM is a variable on data set GAPS.
+NOTE: (ASSERT_DEPEND) PASS, found mac var MAX_BOXES_PER_PAGE with value "20"
+NOTE: (ASSERT_DEPEND) Result is PASS.
+
+NOTE: There were 36 observations read from the data set WORK.GAPS.
+NOTE: 0 observations with duplicate key values were deleted.
+NOTE: The data set WORK.BBR_CATS has 36 observations and 2 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: There were 36 observations read from the data set WORK.BBR_CATS.
+NOTE: The data set WORK.BRR_COUNTS has 11 observations and 2 variables.
+NOTE: PROCEDURE FREQ used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: Numeric values have been converted to character values at the places given by: (Line):(Column).
+      8:195
+NOTE: There were 11 observations read from the data set WORK.BRR_COUNTS.
+NOTE: The data set WORK.BRR_PAGES has 11 observations and 4 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: There were 11 observations read from the data set WORK.BRR_PAGES.
+NOTE: The data set WORK.BRR_RANGES has 2 observations and 5 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: Deleting WORK.BBR_CATS (memtype=DATA).
+NOTE: Deleting WORK.BRR_COUNTS (memtype=DATA).
+NOTE: Deleting WORK.BRR_PAGES (memtype=DATA).
+NOTE: Deleting WORK.BRR_RANGES (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: (UTIL_BOXPLOT_BLOCK_RANGES) Default block ranges for each plot produces, limiting to 20 boxes max per page.
+NOTE: (UTIL_BOXPLOT_BLOCK_RANGES) BOXPLOT_BLOCK_RANGES set to: 10<=visitnum<=22|25<=visitnum<=40
+
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+NOTE: There were 25 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 25 observations rewritten, 0 observations added and 0 observations deleted.
+
+NOTE: CALL EXECUTE routine executed successfully, but no SAS statements were generated.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD7712_RBAMW049235_\#LN00035,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=26Feb2016:18:16:57,
+      Create Time=26Feb2016:18:16:51
+
+NOTE: 1 record was written to the file PFEXCODE.
+      The minimum record length was 157.
+      The maximum record length was 157.
+NOTE: There were 25 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 25 observations and 16 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set ALPH_GAP is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set ALPH_GAP is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set ALPH_GAP, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. VISITCD is a variable on data set ALPH_GAP.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set ALPH_GAP is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set ALPH_GAP, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. TREATCD is a variable on data set ALPH_GAP.
+NOTE: (ASSERT_DEPEND) PASS, found mac var MAX_BOXES_PER_PAGE with value "20"
+NOTE: (ASSERT_DEPEND) Result is PASS.
+
+NOTE: There were 32 observations read from the data set WORK.ALPH_GAP.
+NOTE: 0 observations with duplicate key values were deleted.
+NOTE: The data set WORK.BBR_CATS has 32 observations and 2 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: There were 32 observations read from the data set WORK.BBR_CATS.
+NOTE: The data set WORK.BRR_COUNTS has 10 observations and 2 variables.
+NOTE: PROCEDURE FREQ used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: Numeric values have been converted to character values at the places given by: (Line):(Column).
+      8:195
+NOTE: There were 10 observations read from the data set WORK.BRR_COUNTS.
+NOTE: The data set WORK.BRR_PAGES has 10 observations and 4 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: There were 10 observations read from the data set WORK.BRR_PAGES.
+NOTE: The data set WORK.BRR_RANGES has 2 observations and 5 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: Deleting WORK.BBR_CATS (memtype=DATA).
+NOTE: Deleting WORK.BRR_COUNTS (memtype=DATA).
+NOTE: Deleting WORK.BRR_PAGES (memtype=DATA).
+NOTE: Deleting WORK.BRR_RANGES (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: (UTIL_BOXPLOT_BLOCK_RANGES) Default block ranges for each plot produces, limiting to 20 boxes max per page.
+NOTE: (UTIL_BOXPLOT_BLOCK_RANGES) BOXPLOT_BLOCK_RANGES set to: "eight"<=visitcd<="seven"|"six"<=visitcd<="two"
+
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+NOTE: There were 25 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 25 observations rewritten, 0 observations added and 0 observations deleted.
+
+NOTE: CALL EXECUTE routine executed successfully, but no SAS statements were generated.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD7712_RBAMW049235_\#LN00035,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=26Feb2016:18:16:57,
+      Create Time=26Feb2016:18:16:51
+
+NOTE: 1 record was written to the file PFEXCODE.
+      The minimum record length was 178.
+      The maximum record length was 178.
+NOTE: There were 25 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 25 observations and 16 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set SASHELP.HEART is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set SASHELP.HEART is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set SASHELP.HEART, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. SMOKING_STATUS is a variable on data set SASHELP.HEART.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set SASHELP.HEART is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set SASHELP.HEART, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. BP_STATUS is a variable on data set SASHELP.HEART.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set SASHELP.HEART is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set SASHELP.HEART, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. STATUS is a variable on data set SASHELP.HEART.
+NOTE: (ASSERT_DEPEND) PASS, found mac var MAX_BOXES_PER_PAGE with value "15"
+NOTE: (ASSERT_DEPEND) Result is PASS.
+
+NOTE: There were 5209 observations read from the data set SASHELP.HEART.
+NOTE: 5173 observations with duplicate key values were deleted.
+NOTE: The data set WORK.BBR_CATS has 36 observations and 3 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: There were 36 observations read from the data set WORK.BBR_CATS.
+NOTE: The data set WORK.BRR_COUNTS has 6 observations and 2 variables.
+NOTE: PROCEDURE FREQ used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: Numeric values have been converted to character values at the places given by: (Line):(Column).
+      8:195
+NOTE: There were 6 observations read from the data set WORK.BRR_COUNTS.
+NOTE: The data set WORK.BRR_PAGES has 6 observations and 4 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: There were 6 observations read from the data set WORK.BRR_PAGES.
+NOTE: The data set WORK.BRR_RANGES has 3 observations and 5 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: Deleting WORK.BBR_CATS (memtype=DATA).
+NOTE: Deleting WORK.BRR_COUNTS (memtype=DATA).
+NOTE: Deleting WORK.BRR_PAGES (memtype=DATA).
+NOTE: Deleting WORK.BRR_RANGES (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: (UTIL_BOXPLOT_BLOCK_RANGES) Default block ranges for each plot produces, limiting to 15 boxes max per page.
+NOTE: (UTIL_BOXPLOT_BLOCK_RANGES) BOXPLOT_BLOCK_RANGES set to: ""<=smoking_status<="Heavy (16-25)"|"Light (1-5)"<=smoking_status<="Moderate (6-15)"|"Non-smoker"<=smoking_status<="Very Heavy (> 25)"
+
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+NOTE: There were 25 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 25 observations rewritten, 0 observations added and 0 observations deleted.
+
+NOTE: CALL EXECUTE routine executed successfully, but no SAS statements were generated.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD7712_RBAMW049235_\#LN00035,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=26Feb2016:18:16:58,
+      Create Time=26Feb2016:18:16:51
+
+NOTE: 1 record was written to the file PFEXCODE.
+      The minimum record length was 178.
+      The maximum record length was 178.
+NOTE: There were 25 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 25 observations and 16 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set SASHELP.HEART is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set SASHELP.HEART is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set SASHELP.HEART, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. BP_STATUS is a variable on data set SASHELP.HEART.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set SASHELP.HEART is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set SASHELP.HEART, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. SMOKING_STATUS is a variable on data set SASHELP.HEART.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set SASHELP.HEART is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set SASHELP.HEART, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. STATUS is a variable on data set SASHELP.HEART.
+NOTE: (ASSERT_DEPEND) PASS, found mac var MAX_BOXES_PER_PAGE with value "10"
+NOTE: (ASSERT_DEPEND) Result is PASS.
+
+NOTE: There were 5209 observations read from the data set SASHELP.HEART.
+NOTE: 5173 observations with duplicate key values were deleted.
+NOTE: The data set WORK.BBR_CATS has 36 observations and 3 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+
+NOTE: There were 36 observations read from the data set WORK.BBR_CATS.
+NOTE: The data set WORK.BRR_COUNTS has 3 observations and 2 variables.
+NOTE: PROCEDURE FREQ used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: Numeric values have been converted to character values at the places given by: (Line):(Column).
+      8:195
+WARNING: (UTIL_BOXPLOT_BLOCK_RANGES) MAX_BOXES_PER_PAGE (10) is too small for this blocking: BP_Status=High COUNT=12
+WARNING: (UTIL_BOXPLOT_BLOCK_RANGES) MAX_BOXES_PER_PAGE (10) is too small for this blocking: BP_Status=Normal COUNT=12
+WARNING: (UTIL_BOXPLOT_BLOCK_RANGES) MAX_BOXES_PER_PAGE (10) is too small for this blocking: BP_Status=Optimal COUNT=12
+NOTE: There were 3 observations read from the data set WORK.BRR_COUNTS.
+NOTE: The data set WORK.BRR_PAGES has 3 observations and 4 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: There were 3 observations read from the data set WORK.BRR_PAGES.
+NOTE: The data set WORK.BRR_RANGES has 3 observations and 5 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: Deleting WORK.BBR_CATS (memtype=DATA).
+NOTE: Deleting WORK.BRR_COUNTS (memtype=DATA).
+NOTE: Deleting WORK.BRR_PAGES (memtype=DATA).
+NOTE: Deleting WORK.BRR_RANGES (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: (UTIL_BOXPLOT_BLOCK_RANGES) Default block ranges for each plot produces, limiting to 10 boxes max per page.
+NOTE: (UTIL_BOXPLOT_BLOCK_RANGES) BOXPLOT_BLOCK_RANGES set to: "High"<=bp_status<="High"|"Normal"<=bp_status<="Normal"|"Optimal"<=bp_status<="Optimal"
+
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+NOTE: There were 25 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 25 observations rewritten, 0 observations added and 0 observations deleted.
+
+NOTE: CALL EXECUTE routine executed successfully, but no SAS statements were generated.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The file PFEXCODE is:
+      Filename=C:\Users\ditommd1\AppData\Local\Temp\SAS Temporary Files\_TD7712_RBAMW049235_\#LN00035,
+      RECFM=V,LRECL=32767,File Size (bytes)=0,
+      Last Modified=26Feb2016:18:16:58,
+      Create Time=26Feb2016:18:16:51
+
+NOTE: 1 record was written to the file PFEXCODE.
+      The minimum record length was 182.
+      The maximum record length was 182.
+NOTE: There were 25 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 25 observations and 16 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set SASHELP.HEART is accessible.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set SASHELP.HEART is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set SASHELP.HEART, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. WEIGHT_STATUS is a variable on data set SASHELP.HEART.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set SASHELP.HEART is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set SASHELP.HEART, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. SMOKING_STATUS is a variable on data set SASHELP.HEART.
+NOTE: (ASSERT_DSET_EXIST) Result is PASS. Data set SASHELP.HEART is accessible.
+NOTE: (ASSERT_VAR_EXIST) If DMS process locks data set SASHELP.HEART, try closing data set ID 1
+NOTE: (ASSERT_VAR_EXIST) Result is PASS. STATUS is a variable on data set SASHELP.HEART.
+NOTE: (ASSERT_DEPEND) PASS, found mac var MAX_BOXES_PER_PAGE with value "20"
+NOTE: (ASSERT_DEPEND) Result is PASS.
+
+NOTE: There were 5209 observations read from the data set SASHELP.HEART.
+NOTE: 5168 observations with duplicate key values were deleted.
+NOTE: The data set WORK.BBR_CATS has 41 observations and 3 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: There were 41 observations read from the data set WORK.BBR_CATS.
+NOTE: The data set WORK.BRR_COUNTS has 4 observations and 2 variables.
+NOTE: PROCEDURE FREQ used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: Numeric values have been converted to character values at the places given by: (Line):(Column).
+      8:195
+NOTE: There were 4 observations read from the data set WORK.BRR_COUNTS.
+NOTE: The data set WORK.BRR_PAGES has 4 observations and 4 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: There were 4 observations read from the data set WORK.BRR_PAGES.
+NOTE: The data set WORK.BRR_RANGES has 3 observations and 5 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: Deleting WORK.BBR_CATS (memtype=DATA).
+NOTE: Deleting WORK.BRR_COUNTS (memtype=DATA).
+NOTE: Deleting WORK.BRR_PAGES (memtype=DATA).
+NOTE: Deleting WORK.BRR_RANGES (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: (UTIL_BOXPLOT_BLOCK_RANGES) Default block ranges for each plot produces, limiting to 20 boxes max per page.
+NOTE: (UTIL_BOXPLOT_BLOCK_RANGES) BOXPLOT_BLOCK_RANGES set to: ""<=weight_status<="Normal"|"Overweight"<=weight_status<="Overweight"|"Underweight"<=weight_status<="Underweight"
+
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+NOTE: There were 25 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has been updated.  There were 25 observations rewritten, 0 observations added and 0 observations deleted.
+
+NOTE: CALL EXECUTE routine executed successfully, but no SAS statements were generated.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: Non-portable document will be produced. The current settings of FORMCHAR use nonstandard line-drawing characters and the resulting output file will not render correctly unless all readers of the document have the SAS Monospace font installed. To
+      make your document portable, issue the following command:
+      OPTIONS FORMCHAR="|----|+|---+=|-/\<>*";
+
+NOTE: 32 lines were written to file PRINT.
+NOTE: There were 25 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set WORK.CSS_PASSFAIL has 25 observations and 17 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+NOTE: Libref SAVEXML was successfully assigned as follows:
+      Engine:        XML
+      Physical Name: .\outputs_sas\testresults_util_boxplot_block_ranges.xml
+
+NOTE: SAS variable labels, formats, and lengths are not written to DBMS tables.
+NOTE: There were 25 observations read from the data set WORK.CSS_PASSFAIL.
+NOTE: The data set SAVEXML.CSS_PASSFAIL has 25 observations and 17 variables.
+NOTE: DATA statement used (Total process time):
+      real time           10.49 seconds
+      cpu time            0.85 seconds
+
+
+NOTE: Libref SAVEXML has been deassigned.
+

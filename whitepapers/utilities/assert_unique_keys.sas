@@ -97,11 +97,11 @@
           quit;
 
           %if &sqlobs NE 0 %then %do;
-            %put ERROR: (ASSERT_UNIQUE_KEYS) Unexpected duplicates in %upcase(&DS) with unique keys %upcase(&keys) &sqlwhr (SQLOBS = &sqlobs). See WORK.FAIL_AUK.;
+            %put ERROR: (ASSERT_UNIQUE_KEYS) Result is FAIL. Unexpected duplicates in %upcase(&DS) with unique keys %upcase(&keys) &sqlwhr (SQLOBS = &sqlobs). See WORK.FAIL_AUK.;
             %let continue = 0;
           %end;
           %else %do;
-            %put NOTE: (ASSERT_UNIQUE_KEYS) %upcase(&DS) has unique records for keys %upcase(&keys) &sqlwhr (SQLOBS = &sqlobs).;
+            %put NOTE: (ASSERT_UNIQUE_KEYS) Result is PASS. %upcase(&DS) has unique records for keys %upcase(&keys) &sqlwhr (SQLOBS = &sqlobs).;
             %util_delete_dsets(fail_auk);
           %end;
 

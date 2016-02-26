@@ -15,7 +15,7 @@
     OPTIONS NOQUOTELENMAX;
 
 
-  %let macroname = util_boxplot_visit_ranges;
+  %let macroname = obsolete_util_boxplot_ranges;
 
   %put WARNING: (TEST_%upcase(&macroname)) User must ensure PhUSE CS utilities are in the AUTOCALL path.;
 
@@ -160,7 +160,7 @@
              '%GLOBAL MAX_BOXES_PER_PAGE; %LET MAX_BOXES_PER_PAGE=20; _MACCALL1_; %SYMDEL MAX_BOXES_PER_PAGE;',
              '~')
 
-/* NB: UTIL_BOXPLOT_VISIT_RANGES creates a |-delim string. So override the default UTIL_PASSFAIL delimiter | with ~
+/* NB: OBSOLETE_UTIL_BOXPLOT_VISIT_RANGES creates a |-delim string. So override the default UTIL_PASSFAIL delimiter | with ~
 
       values("%lowcase(&macroname)", '', '',  'M',  '', '', '',
              '', 'BOXPLOT_VISIT_RANGES=',
@@ -235,4 +235,4 @@
 
 
 *--- Execute & evaluate tests, and report & store test results ---*;
-  %util_passfail (my_test_definitions, savexml=&xml_filename, debug=N);
+  %util_passfail (my_test_definitions, savexml=/*&xml_filename*/, debug=N);

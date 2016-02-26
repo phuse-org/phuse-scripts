@@ -2,11 +2,11 @@
   Create a global symbol that contains the MIN and MAX of numeric values, space-delimited
 
   -INPUT
-    DSET    data set containing the numeric variable for which you want MIN and MAX
+    DS      data set containing the numeric variable for which you want MIN and MAX
               REQUIRED
               Syntax:  (libname.)memname
               Example: ANA.ADVS
-    VAR     variable on DSET containing non-missing values
+    VAR     variable on DS containing non-missing values
               REQUIRED
               Syntax:  variable-name
               Example: AVAL

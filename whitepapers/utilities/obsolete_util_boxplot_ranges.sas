@@ -25,7 +25,7 @@
   Author:          Dante Di Tommaso
 ***/
 
-%macro util_boxplot_visit_ranges(ds, vvisn=, vtrtn=);
+%macro obsolete_util_boxplot_ranges(ds, vvisn=, vtrtn=);
   %global BOXPLOT_VISIT_RANGES;
   %local OK numvis numtrt vistyp vislen max_length;
   %let OK = 1;
@@ -35,15 +35,15 @@
 
   %if &OK %then %do;
     %*--- Expect only NON-MISSING values for both VISIT and TREATMENT ---*;
-      %if not %assert_var_nonmissing(&ds, &vvisn) %then %put WARNING: (UTIL_BOXPLOT_VISIT_RANGES) Variable "%upcase(&ds..&vvisn)" has missing values. Results may be unexpected.;
-      %if not %assert_var_nonmissing(&ds, &vtrtn) %then %put WARNING: (UTIL_BOXPLOT_VISIT_RANGES) Variable "%upcase(&ds..&vtrtn)" has missing values. Results may be unexpected.;
+      %if not %assert_var_nonmissing(&ds, &vvisn) %then %put WARNING: (OBSOLETE_UTIL_BOXPLOT_RANGES) Variable "%upcase(&ds..&vvisn)" has missing values. Results may be unexpected.;
+      %if not %assert_var_nonmissing(&ds, &vtrtn) %then %put WARNING: (OBSOLETE_UTIL_BOXPLOT_RANGES) Variable "%upcase(&ds..&vtrtn)" has missing values. Results may be unexpected.;
 
     %*--- Get VIS and TRT counts from the data. These are the max values. Some TRTs may not appear in all VISs. ---*;
       %util_count_unique_values(&ds, &vvisn, numvis)
       %util_count_unique_values(&ds, &vtrtn, numtrt)
 
       %if &numtrt > &max_boxes_per_page %then %do;
-        %put WARNING: (UTIL_BOXPLOT_VISIT_RANGES) Treatment count (&NUMTRT) is greater than Max boxes per page (&MAX_BOXES_PER_PAGE). Keeping treatments together, Max boxes per page is effectively &NUMTRT..;
+        %put WARNING: (OBSOLETE_UTIL_BOXPLOT_RANGES) Treatment count (&NUMTRT) is greater than Max boxes per page (&MAX_BOXES_PER_PAGE). Keeping treatments together, Max boxes per page is effectively &NUMTRT..;
       %end;
 
 
@@ -70,7 +70,7 @@
 
       %if &vistyp = C %then %do;
         %let vislen = $&vislen;
-        %put WARNING: (UTIL_BOXPLOT_VISIT_RANGES) Expecting NUMERIC visit numbers, not CHAR &vislen.. Results may be unexpected.;
+        %put WARNING: (OBSOLETE_UTIL_BOXPLOT_RANGES) Expecting NUMERIC visit numbers, not CHAR &vislen.. Results may be unexpected.;
       %end;
 
 
@@ -125,9 +125,9 @@
 
     %util_delete_dsets(temp_vis_trt)
 
-    %put Note: (UTIL_BOXPLOT_VISIT_RANGES) Default visit ranges for each plot produces, limiting to &max_boxes_per_page boxes max per page.;
-    %put Note: (UTIL_BOXPLOT_VISIT_RANGES) BOXPLOT_VISIT_RANGES set to: &boxplot_visit_ranges;
+    %put Note: (OBSOLETE_UTIL_BOXPLOT_RANGES) Default visit ranges for each plot produces, limiting to &max_boxes_per_page boxes max per page.;
+    %put Note: (OBSOLETE_UTIL_BOXPLOT_RANGES) BOXPLOT_VISIT_RANGES set to: &boxplot_visit_ranges;
 
   %end;
 
-%mend util_boxplot_visit_ranges;
+%mend obsolete_util_boxplot_ranges;

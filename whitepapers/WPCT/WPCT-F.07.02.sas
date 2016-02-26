@@ -171,7 +171,7 @@ end HEADER ***/
                                      vars=%str(&m_lb..&m_ds : &ana_variables),
                                      macros=assert_continue util_labels_from_var util_count_unique_values 
                                             util_proc_template util_get_var_min_max util_value_format
-                                            util_boxplot_visit_ranges util_axis_order util_delete_dsets,
+                                            util_boxplot_block_ranges util_axis_order util_delete_dsets,
                                      symbols=m_lb m_ds t_var tn_var c_var b_var ref_trtn b_visn e_visn p_fl a_fl
                                              max_boxes_per_page outputs_folder
                                     );
@@ -278,14 +278,11 @@ end HEADER ***/
           %*--- Y-AXIS DEFAULT: Set Y-Axis MIN/MAX based on this timepoint. See Y-AXIS alternative, above. ---*;
             %util_get_var_min_max(css_nexttimept, &c_var, chg_min_max)
 
-          %*--- Number of visits for this parameter and analysis timepoint: &VISN ---*;
-            %util_count_unique_values(css_nexttimept, avisitn, visn)
-
           %*--- Create format string to display MEAN and STDDEV to default sig-digs: &UTIL_VALUE_FORMAT ---*;
             %util_value_format(css_nexttimept, &c_var)
 
-          %*--- Create macro variable BOXPLOT_VISIT_RANGES, to subset visits into box plot pages ---*;
-            %util_boxplot_visit_ranges(css_nexttimept, vvisn=avisitn, vtrtn=&tn_var);
+          %*--- Create macro variable BOXPLOT_BLOCK_RANGES, to subset visits into box plot pages ---*;
+            %util_boxplot_block_ranges(css_nexttimept, blockvar=avisitn, catvars=&tn_var);
 
 
           *--- Calculate summary statistics, KEEP LABELS of VISIT and TRT for plotting, below ---*;
@@ -384,10 +381,10 @@ end HEADER ***/
 
             %local vdx nxtvis;
             %let vdx=1;
-            %do %while (%qscan(&boxplot_visit_ranges,&vdx,|) ne );
-              %let nxtvis = %qscan(&boxplot_visit_ranges,&vdx,|);
+            %do %while (%qscan(&boxplot_block_ranges,&vdx,|) ne );
+              %let nxtvis = %qscan(&boxplot_block_ranges,&vdx,|);
 
-              proc sgrender data=css_plot (where=( &nxtvis )) template=PhUSEboxplot ;
+              proc sgrender data=css_plot (where=( %unquote(&nxtvis) )) template=PhUSEboxplot ;
                 dynamic 
                         _MARKERS    = "&t_var"
                         _XVAR       = 'avisitn' 
