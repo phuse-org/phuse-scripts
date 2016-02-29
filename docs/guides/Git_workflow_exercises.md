@@ -1,46 +1,45 @@
 ### GitHub workflows
 
-**Objective:** put together workflow proposal (including Roles) for review by WG leads
+To get setup as a PhUSE CS contributor, see [Contributor_setup.md](http://github.com/phuse-org/phuse-scripts/blob/master/docs/guides/Contributor_Setup.md)
 
-**Pick a location:** Here in GitHub (makes sense), or [in Phusewiki](http://www.phusewiki.org/wiki/index.php?title=WG5_Project_02_GitHub_Exercises)?
+Relevant roles for phuse-org/phuse-scripts are:
+  1. Admin
+  2. Developer
+  3. ? [our repo teams](https://github.com/phuse-org/phuse-scripts/settings/collaboration) -- Owner? Admin? Is this the right setup?
 
-1. TO DO: Hanming - What can "Owners" or "Team Maintainer" do specifically for the phuse-scripts repository? (Reference: https://help.github.com/articles/repository-permission-levels-for-an-organization/)
-2. Moderator - can change central code (Hanming - clarify)
-3. Contributors - "pull request" suggested code to the project committers (Hanming - clarify)
-
+### Objective
+Script GitHub workflow exercises for CSS 2016.
 
 ### Git workflow tutorials
 
-* [Atlassian Git Workflows](http://www.atlassian.com/git/tutorials/comparing-workflows)
-* [Learn git on Codecademy](http://www.codecademy.com/learn/learn-git)
+  * [Atlassian Git Workflows](http://www.atlassian.com/git/tutorials/comparing-workflows)
+  * [Learn git on Codecademy](http://www.codecademy.com/learn/learn-git)
 
-(for setup, see [Contributor_setup.md](http://github.com/phuse-org/phuse-scripts/blob/master/docs/guides/Contributor_Setup.md))
+### GitHub Roles
 
-#### Setup & Considerations
+[GitHub article on Repository Permission Levels](https://help.github.com/articles/repository-permission-levels-for-an-organization/)
 
-* What team configuration do we want?
-  * **Open:** Anyone that asks can be a team member and therefore change files in this repository
-  * **Maintained:** Relatively few "maintainers" that must integrate any proposed changes, and can promote engaged contributors to team members. (Maintainers "protect" production-ready state of master branch.)
-* training folder, for scripted exercises
-* sequence: contribute-edit-"commit"-"sync"-another_edit
+  1. phuse-or/phuse-scripts Maintainers: can change master code
+  2. GitHub Contributors: can create "pull request" from their own branch, for the Maintainers to review
 
-#### GitHub Roles
+#### phuse-or/phuse-scripts Setup
 
-1. GitHub browser, without account
-2. GitHub member, without phuse-scripts membership
-3. phuse-scripts team member
-4. phuse-scripts maintainer
+  * Master branch is always "production ready"
+  * Therefore relatively few "Developers", who
+    * have "write access", and can therefore
+    * review "pull requests" and commit changes to master branch
+  * There are also "Admins" who can
+    * can promote engaged contributors to the "Developers" team
 
 #### GitHub Exercises
 
-##### Contributors
-
-1. GitHub browser submits a change
-2. GitHub member submits isolated changes from their local repository. (Maintainer reviews and either Rejects or Incorporates.)
-3. 2 contributors make related changes (edit same file, move file, etc.). What do they see in GitHub?
-
-##### Advanced / Maintainers
-
-Advanced topics, as tutorials for project Maintainers.
-
-**NB:** Avoid unnecessary complexity, such as Branches.
+  * Simple steps: Suggest a change to an UNmodified file on the master branch
+    1. ? Clone the repository
+    2. modify file
+    3. "pull request" ... screenshots
+  * Substantial change (takes some time)
+    1. ? Create a branch
+    2. develop modules
+    3. "pull" changes from master branch
+    4. resolve any conflicts
+    5. "pull request" ... screenshots
