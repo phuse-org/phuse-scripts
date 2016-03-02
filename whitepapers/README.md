@@ -30,4 +30,3 @@ A brief description of each folder at this level:
 * [**images**](http://github.com/phuse-org/phuse-scripts/tree/master/whitepapers/images)
   * Images to support our github documentation. See for example our [WPCT to-do list](http://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/WPCT/TODO.md)
 
-**Note**: Code on this site is by definition 'under development'.
