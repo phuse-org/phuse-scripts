@@ -22,7 +22,8 @@ We maintain Task Lists (to-do lists) for both:
 * [Git e-book](http://www.git-scm.com/book/en/v2)
 * [GitHub for beginners](http://sixrevisions.com/resources/git-tutorials-beginners/)
 * [Learn: Code Academy quick video tutorial](http://www.youtube.com/watch?v=0fKg7e37bQE)
-* [Tutorial on setup and workflows](http://www.atlassian.com/git/tutorials/setting-up-a-repository)
+* [Git Workflows - "Centralized" is a good starting point](https://www.atlassian.com/git/tutorials/comparing-workflows/centralized-workflow)
+* [GitHub Workflow - a GitHub Guide](https://guides.github.com/introduction/flow/index.html)
 
 ### Various desktop clients for Git:
 * [GitHub Clients](http://help.github.com/articles/set-up-git/)
