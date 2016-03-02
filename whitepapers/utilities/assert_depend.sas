@@ -44,7 +44,7 @@
     based on: http://blogs.sas.com/content/iml/2013/08/26/determine-sas-version-at-run-time.html
 
   Author:          Dante Di Tommaso
-  Acknowledgement: Based on FUTS system from Thotwave
+  Acknowledgement: Inspired by FUTS system from Thotwave
                    http://thotwave.com/resources/futs-framework-unit-testing-sas/
 ***/
 

@@ -30,7 +30,7 @@
     Data Set Lists: http://support.sas.com/documentation/cdl/en/lrcon/62955/HTML/default/viewer.htm#a003040446.htm
 
   Author: Dante Di Tommaso
-  Acknowledgement: Based on FUTS system from Thotwave
+  Acknowledgement: Inspired by FUTS system from Thotwave
                    http://thotwave.com/resources/futs-framework-unit-testing-sas/
 ***/
 

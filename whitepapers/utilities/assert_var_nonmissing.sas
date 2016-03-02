@@ -24,7 +24,7 @@
     Any problems accessing the data set or variable produce an ERROR in the log.
 
   Author:       Dante Di Tommaso                                                  
-  Acknowledgement: Based on FUTS system from Thotwave                                
+  Acknowledgement: Inspired by FUTS system from Thotwave                                
                    http://thotwave.com/resources/futs-framework-unit-testing-sas/    
 ***/
 

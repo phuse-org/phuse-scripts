@@ -12,7 +12,7 @@
     If calling macro provides multiple data set names, ALL must exist to pass the assertion.
                                                                                     
   Author:          Dante Di Tommaso                                                  
-  Acknowledgement: Based on FUTS system from Thotwave                                
+  Acknowledgement: Inspired by FUTS system from Thotwave                                
                    http://thotwave.com/resources/futs-framework-unit-testing-sas/    
 ***/
 

@@ -4,7 +4,7 @@
   Returns a 0 (fail) or 1 (pass) result in-line.                                     
                                                                                     
   Author:          Dante Di Tommaso                                                  
-  Acknowledgement: Based on FUTS system from Thotwave                                
+  Acknowledgement: Inspired by FUTS system from Thotwave                                
                    http://thotwave.com/resources/futs-framework-unit-testing-sas/    
 ***/
 
