@@ -1,10 +1,8 @@
 Modified CDISC ADaM pilot data
 
 Modification:
-  * Split single-study CDISC pilot data:
-    https://github.com/phuse-org/phuse-scripts/tree/master/data/adam/cdisc
-
-  * Into 2 studies: 01 and 02
+  * **See also the original single-study CDISC pilot data](http://github.com/phuse-org/phuse-scripts/tree/master/data/adam/cdisc)
+  * This "split" version has 2 studies: 01 and 02
 
 Future effort:
   * This allows testing of pooled (multiple study) analyses
