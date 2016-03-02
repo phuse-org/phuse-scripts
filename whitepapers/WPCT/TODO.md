@@ -1,6 +1,10 @@
-### WPCT Task List
+### White Paper on Central Tendency Task List
 
 The Repository Content team aim to deliver a package of robust, easy to use and understand SAS and R scripts that create the WPCT standard analyses and displays. For further details, see [the README file in this folder](./README.md).
+
+**Contents:**
+ 1. [To-do list to complete the WPCT package](http://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/WPCT/TODO.md#to-complete-the-wpct-package)
+ 2. [Table: Implementation Status of WPCT Figures](http://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/WPCT/TODO.md#wpct-figures--scripts-with-qualification-details)
 
 **But feel free to be creative** when considering the expertise that you can contribute:
 * Do you have Spotfire expertise, and time to create templates for these analyses?
