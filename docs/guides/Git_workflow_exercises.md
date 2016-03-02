@@ -33,7 +33,7 @@ Relevant roles for phuse-org/phuse-scripts?
     2. modify file
     3. "pull request" ... screenshots
   * Substantial change (takes some time)
-    1. ? Create a branch
+    1. ? Create a fork (is branching only for members with "write" access??)
     2. develop modules
     3. "pull" changes from master branch
     4. resolve any conflicts
