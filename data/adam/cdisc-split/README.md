@@ -1,7 +1,7 @@
 Modified CDISC ADaM pilot data
 
 Modification:
-  * **See also the original single-study CDISC pilot data](http://github.com/phuse-org/phuse-scripts/tree/master/data/adam/cdisc)
+  * [**See also the original single-study CDISC pilot data**](http://github.com/phuse-org/phuse-scripts/tree/master/data/adam/cdisc)
   * This "split" version has 2 studies: 01 and 02
 
 Future effort:
