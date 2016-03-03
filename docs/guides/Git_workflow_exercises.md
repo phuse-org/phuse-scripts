@@ -13,9 +13,9 @@ Script GitHub workflow exercises for CSS 2016.
   2. GitHub Contributors: can create "pull request" from their own branch, for the Maintainers to review
 
 Relevant roles for phuse-org/phuse-scripts?
-  1. Admin
-  2. Developer
-  3. ? [our repo teams](https://github.com/phuse-org/phuse-scripts/settings/collaboration) -- Owner? Admin? Is this the right setup?
+  1. Admin (admin access (what does that mean above Write access?)
+  2. Developer (write access)
+  3. Contributors (no write access)? [our repo teams](https://github.com/phuse-org/phuse-scripts/settings/collaboration) -- Owner? Admin? Is this the right setup?
 
 #### phuse-or/phuse-scripts Setup
 
