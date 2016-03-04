@@ -1,43 +1,69 @@
 ### GitHub workflows
 
-To get setup as a PhUSE CS contributor, see [Contributor_setup.md](http://github.com/phuse-org/phuse-scripts/blob/master/docs/guides/Contributor_Setup.md)
+To get setup as a PhUSE CS collaborator, see [Collaborator_Setup.md](http://github.com/phuse-org/phuse-scripts/blob/master/docs/guides/Collaborator_Setup.md)
 
 ### Objective
+
 Script GitHub workflow exercises for CSS 2016.
 
 ### GitHub Roles
 
-[GitHub article on Repository Permission Levels](https://help.github.com/articles/repository-permission-levels-for-an-organization/)
+[GitHub article on Repository Permission Levels](http://help.github.com/articles/repository-permission-levels-for-an-organization/)
 
-  1. phuse-or/phuse-scripts Maintainers: can change master code
-  2. GitHub Contributors: can create "pull request" from their own branch, for the Maintainers to review
+  1. Write-Access Collaborators (int): can create/modify "master" files
+  2. Read-Access Collaborators (ext):  can send "pull requests" from their own "forks", for the Write-Access team to assess
 
-Relevant roles for phuse-org/phuse-scripts?
-  1. Admin
-  2. Developer
-  3. ? [our repo teams](https://github.com/phuse-org/phuse-scripts/settings/collaboration) -- Owner? Admin? Is this the right setup?
+#### Setup for the phuse-org/phuse-scripts repository
 
-#### phuse-or/phuse-scripts Setup
-
-  * Master branch is always "production ready"
-  * Therefore relatively few "Developers", who
-    * have "write access", and can therefore
-    * review "pull requests" and commit changes to master branch
-  * There are also "Admins" who can
-    * can promote engaged contributors to the "Developers" team
+  * Master branch is always "ready to deploy"
+  * Therefore relatively few "Write-Access" members, who can
+    * create/modify files directly, and
+    * review "pull requests", merge them into the "master"
+  * Any GitHub member can 
+    * "fork" the phuse-scripts repository
+    * create/modify files in their "fork"
+    * send a "pull request" back to the original, "base" repo (phuse-org/phuse-scripts)
 
 #### GitHub Exercises
 
-  * Simple steps: Suggest a change to an UNmodified file on the master branch
-    1. ? Clone the repository
-    2. modify file
-    3. "pull request" ... screenshots
-  * Substantial change (takes some time)
-    1. ? Create a fork (is branching only for members with "write" access??)
-    2. develop modules
-    3. "pull" changes from master branch
-    4. resolve any conflicts
-    5. "pull request" ... screenshots
+We highlight a few steps in [screenshots of these scenarios](https://github.com/phuse-org/phuse-scripts/blob/master/docs/guides/Git_workflow_screenshots.md).
+
+  * Simple scenario: EXT. Collaborator suggests a change to an UNmodified file on "master"
+    1. EXT. Collaborator:
+      * ... forks the phuse-scripts repository
+      * ... [or re-SYNC existing, out-of-sync fork]
+      * ... creates/modifies file in your new fork
+      * ... creates "pull request" in the fork
+        * this redirects you to the source repo (note path in page header)
+        * request pull _from_ your fork, _to_ the original repo
+        * (demo of discussing and resolving a pull request)
+    2. INT. Collaborator:
+      * ... receives GitHub notification of "pull request" _(depends on user settings)_
+      * ... reviews the pull request
+      * ... discusses with ext. collaborator
+      * ... approves / rejects
+    3. EXT. Collaborator:
+      * Option to delete fork
+      * or maintain by re-syncing with phuse-org/phuse-scripts, and merging in latest changes
+  
+  * Substantial change: development of new feature takes some time
+
+    1. EXT. Collaborator:
+      * ... Re-syncs often with origin repo, so always working with up-to-date files.
+        * [Re-syncing requires GitHub Desktop or Command Line](https://help.github.com/articles/syncing-a-fork/)
+      * ... is responsible for merging in latest changes from phuse-org/phuse-scripts, the "base" repo
+      * ... develops a new feature, extensive changes in own fork
+      * ... creates "pull request" in the fork
+    2. INT. Collaborator:
+      * ... receives GitHub notification of "pull request" _(depends on user settings)_
+      * ... reviews the pull request
+      * ... discusses with contributor
+        * (will advise EXT. to re-sync & try again, if it's clear s/he has not first pulled latest changes!)
+      * ... approves / rejects
+    3. _(delete or maintain, same as Simple scenario)_
+
+  * Contributing without GitHub access
+    * Via PhUSE Wiki, email to project leads
 
 ### Git workflow tutorials
 
