@@ -1,8 +1,8 @@
-#### Git workflow exercises
+## Git workflow exercises
 
 These are selected screenshots of the [Git workflow exercises](https://github.com/phuse-org/phuse-scripts/blob/master/docs/guides/Git_workflow_exercises.md)
 
-##### Simple scenario
+### Simple scenario
 
 **EXT. Collaborator forks the phuse-scripts repository:**
 
@@ -32,7 +32,7 @@ These are selected screenshots of the [Git workflow exercises](https://github.co
 
 ![simple_07](./images/Git_workflow_exercises_simple_07.png)
 
-##### Substantial change: development of new feature takes some time
+### Substantial change: development of new feature takes some time
 
 **If the INT and EXT Collaborators make conflicting changes:**
 
