@@ -26,6 +26,8 @@ Script GitHub workflow exercises for CSS 2016.
 
 #### GitHub Exercises
 
+We highlight a few steps in [screenshots of these scenarios](https://github.com/phuse-org/phuse-scripts/blob/master/docs/guides/Git_workflow_screenshots.md).
+
   * Simple scenario: EXT. Collaborator suggests a change to an UNmodified file on "master"
     1. EXT. Collaborator:
       * ... forks the phuse-scripts repository
