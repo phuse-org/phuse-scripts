@@ -10,16 +10,16 @@ Script GitHub workflow exercises for CSS 2016.
 
 [GitHub article on Repository Permission Levels](http://help.github.com/articles/repository-permission-levels-for-an-organization/)
 
-  1. Write-Access Collaborators (int): can create/modify "master" files
-  2. Read-Access Collaborators (ext):  can send "pull requests" from their own "forks", for the Write-Access team to assess
+  1. Write-Access Collaborators (**int**, internal): can create/modify "master" files
+  2. Read-Access Collaborators (**ext**, external):  can send "pull requests" from their own "forks", for the Write-Access team to assess
 
 #### Setup for the phuse-org/phuse-scripts repository
 
   * Master branch is always "ready to deploy"
-  * Therefore relatively few "Write-Access" members, who can
+  * Therefore relatively few "Write-Access", internal members, who can
     * create/modify files directly, and
     * review "pull requests", merge them into the "master"
-  * Any GitHub member can 
+  * Any GitHub member can be an "external" collaborator, and
     * "fork" the phuse-scripts repository
     * create/modify files in their "fork"
     * send a "pull request" back to the original, "base" repo (phuse-org/phuse-scripts)
