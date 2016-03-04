@@ -22,11 +22,11 @@ Script GitHub workflow exercises for CSS 2016.
   * Any GitHub member can 
     * "fork" the phuse-scripts repository
     * create/modify files in their "fork"
-    * send a "pull request" back to the origin repo (phuse-scripts)
+    * send a "pull request" back to the original, "base" repo (phuse-org/phuse-scripts)
 
 #### GitHub Exercises
 
-  * Simple scenario: Collaborator suggests a change to an UNmodified file on "master"
+  * Simple scenario: EXT. Collaborator suggests a change to an UNmodified file on "master"
     1. EXT. Collaborator:
       * ... forks the phuse-scripts repository
       * ... [or re-SYNC existing, out-of-sync fork]
@@ -42,18 +42,13 @@ Script GitHub workflow exercises for CSS 2016.
       * ... approves / rejects
     3. EXT. Collaborator:
       * Option to delete fork
-      * [RESYNC with latest changes from original repo]
+      * or maintain by re-syncing with phuse-org/phuse-scripts, and merging in latest changes
   
-  * Substantial change (takes some time)
-    1. ? Create a fork (is branching only for members with "write" access??)
-    2. develop modules
-    3. "pull" changes from master branch
-    4. resolve any conflicts
-    5. "pull request" ... screenshots
-    6. Now as above?
+  * Substantial change: development of new feature takes some time
 
     1. EXT. Collaborator:
-      * ... Re-syncs with origin repo, so always working with up-to-date files. [Re-syncing requires command line](https://help.github.com/articles/syncing-a-fork/)
+      * ... Re-syncs often with origin repo, so always working with up-to-date files. [Re-syncing requires command line](https://help.github.com/articles/syncing-a-fork/)
+      * ... is responsible for merging in latest changes from phuse-org/phuse-scripts, the "base" repo
       * ... develops a new feature, extensive changes in own fork
       * ... creates "pull request" in the fork
     2. INT. Collaborator:
@@ -62,6 +57,7 @@ Script GitHub workflow exercises for CSS 2016.
       * ... discusses with contributor
         * (will advise EXT. to re-sync & try again, if it's clear s/he has not first pulled latest changes!)
       * ... approves / rejects
+    3. _(delete or maintain, same as Simple scenario)_
 
   * Contributing without GitHub access
     * Via PhUSE Wiki, email to project leads
