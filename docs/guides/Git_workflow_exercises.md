@@ -31,11 +31,11 @@ Relevant roles for phuse-org/phuse-scripts?
 
 #### GitHub Exercises PSch: Are we creating some 'sandbox for this? What files to we use for examples? 
 
-  * Simple steps: Contributor? suggest a change to an UNmodified file on the master branch
-    1. ? Clone the repository
+  * Simple steps: Contributor suggests a change to an UNmodified file on the master branch
+    1. Fork the repository
     2. modify file
     3. "pull request" ... screenshots
-    4. what happens then: Developer reviews the file? How does she know that there is a change to review?
+    4. what happens then: Maintainer reviews the file? How does she know that there is a change to review?
     5. Open questions: when does this process end? What if the change is rejected? Does the contributor learn what happend to the suggested change? How?
   * Substantial change (takes some time)
     1. ? Create a fork (is branching only for members with "write" access??)
