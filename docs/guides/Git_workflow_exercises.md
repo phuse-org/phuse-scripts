@@ -32,11 +32,19 @@ Relevant roles for phuse-org/phuse-scripts?
 #### GitHub Exercises PSch: Are we creating some 'sandbox for this? What files to we use for examples? 
 
   * Simple steps: Contributor suggests a change to an UNmodified file on the master branch
-    1. Fork the repository
-    2. modify file
-    3. "pull request" ... screenshots
-    4. what happens then: Maintainer reviews the file? How does she know that there is a change to review?
+    1. Contributor:
+    2. ... forks the phuse-scripts repository
+    3. ... creates/modifies file in your new fork
+    4. ... creates "pull request" in the fork
+      * this redirects you to the source repo (note path in page header)
+      * request pull _from_ your fork, _to_ the original repo
+      * ... demo & track locations
+    4. Maintainers:
+      * ... receives GitHub notification of "pull request" [CLARIFY!]
+      * ... reviews the pull request, changes
+      * ... 
     5. Open questions: when does this process end? What if the change is rejected? Does the contributor learn what happend to the suggested change? How?
+  
   * Substantial change (takes some time)
     1. ? Create a fork (is branching only for members with "write" access??)
     2. develop modules
