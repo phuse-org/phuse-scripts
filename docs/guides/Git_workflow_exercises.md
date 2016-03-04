@@ -3,30 +3,31 @@
 To get setup as a PhUSE CS contributor, see [Contributor_setup.md](http://github.com/phuse-org/phuse-scripts/blob/master/docs/guides/Contributor_Setup.md)
 
 ### Objective
+
 Script GitHub workflow exercises for CSS 2016.
 
 ### GitHub Roles
 
-[GitHub article on Repository Permission Levels](https://help.github.com/articles/repository-permission-levels-for-an-organization/)
+[GitHub article on Repository Permission Levels](http://help.github.com/articles/repository-permission-levels-for-an-organization/)
 
   1. phuse-or/phuse-scripts Maintainers: can change master code
   2. GitHub Contributors: can create "pull request" from their own branch, for the Maintainers to review
 
 Relevant roles for phuse-org/phuse-scripts?
-  1. Admin (admin access (what does that mean above Write access?)
-  2. Developer (write access)
-  3. Contributors (no write access)? [our repo teams](https://github.com/phuse-org/phuse-scripts/settings/collaboration) -- Owner? Admin? Is this the right setup?
+  1. Admin (manage repository settings, NOT relevant for workshop)
+  2. Maintainer (write access)
+  3. Contributors (no write access)? [our repo teams](https://github.com/phuse-org/phuse-scripts/settings/collaboration)
 
 #### phuse-or/phuse-scripts Setup
 
   * Master branch is always "production ready"
-  * Therefore relatively few "Developers", who
+  * Therefore relatively few "Maintainers", who
     * have "write access", and can therefore
     * review "pull requests" and commit changes to master branch
-  * There are also "Admins" who can
-    * can promote engaged contributors to the "Developers" team
-  * All others (contributors?) can do ... what is it? 
-    * ....
+  * Any GitHub member can 
+    * "fork" the phuse-scripts repository
+    * develop new scripts or enhance any element
+    * create a "pull request", a proposal to incorporate your modifications into the phuse-scripts repository
 
 #### GitHub Exercises PSch: Are we creating some 'sandbox for this? What files to we use for examples? 
 
@@ -43,6 +44,7 @@ Relevant roles for phuse-org/phuse-scripts?
     4. resolve any conflicts
     5. "pull request" ... screenshots
     6. Now as above?
+  * Contributing without GitHub access
 
 ### Git workflow tutorials
 
