@@ -1,6 +1,6 @@
 ### GitHub workflows
 
-To get setup as a PhUSE CS collaborator, see [Contributor_setup.md](http://github.com/phuse-org/phuse-scripts/blob/master/docs/guides/Contributor_Setup.md)
+To get setup as a PhUSE CS collaborator, see [Collaborator_Setup.md](http://github.com/phuse-org/phuse-scripts/blob/master/docs/guides/Collaborator_Setup.md)
 
 ### Objective
 
@@ -47,7 +47,9 @@ Script GitHub workflow exercises for CSS 2016.
   * Substantial change: development of new feature takes some time
 
     1. EXT. Collaborator:
-      * ... Re-syncs often with origin repo, so always working with up-to-date files. [Re-syncing requires command line](https://help.github.com/articles/syncing-a-fork/)
+      * ... Re-syncs often with origin repo, so always working with up-to-date files.
+        * [Link your fork to the original repo, "configuring a remote"](https://help.github.com/articles/configuring-a-remote-for-a-fork/)
+        * [Re-syncing requires command line](https://help.github.com/articles/syncing-a-fork/)
       * ... is responsible for merging in latest changes from phuse-org/phuse-scripts, the "base" repo
       * ... develops a new feature, extensive changes in own fork
       * ... creates "pull request" in the fork
