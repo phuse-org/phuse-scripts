@@ -4,6 +4,10 @@ These are selected screenshots of the [Git workflow exercises](https://github.co
 
 ### Simple scenario
 
+| Internal, Write-Access Collaborator | External, Read-Access Collaborator |
+|---|---|
+|In the following screenshots, the left-hand screen displays the view and actions of a Write-Access ("internal") Collaborator ... | ... while the right-hand screen displays the view and actions of a Read-Access ("external") Collaborator |
+
 **EXT. Collaborator forks the phuse-scripts repository:**
 
 ![simple_01](./images/Git_workflow_exercises_simple_01.png)
