@@ -2,9 +2,9 @@ KeyWords: MedDRA, MedDRA at a Glance
 Script: 
   Desc   : > 
     The MedDRA at a Glance Analysis Panel shows the user the adverse events 
-	that occurred in the study according to their place in the MedDRA 
-	hierarchy and allows them to compare any two arms according to a number 
-	of statistics.
+     that occurred in the study according to their place in the MedDRA 
+     hierarchy and allows them to compare any two arms according to a number 
+     of statistics.
   Name   : ae_meddra_w_flag_generation_v1.sas 
   GCR    : r135
   SRV    : 12345
@@ -31,28 +31,28 @@ Comments: >
   The user can also sort and filter by any of the information contained in 
   the report.
   Dataset Requirements:
-	Demographics		(DM)
-	Adverse Event	 	(AE)
-	Exposure 		(EX)	
-	MedDRA hierarchy – need to specify what version of MedDRA
-	Designated Medical Events
+     Demographics          (DM)
+     Adverse Event           (AE)
+     Exposure           (EX)     
+     MedDRA hierarchy – need to specify what version of MedDRA
+     Designated Medical Events
   Variable Requirements:
-	DM 	- Actual Arm 			(ACTARM)
-		- Planned Treatment Arm	(ARM)
-		- Subject ID			(USUBJID)
-		- Planned Arm Code			(ARMCD)
-		- Subject Reference Start Date/Time	(RFSTDTC)
-		- Subject Reference End Date/Time	(RFENDTC)
-	AE	- Subject ID			(USUBJID)
-		- Body system/organ class	(AEBODSYS)
-		- Dictionary Derived Term	(AEDECOD)
-		- Toxicity Grade			(AETOXGR)
-		-Adverse Event Start Date/Time	(AESTDTC)
-	EX	- Subject ID		(USUBJID)
-		- Exposure Start Date/Time	(EXSTDTC)
-		- Exposure End Date/Time	(EXENDTC)
-	MedDRA Hierarchy for correct version
-	Designated Medical Events
+     DM      - Actual Arm                (ACTARM)
+          - Planned Treatment Arm     (ARM)
+          - Subject ID               (USUBJID)
+          - Planned Arm Code               (ARMCD)
+          - Subject Reference Start Date/Time     (RFSTDTC)
+          - Subject Reference End Date/Time     (RFENDTC)
+     AE     - Subject ID               (USUBJID)
+          - Body system/organ class     (AEBODSYS)
+          - Dictionary Derived Term     (AEDECOD)
+          - Toxicity Grade               (AETOXGR)
+          -Adverse Event Start Date/Time     (AESTDTC)
+     EX     - Subject ID          (USUBJID)
+          - Exposure Start Date/Time     (EXSTDTC)
+          - Exposure End Date/Time     (EXENDTC)
+     MedDRA Hierarchy for correct version
+     Designated Medical Events
 Inputs:
   datasets: dat1, dat2, dat3
   P1: String - dataset name
@@ -66,11 +66,11 @@ Authors:
   - name   : David Kretch 
     email  : david.kretch@us.ibm.com
     company: FDA/IBM
-	date   : 02/12/2011
+    date   : 02/12/2011
   - name   : 
     email  : 
     company: 
-	date   : 
+    date   : 
 Qualification: 
   LastQualDate: MM/DD/YYYY 
   LastQualBy: FirstName LastName
