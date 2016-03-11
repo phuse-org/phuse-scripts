@@ -24,31 +24,31 @@ Comments: >
   The Adverse Event analysis panel generates three separate Excel workbooks. 
   1. Adverse Events Counts:  provides various combinations of counts and 
      percentages of most frequent adverse events and serious adverse events 
-	 by treatment arm
+      by treatment arm
   2. Adverse Events Relative Risk: provides a listing of the relative risk of
      adverse events between arms with their corresponding confidence intervals
   3. Adverse Events Odds Ratio: provides a listing of odds ratios of adverse 
      events between arms with their corresponding confidence intervals
   Dataset Requirements:
-	Demographics		(DM)
-	Adverse Event	 	(AE)
-	Exposure 			(EX)	
+     Demographics          (DM)
+     Adverse Event          (AE)
+     Exposure               (EX)     
   Variable Requirements:
-	DM 	- Actual Arm 			(ACTARM)
-		- Planned Treatment Arm	(ARM)
-		- Subject ID			(USUBJID)
-		- Planned Arm Code		(ARMCD)
-		- Subject Reference Start Date/Time	(RFSTDTC)
-		- Subject Reference End Date/Time	(RFENDTC)
-	AE	- Subject ID			(USUBJID)
-		- Body system/organ class	(AEBODSYS)
-		- Dictionary Derived Term	(AEDECOD)
-		- Severity/intensity		(AESEV)
-		- Serious Event				(AESER)
-		-Adverse Event Start Date/Time	(AESTDTC)
-	EX	- Subject ID				(USUBJID)
-		- Exposure Start Date/Time	(EXSTDTC)
-		- Exposure End Date/Time	(EXENDTC)
+     DM      - Actual Arm            (ACTARM)
+          - Planned Treatment Arm    (ARM)
+          - Subject ID               (USUBJID)
+          - Planned Arm Code         (ARMCD)
+          - Subject Reference Start Date/Time     (RFSTDTC)
+          - Subject Reference End Date/Time     (RFENDTC)
+     AE     - Subject ID               (USUBJID)
+          - Body system/organ class     (AEBODSYS)
+          - Dictionary Derived Term     (AEDECOD)
+          - Severity/intensity          (AESEV)
+          - Serious Event                    (AESER)
+          -Adverse Event Start Date/Time     (AESTDTC)
+     EX     - Subject ID                    (USUBJID)
+          - Exposure Start Date/Time     (EXSTDTC)
+          - Exposure End Date/Time     (EXENDTC)
 Inputs:
   datasets: DM, AE, EX
   P1: Studypath - location of the drug study datasets
@@ -63,11 +63,11 @@ Authors:
   - name   : David Kretch
     email  : david.kretch@us.ibm.com
     company: FDA/IBM
-	date   : 02/07/2011
+     date   : 02/07/2011
   - name   : Andreas Anastassopoulos
     email  : andreas.anastassapoulos@us.ibm.com
     company: FDA/IBM
-	date   : 02/07/2011
+     date   : 02/07/2011
 Qualification: 
   LastQualDate: MM/DD/YYYY 
   LastQualBy: FirstName LastName

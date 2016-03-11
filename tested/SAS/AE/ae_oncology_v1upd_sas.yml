@@ -3,9 +3,9 @@ Script:
   Desc   : > 
     The AE Toxicity Analysis Panel provides the user with 
     different analyses to help understand the adverse events present 
-	in the study and the frequency of their occurrence by treatment arm. 
-	Statistical and frequency reports are generated to provide the user 
-	with needed information.  
+    in the study and the frequency of their occurrence by treatment arm. 
+    Statistical and frequency reports are generated to provide the user 
+    with needed information.  
   Name   : ae_oncology_v1upd.sas 
   GCR    : r135
   SRV    : 12345
@@ -52,11 +52,11 @@ Authors:
   - name   : David Kretch
     email  : david.kretch@us.ibm.com
     company: FDA/IBM
-	date   : 02/07/2011
+    date   : 02/07/2011
   - name   : 
     email  : 
     company: 
-	date   : 
+    date   : 
 Qualification: 
   LastQualDate: MM/DD/YYYY 
   LastQualBy: FirstName LastName
@@ -76,7 +76,7 @@ Rating:
   - User: Rebeka Revis
     Date: 03/07/2016
     Association: Lilly 
-    Stars: 4
+    Stars: 4 
   - User: htu 
     Date: 03/10/2016 
     Association: Accenture

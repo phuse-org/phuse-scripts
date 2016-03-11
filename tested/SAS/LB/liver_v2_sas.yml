@@ -2,13 +2,13 @@ KeyWords: LB, Liver Lab
 Script: 
   Desc   : > 
     The Liver Lab Analysis Panel provides the User with an overview of 
-	the number and percent of subjects who have predefined abnormalities 
-	in lab test values for Alanine Aminotransferase (ALT), Aspartate 
-	Aminotransferase (AST), Total Bilirubin (TB), and Alkaline Phosphatase
-	(ALP). It provides the frequency of the lab test values that occur in 
-	varying degrees above what is considered a normal lab value (upper limit
-	of normal, ULN). It also compares maximum lab values between tests, and 
-	looks at the maximum lab values by (i.e, as a function of) study day.
+     the number and percent of subjects who have predefined abnormalities 
+     in lab test values for Alanine Aminotransferase (ALT), Aspartate 
+     Aminotransferase (AST), Total Bilirubin (TB), and Alkaline Phosphatase
+     (ALP). It provides the frequency of the lab test values that occur in 
+     varying degrees above what is considered a normal lab value (upper limit
+     of normal, ULN). It also compares maximum lab values between tests, and 
+     looks at the maximum lab values by (i.e, as a function of) study day.
   Name   : liver_v2.sas 
   GCR    : r135
   SRV    : 12345
@@ -31,25 +31,25 @@ Comments: >
   subjects exposed to at least one dose of treatment per arm (either actual
   or planned depending on what exists in the data).  
   Dataset Requirements:
-	Laboratory Test Results	(LB)
-	Demographics		 	(DM)
+     Laboratory Test Results     (LB)
+     Demographics                (DM)
   Variable Requirements:
-	LB	- Subject ID				(USUBJID)
-		- Date/Time of Specimen Collection		(LBDTC)
-		- Lab Test or Examination Short Name	(LBTESTCD)
-		- Numeric Result/Finding in Standard Units	(LBSTRESN)
-		- Standard Units				(LBSTRESU)
-		- Reference Range Lower Limit-Std Units	(LBSTNRLO)
-		- Reference Range Upper Limit-Std Units	(LBSTNRHI)
-		- Baseline Flag				(LBBLFL)
-		- Study Day of Specimen Collection		(LBDY)
-		- Visit Number				(VISITNUM)
-	DM  - Actual Arm 				(ACTARM)
-		- Planned Treatment Arm		(ARM)
-		- Subject ID				(USUBJID)
-		- Subject Reference Start Date/Time	(RFSTDTC)
-		- Subject Reference End Date/Time	(RFENDTC)
-		- Planned Arm Code			(ARMCD)
+     LB     - Subject ID                    (USUBJID)
+          - Date/Time of Specimen Collection          (LBDTC)
+          - Lab Test or Examination Short Name     (LBTESTCD)
+          - Numeric Result/Finding in Standard Units     (LBSTRESN)
+          - Standard Units                    (LBSTRESU)
+          - Reference Range Lower Limit-Std Units     (LBSTNRLO)
+          - Reference Range Upper Limit-Std Units     (LBSTNRHI)
+          - Baseline Flag                    (LBBLFL)
+          - Study Day of Specimen Collection          (LBDY)
+          - Visit Number                    (VISITNUM)
+     DM  - Actual Arm                     (ACTARM)
+          - Planned Treatment Arm          (ARM)
+          - Subject ID                    (USUBJID)
+          - Subject Reference Start Date/Time     (RFSTDTC)
+          - Subject Reference End Date/Time     (RFENDTC)
+          - Planned Arm Code               (ARMCD)
 Inputs:
   datasets: dat1, dat2, dat3
   P1: String - dataset name
@@ -63,11 +63,11 @@ Authors:
   - name   : Shannon Dennis 
     email  : shannon.dennis@fda.hhs.gov
     company: FDA/IBM
-	date   : 12/29/2009
+     date   : 12/29/2009
   - name   : 
     email  : 
     company: 
-	date   : 
+     date   : 
 Qualification: 
   LastQualDate: MM/DD/YYYY 
   LastQualBy: FirstName LastName
