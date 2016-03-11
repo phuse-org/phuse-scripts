@@ -108,7 +108,7 @@ options missing='';
 
 		/* NDA/BLA number */
 		/* study number */
-		%global ndabla studyid;
+		%global ndabla studyid catc subc catdis subcatdis;
 		%let ndabla = ;
 		%let studyid = ;
 
@@ -119,7 +119,7 @@ options missing='';
 		%let subcatdis='END OF TREATMENT'; /* Example: 'END OF TREATMENT' */
 
 		/* location of the study being examined */
-		%let studypath = ;
+		%let studypath =F:\Internal Use\FDA JumpStart Scripts\Data\SDTM ;
 
 		libname inlib "&studypath."; 
 
@@ -130,15 +130,15 @@ options missing='';
 
 		/* location of external SAS programs */
 		%global saspath utilpath;
-		%let saspath = ;
-		%let utilpath = ;
+		%let saspath =F:\Internal Use\FDA JumpStart Scripts\Programs\Ad Hoc ;
+		%let utilpath = F:\Internal Use\FDA JumpStart Scripts\Programs\Maclib;
 
 		/* location and filename of the disposition panel template */
-		%let templatepath = ;
+		%let templatepath =F:\Internal Use\FDA JumpStart Scripts\Data\External\Templates ;
 		%let template = Disposition_Template.xls;
 
 		/* location and filename of the output */
-		%let outpath = ;
+		%let outpath =F:\Internal Use\FDA JumpStart Scripts\Output\Dev ;
 		%let outfile = Disposition.xls;
 
 		%global dispout errout;
@@ -171,9 +171,7 @@ options missing='';
 	%end;
 
 %mend params;
-
 %params;
-
 
 /* data checks and data check output */
 %include "&saspath.\data_checks_disposition.sas";
@@ -957,8 +955,8 @@ options missing='';
 
 	/* local runs use the Microsoft Jet database-based Excel LIBNAME engine */
 	%if %upcase(&run_location.) = LOCAL %then %do;
-		*libname xls excel "&dispout." ver=2003; *Output function changed due to SAS 9.3(64bit) and Excel 2010(32bit) incompatability;
-		libname xls pcfiles path="&dispout."; 
+		libname xls excel "&dispout." ver=2003; *Output function changed due to SAS 9.3(64bit) and Excel 2010(32bit) incompatability;
+/*		libname xls pcfiles path="&dispout."; */
 	%end;
 	/* Script Launcher runs use the PCFILES LIBNAME Engine */
 	%else %do; 

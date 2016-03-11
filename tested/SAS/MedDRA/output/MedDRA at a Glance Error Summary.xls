@@ -1,0 +1,410 @@
+<?xml version="1.0"?>
+<?mso-application progid="Excel.Sheet"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet" xmlns:html="http://www.w3.org/TR/REC-html40">
+<DocumentProperties xmlns="urn:schemas-microsoft-com:office:office">
+<Title>MedDRA at a Glance Error Summary</Title>
+<Author>US Food &amp; Drug Administration</Author>
+<Created>2016-03-08T14:11:22</Created>
+</DocumentProperties>
+<ExcelWorkbook xmlns="urn:schemas-microsoft-com:office:excel">
+</ExcelWorkbook>
+<Styles>
+<Style ss:ID="Default" ss:Name="Normal">
+<Font ss:Size="9"/>
+<Interior ss:Pattern="Solid"/>
+</Style>
+<Style ss:ID="DefaultLeft" ss:Parent="Default">
+<Alignment ss:Horizontal="Left" ss:Vertical="Top" ss:WrapText="0"/>
+</Style>
+<Style ss:ID="DefaultRight" ss:Parent="Default">
+<Alignment ss:Horizontal="Right" ss:Vertical="Top" ss:WrapText="0"/>
+</Style>
+<Style ss:ID="DefaultWhite" ss:Parent="Default">
+<Font ss:Color="#FFFFFF"/>
+</Style>
+<Style ss:ID="Default10" ss:Parent="Default">
+<Alignment ss:Vertical="Top" ss:WrapText="0"/>
+<Font ss:Size="10"/>
+</Style>
+<Style ss:ID="Default10Wrap" ss:Parent="Default10">
+<Alignment ss:Vertical="Top" ss:WrapText="1"/>
+</Style>
+<Style ss:ID="Default10RedWrap" ss:Parent="Default">
+<Alignment ss:Vertical="Top" ss:WrapText="1"/>
+<Font ss:Color="#FF0000" ss:Size="10" ss:Italic="1"/>
+</Style>
+<Style ss:ID="Default10Right" ss:Parent="Default10">
+<Alignment ss:Horizontal="Right" ss:Vertical="Top" ss:WrapText="0"/>
+</Style>
+<Style ss:ID="Default8" ss:Parent="Default">
+<Alignment ss:Vertical="Top" ss:WrapText="0"/>
+<Font ss:Size="8"/>
+</Style>
+<Style ss:ID="Header">
+<Alignment/>
+<Font ss:Size="12" ss:Bold="1" ss:Italic="1"/>
+</Style>
+<Style ss:ID="SubHeader">
+<Alignment ss:Vertical="Top"/>
+<Font ss:Size="10" ss:Bold="1" ss:Italic="0"/>
+</Style>
+<Style ss:ID="Column">
+<Alignment ss:Horizontal="Center" ss:Vertical="Center" ss:WrapText="1"/>
+<Interior ss:Color="#333399" ss:Pattern="Solid"/>
+<Font ss:Size="10" ss:Color="#FFFFFF" ss:Bold="1"/>
+</Style>
+<Style ss:ID="ColumnOutline" ss:Parent="Column">
+<Borders>
+<Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+</Borders>
+</Style>
+<Style ss:ID="ColumnOutlineSmall" ss:Parent="ColumnOutline">
+<Font ss:Size="8" ss:Color="#FFFFFF" ss:Bold="1"/>
+</Style>
+<Style ss:ID="ColumnOutlineItalic" ss:Parent="ColumnOutline">
+<Font ss:Size="10" ss:Color="#FFFFFF" ss:Bold="1" ss:Italic="1"/>
+</Style>
+<Style ss:ID="ColumnOutlineRotateTop" ss:Parent="ColumnOutline">
+<Alignment ss:Horizontal="Center" ss:Vertical="Top" ss:Rotate="90" ss:WrapText="1"/>
+</Style>
+<Style ss:ID="ColumnOutlineRotateCtr" ss:Parent="ColumnOutline">
+<Alignment ss:Horizontal="Center" ss:Vertical="Center" ss:Rotate="90" ss:WrapText="1"/>
+</Style>
+<Style ss:ID="DataHeader">
+<Alignment ss:Horizontal="Left" ss:Vertical="Center" ss:WrapText="0"/>
+<Interior ss:Color="#C0C0C0" ss:Pattern="Solid"/>
+<Borders>
+<Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+</Borders>
+<Font ss:Size="10" ss:Bold="1"/>
+</Style>
+<Style ss:ID="Table">
+<Alignment ss:Horizontal="Center" ss:Vertical="Center" ss:WrapText="0"/>
+<Borders>
+<Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+</Borders>
+<Font ss:Size="10"/>
+</Style>
+<Style ss:ID="Data">
+<Alignment ss:Vertical="Top" ss:WrapText="0"/>
+<Borders>
+<Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+</Borders>
+</Style>
+<Style ss:ID="DataWrap" ss:Parent="Data">
+<Alignment ss:Vertical="Top" ss:WrapText="1"/>
+</Style>
+<Style ss:ID="DataRight" ss:Parent="Data">
+<Alignment ss:Horizontal="Right" ss:Vertical="Top" ss:WrapText="0"/>
+</Style>
+<Style ss:ID="DataRightHighlight" ss:Parent="DataRight">
+<Interior ss:Color="#CCCCFF" ss:Pattern="Solid"/>
+</Style>
+<Style ss:ID="DataCenter" ss:Parent="Data">
+<Alignment ss:Horizontal="Center" ss:Vertical="Top" ss:WrapText="0"/>
+</Style>
+<Style ss:ID="DataDec0" ss:Parent="Data">
+<Alignment ss:Horizontal="Right" ss:Vertical="Top"/>
+<NumberFormat ss:Format="0"/>
+</Style>
+<Style ss:ID="DataDec0Center" ss:Parent="DataDec0">
+<Alignment ss:Horizontal="Center" ss:Vertical="Top" ss:WrapText="0"/>
+</Style>
+<Style ss:ID="DataDec0Highlight" ss:Parent="DataDec0">
+<Interior ss:Color="#CCCCFF" ss:Pattern="Solid"/>
+</Style>
+<Style ss:ID="DataDec1" ss:Parent="Data">
+<Alignment ss:Horizontal="Right" ss:Vertical="Top"/>
+<NumberFormat ss:Format="0.0"/>
+</Style>
+<Style ss:ID="DataDec1Center" ss:Parent="DataDec1">
+<Alignment ss:Horizontal="Center" ss:Vertical="Top" ss:WrapText="0"/>
+</Style>
+<Style ss:ID="DataDec1Highlight" ss:Parent="DataDec1">
+<Interior ss:Color="#CCCCFF" ss:Pattern="Solid"/>
+</Style>
+<Style ss:ID="DataDec2" ss:Parent="Data">
+<Alignment ss:Horizontal="Right" ss:Vertical="Top"/>
+<NumberFormat ss:Format="0.00"/>
+</Style>
+<Style ss:ID="DataDec2Center" ss:Parent="DataDec2">
+<Alignment ss:Horizontal="Center" ss:Vertical="Top" ss:WrapText="0"/>
+</Style>
+<Style ss:ID="DataDec2Highlight" ss:Parent="DataDec2">
+<Interior ss:Color="#CCCCFF" ss:Pattern="Solid"/>
+</Style>
+<Style ss:ID="DataSN" ss:Parent="Data">
+<Alignment ss:Horizontal="Right" ss:Vertical="Top"/>
+<NumberFormat ss:Format="0.00E+00"/>
+</Style>
+<Style ss:ID="DataSNCenter" ss:Parent="DataSN">
+<Alignment ss:Horizontal="Center" ss:Vertical="Top" ss:WrapText="0"/>
+</Style>
+<Style ss:ID="DataSNHighlight" ss:Parent="DataSN">
+<Interior ss:Color="#CCCCFF" ss:Pattern="Solid"/>
+</Style>
+<Style ss:ID="DataPct" ss:Parent="Data">
+<Alignment ss:Horizontal="Right" ss:Vertical="Top"/>
+<NumberFormat ss:Format="0%"/>
+</Style>
+<Style ss:ID="DataPctHighlight" ss:Parent="DataPct">
+<Interior ss:Color="#CCCCFF" ss:Pattern="Solid"/>
+</Style>
+<Style ss:ID="DataBottom" ss:Parent="Data">
+<Borders>
+<Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+</Borders>
+</Style>
+<Style ss:ID="DataWrapBottom" ss:Parent="DataWrap">
+<Borders>
+<Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+</Borders>
+</Style>
+<Style ss:ID="DataRightBottom" ss:Parent="DataRight">
+<Borders>
+<Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+</Borders>
+</Style>
+<Style ss:ID="DataRightHighlightBottom" ss:Parent="DataRightHighlight">
+<Borders>
+<Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+</Borders>
+</Style>
+<Style ss:ID="DataCenterBottom" ss:Parent="DataCenter">
+<Borders>
+<Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+</Borders>
+</Style>
+<Style ss:ID="DataDec0Bottom" ss:Parent="DataDec0">
+<Borders>
+<Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+</Borders>
+</Style>
+<Style ss:ID="DataDec0CenterBottom" ss:Parent="DataDec0Center">
+<Borders>
+<Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+</Borders>
+</Style>
+<Style ss:ID="DataDec0HighlightBottom" ss:Parent="DataDec0Highlight">
+<Borders>
+<Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+</Borders>
+</Style>
+<Style ss:ID="DataDec1Bottom" ss:Parent="DataDec1">
+<Borders>
+<Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+</Borders>
+</Style>
+<Style ss:ID="DataDec1CenterBottom" ss:Parent="DataDec1Center">
+<Borders>
+<Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+</Borders>
+</Style>
+<Style ss:ID="DataDec1HighlightBottom" ss:Parent="DataDec1Highlight">
+<Borders>
+<Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+</Borders>
+</Style>
+<Style ss:ID="DataDec2Bottom" ss:Parent="DataDec2">
+<Borders>
+<Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+</Borders>
+</Style>
+<Style ss:ID="DataDec2CenterBottom" ss:Parent="DataDec2Center">
+<Borders>
+<Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+</Borders>
+</Style>
+<Style ss:ID="DataDec2HighlightBottom" ss:Parent="DataDec2Highlight">
+<Borders>
+<Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+</Borders>
+</Style>
+<Style ss:ID="DataSNBottom" ss:Parent="DataSN">
+<Borders>
+<Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+</Borders>
+</Style>
+<Style ss:ID="DataSNCenterBottom" ss:Parent="DataSNCenter">
+<Borders>
+<Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+</Borders>
+</Style>
+<Style ss:ID="DataSNHighlightBottom" ss:Parent="DataSNHighlight">
+<Borders>
+<Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+</Borders>
+</Style>
+<Style ss:ID="DataPctBottom" ss:Parent="DataPct">
+<Borders>
+<Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+</Borders>
+</Style>
+<Style ss:ID="DataPctHighlightBottom" ss:Parent="DataPctHighlight">
+<Borders>
+<Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+</Borders>
+</Style>
+<Style ss:ID="Gray" ss:Parent="DataCenterBottom">
+<Font ss:Size="8" ss:Color="#808080"/>
+<Interior ss:Color="#808080" ss:Pattern="Solid"/>
+</Style>
+<Style ss:ID="Red" ss:Parent="DataCenterBottom">
+<Font ss:Size="8" ss:Color="#FF0000"/>
+<Interior ss:Color="#FF0000" ss:Pattern="Solid"/>
+</Style>
+<Style ss:ID="Peach" ss:Parent="DataCenterBottom">
+<Font ss:Size="8" ss:Color="#FFCC99"/>
+<Interior ss:Color="#FFCC99" ss:Pattern="Solid"/>
+</Style>
+<Style ss:ID="BoldRedText" ss:Parent="DataDec1Bottom">
+<Font ss:Size="8" ss:Color="#FF0000" ss:Bold="1"/>
+</Style>
+<Style ss:ID="GS_BTLRB">
+<Alignment ss:Vertical="Top" ss:WrapText="1"/>
+<Font ss:Size="10"/>
+<Borders>
+<Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+</Borders>
+</Style>
+<Style ss:ID="GSC_BTLRB">
+<Alignment ss:Vertical="Top" ss:Horizontal="Center" ss:WrapText="1"/>
+<Font ss:Size="10"/>
+<Borders>
+<Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+</Borders>
+</Style>
+<Style ss:ID="GS_BTLR">
+<Alignment ss:Vertical="Top" ss:WrapText="1"/>
+<Font ss:Size="10"/>
+<Borders>
+<Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+</Borders>
+</Style>
+<Style ss:ID="GS_BLR">
+<Alignment ss:Vertical="Top" ss:WrapText="1"/>
+<Font ss:Size="10"/>
+<Borders>
+<Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+</Borders>
+</Style>
+<Style ss:ID="GS_BLRB">
+<Alignment ss:Vertical="Top" ss:WrapText="1"/>
+<Font ss:Size="10"/>
+<Borders>
+<Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+</Borders>
+</Style>
+</Styles>
+<Worksheet ss:Name="Error Summary">
+<Table>
+<Column ss:Width="150"/>
+<Column ss:Width="250"/>
+<Column/>
+<Row >
+<Cell></Cell>
+</Row>
+<Row >
+<Cell ss:StyleID="Header"><Data ss:Type="String">MedDRA at a Glance Error Summary</Data></Cell>
+</Row>
+<Row >
+<Cell></Cell>
+</Row>
+<Row >
+<Cell ss:StyleID="Default10"><Data ss:Type="String">NDA/BLA: xxx</Data></Cell>
+</Row>
+<Row >
+<Cell ss:StyleID="Default10"><Data ss:Type="String">Study: fdadata</Data></Cell>
+</Row>
+<Row >
+<Cell ss:StyleID="Default10"><Data ss:Type="String">Analysis run date: 2016-03-08 2:11:22 PM</Data></Cell>
+</Row>
+<Row >
+<Cell></Cell>
+</Row>
+<Row ss:Height="12.75">
+<Cell ss:MergeAcross="6" ss:StyleID="Default10Wrap"><Data ss:Type="String">There were zero adverse events with matching MedDRA descriptions.</Data></Cell>
+</Row>
+<Row ss:Height="12.75">
+<Cell ss:MergeAcross="6"></Cell>
+</Row>
+<Row ss:Height="12.75">
+<Cell ss:MergeAcross="6"></Cell>
+</Row>
+</Table>
+<WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
+<PageSetup>
+<Layout x:Orientation="Landscape"/>
+<Header x:Data="&amp;Lpanel_title.&amp;RNDA/BLA xxx&#10;Study fdadata"/>
+<Footer x:Data="Page &amp;P of &amp;N"/>
+</PageSetup>
+<FitToPage/>
+<Print>
+<FitHeight>100</FitHeight>
+<ValidPrinterInfo/>
+<Scale>78</Scale>
+<HorizontalResolution>600</HorizontalResolution>
+<VerticalResolution>0</VerticalResolution>
+</Print>
+</WorksheetOptions>
+</Worksheet>
+</Workbook>

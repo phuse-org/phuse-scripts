@@ -1,0 +1,2975 @@
+NOTE: Copyright (c) 2002-2012 by SAS Institute Inc., Cary, NC, USA.
+NOTE: SAS (r) Proprietary Software 9.4 (TS1M1)
+      Licensed to PROQUIRE LLC - LIFE SCIENCES PRACTICE GROUP, Site 70149550.
+NOTE: This session is executing on the X64_ES08R2  platform.
+
+
+
+NOTE: Updated analytical products:
+
+      SAS/STAT 13.1
+      SAS/IML 13.1
+
+NOTE: Additional host information:
+
+ X64_ES08R2 WIN 6.1.7601 Service Pack 1 Server
+
+NOTE: SAS initialization used:
+      real time           3.01 seconds
+      cpu time            1.40 seconds
+
+
+NOTE: AUTOEXEC processing beginning; file is D:\clinprog\autoexec.sas.
+
+
+NOTE: AUTOEXEC processing completed.
+
+1    /****************************************************************************/
+2    /*         PROGRAM NAME: Disposition Analysis Panel                         */
+3    /*                                                                          */
+4    /*          DESCRIPTION: Find subject counts per arm for each disposition   */
+5    /*                        event appearing in the study, for all subjects    */
+6    /*                        and for exposed subjects                          */
+7    /*                       Create charts of the time to disposition event for */
+8    /*                        all subjects and for exposed subjects             */
+9    /*                       Creates an Excel spreadsheet as output             */
+10   /*                                                                          */
+11   /*      EVALUATION TYPE:                                                    */
+12   /*                                                                          */
+13   /*               AUTHOR: Andreas Anastassopoulos                            */
+14   /*                          (andreas.anastassapoulos@us.ibm.com)            */
+15   /*                                                                          */
+16   /*                 DATE: December 9, 2009                                   */
+17   /*                                                                          */
+18   /*  EXTERNAL FILES USED: Disposition_Template.xls -- Excel template         */
+19   /*                       data_checks.sas -- Generic variable checks         */
+20   /*                       data_checks_disposition.sas -- DS data checks      */
+21   /*                       sl_gs_output.sas -- Script Launcher settings output*/
+22   /*                       err_output.sas -- Error output when missing vars   */
+23   /*                                                                          */
+24   /*  PARAMETERS REQUIRED: saspath -- location of external panel SAS programs */
+25   /*                       utilpath -- location of external util SAS programs */
+26   /*                       ndabla -- NDA or BLA number                        */
+27   /*                       studyid -- study number                            */
+28   /*                                                                          */
+29   /*           LOCAL ONLY: studypath -- location of the drug study datasets   */
+30   /*                       outpath -- location of the output                  */
+31   /*                       outfile -- filename of the output                  */
+32   /*                       templatepath -- location of the Excel template     */
+33   /*                       template -- filename of the template               */
+34   /*                                                                          */
+35   /*   VARIABLES REQUIRED: DM -- ACTARM or ARM                                */
+36   /*                             USUBJID                                      */
+37   /*                             RFSTDTC if no DSSTDY                         */
+38   /*                       DS -- DSDECOD                                      */
+39   /*                             DSSTDY or DSSTDTC                            */
+40   /*                             USUBJID                                      */
+41   /*                       EX -- USUBJID                                      */
+42   /*                                                                          */
+43   /* OTHER VARIABLES USED: DM -- ARMCD                                        */
+44   /* IF AVAILABLE          DS -- DSCAT                                        */
+45   /*                             DSSCAT                                       */
+46   /*                             DSSEQ                                        */
+47   /*                                                                          */
+48   /*            MADE WITH: SAS 9.2                                            */
+49   /*                                                                          */
+50   /*                NOTES:                                                    */
+51   /*                                                                          */
+52   /****************************************************************************/
+53
+54   /* REVISIONS */
+55   /*
+56   2011-02-17 DK  Changed to subject count from event count
+57                  Added check for DSSCAT variable
+58                  Moved output to separate macro
+59                  Updated template to uniform panel style
+60
+61   2011-02-24 DK  Moved every section into separate macros
+62                  Collapsed time to event code into one macro for both all and
+62 ! exposed
+63                  Added checks for all variables
+64
+65   2011-03-05 DK  Added grouping & subsetting output
+66                  Added handling for missing study day/date variables
+67                  Number of DSDECOD terms now stored in separate macro variables
+67 ! for all vs ex
+68
+69   2011-03-27 DK  Added run location handling
+70
+71   2011-04-24 DK  Fixed an error in determining the number of randomized subjects
+72                  when DSCAT and DSSCAT are missing; now determined by looking at
+72 !  DM_DS/DM_DS_EX
+73
+74   2011-05-08 DK  Error/no subjects in DM handling
+75
+76   2011-05-10 DK  Fixed substr to extract dates, order of sort variables, arm
+76 ! name length,
+77                  by_ds2_one datastep where statement to prevent using missing
+77 ! values in a do loop
+78
+79   2011-05-18 DK  Changed sort in %ds_by_arm to by dsdy instead of dsstdtc/dsstdy
+80
+81   2011-05-23 DK  Added exceptions in the data step that keeps one dsdecod per
+81 ! usubjid/dscat/dsscat
+82                  when dsdecod is Informed Consent Obtained or Randomized
+83                  Made missing categories/subcategories Missing
+84
+85   2015-06-13 DC  Enhanced to filter data and graph by dscat and dsscat
+86   */
+87
+88   /* the minoperator option allows the use of the in operator by the macro
+88 ! language */
+89   options minoperator;
+90   options missing='';
+91
+92   /* determine the run location by looking for the SL-set run_location macro
+92 ! variable */
+93   %sysfunc(ifc(not %symexist(run_location),%nrstr(%let run_location = local;),))
+93 ! ;
+94   %put RUN LOCATION: &run_location.;
+RUN LOCATION: local
+95
+96   %macro params;
+97
+98       /* program parameters if the program is run locally */
+99       %if %upcase(&run_location.) = LOCAL %then %do;
+100
+101          data macrovar; set sashelp.vmacro(keep=scope name
+101! where=(scope='GLOBAL' & name ne 'RUN_LOCATION')); run;
+102          data _null_; set macrovar; call execute('%symdel
+102! '||trim(left(name))||';'); run;
+103          proc datasets kill; quit;
+104
+105          %global panel_title panel_desc;
+106          %let panel_title = Disposition;
+107          %let panel_desc = ;
+108
+109          /* NDA/BLA number */
+110          /* study number */
+111          %global ndabla studyid catc subc catdis subcatdis;
+112          %let ndabla = ;
+113          %let studyid = ;
+114
+115          %let catc=dscat;
+116          %let subc=dsscat;
+117
+118          %let catdis='DISPOSITION EVENT'; /* Example: 'DISPOSITION EVENT' */
+119          %let subcatdis='END OF TREATMENT'; /* Example: 'END OF TREATMENT' */
+120
+121          /* location of the study being examined */
+122          %let studypath =F:\Internal Use\FDA JumpStart
+122! Scripts\Data\SDTM_Accenture_Data ;
+123
+124          libname inlib "&studypath.";
+125
+126          /* retrieve datasets */
+127          data dm; set inlib.dm; run;
+128          data ds; set inlib.ds; run;
+129          data ex; set inlib.ex; run;
+130
+131          /* location of external SAS programs */
+132          %global saspath utilpath;
+133          %let saspath =F:\Internal Use\FDA JumpStart Scripts\Programs\Ad Hoc ;
+134          %let utilpath = F:\Internal Use\FDA JumpStart Scripts\Programs\Maclib;
+135
+136          /* location and filename of the disposition panel template */
+137          %let templatepath =F:\Internal Use\FDA JumpStart
+137! Scripts\Data\External\Templates ;
+138          %let template = Disposition_Template.xls;
+139
+140          /* location and filename of the output */
+141          %let outpath =F:\Internal Use\FDA JumpStart Scripts\Output\Dev ;
+142          %let outfile = Disposition.xls;
+143
+144          %global dispout errout;
+145          %let dispout = &outpath.\&outfile.;
+146          %let errout = &outpath.\Disposition Error Summary.xls;
+147
+148          options noxwait xsync;
+149
+150          /* copy the template to the output file */
+151          x "%str(copy %"&templatepath.\&template.%" %"&dispout.%")";
+152
+153          /* dummy grouping, subsetting, and dataset information datasets */
+154          data sl_datasets;
+155              datatype = ''; name = ''; partition_variable = ''; default = '';
+156              delete;
+157          run;
+158          data sl_group;
+159              group_name = ''; domain = ''; partition = ''; var_name = '';
+159! var_value = ''; dsvg_grp_name = '';
+160              delete;
+161          run;
+162          data sl_subset;
+163              name = ''; domain = ''; partition = ''; var_name = ''; var_value =
+163!  ''; inner_operator = ''; outer_operator = '';
+164              delete;
+165          run;
+166
+167      %end;
+168
+169      /* program parameters if the program is run through Script Launcher */
+170      %else %do;
+171      %end;
+172
+173  %mend params;
+174  %params;
+
+NOTE: There were 3 observations read from the data set SASHELP.VMACRO.
+      WHERE (scope='GLOBAL') and (name not = 'RUN_LOCATION');
+NOTE: The data set WORK.MACROVAR has 3 observations and 2 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.04 seconds
+
+
+
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.00 seconds
+
+NOTE: There were 3 observations read from the data set WORK.MACROVAR.
+
+NOTE: CALL EXECUTE routine executed successfully, but no SAS statements were
+      generated.
+                                     Directory
+
+                Libref         WORK
+                Engine         V9
+                Physical Name  J:\SASWorkSpace\_TD5076_ATTOCTPAPP2_
+                Filename       J:\SASWorkSpace\_TD5076_ATTOCTPAPP2_
+
+
+                         Member      File
+            #  Name      Type        Size  Last Modified
+
+            1  MACROVAR  DATA      131072  03/04/2016 08:45:38
+            2  SASMACR   CATALOG     5120  03/04/2016 08:45:38
+NOTE: Deleting WORK.MACROVAR (memtype=DATA).
+NOTE: Deleting WORK.SASMACR (memtype=CATALOG).
+NOTE: File WORK.SASMACR (memtype=CATALOG) cannot be deleted because it is in use.
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.07 seconds
+      cpu time            0.06 seconds
+
+
+NOTE: Libref INLIB was successfully assigned as follows:
+      Engine:        V9
+      Physical Name: F:\Internal Use\FDA JumpStart Scripts\Data\SDTM_Accenture_Data
+
+NOTE: There were 633 observations read from the data set INLIB.DM.
+NOTE: The data set WORK.DM has 633 observations and 26 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.09 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: There were 2631 observations read from the data set INLIB.DS.
+NOTE: The data set WORK.DS has 2631 observations and 15 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: There were 19090 observations read from the data set INLIB.EX.
+NOTE: The data set WORK.EX has 19090 observations and 23 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+NOTE: The data set WORK.SL_DATASETS has 0 observations and 4 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The data set WORK.SL_GROUP has 0 observations and 6 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The data set WORK.SL_SUBSET has 0 observations and 7 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+175
+176  /* data checks and data check output */
+177  %include "&saspath.\data_checks_disposition.sas";
+474  %include "&utilpath.\data_checks.sas";
+785   %include "&utilpath.\sl_gs_output.sas";
+1918  %include "&utilpath.\err_output.sas";
+XML TEXT STRING LENGTH: 2000
+3097
+3098
+3099  /*****************************************************/
+3100  /* PRELIMINARY REQUIRED AND OPTIONAL VARIABLE CHECKS */
+3101  /*****************************************************/
+3102  %macro ds_prelim_check;
+3103
+3104      /* check whether there are subjects in DM */
+3105      %chk_dm_subj_gt0;
+3106
+3107      /* required variables */
+3108      %chk_var(ds=dm,var=usubjid);
+3109      %chk_var(ds=ds,var=dsdecod);
+3110      %chk_var(ds=ds,var=usubjid);
+3111      %chk_var(ds=ex,var=usubjid);
+3112
+3113      data rpt_chk_var_req;
+3114          set rpt_chk_var;
+3115      run;
+3116
+3117      /* actual arm or planned arm */
+3118      %chk_var(ds=dm,var=actarm);
+3119      %chk_var(ds=dm,var=arm);
+3120
+3121      /* insert a row into RPT_CHK_VAR_REQ indicating whether actual arm OR arm
+3121!  exists */
+3122      proc sql noprint;
+3123          insert into rpt_chk_var_req
+3124          set chk = 'VAR',
+3125              ds = 'DM',
+3126              var = 'ACTARM or ARM',
+3127              condition = 'EXISTS',
+3128              ind = %sysfunc(ifc(&dm_actarm. or &dm_arm.,1,0));
+3129      quit;
+3130
+3131      /* study day of disposition event OR (start date of disposition event AND
+3131!  subject reference start date) */
+3132      %chk_var(ds=ds,var=dsstdtc);
+3133      %chk_var(ds=ds,var=dsstdy);
+3134      %chk_var(ds=dm,var=rfstdtc);
+3135
+3136      proc sql noprint;
+3137          insert into rpt_chk_var_req
+3138          set chk = 'VAR',
+3139              ds = 'DM/DS',
+3140              var = 'DSSTDY or (DSSTDTC and RFSTDTC)',
+3141              condition = 'EXISTS',
+3142              ind = %sysfunc(ifc(&ds_dsstdy. or (&ds_dsstdtc. and
+3142! &dm_rfstdtc.),1,0));
+3143      quit;
+3144
+3145      /* set a flag indicating whether all required variables are present */
+3146      %global all_req_var;
+3147      proc sql noprint;
+3148          select (case when count = 0 then 1 else 0 end) into: all_req_var
+3149          from (select count(1) as count
+3150                from rpt_chk_var_req
+3151                where ind ne 1);
+3152      quit;
+3153
+3154      /* optional variables */
+3155      %chk_var(ds=dm,var=armcd);
+3156      %chk_var(ds=ds,var=dscat);
+3157      %chk_var(ds=ds,var=dsscat);
+3158      %chk_var(ds=ds,var=dsseq);
+3159
+3160      /* if study day exists or date variables exist to compute study day, time
+3160!  to event can be done */
+3161      %global ds_tte;
+3162      %if &ds_dsstdy. or (&dm_rfstdtc. and &ds_dsstdtc.) %then %let ds_tte = 1;
+3163      %else %let ds_tte = 0;
+3164
+3165  %mend ds_prelim_check;
+3166
+3167
+3168  /**********************************************/
+3169  /* DISPOSITION ANALYSIS DATASET PREPROCESSING */
+3170  /**********************************************/
+3171  %macro ds_setup;
+3172
+3173      %put **********************************************;
+3174      %put * DISPOSITION ANALYSIS DATASET PREPROCESSING *;
+3175      %put **********************************************;
+3176
+3177      /* used ACTARM if it is available */
+3178      %if &dm_actarm. %then %do;
+3179          proc datasets library=work;
+3180              modify dm;
+3181              rename %if &dm_arm. %then arm=plannedarm;
+3182                     actarm=arm;
+3183          quit;
+3184      %end;
+3185
+3186      data dm;
+3187          set dm;
+3188
+3189          %if &dm_armcd. %then %do;
+3190              if upcase(ARMCD) in("SCRNFAIL","NOTASSGN") then delete;
+3191          %end;
+3192
+3193          /* put arm into propcase */
+3194          arm_display = arm;
+3195          if arm_display ne '' and not anylower(arm_display) then do;
+3196              length arm_word $50;
+3197              i = 1;
+3198              arm_word = scan(arm_display,i);
+3199              do while (arm_word ne '');
+3200                  if length(arm_word) > 3 and not anydigit(compress(arm_word))
+3201                          then
+3201! substr(arm_display,index(arm_display,compress(arm_word)),length(compress(arm_
+3201! word))) = propcase(compress(arm_word));
+3202                  if compress(arm_word) in ('MG' 'KG')
+3203                      then
+3203! substr(arm_display,index(arm_display,compress(arm_word)),length(compress(arm_
+3203! word))) = lowcase(arm_word);
+3204                  if compress(arm_word) = ('ML')
+3205                      then
+3205! substr(arm_display,index(arm_display,compress(arm_word)),length(compress(arm_
+3205! word))) = 'mL';
+3206                  i = i + 1;
+3207                  arm_word = scan(arm_display,i);
+3208              end;
+3209          end;
+3210          arm = arm_display;
+3211          drop arm_display arm_word i;
+3212      run;
+3213
+3214      data ds ;
+3215          set ds;
+3216          if not anylower(dsdecod) then dsdecod = propcase(dsdecod);
+3217
+3218          %if &ds_dscat. %then %do;
+3219              if missing(dscat) then dscat = 'Missing';
+3220              if not anylower(dscat) then dscat = propcase(dscat);
+3221          %end;
+3222          %else %do;
+3223              dscat = 'Missing';
+3224          %end;
+3225
+3226          %if &ds_dsscat. %then %do;
+3227              if missing(dsscat) then dsscat = 'Missing';
+3228              if not anylower(dsscat) then dsscat = propcase(dsscat);
+3229          %end;
+3230          %else %do;
+3231              dsscat = 'Missing';
+3232          %end;
+3233      run;
+3234
+3235      *data ex;
+3236      *   set ex;
+3237      *run;
+3238
+3239      * Obtain demographics and people for each of the disposition terms;
+3240      proc sort data = dm;
+3241        by usubjid;
+3242      run;
+3243
+3244      proc sort data = ds;
+3245        by usubjid;
+3246      run;
+3247
+3248      proc sort data = ex nodupkey;
+3249        by usubjid;
+3250      run;
+3251
+3252      data dm_ds;
+3253          merge dm (in=b) ds (in=a);
+3254          by usubjid;
+3255          if  a and b;
+3256      run;
+3257
+3258
+3259      data dm_ds;
+3260          set dm_ds;
+3261
+3262          %if &ds_dsstdy. %then %do;
+3263              dsdy = dsstdy;
+3264          %end;
+3265
+3266          %else %if &dm_rfstdtc. and &ds_dsstdtc. %then %do;
+3267              dss_year  = substr(left(dsstdtc),1,4);
+3268              dss_month = substr(left(dsstdtc),6,2);
+3269              dss_day   = substr(left(dsstdtc),9,2);
+3270              dss_date  = mdy( dss_month, dss_day, dss_year);
+3271
+3272              rfs_year  = substr(left(rfstdtc),1,4);
+3273              rfs_month = substr(left(rfstdtc),6,2);
+3274              rfs_day   = substr(left(rfstdtc),9,2);
+3275              rfs_date  = mdy( rfs_month, rfs_day, rfs_year);
+3276
+3277              if dss_date >= rfs_date then do;
+3278                  dsdy = (dss_date - rfs_date + 1);
+3279              end;
+3280              else do;
+3281                  dsdy = (dss_date - rfs_date);
+3282              end;
+3283          %end;
+3284
+3285          %else %do;
+3286              length dsdy 8. dsstdy 8. rfstdtc $1 dsstdtc $1;
+3287              call missing(dsdy,dsstdy,rfstdtc,dsstdtc);
+3288          %end;
+3289      run;
+3290
+3291      ** MERGE ON THE EX FILE TO SUBSET   **;
+3292
+3293      data dm_ds_ex;
+3294        merge dm_ds(in=d) ex(in=e keep=usubjid);
+3295        by usubjid;
+3296        if d and e;
+3297      run;
+3298
+3299  %mend ds_setup;
+3300
+3301
+3302  /**********************/
+3303  /* DISPOSITION BY ARM */
+3304  /**********************/
+3305  %macro ds_by_arm(infile,outfile);
+3306
+3307      %put ******************************************;
+3308      %put * DISPOSITION EVENTS BY ARM for &infile. *;
+3309      %put ******************************************;
+3310
+3311      ** Revised logic part of the program starts here ****;
+3312      **IF THE VARIABLES ARE MISSING THEY WILL BE SET TO MISSING ***;
+3313
+3314      proc sort data=&infile. out=&infile._sort;
+3315          by usubjid dscat dsscat %if &ds_dsstdtc. %then dsstdtc; %else %if
+3315! &ds_dsstdy. %then dsstdy;;
+3316      run;
+3317
+3318      /* keep only the last disposition event per category and subcategory */
+3319      /* keep death if there are multiple disposition events on a single day */
+3320      data &infile._sort;
+3321          set &infile._sort;
+3322          if upcase(dsdecod) = 'DEATH' then order = 100;
+3323          else order = 1;
+3324      run;
+3325
+3326      proc sort data=&infile._sort out=&infile._sort;
+3327          by usubjid
+3328             dscat
+3329             dsscat
+3330             dsdy
+3331             order
+3332             %if &ds_dsseq. %then dsseq;
+3333             dsdecod;
+3334      run;
+3335
+3336      /* pick out the last disposition event per subject in each category and
+3336! subcategory */
+3337      /* category/subcategory/subject level */
+3338      data &infile._cscsl;
+3339          set &infile._sort;
+3340          by usubjid dscat dsscat;
+3341
+3342          if upcase(dscat) ne 'PROTOCOL MILESTONE'
+3343          and not (upcase(dsdecod) =: 'INFORMED CONSENT OBTAINED')
+3344          and not (upcase(dsdecod) =: 'RANDOMIZED')
+3345          then do;
+3346              if last.dsscat;
+3347          end;
+3348      run;
+3349
+3350      proc sql noprint;
+3351          create table by_cat as
+3352          select dscat, dsscat, dsdecod, arm, count(distinct usubjid) as
+3352! num_by_cat
+3353          from &infile._cscsl
+3354          group by dscat, dsscat, dsdecod, arm;
+3355      quit;
+3356
+3357      /*proc summary data = dm_ds_a nway;
+3358        class dscat dsscat dsdecod arm;
+3359        output out = by_cat(drop=_type_ rename=(_freq_=num_by_cat));
+3360      run;*/
+3361
+3362
+3363      * Create the denominator total out of the randomized ;
+3364      * Total Randomized Patients ;
+3365
+3366
+3367      * Total Randomized Patients by Treatment ;
+3368      proc sql noprint;
+3369          create table ran_arm as
+3370          select arm, count(distinct usubjid) as total_count
+3371          from &infile.
+3372          where upcase(dsdecod) like 'RANDOM%'
+3373          group by arm;
+3374      quit;
+3375
+3376      data ran_arm;
+3377          set ran_arm;
+3378          arm_n + 1;
+3379      run;
+3380
+3381      ** CHECK TO SEE IF THERE ARE ANY RANDOMIZED, IF NOT CALCULATE ARM N **;
+3382      %global num_random;
+3383      proc sql noprint;
+3384        select count(*) into: num_random
+3385        from ran_arm;
+3386      quit;
+3387
+3388      %if &num_random. = 0 %then %do;
+3389
+3390          proc sql noprint;
+3391              create table ran_arm as
+3392              select arm, count(distinct usubjid) as total_count
+3393              from dm_ds
+3394              group by arm;
+3395          quit;
+3396
+3397          data ran_arm;
+3398              set ran_arm;
+3399              arm_n + 1;
+3400          run;
+3401
+3402          proc sql noprint;
+3403              select count(1) into: num_random
+3404              from ran_arm;
+3405          quit;
+3406
+3407      %end;
+3408
+3409      ** COMBINE BREAKDOWN WITH NUMBER BY ARM ***;
+3410
+3411      proc sql;
+3412        create table by_cat_arm
+3413        as select b.*, r.*
+3414        from by_cat b, ran_arm r
+3415        where b.arm = r.arm
+3416        order by dscat, dsscat, dsdecod, arm
+3417        ;
+3418      quit;
+3419
+3420      ** NOW MAKE ONE OBS FOR EACH STANDARD TERM ***;
+3421
+3422      data by_dsdecode (drop=total_count num_by_cat arm I arm_n);
+3423            set by_cat_arm;
+3424            by dscat dsscat dsdecod;
+3425            retain n_arm1 - n_arm%eval(&num_random.) n1 - n%eval(&num_random.)
+3425! p_arm1 - p_arm%eval(&num_random.) name1 - name%eval(&num_random.);
+3426            format name1 - name%eval(&num_random.) $100.;
+3427            array ns{*} n_arm1 - n_arm%eval(&num_random.);
+3428            array nds{*} n1 - n%eval(&num_random.);
+3429            array percs{*} p_arm1 - p_arm%eval(&num_random.);
+3430            array names{*} $ name1 - name%eval(&num_random.);
+3431
+3432          ns{arm_n} = total_count;
+3433          nds{arm_n} = num_by_cat;
+3434          percs{arm_n} = 100*num_by_cat/total_count;
+3435          names{arm_n} = arm;
+3436
+3437          dscat = propcase(dscat);
+3438          dsdecod = propcase(dsdecod);
+3439          if index(dscat,'Mile') then sorter = 1;
+3440            else sorter = 2;
+3441
+3442          if last.dsdecod then do;
+3443            tot_perc = sum(of p_arm:);
+3444            output;
+3445            do I = 1 to &num_random.;
+3446               nds{I} = 0;
+3447               percs{I} = 0;
+3448            end;
+3449          end;
+3450      run;
+3451
+3452      proc sort data =  by_dsdecode;
+3453        by sorter dscat dsscat decending tot_perc;
+3454      run;
+3455
+3456      data by_dsdecode;
+3457            set by_dsdecode;
+3458            by sorter dscat dsscat;
+3459          if not first.dscat then dscat = '';
+3460          if not first.dsscat then dsscat = '';
+3461      run;
+3462
+3463      ** NOW I NEED TO GET THE VARIABLES INTO THE CORRECT ORDER FOR EXPORTING
+3463! ***;
+3464
+3465      %macro order;
+3466
+3467          %do I = 1 %to &num_random.;
+3468
+3469          data order&I;
+3470              format order $8.;
+3471              order = "n_arm&I.";
+3472              output;
+3473              order = "n&I.";
+3474              output;
+3475              order = "p_arm&I.";
+3476              output;
+3477              order = "name&I.";
+3478              output;
+3479          run;
+3480
+3481          %end;
+3482
+3483      %mend order;
+3484
+3485      %order;
+3486
+3487      data order;
+3488       set order:;
+3489      run;
+3490
+3491      proc sql noprint;
+3492        select order into: order separated by ','
+3493        from order;
+3494      quit;
+3495
+3496      proc sql;
+3497        create table &OUTFILE.
+3498        as select dscat, dsscat, dsdecod, &order
+3499        from by_dsdecode
+3500      ;
+3501      quit;
+3502
+3503
+3504      PROC STDIZE DATA=&OUTFILE. REPONLY MISSING=0 OUT=&OUTFILE.;
+3505      VAR _numeric_;
+3506      RUN;
+3507
+3508      /* clean up */
+3509      proc datasets library = work;
+3510        delete order:;
+3511      run;
+3512      quit;
+3513
+3514  %mend ds_by_arm;
+3515
+3516
+3517  /************************************/
+3518  /* TIME TO DISPOSITION EVENT BY ARM */
+3519  /************************************/
+3520  %macro time_to_event(ds);
+3521
+3522      %put **************************************;
+3523      %put * TIME TO DISPOSITION EVENT for &ds. *;
+3524      %put **************************************;
+3525
+3526      /* disposition event study day or date variables to calculate it must be
+3526! available */
+3527      %if &ds_tte. %then %do;
+3528
+3529          /* set the time-to-event failure note to empty */
+3530          %if not %symexist(tte_fail_note) %then %do;
+3531              %global tte_fail_note;
+3532              %let tte_fail_note = ;
+3533          %end;
+3534
+3535          ** THE FOLLOWING CREATES THE LITTLE GRAPHS ***;
+3536
+3537          ** DEDUPE DATA **;
+3538          proc sort data = &ds. nodupkey dupout = &ds._dupes;
+3539            by usubjid dsdecod dsdy;
+3540          run;
+3541
+3542  /*Start of 6/13 enhancement*/
+3543
+3544          %if &subcatdis~= %then %do;
+3545
+3546          ** NUMBER OF EACH BY ARM DSDECOD ***;
+3547
+3548          proc summary data = &ds. nway;
+3549            class arm dsdecod;
+3550            where upcase(&subc.)=&subcatdis and upcase(&catc.)=&catdis;
+3551            output out = by_dsdecod(drop=_type_ rename=(_freq_=tot_dsdecod));
+3552          run;
+3553
+3554          ** NUMBER OF EACH BY ARM BY DAY ***;
+3555
+3556          proc summary data = &ds. nway;
+3557            class arm dsdecod dsdy;
+3558            where upcase(&subc.)=&subcatdis and upcase(&catc.)=&catdis;
+3559            output out = by_dsdecod_day(drop=_type_ rename=(_freq_=by_dsdecod))
+3559! ;
+3560          run;
+3561
+3562          %end;
+3563
+3564          %if &subcatdis= and &catdis~= %then %do;
+3565
+3566          ** NUMBER OF EACH BY ARM DSDECOD ***;
+3567
+3568          proc summary data = &ds. nway;
+3569            class arm dsdecod;
+3570            where upcase(&catc.)=&catdis;
+3571            output out = by_dsdecod(drop=_type_ rename=(_freq_=tot_dsdecod));
+3572          run;
+3573
+3574          ** NUMBER OF EACH BY ARM BY DAY ***;
+3575
+3576          proc summary data = &ds. nway;
+3577            class arm dsdecod dsdy;
+3578            where upcase(&catc.)=&catdis;
+3579            output out = by_dsdecod_day(drop=_type_ rename=(_freq_=by_dsdecod))
+3579! ;
+3580          run;
+3581
+3582          %end;
+3583
+3584          %if &subcatdis= and &catdis= %then %do;
+3585
+3586          ** NUMBER OF EACH BY ARM DSDECOD ***;
+3587
+3588          proc summary data = &ds. nway;
+3589            class arm dsdecod;
+3590            output out = by_dsdecod(drop=_type_ rename=(_freq_=tot_dsdecod));
+3591          run;
+3592
+3593          ** NUMBER OF EACH BY ARM BY DAY ***;
+3594
+3595          proc summary data = &ds. nway;
+3596            class arm dsdecod dsdy;
+3597            output out = by_dsdecod_day(drop=_type_ rename=(_freq_=by_dsdecod))
+3597! ;
+3598          run;
+3599
+3600          %end;
+3601
+3602  /*End of 6/13 Enhancement*/
+3603
+3604          ** NOW GET THE MAX DAY IN THE STUDY ***;
+3605
+3606          proc sql noprint;
+3607            select max(dsdy) into: max_day
+3608            from by_dsdecod_day;
+3609          quit;
+3610
+3611          ** NOW RUN THROUGH AND DO THE CUMMULATIVE NUMBER OF EACH EVENT AND
+3611! ALL THE NUMBER OF DAYS ***;
+3612
+3613          data by_dsdecod_day1 (keep = arm dsdecod dsdy1 cum_dsdecod);
+3614                set by_dsdecod_day;
+3615                by arm dsdecod;
+3616                retain cum_dsdecod;
+3617
+3618              dsdy0 = lag(dsdy);
+3619              if first.dsdecod then do;
+3620                if dsdy < 0 then do;
+3621                  dsdy1 = dsdy;
+3622                  cum_dsdecod = by_dsdecod;
+3623                  output;
+3624                end;
+3625                else do;
+3626                do J = 0 to dsdy;
+3627                  dsdy1 = J;
+3628                  if dsdy1 = dsdy then cum_dsdecod = by_dsdecod;
+3629                    else cum_dsdecod = 0;
+3630                  output;
+3631                end;
+3632                end;
+3633              end;
+3634              else do;
+3635                days_between = abs(dsdy0-dsdy);
+3636                if days_between = 1 then do;
+3637                  dsdy1 = dsdy;
+3638                  cum_dsdecod = cum_dsdecod+by_dsdecod;
+3639                  output;
+3640                end;
+3641                else do;
+3642                  do I = 1 to days_between;
+3643                    dsdy1 = dsdy0+I;
+3644                    if dsdy1 = dsdy then  cum_dsdecod = cum_dsdecod+by_dsdecod;
+3645                    output;
+3646                  end;
+3647                end;
+3648              end;
+3649          run;
+3650
+3651          ** MERGE TOTAL ON TOGETHER AND CALCULATE CUMMULATIVE PERCENT ***;
+3652
+3653          data by_ds;
+3654            merge by_dsdecod_day1 by_dsdecod ;
+3655            by arm dsdecod;
+3656
+3657          cum_percent = cum_dsdecod/tot_dsdecod;
+3658          run;
+3659
+3660
+3661          ** NOW FIGURE OUT THE NUMBER OF ARMS AND THE NUMBER OF DSDECODS AND
+3661! NUMBER OF DAYS FOR DSDECOD **;
+3662
+3663          proc sql;
+3664            create table arm
+3665            as select distinct arm
+3666            from by_dsdecod
+3667            ;
+3668          quit;
+3669
+3670          ** THIS GETS A NUMERIC FOR EACH ARM ***;
+3671          data arm;
+3672                set arm;
+3673              n_arm = _n_;
+3674          run;
+3675
+3676
+3677          %global num_arms;
+3678          proc sql noprint;
+3679            select count(*) into: num_arms
+3680            from arm;
+3681          quit;
+3682
+3683
+3684          ** NOW I FIGURE OUT HOW MANY EACH DSDECOD OCCURED TO GET UP TO 12
+3684! INTERESTING ONES ***;
+3685          ** THIS PUTS THEM IN ORDER ***;
+3686          proc sql;
+3687            create table dsd_num
+3688            as select dsdecod, sum(tot_dsdecod) as num_events
+3689            from by_dsdecod
+3690            group by dsdecod
+3691            order by num_events descending;
+3692          quit;
+3693
+3694          /* determine the macro variable to use for the number of DSDECOD
+3694! terms */
+3695          %if not %sysfunc(index(&ds.,ex)) %then %let rlimit = num_dsd;
+3696          %else %let rlimit = num_dsde;
+3697
+3698          data dsd_num (keep = dsdecod order);
+3699                set dsd_num end=eof;
+3700              order = _n_;
+3701              twelve = 12;
+3702              if eof then do;
+3703                  call symputx("&rlimit.",put(min(_n_,12),8. -l),'g');
+3704              end;
+3705          run;
+3706
+3707
+3708          ** NOW I NEED TO GET ALL THE ARMS LINED UP CORRECTLY for EACH
+3708! DSDECOD**;
+3709
+3710          ** MERGE FILES TOGETHER **;
+3711
+3712          proc sql;
+3713            create table by_ds2
+3714            as select b.*, a.*, d.*
+3715            from by_ds b, arm a, dsd_num d
+3716            where b.dsdecod = d.dsdecod  and
+3717                  b.arm = a.arm
+3718            order by d.order, b.dsdy1
+3719          ;
+3720          quit;
+3721
+3722          data by_ds2_one(keep = dsdecod order dsdy1
+3722! c_perc1-c_perc%eval(&num_arms.));
+3723                set by_ds2 end=eof;
+3724                by order dsdy1;
+3725                retain c_perc1-c_perc%eval(&num_arms.);
+3726                array c_percs{*} c_perc1-c_perc%eval(&num_arms.);
+3727
+3728              where dsdy1 ne .;
+3729
+3730              if first.order then do;
+3731                do I = 1 to %eval(&num_arms.);
+3732                  c_percs{I} = 0;
+3733                end;
+3734              end;
+3735
+3736              c_percs{n_arm} = cum_percent;
+3737              if last.dsdy1 then output;
+3738
+3739              if last.order then do;
+3740                if dsdy1 < &max_day. then do;
+3741                  do J = dsdy1+1 to %eval(&max_day.);
+3742                    dsdy1 = J;
+3743                    output;
+3744                  end;
+3745                end;
+3746              end;
+3747          run;
+3748
+3749          ** GET UNIQUE ARM DSDECODE OBS TO BE USED IN LABELS ***;
+3750
+3751          proc sort data = by_ds2 out = for_labels(keep = order dsdecod
+3751! tot_dsdecod n_arm) nodupkey;
+3752            by order n_arm;
+3753          run;
+3754
+3755
+3756
+3757          * Break up the file by DSDECOD Term and Export ;
+3758          ** I WANT TO CREATE A LABEL FOR EACH THAT HAS THE NUMBER OF OBS IN IT
+3758!  ***;
+3759          %global lable1 lable2 lable3 lable4 lable5 lable6 lable7 lable8;
+3760
+3761          %do a=1 %to &&&rlimit.;
+3762
+3763              ** THIS WILL HAVE THE NUMBER OF OBS FOR EACH ARM IN THE DSDECOD
+3763! WE ARE WORKING ON ***;
+3764
+3765              data for_labels1(keep=tot_dsdecod n_arm);
+3766                set for_labels;
+3767              if order = &a.;
+3768              run;
+3769
+3770              ** CREATE A LABEL FOR THE DSDECOD **;
+3771              data _null_;
+3772                set for_labels;
+3773                format dsdtext $100.;
+3774                if order = &a.;
+3775              dsdtext = "Cumulative Chart for Disposition Event =
+3775! "||trim(compress(dsdecod,';'));
+3776              call symput('dsd_label',dsdtext);
+3777              run;
+3778
+3779              ** THIS WILL HAVE THE LABEL TEXT FOR EACH ***;
+3780              data for_labels1;
+3781                format text $200.;
+3782                merge for_labels1 arm;
+3783                by n_arm;
+3784                if tot_dsdecod = . then tot_dsdecod =0;
+3785                text = "label c_perc"||compress(_N_)||' =
+3785! "'||trim(compress(arm,,'c'))||' Events = '||compress(tot_dsdecod)||'"';
+3786              run;
+3787
+3788              ** CREATE A MACRO FOR EACH ***;
+3789
+3790              %do L = 1 %to &num_arms.;
+3791
+3792                  data _null_;
+3793                   set for_labels1;
+3794                   if _N_ = &L;
+3795                   call symput("lable&L.",trim(text));
+3796                  run;
+3797
+3798              %end;
+3799
+3800
+3801              ** NOW SUBSET THE DATA AND USE THE LABELS ***;
+3802
+3803              data dsdecod&a.%sysfunc(ifc(%sysfunc(index(&ds.,ex)),e,)) (drop =
+3803!  order);
+3804                  length dsdecod $ 200;
+3805                  set by_ds2_one;
+3806                  if order = &a.;
+3807
+3808                  dsdecod = "&dsd_label.";
+3809
+3810                  %do L2 = 1 %to &num_arms.;
+3811                      &&lable&L2.;
+3812                  %end;
+3813              run;
+3814
+3815          %end;
+3816
+3817      %end;
+3818      %else %do;
+3819
+3820          %put;
+3821          %put WARNING: Study day or date variables not available;
+3822          %put;
+3823
+3824          %if not %symexist(tte_fail_note) %then %do;
+3825              %global tte_fail_note;
+3826              %let tte_fail_note = Time to event analysis could not be
+3826! performed because
+3827                                   study day and date variables used to compute
+3827!  study day were not available;
+3828              %let tte_fail_note = %sysfunc(compbl(&tte_fail_note.));
+3829          %end;
+3830
+3831      %end;
+3832
+3833  %mend time_to_event;
+3834
+3835
+3836  /***********************/
+3837  /* CREATE EXCEL OUTPUT */
+3838  /***********************/
+3839  %macro ds_out;
+3840
+3841      %put ********************************************;
+3842      %put * CREATE DISPOSITION ANALYSIS EXCEL OUTPUT *;
+3843      %put ********************************************;
+3844
+3845      ** ADD IN THE DATA INFORMATION ***;
+3846      data lib;
+3847          length path $500;
+3848          path = "&ndabla.";
+3849          output;
+3850          path = "&studyid.";
+3851          output;
+3852          path =  compbl(put(date(),e8601da.)||' '||put(time(),timeampm11.));
+3853          output;
+3854          path = "&sl_custom_ds.";
+3855          output;
+3856          path = "&tte_fail_note.";
+3857          output;
+3858          path = ifc(&dm_actarm.,'actual treatment arm (ACTARM)','planned
+3858! treatment arm (ARM)');
+3859          output;
+3860          %if &subcatdis~= %then %do;
+3861              path = "Subset where &catc. = &catdis. and &subc. = &subcatdis.";
+3862              output;
+3863          %end;
+3864          %if &subcatdis= %then %do;
+3865              path = "Subset where &catc. = &catdis.";
+3866              output;
+3867          %end;
+3868      run;
+3869
+3870      %if not %symexist(run_location) %then %let run_location = LOCAL;
+3871
+3872      /* local runs use the Microsoft Jet database-based Excel LIBNAME engine
+3872! */
+3873      %if %upcase(&run_location.) = LOCAL %then %do;
+3874          libname xls excel "&dispout." ver=2003; *Output function changed due
+3874! to SAS 9.3(64bit) and Excel 2010(32bit) incompatability;
+3875  /*      libname xls pcfiles path="&dispout."; */
+3876      %end;
+3877      /* Script Launcher runs use the PCFILES LIBNAME Engine */
+3878      %else %do;
+3879          libname xls pcfiles path="&dispout.";
+3880      %end;
+3881
+3882      proc sql noprint;
+3883          drop table xls.DispositionANew,
+3884                     xls.DispositionBNew,
+3885                     %if &ds_tte. %then %do;
+3886                      %do a = 1 %to &num_dsd.;
+3887                       xls.Sheet&a.,
+3888                       xls.Sheet&a.E,
+3889                      %end;
+3890                     %end;
+3891                     xls.Info
+3892                     ;
+3893      quit;
+3894
+3895
+3896      data xls.DispositionANew;
+3897          set final_dispositionA;
+3898      run;
+3899
+3900      data xls.DispositionBNew;
+3901          set final_dispositionB ;
+3902      run;
+3903
+3904      %if &ds_tte. %then %do;
+3905
+3906          %do a = 1 %to &num_dsd.;
+3907
+3908              data xls.Sheet&a.(dblabel=yes);
+3909                  set dsdecod&a.;
+3910              run;
+3911
+3912          %end;
+3913
+3914          %do a = 1 %to &num_dsde.;
+3915
+3916              data xls.Sheet&a.E(dblabel=yes);
+3917                  set dsdecod&a.e;
+3918              run;
+3919
+3920          %end;
+3921
+3922      %end;
+3923
+3924      data xls.Info;
+3925          set lib;
+3926      run;
+3927
+3928      libname xls clear;
+3929
+3930  %mend ds_out;
+3931
+3932
+3933  /**********************************/
+3934  /* RUN DISPOSITION ANALYSIS PANEL */
+3935  /**********************************/
+3936  %macro ds;
+3937
+3938      %ds_prelim_check;
+3939
+3940      %if &dm_subj_gt0. and &all_req_var. %then %do;
+3941
+3942          %ds_setup;
+3943
+3944          %ds_by_arm(dm_ds,final_dispositionA);
+3945
+3946          %ds_by_arm(dm_ds_ex,final_dispositionB);
+3947
+3948          %time_to_event(dm_ds);
+3949
+3950          %time_to_event(dm_ds_ex);
+3951
+3952          /* do preprocessing of Script Launcher datasets */
+3953          %group_subset_pp;
+3954
+3955          %ds_out;
+3956
+3957          /* data checks */
+3958          %disposition_check;
+3959
+3960          %disposition_check_out;
+3961
+3962          /* create grouping & subsetting output */
+3963          %group_subset_xls_out(gs_file=&dispout.);
+3964
+3965      %end;
+3966      %else %do;
+3967          %error_summary(err_file=&errout.,
+3968                         err_nosubj=%sysfunc(ifc(&dm_subj_gt0.,0,1)),
+3969                         err_missvar=%sysfunc(ifc(&all_req_var.,0,1))
+3970                         );
+3971      %end;
+3972
+3973  %mend ds;
+3974
+3975
+3976  /* run the disposition panel */
+3977  %ds;
+
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The data set WORK.CHK_VAR_DM_USUBJID has 1 observations and 7 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: There were 1 observations read from the data set WORK.CHK_VAR_DM_USUBJID.
+NOTE: The data set WORK.RPT_CHK_VAR has 1 observations and 7 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: Deleting WORK.CHK_VAR_DM_USUBJID (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: The data set WORK.CHK_VAR_DS_DSDECOD has 1 observations and 7 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: There were 1 observations read from the data set WORK.RPT_CHK_VAR.
+NOTE: There were 1 observations read from the data set WORK.CHK_VAR_DS_DSDECOD.
+NOTE: The data set WORK.RPT_CHK_VAR has 2 observations and 7 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: Deleting WORK.CHK_VAR_DS_DSDECOD (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The data set WORK.CHK_VAR_DS_USUBJID has 1 observations and 7 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: There were 2 observations read from the data set WORK.RPT_CHK_VAR.
+NOTE: There were 1 observations read from the data set WORK.CHK_VAR_DS_USUBJID.
+NOTE: The data set WORK.RPT_CHK_VAR has 3 observations and 7 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+
+NOTE: Deleting WORK.CHK_VAR_DS_USUBJID (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The data set WORK.CHK_VAR_EX_USUBJID has 1 observations and 7 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: There were 3 observations read from the data set WORK.RPT_CHK_VAR.
+NOTE: There were 1 observations read from the data set WORK.CHK_VAR_EX_USUBJID.
+NOTE: The data set WORK.RPT_CHK_VAR has 4 observations and 7 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: Deleting WORK.CHK_VAR_EX_USUBJID (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: There were 4 observations read from the data set WORK.RPT_CHK_VAR.
+NOTE: The data set WORK.RPT_CHK_VAR_REQ has 4 observations and 7 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The data set WORK.CHK_VAR_DM_ACTARM has 1 observations and 7 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: There were 4 observations read from the data set WORK.RPT_CHK_VAR.
+NOTE: There were 1 observations read from the data set WORK.CHK_VAR_DM_ACTARM.
+NOTE: The data set WORK.RPT_CHK_VAR has 5 observations and 7 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: Deleting WORK.CHK_VAR_DM_ACTARM (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The data set WORK.CHK_VAR_DM_ARM has 1 observations and 7 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: There were 5 observations read from the data set WORK.RPT_CHK_VAR.
+NOTE: There were 1 observations read from the data set WORK.CHK_VAR_DM_ARM.
+NOTE: The data set WORK.RPT_CHK_VAR has 6 observations and 7 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: Deleting WORK.CHK_VAR_DM_ARM (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: 1 row was inserted into WORK.RPT_CHK_VAR_REQ.
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The data set WORK.CHK_VAR_DS_DSSTDTC has 1 observations and 7 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: There were 6 observations read from the data set WORK.RPT_CHK_VAR.
+NOTE: There were 1 observations read from the data set WORK.CHK_VAR_DS_DSSTDTC.
+NOTE: The data set WORK.RPT_CHK_VAR has 7 observations and 7 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+
+NOTE: Deleting WORK.CHK_VAR_DS_DSSTDTC (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: The data set WORK.CHK_VAR_DS_DSSTDY has 1 observations and 7 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: There were 7 observations read from the data set WORK.RPT_CHK_VAR.
+NOTE: There were 1 observations read from the data set WORK.CHK_VAR_DS_DSSTDY.
+NOTE: The data set WORK.RPT_CHK_VAR has 8 observations and 7 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: Deleting WORK.CHK_VAR_DS_DSSTDY (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: The data set WORK.CHK_VAR_DM_RFSTDTC has 1 observations and 7 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: There were 8 observations read from the data set WORK.RPT_CHK_VAR.
+NOTE: There were 1 observations read from the data set WORK.CHK_VAR_DM_RFSTDTC.
+NOTE: The data set WORK.RPT_CHK_VAR has 9 observations and 7 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: Deleting WORK.CHK_VAR_DM_RFSTDTC (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: 1 row was inserted into WORK.RPT_CHK_VAR_REQ.
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: The data set WORK.CHK_VAR_DM_ARMCD has 1 observations and 7 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: There were 9 observations read from the data set WORK.RPT_CHK_VAR.
+NOTE: There were 1 observations read from the data set WORK.CHK_VAR_DM_ARMCD.
+NOTE: The data set WORK.RPT_CHK_VAR has 10 observations and 7 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: Deleting WORK.CHK_VAR_DM_ARMCD (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: The data set WORK.CHK_VAR_DS_DSCAT has 1 observations and 7 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: There were 10 observations read from the data set WORK.RPT_CHK_VAR.
+NOTE: There were 1 observations read from the data set WORK.CHK_VAR_DS_DSCAT.
+NOTE: The data set WORK.RPT_CHK_VAR has 11 observations and 7 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: Deleting WORK.CHK_VAR_DS_DSCAT (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The data set WORK.CHK_VAR_DS_DSSCAT has 1 observations and 7 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: There were 11 observations read from the data set WORK.RPT_CHK_VAR.
+NOTE: There were 1 observations read from the data set WORK.CHK_VAR_DS_DSSCAT.
+NOTE: The data set WORK.RPT_CHK_VAR has 12 observations and 7 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: Deleting WORK.CHK_VAR_DS_DSSCAT (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The data set WORK.CHK_VAR_DS_DSSEQ has 1 observations and 7 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: There were 12 observations read from the data set WORK.RPT_CHK_VAR.
+NOTE: There were 1 observations read from the data set WORK.CHK_VAR_DS_DSSEQ.
+NOTE: The data set WORK.RPT_CHK_VAR has 13 observations and 7 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: Deleting WORK.CHK_VAR_DS_DSSEQ (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+**********************************************
+* DISPOSITION ANALYSIS DATASET PREPROCESSING *
+**********************************************
+                                     Directory
+
+                Libref         WORK
+                Engine         V9
+                Physical Name  J:\SASWorkSpace\_TD5076_ATTOCTPAPP2_
+                Filename       J:\SASWorkSpace\_TD5076_ATTOCTPAPP2_
+
+
+                            Member       File
+        #  Name             Type         Size  Last Modified
+
+        1  DM               DATA       327680  03/04/2016 08:45:38
+        2  DS               DATA      1114112  03/04/2016 08:45:38
+        3  EX               DATA      4718592  03/04/2016 08:45:38
+        4  RPT_CHK_VAR      DATA       131072  03/04/2016 08:45:41
+        5  RPT_CHK_VAR_REQ  DATA       131072  03/04/2016 08:45:41
+        6  SASMACR          CATALOG      5120  03/04/2016 08:45:38
+        7  SL_DATASETS      DATA       131072  03/04/2016 08:45:39
+        8  SL_GROUP         DATA       131072  03/04/2016 08:45:39
+        9  SL_SUBSET        DATA       131072  03/04/2016 08:45:39
+NOTE: Renaming variable arm to plannedarm.
+NOTE: Renaming variable actarm to arm.
+
+NOTE: MODIFY was successful for WORK.DM.DATA.
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: There were 633 observations read from the data set WORK.DM.
+NOTE: The data set WORK.DM has 461 observations and 26 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: There were 2631 observations read from the data set WORK.DS.
+NOTE: The data set WORK.DS has 2631 observations and 15 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: There were 461 observations read from the data set WORK.DM.
+NOTE: The data set WORK.DM has 461 observations and 26 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: There were 2631 observations read from the data set WORK.DS.
+NOTE: The data set WORK.DS has 2631 observations and 15 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: There were 19090 observations read from the data set WORK.EX.
+NOTE: 18626 observations with duplicate key values were deleted.
+NOTE: The data set WORK.EX has 464 observations and 23 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+
+NOTE: There were 461 observations read from the data set WORK.DM.
+NOTE: There were 2631 observations read from the data set WORK.DS.
+NOTE: The data set WORK.DM_DS has 2166 observations and 38 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: There were 2166 observations read from the data set WORK.DM_DS.
+NOTE: The data set WORK.DM_DS has 2166 observations and 39 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: There were 2166 observations read from the data set WORK.DM_DS.
+NOTE: There were 464 observations read from the data set WORK.EX.
+NOTE: The data set WORK.DM_DS_EX has 2166 observations and 39 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.00 seconds
+
+
+******************************************
+* DISPOSITION EVENTS BY ARM for dm_ds *
+******************************************
+
+NOTE: There were 2166 observations read from the data set WORK.DM_DS.
+NOTE: The data set WORK.DM_DS_SORT has 2166 observations and 39 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: There were 2166 observations read from the data set WORK.DM_DS_SORT.
+NOTE: The data set WORK.DM_DS_SORT has 2166 observations and 40 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: There were 2166 observations read from the data set WORK.DM_DS_SORT.
+NOTE: The data set WORK.DM_DS_SORT has 2166 observations and 40 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: There were 2166 observations read from the data set WORK.DM_DS_SORT.
+NOTE: The data set WORK.DM_DS_CSCSL has 2166 observations and 40 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: Table WORK.BY_CAT created, with 23 rows and 5 columns.
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: Table WORK.RAN_ARM created, with 2 rows and 2 columns.
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: There were 2 observations read from the data set WORK.RAN_ARM.
+NOTE: The data set WORK.RAN_ARM has 2 observations and 3 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+WARNING: Column named arm is duplicated in a select expression (or a view).
+         Explicit references to it will be to the first one.
+WARNING: Variable arm already exists on file WORK.BY_CAT_ARM.
+NOTE: Table WORK.BY_CAT_ARM created, with 23 rows and 7 columns.
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+
+NOTE: There were 23 observations read from the data set WORK.BY_CAT_ARM.
+NOTE: The data set WORK.BY_DSDECODE has 14 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: There were 14 observations read from the data set WORK.BY_DSDECODE.
+NOTE: The data set WORK.BY_DSDECODE has 14 observations and 13 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: There were 14 observations read from the data set WORK.BY_DSDECODE.
+NOTE: The data set WORK.BY_DSDECODE has 14 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The data set WORK.ORDER1 has 4 observations and 1 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The data set WORK.ORDER2 has 4 observations and 1 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: There were 4 observations read from the data set WORK.ORDER1.
+NOTE: There were 4 observations read from the data set WORK.ORDER2.
+NOTE: The data set WORK.ORDER has 8 observations and 1 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: Table WORK.FINAL_DISPOSITIONA created, with 14 rows and 11 columns.
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: There were 14 observations read from the data set WORK.FINAL_DISPOSITIONA.
+NOTE: The data set WORK.FINAL_DISPOSITIONA has 14 observations and 11 variables.
+NOTE: PROCEDURE STDIZE used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+                                     Directory
+
+                Libref         WORK
+                Engine         V9
+                Physical Name  J:\SASWorkSpace\_TD5076_ATTOCTPAPP2_
+                Filename       J:\SASWorkSpace\_TD5076_ATTOCTPAPP2_
+
+
+                              Member       File
+       #  Name                Type         Size  Last Modified
+
+       1  BY_CAT              DATA       131072  03/04/2016 08:45:42
+       2  BY_CAT_ARM          DATA       131072  03/04/2016 08:45:42
+       3  BY_DSDECODE         DATA       131072  03/04/2016 08:45:42
+       4  DM                  DATA       262144  03/04/2016 08:45:42
+       5  DM_DS               DATA      1572864  03/04/2016 08:45:42
+       6  DM_DS_CSCSL         DATA      1572864  03/04/2016 08:45:42
+       7  DM_DS_EX            DATA      1572864  03/04/2016 08:45:42
+       8  DM_DS_SORT          DATA      1572864  03/04/2016 08:45:42
+       9  DS                  DATA      1114112  03/04/2016 08:45:42
+      10  EX                  DATA       196608  03/04/2016 08:45:42
+      11  FINAL_DISPOSITIONA  DATA       131072  03/04/2016 08:45:42
+      12  ORDER               DATA       131072  03/04/2016 08:45:42
+      13  ORDER1              DATA       131072  03/04/2016 08:45:42
+      14  ORDER2              DATA       131072  03/04/2016 08:45:42
+      15  RAN_ARM             DATA       131072  03/04/2016 08:45:42
+      16  RPT_CHK_VAR         DATA       131072  03/04/2016 08:45:41
+      17  RPT_CHK_VAR_REQ     DATA       131072  03/04/2016 08:45:41
+      18  SASMACR             CATALOG      5120  03/04/2016 08:45:38
+      19  SL_DATASETS         DATA       131072  03/04/2016 08:45:39
+      20  SL_GROUP            DATA       131072  03/04/2016 08:45:39
+      21  SL_SUBSET           DATA       131072  03/04/2016 08:45:39
+NOTE: Deleting WORK.ORDER (memtype=DATA).
+NOTE: Deleting WORK.ORDER1 (memtype=DATA).
+NOTE: Deleting WORK.ORDER2 (memtype=DATA).
+
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+******************************************
+* DISPOSITION EVENTS BY ARM for dm_ds_ex *
+******************************************
+
+NOTE: There were 2166 observations read from the data set WORK.DM_DS_EX.
+NOTE: The data set WORK.DM_DS_EX_SORT has 2166 observations and 39 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+
+NOTE: There were 2166 observations read from the data set WORK.DM_DS_EX_SORT.
+NOTE: The data set WORK.DM_DS_EX_SORT has 2166 observations and 40 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: There were 2166 observations read from the data set WORK.DM_DS_EX_SORT.
+NOTE: The data set WORK.DM_DS_EX_SORT has 2166 observations and 40 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+
+NOTE: There were 2166 observations read from the data set WORK.DM_DS_EX_SORT.
+NOTE: The data set WORK.DM_DS_EX_CSCSL has 2166 observations and 40 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: Table WORK.BY_CAT created, with 23 rows and 5 columns.
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: Table WORK.RAN_ARM created, with 2 rows and 2 columns.
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: There were 2 observations read from the data set WORK.RAN_ARM.
+NOTE: The data set WORK.RAN_ARM has 2 observations and 3 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+WARNING: Column named arm is duplicated in a select expression (or a view).
+         Explicit references to it will be to the first one.
+WARNING: Variable arm already exists on file WORK.BY_CAT_ARM.
+NOTE: Table WORK.BY_CAT_ARM created, with 23 rows and 7 columns.
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: There were 23 observations read from the data set WORK.BY_CAT_ARM.
+NOTE: The data set WORK.BY_DSDECODE has 14 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: There were 14 observations read from the data set WORK.BY_DSDECODE.
+NOTE: The data set WORK.BY_DSDECODE has 14 observations and 13 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: There were 14 observations read from the data set WORK.BY_DSDECODE.
+NOTE: The data set WORK.BY_DSDECODE has 14 observations and 13 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: The data set WORK.ORDER1 has 4 observations and 1 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The data set WORK.ORDER2 has 4 observations and 1 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: There were 4 observations read from the data set WORK.ORDER1.
+NOTE: There were 4 observations read from the data set WORK.ORDER2.
+NOTE: The data set WORK.ORDER has 8 observations and 1 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: Table WORK.FINAL_DISPOSITIONB created, with 14 rows and 11 columns.
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: There were 14 observations read from the data set WORK.FINAL_DISPOSITIONB.
+NOTE: The data set WORK.FINAL_DISPOSITIONB has 14 observations and 11 variables.
+NOTE: PROCEDURE STDIZE used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.00 seconds
+
+
+                                     Directory
+
+                Libref         WORK
+                Engine         V9
+                Physical Name  J:\SASWorkSpace\_TD5076_ATTOCTPAPP2_
+                Filename       J:\SASWorkSpace\_TD5076_ATTOCTPAPP2_
+
+
+                              Member       File
+       #  Name                Type         Size  Last Modified
+
+       1  BY_CAT              DATA       131072  03/04/2016 08:45:42
+       2  BY_CAT_ARM          DATA       131072  03/04/2016 08:45:42
+       3  BY_DSDECODE         DATA       131072  03/04/2016 08:45:42
+       4  DM                  DATA       262144  03/04/2016 08:45:42
+       5  DM_DS               DATA      1572864  03/04/2016 08:45:42
+       6  DM_DS_CSCSL         DATA      1572864  03/04/2016 08:45:42
+       7  DM_DS_EX            DATA      1572864  03/04/2016 08:45:42
+       8  DM_DS_EX_CSCSL      DATA      1572864  03/04/2016 08:45:42
+       9  DM_DS_EX_SORT       DATA      1572864  03/04/2016 08:45:42
+      10  DM_DS_SORT          DATA      1572864  03/04/2016 08:45:42
+      11  DS                  DATA      1114112  03/04/2016 08:45:42
+      12  EX                  DATA       196608  03/04/2016 08:45:42
+      13  FINAL_DISPOSITIONA  DATA       131072  03/04/2016 08:45:42
+      14  FINAL_DISPOSITIONB  DATA       131072  03/04/2016 08:45:43
+      15  ORDER               DATA       131072  03/04/2016 08:45:43
+      16  ORDER1              DATA       131072  03/04/2016 08:45:42
+      17  ORDER2              DATA       131072  03/04/2016 08:45:42
+      18  RAN_ARM             DATA       131072  03/04/2016 08:45:42
+      19  RPT_CHK_VAR         DATA       131072  03/04/2016 08:45:41
+      20  RPT_CHK_VAR_REQ     DATA       131072  03/04/2016 08:45:41
+      21  SASMACR             CATALOG      5120  03/04/2016 08:45:38
+      22  SL_DATASETS         DATA       131072  03/04/2016 08:45:39
+      23  SL_GROUP            DATA       131072  03/04/2016 08:45:39
+      24  SL_SUBSET           DATA       131072  03/04/2016 08:45:39
+NOTE: Deleting WORK.ORDER (memtype=DATA).
+NOTE: Deleting WORK.ORDER1 (memtype=DATA).
+NOTE: Deleting WORK.ORDER2 (memtype=DATA).
+
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.09 seconds
+      cpu time            0.09 seconds
+
+
+**************************************
+* TIME TO DISPOSITION EVENT for dm_ds *
+**************************************
+
+NOTE: There were 2166 observations read from the data set WORK.DM_DS.
+NOTE: 325 observations with duplicate key values were deleted.
+NOTE: The data set WORK.DM_DS_DUPES has 325 observations and 39 variables.
+NOTE: The data set WORK.DM_DS has 1841 observations and 39 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+
+NOTE: No observations were selected from data set WORK.DM_DS.
+NOTE: There were 0 observations read from the data set WORK.DM_DS.
+      WHERE (UPCASE(dsscat)='END OF TREATMENT') and (UPCASE(dscat)='DISPOSITION
+      EVENT');
+NOTE: The data set WORK.BY_DSDECOD has 0 observations and 3 variables.
+NOTE: PROCEDURE SUMMARY used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+
+NOTE: No observations were selected from data set WORK.DM_DS.
+NOTE: There were 0 observations read from the data set WORK.DM_DS.
+      WHERE (UPCASE(dsscat)='END OF TREATMENT') and (UPCASE(dscat)='DISPOSITION
+      EVENT');
+NOTE: The data set WORK.BY_DSDECOD_DAY has 0 observations and 4 variables.
+NOTE: PROCEDURE SUMMARY used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: There were 0 observations read from the data set WORK.BY_DSDECOD_DAY.
+NOTE: The data set WORK.BY_DSDECOD_DAY1 has 0 observations and 4 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: There were 0 observations read from the data set WORK.BY_DSDECOD_DAY1.
+NOTE: There were 0 observations read from the data set WORK.BY_DSDECOD.
+NOTE: The data set WORK.BY_DS has 0 observations and 6 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: Table WORK.ARM created, with 0 rows and 1 columns.
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: There were 0 observations read from the data set WORK.ARM.
+NOTE: The data set WORK.ARM has 0 observations and 2 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: Table WORK.DSD_NUM created, with 0 rows and 2 columns.
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.04 seconds
+
+
+
+NOTE: There were 0 observations read from the data set WORK.DSD_NUM.
+NOTE: The data set WORK.DSD_NUM has 0 observations and 2 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+WARNING: Variable arm already exists on file WORK.BY_DS2.
+WARNING: Variable DSDECOD already exists on file WORK.BY_DS2.
+NOTE: Table WORK.BY_DS2 created, with 0 rows and 8 columns.
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+NOTE: Line generated by the invoked macro "TIME_TO_EVENT".
+30    (&num_arms.);                 c_percs{I} = 0;               end;
+30  ! end;              c_percs{n_arm} = cum_percent;             if last.dsdy1
+30  ! then output;              if last.order then do;               if dsdy1 <
+30  ! &max_day. then do;
+                     --
+                     22
+ERROR: %EVAL function has no expression to evaluate, or %IF statement has no
+       condition.
+NOTE 137-205: Line generated by the invoked macro "TIME_TO_EVENT".
+31                     do J = dsdy1+1 to %eval(&max_day.);                   dsdy1
+                                                         -
+                                                         22
+31  ! = J;                   output;                 end;               end;
+31  !       end;         run;          ** GET UNIQUE ARM DSDECODE OBS TO BE USED IN
+31  !  LABELS ***;
+ERROR 22-322: Syntax error, expecting one of the following: !, !!, &, *, **, +, -,
+              /, ;, <, <=, <>, =, >, ><, >=, AND, EQ, GE, GT, IN, LE, LT, MAX,
+              MIN, NE, NG, NL, NOTIN, OR, ^=, |, ||, ~=.
+
+ERROR 22-322: Syntax error, expecting one of the following: a name,
+              a quoted string, a numeric constant, a datetime constant,
+              a missing value, INPUT, PUT.
+
+NOTE: Line generated by the invoked macro "TIME_TO_EVENT".
+31                     do J = dsdy1+1 to %eval(&max_day.);                   dsdy1
+31  ! = J;                   output;                 end;               end;
+31  !       end;         run;          ** GET UNIQUE ARM DSDECODE OBS TO BE USED IN
+            ---
+            161
+31  !  LABELS ***;
+ERROR 161-185: No matching DO/SELECT statement.
+
+
+NOTE: The SAS System stopped processing this step because of errors.
+WARNING: The data set WORK.BY_DS2_ONE may be incomplete.  When this step was
+         stopped there were 0 observations and 5 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: Input data set is empty.
+NOTE: 0 observations with duplicate key values were deleted.
+NOTE: The data set WORK.FOR_LABELS has 0 observations and 4 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+ERROR: The macro TIME_TO_EVENT will stop executing.
+**************************************
+* TIME TO DISPOSITION EVENT for dm_ds_ex *
+**************************************
+
+NOTE: There were 2166 observations read from the data set WORK.DM_DS_EX.
+NOTE: 325 observations with duplicate key values were deleted.
+NOTE: The data set WORK.DM_DS_EX_DUPES has 325 observations and 39 variables.
+NOTE: The data set WORK.DM_DS_EX has 1841 observations and 39 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: No observations were selected from data set WORK.DM_DS_EX.
+NOTE: There were 0 observations read from the data set WORK.DM_DS_EX.
+      WHERE (UPCASE(dsscat)='END OF TREATMENT') and (UPCASE(dscat)='DISPOSITION
+      EVENT');
+NOTE: The data set WORK.BY_DSDECOD has 0 observations and 3 variables.
+NOTE: PROCEDURE SUMMARY used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+
+NOTE: No observations were selected from data set WORK.DM_DS_EX.
+NOTE: There were 0 observations read from the data set WORK.DM_DS_EX.
+      WHERE (UPCASE(dsscat)='END OF TREATMENT') and (UPCASE(dscat)='DISPOSITION
+      EVENT');
+NOTE: The data set WORK.BY_DSDECOD_DAY has 0 observations and 4 variables.
+NOTE: PROCEDURE SUMMARY used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: There were 0 observations read from the data set WORK.BY_DSDECOD_DAY.
+NOTE: The data set WORK.BY_DSDECOD_DAY1 has 0 observations and 4 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: There were 0 observations read from the data set WORK.BY_DSDECOD_DAY1.
+NOTE: There were 0 observations read from the data set WORK.BY_DSDECOD.
+NOTE: The data set WORK.BY_DS has 0 observations and 6 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: Table WORK.ARM created, with 0 rows and 1 columns.
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: There were 0 observations read from the data set WORK.ARM.
+NOTE: The data set WORK.ARM has 0 observations and 2 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: Table WORK.DSD_NUM created, with 0 rows and 2 columns.
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+
+NOTE: There were 0 observations read from the data set WORK.DSD_NUM.
+NOTE: The data set WORK.DSD_NUM has 0 observations and 2 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+WARNING: Variable arm already exists on file WORK.BY_DS2.
+WARNING: Variable DSDECOD already exists on file WORK.BY_DS2.
+NOTE: Table WORK.BY_DS2 created, with 0 rows and 8 columns.
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: Line generated by the invoked macro "TIME_TO_EVENT".
+30    (&num_arms.);                 c_percs{I} = 0;               end;
+30  ! end;              c_percs{n_arm} = cum_percent;             if last.dsdy1
+30  ! then output;              if last.order then do;               if dsdy1 <
+30  ! &max_day. then do;
+                     --
+                     22
+ERROR: %EVAL function has no expression to evaluate, or %IF statement has no
+       condition.
+NOTE 137-205: Line generated by the invoked macro "TIME_TO_EVENT".
+31                     do J = dsdy1+1 to %eval(&max_day.);                   dsdy1
+                                                         -
+                                                         22
+31  ! = J;                   output;                 end;               end;
+31  !       end;         run;          ** GET UNIQUE ARM DSDECODE OBS TO BE USED IN
+31  !  LABELS ***;
+ERROR 22-322: Syntax error, expecting one of the following: !, !!, &, *, **, +, -,
+              /, ;, <, <=, <>, =, >, ><, >=, AND, EQ, GE, GT, IN, LE, LT, MAX,
+              MIN, NE, NG, NL, NOTIN, OR, ^=, |, ||, ~=.
+
+ERROR 22-322: Syntax error, expecting one of the following: a name,
+              a quoted string, a numeric constant, a datetime constant,
+              a missing value, INPUT, PUT.
+
+NOTE: Line generated by the invoked macro "TIME_TO_EVENT".
+31                     do J = dsdy1+1 to %eval(&max_day.);                   dsdy1
+31  ! = J;                   output;                 end;               end;
+31  !       end;         run;          ** GET UNIQUE ARM DSDECODE OBS TO BE USED IN
+            ---
+            161
+31  !  LABELS ***;
+ERROR 161-185: No matching DO/SELECT statement.
+
+
+NOTE: The SAS System stopped processing this step because of errors.
+WARNING: The data set WORK.BY_DS2_ONE may be incomplete.  When this step was
+         stopped there were 0 observations and 5 variables.
+WARNING: Data set WORK.BY_DS2_ONE was not replaced because this step was stopped.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: Input data set is empty.
+NOTE: 0 observations with duplicate key values were deleted.
+NOTE: The data set WORK.FOR_LABELS has 0 observations and 4 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+ERROR: The macro TIME_TO_EVENT will stop executing.
+SL GROUPING/SUBSETTING PREPROCESSING
+
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+No grouping
+No subsetting
+
+GROUP DETAIL
+
+NOTE: Input data set is empty.
+NOTE: The data set WORK.SL_GROUP has 0 observations and 6 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: There were 0 observations read from the data set WORK.SL_GROUP.
+NOTE: The data set WORK.SL_OUT_GROUP has 0 observations and 7 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+SUBSET DETAIL
+
+NOTE: Input data set is empty.
+NOTE: The data set WORK.SL_SUBSET has 0 observations and 7 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: Table WORK.SL_SUBSET_CONDITION created, with 0 rows and 2 columns.
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: There were 0 observations read from the data set WORK.SL_SUBSET.
+NOTE: The data set WORK.SL_OUT_SUBSET has 0 observations and 7 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: Deleting WORK.SL_SUBSET_CONDITION (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+CUSTOM DATASETS
+NOTE: No rows were selected.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+********************************************
+* CREATE DISPOSITION ANALYSIS EXCEL OUTPUT *
+********************************************
+
+NOTE: The data set WORK.LIB has 7 observations and 1 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: Libref XLS was successfully assigned as follows:
+      Engine:        EXCEL
+      Physical Name: F:\Internal Use\FDA JumpStart
+      Scripts\Output\Dev\Disposition.xls
+WARNING: Apparent symbolic reference NUM_DSD not resolved.
+ERROR: A character operand was found in the %EVAL function or %IF condition where
+       a numeric operand is required. The condition was: &num_dsd.
+ERROR: The %TO value of the %DO A loop is invalid.
+ERROR: The macro DS_OUT will stop executing.
+NOTE: Line generated by the invoked macro "DISPOSITION_ERR_DT".
+1         format dsstdt e8601da.;    dsstdt = input(dsstdtc,?? e8601da.);
+
+------
+
+180
+WARNING: This SAS global statement is not supported in PROC SQL. It has been
+         ignored.
+ERROR 180-322: Statement is not valid or it is used out of proper order.
+
+NOTE: Line generated by the invoked macro "DISPOSITION_ERR_DT".
+1        drop dsstdtc;
+
+-------
+
+22
+
+76
+ERROR 22-322: Syntax error, expecting one of the following: TABLE, VIEW.
+
+ERROR 76-322: Syntax error, statement will be ignored.
+
+NOTE: Line generated by the invoked macro "DISPOSITION_ERR_DT".
+1         if missing(dsstdt) then order = 99;
+
+--
+
+180
+ERROR 180-322: Statement is not valid or it is used out of proper order.
+
+NOTE: Line generated by the invoked macro "DISPOSITION_ERR_DT".
+1        else order = 1;
+
+----
+
+180
+ERROR 180-322: Statement is not valid or it is used out of proper order.
+
+NOTE: Line generated by the macro variable "DS".
+1      ds_err_dm_ds
+       ------------
+       22
+ERROR 22-322: Syntax error, expecting one of the following: ',', '.', TABLE,
+              VIEW.
+
+NOTE: Line generated by the macro variable "DS".
+1      dm_ds
+       -----
+       22
+       76
+NOTE: Line generated by the invoked macro "DISPOSITION_ERR_DT".
+2       if _n_ = 1
+        --
+        180
+ERROR 22-322: Syntax error, expecting one of the following: MODE, TRANSACTION.
+
+ERROR 76-322: Syntax error, statement will be ignored.
+
+ERROR 180-322: Statement is not valid or it is used out of proper order.
+
+NOTE: Line generated by the invoked macro "DISPOSITION_ERR_DT".
+3                  declare hash h(dataset:'arm');
+                   -------
+                   180
+ERROR 180-322: Statement is not valid or it is used out of proper order.
+
+NOTE: Line generated by the invoked macro "DISPOSITION_ERR_DT".
+3                                                    h.definekey('arm');
+                                                     -
+                                                     180
+ERROR 180-322: Statement is not valid or it is used out of proper order.
+
+NOTE: Line generated by the invoked macro "DISPOSITION_ERR_DT".
+3                                                                           h.defin
+                                                                            -
+                                                                            180
+3   ! edata('n_arm');    h.definedone();   end;    length n_arm 8.;   call
+ERROR 180-322: Statement is not valid or it is used out of proper order.
+
+NOTE: Line generated by the invoked macro "DISPOSITION_ERR_DT".
+3         h.definedone();
+
+-
+
+180
+ERROR 180-322: Statement is not valid or it is used out of proper order.
+
+NOTE: Line generated by the invoked macro "DISPOSITION_ERR_DT".
+3        end;
+
+---
+
+180
+ERROR 180-322: Statement is not valid or it is used out of proper order.
+
+NOTE: Line generated by the invoked macro "DISPOSITION_ERR_DT".
+3         length n_arm 8.;   call missing(n_arm);
+
+----
+
+180
+WARNING: This SAS global statement is not supported in PROC SQL. It has been
+         ignored.
+ERROR 180-322: Statement is not valid or it is used out of proper order.
+
+NOTE: Line generated by the invoked macro "DISPOSITION_ERR_DT".
+3        rc = h.find();
+
+--
+
+180
+ERROR 180-322: Statement is not valid or it is used out of proper order.
+
+NOTE: Line generated by the invoked macro "DISPOSITION_ERR_DT".
+3        drop rc;
+
+--
+
+22
+
+76
+ERROR 22-322: Syntax error, expecting one of the following: TABLE, VIEW.
+
+ERROR 76-322: Syntax error, statement will be ignored.
+
+NOTE: Line generated by the invoked macro "DISPOSITION_ERR_DT".
+3         rename n_arm=arm_num;
+
+------
+
+180
+ERROR 180-322: Statement is not valid or it is used out of proper order.
+
+NOTE: Line generated by the invoked macro "DISPOSITION_ERR_DT".
+3        drop dsdy;
+
+----
+
+22
+
+76
+ERROR 22-322: Syntax error, expecting one of the following: TABLE, VIEW.
+
+ERROR 76-322: Syntax error, statement will be ignored.
+
+NOTE: PROC SQL statements are executed immediately; The RUN statement has no
+      effect.
+NOTE: The SAS System stopped processing this step because of errors.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.17 seconds
+      cpu time            0.12 seconds
+
+
+ERROR: File WORK.DS_ERR_DM_DS.DATA does not exist.
+
+NOTE: The SAS System stopped processing this step because of errors.
+WARNING: The data set WORK.DS_ERR_DM_DS may be incomplete.  When this step was
+         stopped there were 0 observations and 0 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+ERROR: Variable USUBJID not found.
+ERROR: Variable DSDECOD not found.
+
+NOTE: The SAS System stopped processing this step because of errors.
+WARNING: The data set WORK.DS_ERR_DM_DS_NODUP may be incomplete.  When this step
+         was stopped there were 0 observations and 0 variables.
+WARNING: The data set WORK.DS_ERR_DM_DS_DUP may be incomplete.  When this step was
+         stopped there were 0 observations and 0 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+
+NOTE: There were 0 observations read from the data set WORK.ARM.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+ERROR: Table WORK.DS_ERR_DM_DS_NODUP doesn't have any columns. PROC SQL requires
+       each of its tables to have at least 1 column.
+ERROR: Table WORK.DS_ERR_DM_DS_NODUP doesn't have any columns. PROC SQL requires
+       each of its tables to have at least 1 column.
+NOTE: A GROUP BY clause has been discarded because neither the SELECT clause nor
+      the optional HAVING clause of the associated table-expression referenced a
+      summary function.
+ERROR: The following columns were not found in the contributing tables: arm_1,
+       dsdecod.
+NOTE: The SAS System stopped processing this step because of errors.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.01 seconds
+
+
+
+ERROR: The variable arm_num in the DROP, KEEP, or RENAME list has never been
+       referenced.
+
+NOTE: The SAS System stopped processing this step because of errors.
+WARNING: The data set WORK.DS_ERR_DM_DS may be incomplete.  When this step was
+         stopped there were 0 observations and 0 variables.
+WARNING: Data set WORK.DS_ERR_DM_DS was not replaced because this step was stopped.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: The file WORK.DS_RPT_DM_DS_: (memtype=DATA) was not found, but appears on a
+      DELETE statement.
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: The data set WORK.CHK_VAR_DS_DSSTDY has 1 observations and 7 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+
+NOTE: There were 13 observations read from the data set WORK.RPT_CHK_VAR.
+NOTE: There were 1 observations read from the data set WORK.CHK_VAR_DS_DSSTDY.
+NOTE: The data set WORK.RPT_CHK_VAR has 13 observations and 7 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+
+NOTE: Deleting WORK.CHK_VAR_DS_DSSTDY (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: The data set WORK.DS_RPT_STDY_TEXT has 1 observations and 1 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: There were 0 observations read from the data set WORK.DM_DS_EX.
+      WHERE MISSING(dsdy);
+NOTE: The data set WORK.DS_ERR_DM_DS_EX has 0 observations and 6 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+
+NOTE: Input data set is empty.
+NOTE: The data set WORK.DS_ERR_DM_DS_EX has 0 observations and 5 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: Input data set is empty.
+NOTE: 0 observations with duplicate key values were deleted.
+NOTE: The data set WORK.DS_ERR_DM_DS_EX_NODUP has 0 observations and 3 variables.
+NOTE: The data set WORK.DS_ERR_DM_DS_EX_DUP has 0 observations and 5 variables.
+NOTE: PROCEDURE SORT used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+
+NOTE: There were 0 observations read from the data set WORK.ARM.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: A GROUP BY clause has been discarded because neither the SELECT clause nor
+      the optional HAVING clause of the associated table-expression referenced a
+      summary function.
+ERROR: The following columns were not found in the contributing tables: arm_1.
+NOTE: The SAS System stopped processing this step because of errors.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+
+NOTE: There were 0 observations read from the data set WORK.DS_ERR_DM_DS_EX.
+NOTE: The data set WORK.DS_ERR_DM_DS_EX has 0 observations and 4 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The file WORK.DS_RPT_DM_DS_EX_: (memtype=DATA) was not found, but appears on
+      a DELETE statement.
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The data set WORK.CHK_VAR_DS_DSSTDY has 1 observations and 7 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: There were 13 observations read from the data set WORK.RPT_CHK_VAR.
+NOTE: There were 1 observations read from the data set WORK.CHK_VAR_DS_DSSTDY.
+NOTE: The data set WORK.RPT_CHK_VAR has 13 observations and 7 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: Deleting WORK.CHK_VAR_DS_DSSTDY (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.00 seconds
+
+
+ERROR: Variable dsstdt is not on file WORK.DS_ERR_DM_DS.
+ERROR: Invalid DROP, KEEP, or RENAME option on file WORK.DS_ERR_DM_DS.
+
+NOTE: The SAS System stopped processing this step because of errors.
+WARNING: The data set WORK.DS_RPT_STDY may be incomplete.  When this step was
+         stopped there were 0 observations and 5 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+
+NOTE: Numeric values have been converted to character
+      values at the places given by: (Line):(Column).
+      5:239
+NOTE: There were 0 observations read from the data set WORK.DS_RPT_STDY.
+NOTE: The data set WORK.DS_RPT_STDY has 0 observations and 5 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+ERROR: File WORK.DS_RPT_DM_DS.DATA does not exist.
+ERROR: File WORK.DS_RPT_DM_DS_EX.DATA does not exist.
+
+NOTE: The SAS System stopped processing this step because of errors.
+WARNING: The data set WORK.DS_RPT_STDY_SUMMARY may be incomplete.  When this step
+         was stopped there were 0 observations and 1 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+
+
+NOTE: Variable dsdecod is uninitialized.
+NOTE: There were 0 observations read from the data set WORK.DS_RPT_STDY_SUMMARY.
+NOTE: The data set WORK.DS_RPT_STDY_SUMMARY has 0 observations and 1 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: The file WORK.DS_RPT_DM_DS: (memtype=DATA) was not found, but appears on a
+      DELETE statement.
+NOTE: Deleting WORK.DS_ERR_DM_DS (memtype=DATA).
+NOTE: Deleting WORK.DS_ERR_DM_DS_DUP (memtype=DATA).
+NOTE: Deleting WORK.DS_ERR_DM_DS_EX (memtype=DATA).
+NOTE: Deleting WORK.DS_ERR_DM_DS_EX_DUP (memtype=DATA).
+NOTE: Deleting WORK.DS_ERR_DM_DS_EX_NODUP (memtype=DATA).
+NOTE: Deleting WORK.DS_ERR_DM_DS_NODUP (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: Table WORK.CHK_CMP_DS1 created, with 461 rows and 2 columns.
+
+NOTE: Table WORK.CHK_CMP_DS2 created, with 640 rows and 2 columns.
+
+NOTE: Table WORK.RPT_CMP_DM_DS created, with 179 rows and 4 columns.
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: Deleting WORK.CHK_CMP_DS1 (memtype=DATA).
+NOTE: Deleting WORK.CHK_CMP_DS2 (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: Numeric values have been converted to character
+      values at the places given by: (Line):(Column).
+      1:8
+NOTE: The data set WORK.DS_RPT_DM_DS_USUBJID has 1 observations and 1 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: Libref XLS was successfully assigned as follows:
+      Engine:        EXCEL
+      Physical Name: F:\Internal Use\FDA JumpStart
+      Scripts\Output\Dev\Disposition.xls
+NOTE: Table XLS.subjmiss has been dropped.
+NOTE: Table XLS.text has been dropped.
+NOTE: Table XLS.summary has been dropped.
+NOTE: Table XLS.list has been dropped.
+NOTE: Table XLS.arminfo has been dropped.
+NOTE: Table XLS.dcinfo has been dropped.
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.04 seconds
+      cpu time            0.03 seconds
+
+
+
+NOTE: There were 1 observations read from the data set WORK.DS_RPT_DM_DS_USUBJID.
+NOTE: The data set XLS.subjmiss has 1 observations and 1 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: There were 1 observations read from the data set WORK.DS_RPT_STDY_TEXT.
+NOTE: The data set XLS.text has 1 observations and 1 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+
+NOTE: There were 0 observations read from the data set WORK.DS_RPT_STDY_SUMMARY.
+NOTE: The data set XLS.summary has 0 observations and 1 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: SAS variable labels, formats, and lengths are not written to DBMS tables.
+NOTE: There were 0 observations read from the data set WORK.DS_RPT_STDY.
+NOTE: The data set XLS.list has 0 observations and 5 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: SAS variable labels, formats, and lengths are not written to DBMS tables.
+NOTE: There were 0 observations read from the data set WORK.ARM.
+NOTE: The data set XLS.arminfo has 0 observations and 2 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The data set XLS.dcinfo has 2 observations and 2 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: Libref XLS has been deassigned.
+GROUPING/SUBSETTING EXCEL TEMPLATE OUTPUT
+NOTE: PROCEDURE SQL used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+
+
+
+NOTE: The data set WORK.SL_OUT_GROUP_SUBSET_INFO has 7 observations and 2
+      variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+local
+NOTE: Libref XLS was successfully assigned as follows:
+      Engine:        EXCEL
+      Physical Name: F:\Internal Use\FDA JumpStart
+      Scripts\Output\Dev\Disposition.xls
+
+NOTE: Deleting XLS.group_detail (memtype=DATA).
+NOTE: Deleting XLS.subset_detail (memtype=DATA).
+NOTE: Deleting XLS.group_subset_info (memtype=DATA).
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: SAS variable labels, formats, and lengths are not written to DBMS tables.
+NOTE: There were 0 observations read from the data set WORK.SL_OUT_GROUP.
+NOTE: The data set XLS.group_detail has 0 observations and 7 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.03 seconds
+      cpu time            0.03 seconds
+
+
+
+NOTE: SAS variable labels, formats, and lengths are not written to DBMS tables.
+NOTE: There were 0 observations read from the data set WORK.SL_OUT_SUBSET.
+NOTE: The data set XLS.subset_detail has 0 observations and 7 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+
+NOTE: There were 7 observations read from the data set
+      WORK.SL_OUT_GROUP_SUBSET_INFO.
+NOTE: The data set XLS.group_subset_info has 7 observations and 2 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.01 seconds
+      cpu time            0.01 seconds
+
+
+NOTE: Libref XLS has been deassigned.
+
