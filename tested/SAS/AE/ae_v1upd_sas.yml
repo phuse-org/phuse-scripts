@@ -11,7 +11,7 @@ Script:
   Type   : analysis
   Subtype: TFL
 Package:
-  name : White Paper abbreviation, for example: WPCT
+  name : SAS Analysis Panels
   title: White Paper title, for example: White Paper on Measures of Central Tendency
 Language: 
   name   : SAS
@@ -40,12 +40,14 @@ Outputs:
   O1:
   O2:
 Authors: 
-  - name   : Jon Doo
-    email  : jon.doo@phuse.com
-    company: PhUSE
-  - name   : Jim Boo
-    email  : jim.boo@phuse.com
-    company: PhUSE
+  - name   : David Kretch
+    email  : david.kretch@us.ibm.com
+    company: FDA/IBM
+	date   : 02/07/2011
+  - name   : Andreas Anastassopoulos
+    email  : andreas.anastassapoulos@us.ibm.com
+    company: FDA/IBM
+	date   : 02/07/2011
 Qualification: 
   LastQualDate: MM/DD/YYYY 
   LastQualBy: FirstName LastName
@@ -53,14 +55,14 @@ Qualification:
   Document: a link to latest documentation 
   Note: C - Contributed; D - Development; T - Testing; Q - Qualified
 Stages: 
-  - Date: mm/dd/yyyy
-    Name: Jon1 Doo
+  - Date: 02/02/2016
+    Name: Austin Taylor <Austin.Taylor@fda.hhs.gov>
     Stage: C 
-    Docs: a link to qualification documents
-  - Date: mm/dd/yyyy
-    Name: Jon2 Doo
-    Stage: D 
-    Docs: a link to qualification documents
+    Docs: https://github.com/phuse-org/phuse-scripts/blob/master/tested/SAS/SpecDocs/AE%20Severity%20Analysis%20Specifications%20(3-24-2015).doc
+  - Date: 03/07/2016
+    Name: Rebeka Revis
+    Stage: T
+    Docs: https://github.com/phuse-org/phuse-scripts/blob/master/tested/SAS/AE/ae_v1upd.docx
 Rating: 
   - User: Rebeka Revis
     Date: 03/07/2016
