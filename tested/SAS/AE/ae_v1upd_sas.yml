@@ -1,0 +1,73 @@
+KeyWords: AE, Severity
+Script: 
+  Desc   : Script description
+  Name   : Script name following the proposed convention: https://github.com/phuse-org/phuse-scripts/blob/master/naming_conventions_proposed.txt
+  GCR    : r135
+  SRV    : 12345
+  Source : FDA JumpStart
+  Target : https://github.com/phuse-org/phuse-scripts/blob/master/MetaData_template.md
+  Title  : AE Severity Analysis Panel
+  Topic  : Severity
+  Type   : analysis
+  Subtype: TFL
+Package:
+  name : White Paper abbreviation, for example: WPCT
+  title: White Paper title, for example: White Paper on Measures of Central Tendency
+Language: 
+  name   : SAS
+  version: 9.2.x, 9.4.x
+Comments: >
+  The AE Severity Analysis Panel provides the user with different analyses 
+  to help understand the adverse events present in the study and the 
+  frequency of their occurrence by treatment arm. Statistical and 
+  frequency reports are generated to provide the user with needed information.  
+  The Adverse Event analysis panel generates three separate Excel workbooks. 
+  1. Adverse Events Counts:  provides various combinations of counts and 
+     percentages of most frequent adverse events and serious adverse events 
+	 by treatment arm
+  2. Adverse Events Relative Risk: provides a listing of the relative risk of
+     adverse events between arms with their corresponding confidence intervals
+  3. Adverse Events Odds Ratio: provides a listing of odds ratios of adverse 
+     events between arms with their corresponding confidence intervals
+Inputs:
+  datasets: DM, AE, EX
+  P1: Studypath - location of the drug study datasets
+  P2: Utilpath - location of external SAS programs
+  P3: Templatepath - filename of the template
+  P4: Outpath - location of the output
+Outputs:
+  datasets: Excel
+  O1:
+  O2:
+Authors: 
+  - name   : Jon Doo
+    email  : jon.doo@phuse.com
+    company: PhUSE
+  - name   : Jim Boo
+    email  : jim.boo@phuse.com
+    company: PhUSE
+Qualification: 
+  LastQualDate: MM/DD/YYYY 
+  LastQualBy: FirstName LastName
+  Stage: T
+  Document: a link to latest documentation 
+  Note: C - Contributed; D - Development; T - Testing; Q - Qualified
+Stages: 
+  - Date: mm/dd/yyyy
+    Name: Jon1 Doo
+    Stage: C 
+    Docs: a link to qualification documents
+  - Date: mm/dd/yyyy
+    Name: Jon2 Doo
+    Stage: D 
+    Docs: a link to qualification documents
+Rating: 
+  - User: Rebeka Revis
+    Date: 03/07/2016
+    Association: Lilly 
+    Stars: 4
+  - User: htu 
+    Date: 03/10/2016 
+    Association: Accenture
+    Stars: 4.5
+

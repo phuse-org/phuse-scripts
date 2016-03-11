@@ -1,0 +1,62 @@
+KeyWords: PK, Dual Box
+Script: 
+  Desc   : Script description
+  Name   : Script name following the proposed convention: https://github.com/phuse-org/phuse-scripts/blob/master/naming_conventions_proposed.txt
+  GCR    : r135
+  SRV    : 12345
+  Source : YML Metadata
+  Target : https://github.com/phuse-org/phuse-scripts/blob/master/MetaData_template.md
+  Title  : YML meta data page example
+  Topic  : Metadata example
+  Type   : metadata
+  Subtype: YML
+Package:
+  name : White Paper abbreviation, for example: WPCT
+  title: White Paper title, for example: White Paper on Measures of Central Tendency
+Language: 
+  name   : YML
+  version: x.x.x
+Comments: >
+  Please edit this file.
+  To provide useful information.
+Inputs:
+  datasets: dat1, dat2, dat3
+  P1: String - dataset name
+  P2: Number - depart id
+  P3: String - subject id
+Outputs:
+  datasets: out1, out2, out3
+  O1:
+  O2:
+Authors: 
+  - name   : Jon Doo
+    email  : jon.doo@phuse.com
+    company: PhUSE
+  - name   : Jim Boo
+    email  : jim.boo@phuse.com
+    company: PhUSE
+Qualification: 
+  LastQualDate: MM/DD/YYYY 
+  LastQualBy: FirstName LastName
+  Stage: T
+  Document: a link to latest documentation 
+  Note: C - Contributed; D - Development; T - Testing; Q - Qualified
+Stages: 
+  - Date: mm/dd/yyyy
+    Name: Jon1 Doo
+    Stage: C 
+    Docs: a link to qualification documents
+  - Date: mm/dd/yyyy
+    Name: Jon2 Doo
+    Stage: D 
+    Docs: a link to qualification documents
+Rating: 
+  - User: htu
+    Date: 02/05/2016
+    Association: Accenture
+    Stars: 5 
+  - User: htu 
+    Date: 01/25/2016 
+    Association: Accenture
+    Stars: 4
+

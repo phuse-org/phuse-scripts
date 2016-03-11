@@ -12,8 +12,8 @@
 |  Source : | Whether the script is based on the whitepaper or from other source |
 |  Target : | a link to the target or whitepaper | 
 |  Title  : | A descriptive title for the script | 
-|  Topic  : | How topic the script is about |
-|  Type   : | What type this script addresses: Table, Figure or List |
+|  Topic  : | What topic the script is about |
+|  Type   : | What type this script addresses: Table, Figure, List or Analysis|
 |  Subtype: | Sub-type such as boxplot, analysis, etc. 
 |**Package**: | Metadata tag group for defining the package | 
 |  name : | Name for the package such as White Paper abbreviation, for example: WPCT | 
