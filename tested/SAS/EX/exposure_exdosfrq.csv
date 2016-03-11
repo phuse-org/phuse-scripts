@@ -1,0 +1,51 @@
+OTHER,Other,1,o
+UNKNOWN,U; Unknown,1,o
+CONTINUOUS,Continuous,1,o
+BID,Twice per day,2,d
+BIS,Twice per week,2,w
+QM,Every Month,1,m
+PRN,As needed,1,o
+Q10H,Every 10 hours,1/10,h
+Q11H,Every 11 hours,1/11,h
+Q12H,Every 12 hours,1/12,h
+Q13H,Every 13 hours,1/13,h
+Q14H,Every 14 hours,1/14,h
+Q15H,Every 15 hours,1/15,h
+Q16H,Every 16 hours,1/16,h
+Q17H,Every 17 hours,1/17,h
+Q18H,Every 18 hours,1/18,h
+Q19H,Every 19 hours,1/19,h
+QH,Every hour,1,h
+Q20H,Every 20 hours,1/20,h
+Q21H,Every 21 hours,1/21,h
+Q22H,Every 22 hours,1/22,h
+Q23H,Every 23 hours,1/23,h
+Q24H,Every 24 hours,1/24,h
+Q2H,Every 2 hours,1/2,h
+Q3H,Every 3 hours,1/3,h
+Q4H,Every 4 hours,1/4,h
+Q5H,Every 5 hours,1/5,h
+Q6H,Every 6 hours,1/6,h
+Q7H,Every 7 hours,1/7,h
+Q8H,Every 8 hours,1/8,h
+Q9H,Every 9 hours,1/9,h
+QOD,Every other day,1/2,d
+TID,3 times per day,3,d
+TIS,Three times a week,3,w
+Q4S,Every 4 weeks,1/4,w
+QID,4 times per day,4,d
+QIS,4 times per week,4,w
+Q3D,Every 3 days,1/3,d
+Q4D,Every 4 days,1/4,d
+Q3S,Every 3 weeks,1/3,w
+Q2M,Every two months,1/2,m
+Q3M,Every 3 months,1/3,m
+Q4M,Every 4 months,1/4,m
+ONCE,Once,1,o
+QS,Every week,1,w
+Q5D,Every 5 days,1/5,d
+Q2S,Every 2 weeks.,1/2,w
+BIM,Twice per month,2,m
+INTERMITTENT,Intermittent,1,o
+QD,Daily,1,d
+OCCASIONAL,Occasional,1,o

@@ -8,11 +8,11 @@ Script:
 	variable for Age Groups, as well as descriptive statistics of the 
 	variable Age. This is done by total study population, treatment 
 	arm and disposition categories. 
-  Name   : DEMOGRAPHICS_V1.SAS 
+  Name   : demographics_v1.sas 
   GCR    : r135
   SRV    : 12345
   Source : FDA JumpStart
-  Target : https://github.com/phuse-org/phuse-scripts/blob/master/MetaData_template.md
+  Target : https://github.com/phuse-org/phuse-scripts/blob/master/tested/SAS/SpecDocs/Analysis%20Panel%20Instructions.doc
   Title  : Demographic Analysis Panel
   Topic  : Demographic Analysis
   Type   : Analysis
@@ -31,6 +31,25 @@ Comments: >
   Failures or Not Assigned. For the demographic variables by disposition
   categories, the denominator for percent calculations is the demographic 
   variable total by arm and overall study population.
+  Dataset Requirements:
+	Demographics	(DM)
+	Disposition	 	(DS)
+  Variable Requirements:
+	DM  - Actual Arm 				(ACTARM)
+		- Planned Treatment Arm		(ARM)
+		- Subject ID				(USUBJID
+		- Planned Arm Code			(ARMCD)
+		- Age Units					(AGEU)
+		- Age in AGEU at RFSTDTC	(AGE)
+		- Race						(RACE)
+		- Ethnic					(ETHNIC)
+		- Sex						(SEX)
+		- Country					(COUNTRY)
+		- Study Cite Identifier		(SITEID)
+	DS	- Subject ID				(USUBJID)
+		- Standardized Disposition Term	(DSDECOD)
+		- Toxicity Grade			(AETOXGR)
+		-Adverse Event Start Date/Time	(AESTDTC)
 Inputs:
   datasets: dat1, dat2, dat3
   P1: String - dataset name
@@ -41,14 +60,14 @@ Outputs:
   O1:
   O2:
 Authors: 
+  - name   : Shannon Dennis
+    email  : shannon.dennis@fda.hhs.gov
+    company: FDA/IBM
+	date   : 12/29/2009
   - name   : David Kretch
     email  : david.kretch@us.ibm.com
     company: FDA/IBM
 	date   : 02/07/2011
-  - name   : 
-    email  : 
-    company: 
-	date   : 
 Qualification: 
   LastQualDate: MM/DD/YYYY 
   LastQualBy: FirstName LastName

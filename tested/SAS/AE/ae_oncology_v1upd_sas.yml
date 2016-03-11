@@ -10,14 +10,14 @@ Script:
   GCR    : r135
   SRV    : 12345
   Source : FDA JumpStart
-  Target : https://github.com/phuse-org/phuse-scripts/blob/master/MetaData_template.md
+  Target : https://github.com/phuse-org/phuse-scripts/blob/master/tested/SAS/SpecDocs/Analysis%20Panel%20Instructions.doc
   Title  : AE Toxicity Analysis Panel
   Topic  : Toxicity
   Type   : Analysis
   Subtype: TFL
 Package:
   name : SAS Analysis Panels
-  title: White Paper title, for example: White Paper on Measures of Central Tendency
+  title: FDA JumpStart analysis package
 Language: 
   name   : SAS
   version: 9.2.x, 9.4.x

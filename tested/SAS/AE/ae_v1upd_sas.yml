@@ -5,14 +5,14 @@ Script:
   GCR    : r135
   SRV    : 12345
   Source : FDA JumpStart
-  Target : https://github.com/phuse-org/phuse-scripts/blob/master/MetaData_template.md
+  Target : https://github.com/phuse-org/phuse-scripts/blob/master/tested/SAS/SpecDocs/Analysis%20Panel%20Instructions.doc
   Title  : AE Severity Analysis Panel
   Topic  : Severity
   Type   : analysis
   Subtype: TFL
 Package:
   name : SAS Analysis Panels
-  title: White Paper title, for example: White Paper on Measures of Central Tendency
+  title: FDA JumpStart analysis package
 Language: 
   name   : SAS
   version: 9.2.x, 9.4.x
@@ -29,6 +29,26 @@ Comments: >
      adverse events between arms with their corresponding confidence intervals
   3. Adverse Events Odds Ratio: provides a listing of odds ratios of adverse 
      events between arms with their corresponding confidence intervals
+  Dataset Requirements:
+	Demographics		(DM)
+	Adverse Event	 	(AE)
+	Exposure 			(EX)	
+  Variable Requirements:
+	DM 	- Actual Arm 			(ACTARM)
+		- Planned Treatment Arm	(ARM)
+		- Subject ID			(USUBJID)
+		- Planned Arm Code		(ARMCD)
+		- Subject Reference Start Date/Time	(RFSTDTC)
+		- Subject Reference End Date/Time	(RFENDTC)
+	AE	- Subject ID			(USUBJID)
+		- Body system/organ class	(AEBODSYS)
+		- Dictionary Derived Term	(AEDECOD)
+		- Severity/intensity		(AESEV)
+		- Serious Event				(AESER)
+		-Adverse Event Start Date/Time	(AESTDTC)
+	EX	- Subject ID				(USUBJID)
+		- Exposure Start Date/Time	(EXSTDTC)
+		- Exposure End Date/Time	(EXENDTC)
 Inputs:
   datasets: DM, AE, EX
   P1: Studypath - location of the drug study datasets
