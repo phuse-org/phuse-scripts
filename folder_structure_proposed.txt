@@ -9,6 +9,7 @@ MM/DD/YYYY (developer) - Description
   2. updated the name convention
 05/09/2014 (htu) - update the examples 
 02/18/2016 (htu) - added updated script and data folder structure
+04/04/2016 (htu) - added language level based on the actual scripts
 
 */
 
@@ -22,16 +23,35 @@ http://www.phusewiki.org/wiki/index.php?title=SS_P03_31AUG2015.
 We've reached a consensus on the folder structure within github. Here's an example:
 ; for scripts
 root
+- contributed
+- - SAS
+- - R
+- developed
+- - SAS
+- - R
+- tested
+- - SAS
+- - - SpecDocs
+- - - ZZ_Utilities
+- - - Templates
+- - - macros
+- - - AE
+- - - - output
+- - - - logs
+- - - - data
+- - - DM
+- - - etc...
+- - R
+- - PLSQL
 - qualified
-- - ae
-- - - meddra
+- - SAS
+- - - AE
+- - - MedDRA
 - - - - meddra document 1.txt
 - - - - example1.sas
 - - - - example1.yml
-- - dm 
-- development
-- contributed
-- tested
+- - - DM
+- - R
 
 ; for data sets
 root
