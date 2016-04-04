@@ -26,7 +26,7 @@ root
 - contributed
 - - SAS
 - - R
-- developed
+- development
 - - SAS
 - - R
 - tested
