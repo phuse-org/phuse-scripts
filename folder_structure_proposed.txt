@@ -1,5 +1,4 @@
 /*
-
 MM/DD/YYYY (developer) - Description
 ------------------------------------
 11/05/2012 (htu) - initial draft
@@ -10,7 +9,6 @@ MM/DD/YYYY (developer) - Description
 05/09/2014 (htu) - update the examples 
 02/18/2016 (htu) - added updated script and data folder structure
 04/04/2016 (htu) - added language level based on the actual scripts
-
 */
 
 ; Folder structure
@@ -20,8 +18,12 @@ Here is the result of the discussion from the P03 - RGI: Repository
 governance and infrastructure:  
 http://www.phusewiki.org/wiki/index.php?title=SS_P03_31AUG2015. 
 
-We've reached a consensus on the folder structure within github. Here's an example:
+We've reached a consensus on the folder structure within github. We will 
+have four areas: contributed, developed (development), tested and 
+qualified to correspoinding to the four stages of the script development. 
+Here's an example:
 ; for scripts
+----------------------------------------------------------------------
 root
 - contributed
 - - SAS
@@ -54,6 +56,7 @@ root
 - - R
 
 ; for data sets
+------------------------------------------------------------------------------
 root
 - data
 - - sdtm
