@@ -1,0 +1,38 @@
+KeyWords: Histopath, Histopathology, Visualization
+Script: 
+  Desc   : >  
+    Adverse events by ARM at all levels of the MedDRA hierarchy
+    Provides all risk difference, Relative Risk and Negative log p-values
+    Flags designated Medical Events
+    Output to Excel template 
+  Name   : AE Scripts.zip
+  GCR    : r153
+  SRV    : 
+  Source : Contributed
+  Topic  : Adverse Events
+  Title  : AE Analysis Panel
+  Type   : table
+  Subtype  : AE
+  Target : https://github.com/phuse-org/phuse-scripts/tree/master/contributed/AE
+Language: 
+  name   : SAS
+  version: 9.2
+Comments : > 
+  This is the original package provided.
+Qualification: 
+  LastQualDate:
+  LastQualBy:
+  Stage: Contributed 
+Rating: 
+  - User: htu
+    Date: 02/05/2016
+    Association: Accenture
+    Stars: 5 
+Authors: 
+  - name   : Shannon Dennis (original author)
+    email  : not known
+    company: IBM
+  - name   : David Kretch (original author)
+    email  : david.kretch@us.ibm.com
+    company: IBM  
+
