@@ -1,3 +1,5 @@
+[![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/phuse-org/phuse-scripts/blob/master/LICENSE.md)
+
 ### PhUSE CS Standard Analyses Working Group
 
 * PhUSE CS Standard Analyses Working Group (SAWG)<br/>
