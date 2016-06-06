@@ -2,6 +2,10 @@
 rm(list=ls())
 
 # check if packages installed and then install if necessary
+packages <- c('foreign','ggplot2')
+if (length(setdiff(packages, rownames(installed.packages()))) > 0) {
+  install.packages(setdiff(packages, rownames(installed.packages())))  
+}
 
 # Load Required Libraries
 library(foreign)
