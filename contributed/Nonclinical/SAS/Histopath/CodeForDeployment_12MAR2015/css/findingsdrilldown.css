@@ -1,0 +1,8 @@
+/* modal window for Findings drill down report */
+#modal { border:4px solid #CCC;
+width:100px; height:50px;
+display:none; position:absolute;
+left:50%; top:50%;
+margin:-25px 0 0 -50px;
+border-radius:5px;
+}
