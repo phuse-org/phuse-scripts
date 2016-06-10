@@ -53,7 +53,7 @@ Treatment <- NA
 for (i in seq(dim(Data)[1])) {
   name <- as.character(Data$Subject[i])
   nameIndex <- which(key$Subject==name)
-  Treatment[i] <- levels(key$Treatment)[key$Treatment[nameIndex]]
+  Treatment[i] <- as.character(key$Treatment[nameIndex])
 }
 Data <- cbind(Data,Treatment)
 
