@@ -1,5 +1,3 @@
-The file "SEND Datasets.zip" contains one upper level folder "SEND Datasets" with two subfolders "Xlsx" and "Xpt".
-
 The Xpt Folder contains a collection of SEND domain files in SAS transport format (.xpt).
 These may be read using SAS, the SAS Universal Viewer (which is available from from SAS), or Instem's SENDView.  Please contact Instem to get more information about SENDView.
 This folder also contains the data definition (define) file in both .pdf and .xml format.  
