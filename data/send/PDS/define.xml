@@ -1,0 +1,3547 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="define1-0-0.xsl"?>
+<ODM FileOID="XX110003" FileType="Snapshot" CreationDateTime="2014-04-10T17:28:57" Originator="Formedix" SourceSystem="Origin Submission Modeller" SourceSystemVersion="2.9.2" ODMVersion="1.2" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:def="http://www.cdisc.org/ns/def/v1.0" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.cdisc.org/ns/odm/v1.2">
+	<Study OID="Define.xml">
+		<GlobalVariables>
+			<StudyName>PDS2014</StudyName>
+			<StudyDescription/>
+			<ProtocolName>PDS2014</ProtocolName>
+		</GlobalVariables>
+		<MetaDataVersion OID="CDISC SEND 3.0" Name="PDS2014, Data Definitions" Description="PDS2014, Data Definitions" def:DefineVersion="1.0" def:StandardName="CDISC SEND" def:StandardVersion="3.0">
+			<def:ComputationMethod OID="CM.DY">--DY = (date portion of --DTC) - (date portion of RFSTDTC) + 1 if --DTC is on or after RFSTDTC
+--DY = (date portion of --DTC) - (date portion of RFSTDTC) if --DTC precedes RFSTDTC</def:ComputationMethod>
+			<ItemGroupDef OID="DM" Name="DM" Repeating="No" SASDatasetName="DM" Purpose="Tabulation" def:Label="Demographics" def:Structure="One record per subject" def:Class="Special Purpose" def:DomainKeys="STUDYID,DOMAIN,USUBJID" def:ArchiveLocationID="ARCHIVELOCATION.DM">
+				<ItemRef ItemOID="DM.STUDYID" Mandatory="Yes" OrderNumber="1" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="DM.DOMAIN" Mandatory="Yes" OrderNumber="2" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="DM.USUBJID" Mandatory="Yes" OrderNumber="3" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="DM.SUBJID" Mandatory="Yes" OrderNumber="4" Role="TOPIC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="DM.RFSTDTC" Mandatory="Yes" OrderNumber="5" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="DM.RFENDTC" Mandatory="No" OrderNumber="6" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="DM.SITEID" Mandatory="No" OrderNumber="7" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="DM.BRTHDTC" Mandatory="No" OrderNumber="8" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="DM.AGE" Mandatory="No" OrderNumber="9" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="DM.AGETXT" Mandatory="No" OrderNumber="10" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="DM.AGEU" Mandatory="No" OrderNumber="11" Role="QUALIFIER.VAR" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="DM.SEX" Mandatory="Yes" OrderNumber="12" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="DM.SPECIES" Mandatory="No" OrderNumber="13" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="DM.STRAIN" Mandatory="No" OrderNumber="14" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="DM.SBSTRAIN" Mandatory="No" OrderNumber="15" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="DM.ARMCD" Mandatory="No" OrderNumber="16" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="DM.ARM" Mandatory="No" OrderNumber="17" Role="QUALIFIER.SYN" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="DM.SETCD" Mandatory="Yes" OrderNumber="18" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<def:leaf xlink:href="dm.xpt" ID="ARCHIVELOCATION.DM">
+					<def:title>dm.xpt</def:title>
+				</def:leaf>
+			</ItemGroupDef>
+			<ItemGroupDef OID="CO" Name="CO" Repeating="Yes" SASDatasetName="CO" Purpose="Tabulation" def:Label="Comments" def:Structure="One record per comment" def:Class="Special Purpose" def:DomainKeys="STUDYID,DOMAIN,USUBJID,COSEQ" def:ArchiveLocationID="ARCHIVELOCATION.CO">
+				<ItemRef ItemOID="CO.STUDYID" Mandatory="Yes" OrderNumber="1" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="CO.DOMAIN" Mandatory="Yes" OrderNumber="2" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="CO.RDOMAIN" Mandatory="No" OrderNumber="3" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="CO.USUBJID" Mandatory="No" OrderNumber="4" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="CO.COSEQ" Mandatory="Yes" OrderNumber="5" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="CO.IDVAR" Mandatory="No" OrderNumber="6" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="CO.IDVARVAL" Mandatory="No" OrderNumber="7" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="CO.COREF" Mandatory="No" OrderNumber="8" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>				
+				<ItemRef ItemOID="CO.COVAL" Mandatory="Yes" OrderNumber="9" Role="TOPIC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="CO.COEVAL" Mandatory="No" OrderNumber="10" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="CO.CODTC" Mandatory="No" OrderNumber="11" Role="TIMING" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="CO.CODY" Mandatory="No" OrderNumber="12" Role="TIMING" RoleCodeListOID="CL.ROLES"/>
+				<def:leaf xlink:href="co.xpt" ID="ARCHIVELOCATION.CO">
+					<def:title>co.xpt</def:title>
+				</def:leaf>
+			</ItemGroupDef>
+			<ItemGroupDef OID="EX" Name="EX" Repeating="Yes" SASDatasetName="EX" Purpose="Tabulation" def:Label="Exposure" def:Structure="One record per constant dosing interval per treatment per subject or pool" def:Class="Interventions" def:DomainKeys="STUDYID,DOMAIN,USUBJID,POOLID,EXSEQ" def:ArchiveLocationID="ARCHIVELOCATION.EX">
+				<ItemRef ItemOID="EX.STUDYID" Mandatory="Yes" OrderNumber="1" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="EX.DOMAIN" Mandatory="Yes" OrderNumber="2" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="EX.USUBJID" Mandatory="No" OrderNumber="3" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="EX.POOLID" Mandatory="No" OrderNumber="4" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="EX.EXSEQ" Mandatory="Yes" OrderNumber="5" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="EX.EXTRT" Mandatory="Yes" OrderNumber="6" Role="TOPIC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="EX.EXDOSE" Mandatory="No" OrderNumber="7" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="EX.EXDOSTXT" Mandatory="No" OrderNumber="8" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="EX.EXDOSU" Mandatory="No" OrderNumber="9" Role="QUALIFIER.VAR" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="EX.EXDOSFRM" Mandatory="No" OrderNumber="10" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="EX.EXDOSFRQ" Mandatory="Yes" OrderNumber="11" Role="QUALIFIER.VAR" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="EX.EXROUTE" Mandatory="Yes" OrderNumber="12" Role="QUALIFIER.VAR" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="EX.EXLOT" Mandatory="No" OrderNumber="13" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="EX.EXLOC" Mandatory="No" OrderNumber="14" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="EX.EXMETHOD" Mandatory="No" OrderNumber="15" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="EX.EXTRTV" Mandatory="No" OrderNumber="16" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="EX.EXVAMT" Mandatory="No" OrderNumber="17" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="EX.EXVAMTU" Mandatory="No" OrderNumber="18" Role="QUALIFIER.VAR" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="EX.EXADJ" Mandatory="No" OrderNumber="19" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="EX.EXSTDTC" Mandatory="No" OrderNumber="20" Role="TIMING" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="EX.EXENDTC" Mandatory="No" OrderNumber="21" Role="TIMING" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="EX.EXSTDY" Mandatory="No" OrderNumber="22" Role="TIMING" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="EX.EXENDY" Mandatory="No" OrderNumber="23" Role="TIMING" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="EX.EXDUR" Mandatory="No" OrderNumber="24" Role="TIMING" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="EX.EXTPT" Mandatory="No" OrderNumber="25" Role="TIMING" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="EX.EXTPTNUM" Mandatory="No" OrderNumber="26" Role="TIMING" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="EX.EXELTM" Mandatory="No" OrderNumber="27" Role="TIMING" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="EX.EXTPTREF" Mandatory="No" OrderNumber="28" Role="TIMING" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="EX.EXRFTDTC" Mandatory="No" OrderNumber="29" Role="TIMING" RoleCodeListOID="CL.ROLES"/>
+				<def:leaf xlink:href="ex.xpt" ID="ARCHIVELOCATION.EX">
+					<def:title>ex.xpt</def:title>
+				</def:leaf>
+			</ItemGroupDef>
+			<ItemGroupDef OID="DS" Name="DS" Repeating="Yes" SASDatasetName="DS" Purpose="Tabulation" def:Label="Disposition" def:Structure="One record per subject" def:Class="Events" def:DomainKeys="STUDYID,DOMAIN,USUBJID,DSSEQ" def:ArchiveLocationID="ARCHIVELOCATION.DS">
+				<ItemRef ItemOID="DS.STUDYID" Mandatory="Yes" OrderNumber="1" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="DS.DOMAIN" Mandatory="Yes" OrderNumber="2" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="DS.USUBJID" Mandatory="Yes" OrderNumber="3" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="DS.DSSEQ" Mandatory="Yes" OrderNumber="4" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="DS.DSTERM" Mandatory="Yes" OrderNumber="5" Role="TOPIC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="DS.DSDECOD" Mandatory="Yes" OrderNumber="6" Role="QUALIFIER.SYN" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="DS.VISITDY" Mandatory="No" OrderNumber="7" Role="TIMING" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="DS.DSSTDTC" Mandatory="Yes" OrderNumber="8" Role="TIMING" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="DS.DSSTDY" Mandatory="No" OrderNumber="9" Role="TIMING" RoleCodeListOID="CL.ROLES"/>
+				<def:leaf xlink:href="ds.xpt" ID="ARCHIVELOCATION.DS">
+					<def:title>ds.xpt</def:title>
+				</def:leaf>
+			</ItemGroupDef>
+			<ItemGroupDef OID="BW" Name="BW" Repeating="Yes" SASDatasetName="BW" Purpose="Tabulation" def:Label="Body Weight" def:Structure="One record per test per observation time per subject" def:Class="Findings" def:DomainKeys="STUDYID,DOMAIN,USUBJID,BWSEQ" def:ArchiveLocationID="ARCHIVELOCATION.BW">
+				<ItemRef ItemOID="BW.STUDYID" Mandatory="Yes" OrderNumber="1" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="BW.DOMAIN" Mandatory="Yes" OrderNumber="2" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="BW.USUBJID" Mandatory="Yes" OrderNumber="3" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="BW.BWSEQ" Mandatory="Yes" OrderNumber="4" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="BW.BWTESTCD" Mandatory="Yes" OrderNumber="5" Role="TOPIC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="BW.BWTEST" Mandatory="Yes" OrderNumber="6" Role="QUALIFIER.SYN" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="BW.BWORRES" Mandatory="No" OrderNumber="7" Role="QUALIFIER.RES" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="BW.BWORRESU" Mandatory="No" OrderNumber="8" Role="QUALIFIER.VAR" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="BW.BWSTRESC" Mandatory="No" OrderNumber="9" Role="QUALIFIER.RES" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="BW.BWSTRESN" Mandatory="No" OrderNumber="10" Role="QUALIFIER.RES" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="BW.BWSTRESU" Mandatory="No" OrderNumber="11" Role="QUALIFIER.VAR" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="BW.BWSTAT" Mandatory="No" OrderNumber="12" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="BW.BWREASND" Mandatory="No" OrderNumber="13" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="BW.BWBLFL" Mandatory="No" OrderNumber="14" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="BW.BWFAST" Mandatory="No" OrderNumber="15" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="BW.BWEXCLFL" Mandatory="No" OrderNumber="16" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="BW.BWREASEX" Mandatory="No" OrderNumber="17" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="BW.VISITDY" Mandatory="No" OrderNumber="18" Role="TIMING" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="BW.BWDTC" Mandatory="No" OrderNumber="19" Role="TIMING" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="BW.BWDY" Mandatory="No" OrderNumber="20" Role="TIMING" RoleCodeListOID="CL.ROLES"/>
+				<def:leaf xlink:href="bw.xpt" ID="ARCHIVELOCATION.BW">
+					<def:title>bw.xpt</def:title>
+				</def:leaf>
+			</ItemGroupDef>
+			<ItemGroupDef OID="BG" Name="BG" Repeating="Yes" SASDatasetName="BG" Purpose="Tabulation" def:Label="Body Weight Gains" def:Structure="One record per test per interval per subject" def:Class="Findings" def:DomainKeys="STUDYID,DOMAIN,USUBJID,BGSEQ" def:ArchiveLocationID="ARCHIVELOCATION.BG">
+				<ItemRef ItemOID="BG.STUDYID" Mandatory="Yes" OrderNumber="1" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="BG.DOMAIN" Mandatory="Yes" OrderNumber="2" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="BG.USUBJID" Mandatory="Yes" OrderNumber="3" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="BG.BGSEQ" Mandatory="Yes" OrderNumber="4" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="BG.BGTESTCD" Mandatory="Yes" OrderNumber="5" Role="TOPIC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="BG.BGTEST" Mandatory="Yes" OrderNumber="6" Role="QUALIFIER.SYN" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="BG.BGORRES" Mandatory="No" OrderNumber="7" Role="QUALIFIER.RES" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="BG.BGORRESU" Mandatory="No" OrderNumber="8" Role="QUALIFIER.VAR" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="BG.BGSTRESC" Mandatory="No" OrderNumber="9" Role="QUALIFIER.RES" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="BG.BGSTRESN" Mandatory="No" OrderNumber="10" Role="QUALIFIER.RES" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="BG.BGSTRESU" Mandatory="No" OrderNumber="11" Role="QUALIFIER.VAR" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="BG.BGSTAT" Mandatory="No" OrderNumber="12" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="BG.BGREASND" Mandatory="No" OrderNumber="13" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="BG.BGEXCLFL" Mandatory="No" OrderNumber="14" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="BG.BGREASEX" Mandatory="No" OrderNumber="15" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="BG.BGDTC" Mandatory="No" OrderNumber="16" Role="TIMING" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="BG.BGENDTC" Mandatory="No" OrderNumber="17" Role="TIMING" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="BG.BGDY" Mandatory="No" OrderNumber="18" Role="TIMING" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="BG.BGENDY" Mandatory="No" OrderNumber="19" Role="TIMING" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="BG.BGELTM" Mandatory="No" OrderNumber="20" Role="TIMING" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="BG.BGTPTREF" Mandatory="No" OrderNumber="21" Role="TIMING" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="BG.BGRFTDTC" Mandatory="No" OrderNumber="22" Role="TIMING" RoleCodeListOID="CL.ROLES"/>
+				<def:leaf xlink:href="bg.xpt" ID="ARCHIVELOCATION.BG">
+					<def:title>bg.xpt</def:title>
+				</def:leaf>
+			</ItemGroupDef>
+			<ItemGroupDef OID="CL" Name="CL" Repeating="Yes" SASDatasetName="CL" Purpose="Tabulation" def:Label="Clinical Observations" def:Structure="One record per finding per observation time per subject or pool" def:Class="Findings" def:DomainKeys="STUDYID,DOMAIN,USUBJID,POOLID,CLSEQ,CLGRPID,CLSPID" def:ArchiveLocationID="ARCHIVELOCATION.CL">
+				<ItemRef ItemOID="CL.STUDYID" Mandatory="Yes" OrderNumber="1" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="CL.DOMAIN" Mandatory="Yes" OrderNumber="2" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="CL.USUBJID" Mandatory="No" OrderNumber="3" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="CL.POOLID" Mandatory="No" OrderNumber="4" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="CL.CLSEQ" Mandatory="Yes" OrderNumber="5" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="CL.CLGRPID" Mandatory="No" OrderNumber="6" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="CL.CLREFID" Mandatory="No" OrderNumber="7" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="CL.CLSPID" Mandatory="No" OrderNumber="8" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="CL.CLTESTCD" Mandatory="Yes" OrderNumber="9" Role="TOPIC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="CL.CLTEST" Mandatory="Yes" OrderNumber="10" Role="QUALIFIER.SYN" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="CL.CLCAT" Mandatory="Yes" OrderNumber="11" Role="QUALIFIER.GRP" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="CL.CLSCAT" Mandatory="No" OrderNumber="12" Role="QUALIFIER.GRP" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="CL.CLBODSYS" Mandatory="No" OrderNumber="13" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="CL.CLORRES" Mandatory="No" OrderNumber="14" Role="QUALIFIER.RES" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="CL.CLSTRESC" Mandatory="No" OrderNumber="15" Role="QUALIFIER.RES" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="CL.CLRESCAT" Mandatory="No" OrderNumber="16" Role="QUALIFIER.VAR" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="CL.CLSTAT" Mandatory="No" OrderNumber="17" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="CL.CLREASND" Mandatory="No" OrderNumber="18" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="CL.CLLOC" Mandatory="No" OrderNumber="19" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="CL.CLEVAL" Mandatory="No" OrderNumber="20" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="CL.CLSEV" Mandatory="No" OrderNumber="21" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="CL.CLEXCLFL" Mandatory="No" OrderNumber="22" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="CL.CLREASEX" Mandatory="No" OrderNumber="23" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="CL.VISITDY" Mandatory="No" OrderNumber="24" Role="TIMING" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="CL.CLDTC" Mandatory="No" OrderNumber="25" Role="TIMING" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="CL.CLDY" Mandatory="No" OrderNumber="26" Role="TIMING" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="CL.CLTPT" Mandatory="No" OrderNumber="27" Role="TIMING" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="CL.CLTPTNUM" Mandatory="No" OrderNumber="28" Role="TIMING" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="CL.CLELTM" Mandatory="No" OrderNumber="29" Role="TIMING" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="CL.CLTPTREF" Mandatory="No" OrderNumber="30" Role="TIMING" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="CL.CLRFTDTC" Mandatory="No" OrderNumber="31" Role="TIMING" RoleCodeListOID="CL.ROLES"/>
+				<def:leaf xlink:href="cl.xpt" ID="ARCHIVELOCATION.CL">
+					<def:title>cl.xpt</def:title>
+				</def:leaf>
+			</ItemGroupDef>
+			<ItemGroupDef OID="MA" Name="MA" Repeating="Yes" SASDatasetName="MA" Purpose="Tabulation" def:Label="Macroscopic Findings" def:Structure="One record per finding per specimen per subject" def:Class="Findings" def:DomainKeys="STUDYID,DOMAIN,USUBJID,MASEQ,MAGRPID,MAREFID,MASPID" def:ArchiveLocationID="ARCHIVELOCATION.MA">
+				<ItemRef ItemOID="MA.STUDYID" Mandatory="Yes" OrderNumber="1" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="MA.DOMAIN" Mandatory="Yes" OrderNumber="2" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="MA.USUBJID" Mandatory="Yes" OrderNumber="3" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="MA.MASEQ" Mandatory="Yes" OrderNumber="4" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="MA.MAGRPID" Mandatory="No" OrderNumber="5" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="MA.MAREFID" Mandatory="No" OrderNumber="6" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="MA.MASPID" Mandatory="No" OrderNumber="7" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="MA.MATESTCD" Mandatory="Yes" OrderNumber="8" Role="TOPIC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="MA.MATEST" Mandatory="Yes" OrderNumber="9" Role="QUALIFIER.SYN" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="MA.MABODSYS" Mandatory="No" OrderNumber="10" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="MA.MAORRES" Mandatory="No" OrderNumber="11" Role="QUALIFIER.RES" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="MA.MASTRESC" Mandatory="No" OrderNumber="12" Role="QUALIFIER.RES" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="MA.MASTAT" Mandatory="No" OrderNumber="13" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="MA.MAREASND" Mandatory="No" OrderNumber="14" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="MA.MANAM" Mandatory="No" OrderNumber="15" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="MA.MASPEC" Mandatory="No" OrderNumber="16" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="MA.MAANTREG" Mandatory="No" OrderNumber="17" Role="QUALIFIER.VAR" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="MA.MASPCCND" Mandatory="No" OrderNumber="18" Role="QUALIFIER.VAR" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="MA.MASPCUFL" Mandatory="No" OrderNumber="19" Role="QUALIFIER.VAR" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="MA.MALAT" Mandatory="No" OrderNumber="20" Role="QUALIFIER.VAR" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="MA.MADIR" Mandatory="No" OrderNumber="21" Role="QUALIFIER.VAR" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="MA.MAPORTOT" Mandatory="No" OrderNumber="22" Role="QUALIFIER.VAR" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="MA.MAEVAL" Mandatory="No" OrderNumber="23" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="MA.MASEV" Mandatory="No" OrderNumber="24" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="MA.MADTHREL" Mandatory="No" OrderNumber="25" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="MA.MADTC" Mandatory="No" OrderNumber="26" Role="TIMING" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="MA.MADY" Mandatory="No" OrderNumber="27" Role="TIMING" RoleCodeListOID="CL.ROLES"/>
+				<def:leaf xlink:href="ma.xpt" ID="ARCHIVELOCATION.MA">
+					<def:title>ma.xpt</def:title>
+				</def:leaf>
+			</ItemGroupDef>
+			<ItemGroupDef OID="LB" Name="LB" Repeating="Yes" SASDatasetName="LB" Purpose="Tabulation" def:Label="Laboratory" def:Structure="One record per test per specimen per observation time per subject or pool" def:Class="Findings" def:DomainKeys="STUDYID,DOMAIN,USUBJID,POOLID,LBSEQ,LBGRPID,LBREFID,LBSPID" def:ArchiveLocationID="ARCHIVELOCATION.LB">
+				<ItemRef ItemOID="LB.STUDYID" Mandatory="Yes" OrderNumber="1" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="LB.DOMAIN" Mandatory="Yes" OrderNumber="2" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="LB.USUBJID" Mandatory="No" OrderNumber="3" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="LB.POOLID" Mandatory="No" OrderNumber="4" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="LB.LBSEQ" Mandatory="Yes" OrderNumber="5" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="LB.LBGRPID" Mandatory="No" OrderNumber="6" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="LB.LBREFID" Mandatory="No" OrderNumber="7" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="LB.LBSPID" Mandatory="No" OrderNumber="8" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="LB.LBTESTCD" Mandatory="Yes" OrderNumber="9" Role="TOPIC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="LB.LBTEST" Mandatory="Yes" OrderNumber="10" Role="QUALIFIER.SYN" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="LB.LBCAT" Mandatory="No" OrderNumber="11" Role="QUALIFIER.GRP" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="LB.LBSCAT" Mandatory="No" OrderNumber="12" Role="QUALIFIER.GRP" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="LB.LBORRES" Mandatory="No" OrderNumber="13" Role="QUALIFIER.RES" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="LB.LBORRESU" Mandatory="No" OrderNumber="14" Role="QUALIFIER.VAR" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="LB.LBORNRLO" Mandatory="No" OrderNumber="15" Role="QUALIFIER.VAR" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="LB.LBORNRHI" Mandatory="No" OrderNumber="16" Role="QUALIFIER.VAR" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="LB.LBSTRESC" Mandatory="No" OrderNumber="17" Role="QUALIFIER.RES" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="LB.LBSTRESN" Mandatory="No" OrderNumber="18" Role="QUALIFIER.RES" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="LB.LBSTRESU" Mandatory="No" OrderNumber="19" Role="QUALIFIER.VAR" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="LB.LBSTNRLO" Mandatory="No" OrderNumber="20" Role="QUALIFIER.VAR" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="LB.LBSTNRHI" Mandatory="No" OrderNumber="21" Role="QUALIFIER.VAR" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="LB.LBSTNRC" Mandatory="No" OrderNumber="22" Role="QUALIFIER.VAR" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="LB.LBNRIND" Mandatory="No" OrderNumber="23" Role="QUALIFIER.VAR" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="LB.LBSTAT" Mandatory="No" OrderNumber="24" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="LB.LBREASND" Mandatory="No" OrderNumber="25" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="LB.LBNAM" Mandatory="No" OrderNumber="26" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="LB.LBSPEC" Mandatory="No" OrderNumber="27" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="LB.LBANTREG" Mandatory="No" OrderNumber="28" Role="QUALIFIER.VAR" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="LB.LBSPCCND" Mandatory="No" OrderNumber="29" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="LB.LBSPCUFL" Mandatory="No" OrderNumber="30" Role="QUALIFIER.VAR" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="LB.LBLOC" Mandatory="No" OrderNumber="31" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="LB.LBLAT" Mandatory="No" OrderNumber="32" Role="QUALIFIER.VAR" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="LB.LBDIR" Mandatory="No" OrderNumber="33" Role="QUALIFIER.VAR" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="LB.LBPORTOT" Mandatory="No" OrderNumber="34" Role="QUALIFIER.VAR" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="LB.LBMETHOD" Mandatory="No" OrderNumber="35" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="LB.LBBLFL" Mandatory="No" OrderNumber="36" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="LB.LBFAST" Mandatory="No" OrderNumber="37" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="LB.LBDRVFL" Mandatory="No" OrderNumber="38" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="LB.LBTOX" Mandatory="No" OrderNumber="39" Role="QUALIFIER.VAR" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="LB.LBTOXGR" Mandatory="No" OrderNumber="40" Role="QUALIFIER.VAR" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="LB.LBEXCLFL" Mandatory="No" OrderNumber="41" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="LB.LBREASEX" Mandatory="No" OrderNumber="42" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="LB.VISITDY" Mandatory="No" OrderNumber="43" Role="TIMING" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="LB.LBDTC" Mandatory="No" OrderNumber="44" Role="TIMING" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="LB.LBENDTC" Mandatory="No" OrderNumber="45" Role="TIMING" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="LB.LBDY" Mandatory="No" OrderNumber="46" Role="TIMING" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="LB.LBENDY" Mandatory="No" OrderNumber="47" Role="TIMING" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="LB.LBTPT" Mandatory="No" OrderNumber="48" Role="TIMING" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="LB.LBTPTNUM" Mandatory="No" OrderNumber="49" Role="TIMING" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="LB.LBELTM" Mandatory="No" OrderNumber="50" Role="TIMING" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="LB.LBTPTREF" Mandatory="No" OrderNumber="51" Role="TIMING" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="LB.LBRFTDTC" Mandatory="No" OrderNumber="52" Role="TIMING" RoleCodeListOID="CL.ROLES"/>
+				<def:leaf xlink:href="lb.xpt" ID="ARCHIVELOCATION.LB">
+					<def:title>lb.xpt</def:title>
+				</def:leaf>
+			</ItemGroupDef>
+			<ItemGroupDef OID="OM" Name="OM" Repeating="Yes" SASDatasetName="OM" Purpose="Tabulation" def:Label="Organ Measurements" def:Structure="One record per test per specimen per subject" def:Class="Findings" def:DomainKeys="STUDYID,DOMAIN,USUBJID,OMSEQ" def:ArchiveLocationID="ARCHIVELOCATION.OM">
+				<ItemRef ItemOID="OM.STUDYID" Mandatory="Yes" OrderNumber="1" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="OM.DOMAIN" Mandatory="Yes" OrderNumber="2" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="OM.USUBJID" Mandatory="Yes" OrderNumber="3" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="OM.OMSEQ" Mandatory="Yes" OrderNumber="4" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="OM.OMTESTCD" Mandatory="Yes" OrderNumber="5" Role="TOPIC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="OM.OMTEST" Mandatory="Yes" OrderNumber="6" Role="QUALIFIER.SYN" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="OM.OMORRES" Mandatory="No" OrderNumber="7" Role="QUALIFIER.RES" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="OM.OMORRESU" Mandatory="No" OrderNumber="8" Role="QUALIFIER.VAR" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="OM.OMSTRESC" Mandatory="No" OrderNumber="9" Role="QUALIFIER.RES" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="OM.OMSTRESN" Mandatory="No" OrderNumber="10" Role="QUALIFIER.RES" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="OM.OMSTRESU" Mandatory="No" OrderNumber="11" Role="QUALIFIER.VAR" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="OM.OMSTAT" Mandatory="No" OrderNumber="12" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="OM.OMREASND" Mandatory="No" OrderNumber="13" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="OM.OMSPEC" Mandatory="Yes" OrderNumber="14" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="OM.OMANTREG" Mandatory="No" OrderNumber="15" Role="QUALIFIER.VAR" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="OM.OMSPCCND" Mandatory="No" OrderNumber="16" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="OM.OMSPCUFL" Mandatory="No" OrderNumber="17" Role="QUALIFIER.VAR" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="OM.OMLAT" Mandatory="No" OrderNumber="18" Role="QUALIFIER.VAR" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="OM.OMDIR" Mandatory="No" OrderNumber="19" Role="QUALIFIER.VAR" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="OM.OMPORTOT" Mandatory="No" OrderNumber="20" Role="QUALIFIER.VAR" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="OM.OMEXCLFL" Mandatory="No" OrderNumber="21" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="OM.OMREASEX" Mandatory="No" OrderNumber="22" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="OM.OMDTC" Mandatory="No" OrderNumber="23" Role="TIMING" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="OM.OMDY" Mandatory="No" OrderNumber="24" Role="TIMING" RoleCodeListOID="CL.ROLES"/>
+				<def:leaf xlink:href="om.xpt" ID="ARCHIVELOCATION.OM">
+					<def:title>om.xpt</def:title>
+				</def:leaf>
+			</ItemGroupDef>
+			<ItemGroupDef OID="MI" Name="MI" Repeating="Yes" SASDatasetName="MI" Purpose="Tabulation" def:Label="Microscopic Findings" def:Structure="One record per finding per specimen per subject" def:Class="Findings" def:DomainKeys="STUDYID,DOMAIN,USUBJID,MISEQ,MIGRPID,MIREFID,MISPID" def:ArchiveLocationID="ARCHIVELOCATION.MI">
+				<ItemRef ItemOID="MI.STUDYID" Mandatory="Yes" OrderNumber="1" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="MI.DOMAIN" Mandatory="Yes" OrderNumber="2" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="MI.USUBJID" Mandatory="Yes" OrderNumber="3" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="MI.MISEQ" Mandatory="Yes" OrderNumber="4" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="MI.MIGRPID" Mandatory="No" OrderNumber="5" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="MI.MIREFID" Mandatory="No" OrderNumber="6" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="MI.MISPID" Mandatory="No" OrderNumber="7" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="MI.MITESTCD" Mandatory="Yes" OrderNumber="8" Role="TOPIC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="MI.MITEST" Mandatory="Yes" OrderNumber="9" Role="QUALIFIER.SYN" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="MI.MIBODSYS" Mandatory="No" OrderNumber="10" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="MI.MIORRES" Mandatory="No" OrderNumber="11" Role="QUALIFIER.RES" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="MI.MISTRESC" Mandatory="No" OrderNumber="12" Role="QUALIFIER.RES" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="MI.MIRESCAT" Mandatory="No" OrderNumber="13" Role="QUALIFIER.RES" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="MI.MISTAT" Mandatory="No" OrderNumber="14" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="MI.MIREASND" Mandatory="No" OrderNumber="15" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="MI.MINAM" Mandatory="No" OrderNumber="16" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="MI.MISPEC" Mandatory="Yes" OrderNumber="17" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="MI.MIANTREG" Mandatory="No" OrderNumber="18" Role="QUALIFIER.VAR" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="MI.MISPCCND" Mandatory="No" OrderNumber="19" Role="QUALIFIER.VAR" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="MI.MISPCUFL" Mandatory="No" OrderNumber="20" Role="QUALIFIER.VAR" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="MI.MIMETHOD" Mandatory="No" OrderNumber="21" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="MI.MILAT" Mandatory="No" OrderNumber="22" Role="QUALIFIER.VAR" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="MI.MIDIR" Mandatory="No" OrderNumber="23" Role="QUALIFIER.VAR" RoleCodeListOID="CL.ROLES"/>				
+				<ItemRef ItemOID="MI.MIEVAL" Mandatory="No" OrderNumber="24" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="MI.MISEV" Mandatory="No" OrderNumber="25" Role="QUALIFIER.VAR" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="MI.MIDTHREL" Mandatory="No" OrderNumber="26" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="MI.MIDTC" Mandatory="No" OrderNumber="27" Role="TIMING" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="MI.MIDY" Mandatory="No" OrderNumber="28" Role="TIMING" RoleCodeListOID="CL.ROLES"/>
+				<def:leaf xlink:href="mi.xpt" ID="ARCHIVELOCATION.MI">
+					<def:title>mi.xpt</def:title>
+				</def:leaf>
+			</ItemGroupDef>
+			<ItemGroupDef OID="PC" Name="PC" Repeating="Yes" SASDatasetName="PC" Purpose="Tabulation" def:Label="Pharmacokinetic Concentrations" def:Structure="One record per test per specimen per observation time per subject or pool" def:Class="Findings" def:DomainKeys="STUDYID,DOMAIN,USUBJID,POOLID,PCSEQ,PCGRPID,PCREFID,PCSPID" def:ArchiveLocationID="ARCHIVELOCATION.PC">
+				<ItemRef ItemOID="PC.STUDYID" Mandatory="Yes" OrderNumber="1" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="PC.DOMAIN" Mandatory="Yes" OrderNumber="2" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="PC.USUBJID" Mandatory="No" OrderNumber="3" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="PC.POOLID" Mandatory="No" OrderNumber="4" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="PC.PCSEQ" Mandatory="Yes" OrderNumber="5" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="PC.PCGRPID" Mandatory="No" OrderNumber="6" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="PC.PCREFID" Mandatory="No" OrderNumber="7" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="PC.PCSPID" Mandatory="No" OrderNumber="8" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="PC.PCTESTCD" Mandatory="Yes" OrderNumber="9" Role="TOPIC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="PC.PCTEST" Mandatory="Yes" OrderNumber="10" Role="QUALIFIER.SYN" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="PC.PCCAT" Mandatory="No" OrderNumber="11" Role="QUALIFIER.GRP" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="PC.PCSCAT" Mandatory="No" OrderNumber="12" Role="QUALIFIER.GRP" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="PC.PCORRES" Mandatory="No" OrderNumber="13" Role="QUALIFIER.RES" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="PC.PCORRESU" Mandatory="No" OrderNumber="14" Role="QUALIFIER.VAR" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="PC.PCSTRESC" Mandatory="No" OrderNumber="15" Role="QUALIFIER.RES" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="PC.PCSTRESN" Mandatory="No" OrderNumber="16" Role="QUALIFIER.RES" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="PC.PCSTRESU" Mandatory="No" OrderNumber="17" Role="QUALIFIER.VAR" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="PC.PCSTAT" Mandatory="No" OrderNumber="18" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="PC.PCREASND" Mandatory="No" OrderNumber="19" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="PC.PCNAM" Mandatory="No" OrderNumber="20" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="PC.PCSPEC" Mandatory="Yes" OrderNumber="21" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="PC.PCSPCCND" Mandatory="No" OrderNumber="22" Role="QUALIFIER.VAR" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="PC.PCMETHOD" Mandatory="No" OrderNumber="23" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="PC.PCBLFL" Mandatory="No" OrderNumber="24" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="PC.PCFAST" Mandatory="No" OrderNumber="25" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="PC.PCDRVFL" Mandatory="No" OrderNumber="26" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="PC.PCLLOQ" Mandatory="No" OrderNumber="27" Role="QUALIFIER.VAR" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="PC.PCEXCLFL" Mandatory="No" OrderNumber="28" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="PC.PCREASEX" Mandatory="No" OrderNumber="29" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="PC.VISITDY" Mandatory="No" OrderNumber="30" Role="TIMING" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="PC.PCDTC" Mandatory="No" OrderNumber="31" Role="TIMING" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="PC.PCENDTC" Mandatory="No" OrderNumber="32" Role="TIMING" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="PC.PCDY" Mandatory="No" OrderNumber="33" Role="TIMING" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="PC.PCENDY" Mandatory="No" OrderNumber="34" Role="TIMING" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="PC.PCTPT" Mandatory="No" OrderNumber="35" Role="TIMING" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="PC.PCTPTNUM" Mandatory="No" OrderNumber="36" Role="TIMING" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="PC.PCELTM" Mandatory="No" OrderNumber="37" Role="TIMING" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="PC.PCTPTREF" Mandatory="No" OrderNumber="38" Role="TIMING" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="PC.PCRFTDTC" Mandatory="No" OrderNumber="39" Role="TIMING" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="PC.PCEVLINT" Mandatory="No" OrderNumber="40" Role="TIMING" RoleCodeListOID="CL.ROLES"/>
+				<def:leaf xlink:href="pc.xpt" ID="ARCHIVELOCATION.PC">
+					<def:title>pc.xpt</def:title>
+				</def:leaf>
+			</ItemGroupDef>
+			<ItemGroupDef OID="PP" Name="PP" Repeating="Yes" SASDatasetName="PP" Purpose="Tabulation" def:Label="Pharmacokinetics Parameters" def:Structure="One record per pharmacokinetic parameter per time-concentration profile per pool" def:Class="Findings" def:DomainKeys="STUDYID,DOMAIN,USUBJID,POOLID,PPSEQ,PPGRPID" def:ArchiveLocationID="ARCHIVELOCATION.PP">
+				<ItemRef ItemOID="PP.STUDYID" Mandatory="Yes" OrderNumber="1" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="PP.DOMAIN" Mandatory="Yes" OrderNumber="2" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="PP.USUBJID" Mandatory="No" OrderNumber="3" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="PP.POOLID" Mandatory="No" OrderNumber="4" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="PP.PPSEQ" Mandatory="Yes" OrderNumber="5" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="PP.PPGRPID" Mandatory="No" OrderNumber="6" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="PP.PPTESTCD" Mandatory="Yes" OrderNumber="7" Role="TOPIC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="PP.PPTEST" Mandatory="Yes" OrderNumber="8" Role="QUALIFIER.SYN" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="PP.PPCAT" Mandatory="No" OrderNumber="9" Role="QUALIFIER.GRP" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="PP.PPSCAT" Mandatory="No" OrderNumber="10" Role="QUALIFIER.GRP" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="PP.PPORRES" Mandatory="No" OrderNumber="11" Role="QUALIFIER.RES" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="PP.PPORRESU" Mandatory="No" OrderNumber="12" Role="QUALIFIER.VAR" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="PP.PPSTRESC" Mandatory="No" OrderNumber="13" Role="QUALIFIER.RES" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="PP.PPSTRESN" Mandatory="No" OrderNumber="14" Role="QUALIFIER.RES" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="PP.PPSTRESU" Mandatory="No" OrderNumber="15" Role="QUALIFIER.VAR" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="PP.PPSTAT" Mandatory="No" OrderNumber="16" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="PP.PPREASND" Mandatory="No" OrderNumber="17" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="PP.PPSPEC" Mandatory="No" OrderNumber="18" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="PP.VISITDY" Mandatory="No" OrderNumber="19" Role="TIMING" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="PP.PPTPTREF" Mandatory="No" OrderNumber="20" Role="TIMING" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="PP.PPRFTDTC" Mandatory="No" OrderNumber="21" Role="TIMING" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="PP.PPSTINT" Mandatory="No" OrderNumber="22" Role="TIMING" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="PP.PPENINT" Mandatory="No" OrderNumber="23" Role="TIMING" RoleCodeListOID="CL.ROLES"/>
+				<def:leaf xlink:href="pp.xpt" ID="ARCHIVELOCATION.PP">
+					<def:title>pp.xpt</def:title>
+				</def:leaf>
+			</ItemGroupDef>
+			<ItemGroupDef OID="TS" Name="TS" Repeating="Yes" SASDatasetName="TS" Purpose="Tabulation" def:Label="Trial Summary" def:Structure="One record per Trial Summary parameter value" def:Class="Trial Design" def:DomainKeys="STUDYID,DOMAIN,TSSEQ,TSGRPID" def:ArchiveLocationID="ARCHIVELOCATION.TS">
+				<ItemRef ItemOID="TS.STUDYID" Mandatory="Yes" OrderNumber="1" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="TS.DOMAIN" Mandatory="Yes" OrderNumber="2" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="TS.TSSEQ" Mandatory="Yes" OrderNumber="3" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="TS.TSGRPID" Mandatory="No" OrderNumber="4" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="TS.TSPARMCD" Mandatory="Yes" OrderNumber="5" Role="TOPIC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="TS.TSPARM" Mandatory="Yes" OrderNumber="6" Role="QUALIFIER.SYN" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="TS.TSVAL" Mandatory="Yes" OrderNumber="7" Role="QUALIFIER.RES" RoleCodeListOID="CL.ROLES"/>
+				<def:leaf xlink:href="ts.xpt" ID="ARCHIVELOCATION.TS">
+					<def:title>ts.xpt</def:title>
+				</def:leaf>
+			</ItemGroupDef>
+			<ItemGroupDef OID="SC" Name="SC" Repeating="Yes" SASDatasetName="SC" Purpose="Tabulation" def:Label="Subject Characteristics" def:Structure="One record per characteristic per subject" def:Class="Findings" def:DomainKeys="STUDYID,DOMAIN,USUBJID,SCSEQ" def:ArchiveLocationID="ARCHIVELOCATION.SC">
+				<ItemRef ItemOID="SC.STUDYID" Mandatory="Yes" OrderNumber="1" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="SC.DOMAIN" Mandatory="Yes" OrderNumber="2" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="SC.USUBJID" Mandatory="Yes" OrderNumber="3" Role="TOPIC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="SC.SCSEQ" Mandatory="Yes" OrderNumber="4" Role="QUALIFIER.SYN" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="SC.SCGRPID" Mandatory="No" OrderNumber="5" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>				
+				<ItemRef ItemOID="SC.SCTESTCD" Mandatory="Yes" OrderNumber="8" Role="TOPIC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="SC.SCTEST" Mandatory="Yes" OrderNumber="9" Role="QUALIFIER.SYN" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="SC.SCORRES" Mandatory="No" OrderNumber="10" Role="QUALIFIER.RES" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="SC.SCORRESU" Mandatory="No" OrderNumber="11" Role="QUALIFIER.RES" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="SC.SCSTRESC" Mandatory="No" OrderNumber="11" Role="QUALIFIER.RES" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="SC.SCSTRESN" Mandatory="No" OrderNumber="12" Role="QUALIFIER.RES" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="SC.SCSTRESU" Mandatory="No" OrderNumber="13" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>				
+				<ItemRef ItemOID="SC.SCDTC" Mandatory="No" OrderNumber="24" Role="TIMING" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="SC.SCDY" Mandatory="No" OrderNumber="25" Role="TIMING" RoleCodeListOID="CL.ROLES"/>				
+				<def:leaf xlink:href="SC.xpt" ID="ARCHIVELOCATION.SC">
+					<def:title>sc.xpt</def:title>
+				</def:leaf>
+			</ItemGroupDef>
+			<ItemGroupDef OID="POOLDEF" Name="POOLDEF" Repeating="No" SASDatasetName="POOLDEF" Purpose="Tabulation" def:Label="Pooled Definition" def:Structure="One record per subject per pool," def:Class="Relationships" def:DomainKeys="STUDYID, POOLID, USUBJID" def:ArchiveLocationID="ARCHIVELOCATION.POOLDEF">
+				<ItemRef ItemOID="POOLDEF.STUDYID" Mandatory="Yes" OrderNumber="1" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="POOLDEF.POOLID" Mandatory="Yes" OrderNumber="2" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="POOLDEF.USUBJID" Mandatory="Yes" OrderNumber="3" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<def:leaf xlink:href="pooldef.xpt" ID="ARCHIVELOCATION.POOLDEF">
+					<def:title>pooldef.xpt</def:title>
+				</def:leaf>
+			</ItemGroupDef>
+			<ItemGroupDef OID="FW" Name="FW" Repeating="Yes" SASDatasetName="FW" Purpose="Tabulation" def:Label="Food and Water Consumption" def:Structure="One record per test per interval per subject or pool" def:Class="Findings" def:DomainKeys="STUDYID,DOMAIN,USUBJID,POOLID,FWSEQ,FWGRPID" def:ArchiveLocationID="ARCHIVELOCATION.FW">
+				<ItemRef ItemOID="FW.STUDYID" Mandatory="Yes" OrderNumber="1" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="FW.DOMAIN" Mandatory="Yes" OrderNumber="2" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="FW.USUBJID" Mandatory="No" OrderNumber="3" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="FW.POOLID" Mandatory="No" OrderNumber="4" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="FW.FWSEQ" Mandatory="Yes" OrderNumber="5" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="FW.FWGRPID" Mandatory="No" OrderNumber="6" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="FW.FWTESTCD" Mandatory="Yes" OrderNumber="7" Role="TOPIC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="FW.FWTEST" Mandatory="Yes" OrderNumber="8" Role="QUALIFIER.SYN" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="FW.FWORRES" Mandatory="No" OrderNumber="9" Role="QUALIFIER.RES" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="FW.FWORRESU" Mandatory="No" OrderNumber="10" Role="QUALIFIER.VAR" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="FW.FWSTRESC" Mandatory="No" OrderNumber="11" Role="QUALIFIER.RES" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="FW.FWSTRESN" Mandatory="No" OrderNumber="12" Role="QUALIFIER.RES" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="FW.FWSTRESU" Mandatory="No" OrderNumber="13" Role="QUALIFIER.VAR" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="FW.FWSTAT" Mandatory="No" OrderNumber="14" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="FW.FWREASND" Mandatory="No" OrderNumber="15" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="FW.FWEXCLFL" Mandatory="No" OrderNumber="16" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="FW.FWREASEX" Mandatory="No" OrderNumber="17" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="FW.FWDTC" Mandatory="No" OrderNumber="18" Role="TIMING" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="FW.FWENDTC" Mandatory="No" OrderNumber="19" Role="TIMING" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="FW.FWDY" Mandatory="No" OrderNumber="20" Role="TIMING" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="FW.FWENDY" Mandatory="No" OrderNumber="21" Role="TIMING" RoleCodeListOID="CL.ROLES"/>
+				<def:leaf xlink:href="fw.xpt" ID="ARCHIVELOCATION.FW">
+					<def:title>fw.xpt</def:title>
+				</def:leaf>
+			</ItemGroupDef>
+			<ItemGroupDef OID="RELREC" Name="RELREC" Repeating="No" SASDatasetName="RELREC" Purpose="Tabulation" def:Label="Related Records - RELREC" def:Structure="One record per related record, related group of records (e.g. --GRPID), or related dataset, Tabulation." def:Class="Relationships" def:DomainKeys="STUDYID,RDOMAIN,USUBJID,POOLID,IDVAR,IDVARVAL,RELTYPE,RELID" def:ArchiveLocationID="ARCHIVELOCATION.RELREC">
+				<ItemRef ItemOID="RELREC.STUDYID" Mandatory="Yes" OrderNumber="1" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="RELREC.RDOMAIN" Mandatory="Yes" OrderNumber="2" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="RELREC.USUBJID" Mandatory="No" OrderNumber="3" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="RELREC.POOLID" Mandatory="No" OrderNumber="4" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="RELREC.IDVAR" Mandatory="No" OrderNumber="5" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="RELREC.IDVARVAL" Mandatory="No" OrderNumber="6" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="RELREC.RELTYPE" Mandatory="No" OrderNumber="7" Role="Record Qualifier" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="RELREC.RELID" Mandatory="Yes" OrderNumber="8" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>				
+				<def:leaf xlink:href="relrec.xpt" ID="ARCHIVELOCATION.RELREC">
+					<def:title>relrec.xpt</def:title>
+				</def:leaf>
+			</ItemGroupDef>
+			<ItemGroupDef OID="SUPPMA" Name="SUPPMA" Repeating="No" SASDatasetName="SUPPMA" Purpose="Tabulation" def:Label="Supplemental Qualifiers - MA" def:Structure="One record per IDVAR, IDVARVAL, and QNAM value per subject" def:Class="Relationships" def:DomainKeys="STUDYID,RDOMAIN,USUBJID,POOLID,IDVAR,IDVARVAL,QNAM" def:ArchiveLocationID="ARCHIVELOCATION.SUPPMA">
+				<ItemRef ItemOID="SUPPMA.STUDYID" Mandatory="Yes" OrderNumber="1" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="SUPPMA.RDOMAIN" Mandatory="Yes" OrderNumber="2" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="SUPPMA.USUBJID" Mandatory="No" OrderNumber="3" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="SUPPMA.POOLID" Mandatory="No" OrderNumber="4" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="SUPPMA.IDVAR" Mandatory="No" OrderNumber="5" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="SUPPMA.IDVARVAL" Mandatory="No" OrderNumber="6" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="SUPPMA.QNAM" Mandatory="Yes" OrderNumber="7" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="SUPPMA.QLABEL" Mandatory="Yes" OrderNumber="8" Role="QUALIFIER.SYN" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="SUPPMA.QVAL" Mandatory="Yes" OrderNumber="9" Role="QUALIFIER.RES" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="SUPPMA.QORIG" Mandatory="No" OrderNumber="10" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="SUPPMA.QEVAL" Mandatory="No" OrderNumber="11" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<def:leaf xlink:href="suppma.xpt" ID="ARCHIVELOCATION.SUPPMA">
+					<def:title>suppma.xpt</def:title>
+				</def:leaf>
+			</ItemGroupDef>
+			<ItemGroupDef OID="SUPPMI" Name="SUPPMI" Repeating="No" SASDatasetName="SUPPMI" Purpose="Tabulation" def:Label="Supplemental Qualifiers - MI" def:Structure="One record per IDVAR, IDVARVAL, and QNAM value per subject" def:Class="Relationships" def:DomainKeys="STUDYID,RDOMAIN,USUBJID,POOLID,IDVAR,IDVARVAL,QNAM" def:ArchiveLocationID="ARCHIVELOCATION.SUPPMI">
+				<ItemRef ItemOID="SUPPMI.STUDYID" Mandatory="Yes" OrderNumber="1" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="SUPPMI.RDOMAIN" Mandatory="Yes" OrderNumber="2" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="SUPPMI.USUBJID" Mandatory="No" OrderNumber="3" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="SUPPMI.POOLID" Mandatory="No" OrderNumber="4" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="SUPPMI.IDVAR" Mandatory="No" OrderNumber="5" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="SUPPMI.IDVARVAL" Mandatory="No" OrderNumber="6" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="SUPPMI.QNAM" Mandatory="Yes" OrderNumber="7" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="SUPPMI.QLABEL" Mandatory="Yes" OrderNumber="8" Role="QUALIFIER.SYN" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="SUPPMI.QVAL" Mandatory="Yes" OrderNumber="9" Role="QUALIFIER.RES" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="SUPPMI.QORIG" Mandatory="No" OrderNumber="10" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="SUPPMI.QEVAL" Mandatory="No" OrderNumber="11" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<def:leaf xlink:href="suppmi.xpt" ID="ARCHIVELOCATION.SUPPMI">
+					<def:title>suppmi.xpt</def:title>
+				</def:leaf>
+			</ItemGroupDef>
+			<ItemGroupDef OID="SUPPPP" Name="SUPPPP" Repeating="No" SASDatasetName="SUPPPP" Purpose="Tabulation" def:Label="Supplemental Qualifiers - PP" def:Structure="One record per IDVAR, IDVARVAL, and QNAM value per subject" def:Class="Relationships" def:DomainKeys="STUDYID,RDOMAIN,USUBJID,POOLID,IDVAR,IDVARVAL,QNAM" def:ArchiveLocationID="ARCHIVELOCATION.SUPPPP">
+				<ItemRef ItemOID="SUPPPP.STUDYID" Mandatory="Yes" OrderNumber="1" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="SUPPPP.RDOMAIN" Mandatory="Yes" OrderNumber="2" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="SUPPPP.USUBJID" Mandatory="No" OrderNumber="3" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="SUPPPP.POOLID" Mandatory="No" OrderNumber="4" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="SUPPPP.IDVAR" Mandatory="No" OrderNumber="5" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="SUPPPP.IDVARVAL" Mandatory="No" OrderNumber="6" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="SUPPPP.QNAM" Mandatory="Yes" OrderNumber="7" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="SUPPPP.QLABEL" Mandatory="Yes" OrderNumber="8" Role="QUALIFIER.SYN" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="SUPPPP.QVAL" Mandatory="Yes" OrderNumber="9" Role="QUALIFIER.RES" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="SUPPPP.QORIG" Mandatory="No" OrderNumber="10" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="SUPPPP.QEVAL" Mandatory="No" OrderNumber="11" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<def:leaf xlink:href="supppp.xpt" ID="ARCHIVELOCATION.SUPPPP">
+					<def:title>supppp.xpt</def:title>
+				</def:leaf>
+			</ItemGroupDef>
+			<ItemDef OID="DM.STUDYID" Name="STUDYID" DataType="text" Length="200" Origin="OTHER" def:Label="Study Identifier"/>
+			<ItemDef OID="DM.DOMAIN" Name="DOMAIN" DataType="text" Length="2" Origin="OTHER" def:Label="Domain Abbreviation">
+				<CodeListRef CodeListOID="CL.C66734.DOMAIN"/>
+			</ItemDef>
+			<ItemDef OID="DM.USUBJID" Name="USUBJID" DataType="text" Length="200" Origin="OTHER" def:Label="Unique Subject Identifier"/>
+			<ItemDef OID="DM.SUBJID" Name="SUBJID" DataType="text" Length="200" Origin="OTHER" def:Label="Subject Identifier for the Study"/>
+			<ItemDef OID="DM.RFSTDTC" Name="RFSTDTC" DataType="datetime" Origin="COLLECTED" def:Label="Subject Reference Start Date/Time">
+				<CodeListRef CodeListOID="CL.ISO8601"/>
+			</ItemDef>
+			<ItemDef OID="DM.RFENDTC" Name="RFENDTC" DataType="datetime" Origin="COLLECTED" def:Label="Subject Reference End Date/Time">
+				<CodeListRef CodeListOID="CL.ISO8601"/>
+			</ItemDef>
+			<ItemDef OID="DM.SITEID" Name="SITEID" DataType="text" Length="200" Origin="OTHER" Comment="not populated" def:Label="Study Site Identifier"/>
+			<ItemDef OID="DM.BRTHDTC" Name="BRTHDTC" DataType="datetime" Origin="COLLECTED" def:Label="Date/Time of Birth">
+				<CodeListRef CodeListOID="CL.ISO8601"/>
+			</ItemDef>
+			<ItemDef OID="DM.AGE" Name="AGE" DataType="integer" Length="8" Origin="DERIVED" def:Label="Age"/>
+			<ItemDef OID="DM.AGETXT" Name="AGETXT" DataType="text" Length="200" Origin="OTHER" def:Label="Age Range"/>
+			<ItemDef OID="DM.AGEU" Name="AGEU" DataType="text" Length="6" Origin="OTHER" def:Label="Age Unit">
+				<CodeListRef CodeListOID="CL.C66781.AGEU"/>
+			</ItemDef>
+			<ItemDef OID="DM.SEX" Name="SEX" DataType="text" Length="2" Origin="COLLECTED" def:Label="Sex">
+				<CodeListRef CodeListOID="CL.C66731.SEX"/>
+			</ItemDef>
+			<ItemDef OID="DM.SPECIES" Name="SPECIES" DataType="text" Length="200" Origin="COLLECTED" def:Label="Species">
+				<CodeListRef CodeListOID="CL.C77808.SPECIES"/>
+			</ItemDef>
+			<ItemDef OID="DM.STRAIN" Name="STRAIN" DataType="text" Length="200" Origin="COLLECTED" def:Label="Strain/Substrain">
+				<CodeListRef CodeListOID="CL.C77530.STRAIN"/>
+			</ItemDef>
+			<ItemDef OID="DM.SBSTRAIN" Name="SBSTRAIN" DataType="text" Length="2" Origin="OTHER" Comment="not populated" def:Label="Strain/Substrain Details"/>
+			<ItemDef OID="DM.ARMCD" Name="ARMCD" DataType="text" Length="20" Origin="OTHER" def:Label="Planned Arm Code"/>
+			<ItemDef OID="DM.ARM" Name="ARM" DataType="text" Length="200" Origin="OTHER" def:Label="Description of Planned Arm"/>
+			<ItemDef OID="DM.SETCD" Name="SETCD" DataType="text" Length="8" Origin="OTHER" def:Label="Set Code"/>
+			<ItemDef OID="CO.STUDYID" Name="STUDYID" DataType="text" Length="200" Origin="OTHER" def:Label="Study Identifier"/>
+			<ItemDef OID="CO.DOMAIN" Name="DOMAIN" DataType="text" Length="2" Origin="OTHER" def:Label="Domain Abbreviation">
+				<CodeListRef CodeListOID="CL.C66734.DOMAIN"/>
+			</ItemDef>
+			<ItemDef OID="CO.RDOMAIN" Name="RDOMAIN" DataType="text" Length="8" Origin="OTHER" def:Label="Related Domain Abbreviation">
+				<CodeListRef CodeListOID="CL.C66734.DOMAIN"/>
+			</ItemDef>
+			<ItemDef OID="CO.USUBJID" Name="USUBJID" DataType="text" Length="200" Origin="COLLECTED" def:Label="Unique Subject Identifier"/>
+			<ItemDef OID="CO.COSEQ" Name="COSEQ" DataType="float" Length="200" Origin="OTHER" SignificantDigits="10" def:Label="Sequence Number"/>
+			<ItemDef OID="CO.IDVAR" Name="IDVAR" DataType="text" Length="200" Origin="OTHER" def:Label="Identifying Variable"/>
+			<ItemDef OID="CO.IDVARVAL" Name="IDVARVAL" DataType="text" Length="200" Origin="OTHER" def:Label="Identifying Variable Value"/>
+			<ItemDef OID="CO.COREF" Name="COREF" DataType="text" Length="200" Origin="OTHER" Comment="not populated" def:Label="Comment Reference"/>
+			<ItemDef OID="CO.COVAL" Name="COVAL" DataType="text" Length="200" Origin="COLLECTED" def:Label="Comment"/>
+			<ItemDef OID="CO.COEVAL" Name="COEVAL" DataType="text" Length="200" Origin="OTHER" def:Label="Evaluator"/>	
+			<ItemDef OID="CO.CODTC" Name="CODTC" DataType="datetime" Origin="COLLECTED" Comment="not populated" def:Label="Date/Time of Comment">
+				<CodeListRef CodeListOID="CL.ISO8601"/>
+			</ItemDef>
+			<ItemDef OID="CO.CODY" Name="CODY" DataType="integer" Length="8" Origin="OTHER" def:ComputationMethodOID="CM.DY" def:Label="Study Day of Comment"/>
+			<ItemDef OID="EX.STUDYID" Name="STUDYID" DataType="text" Length="200" Origin="OTHER" def:Label="Study Identifier"/>
+			<ItemDef OID="EX.DOMAIN" Name="DOMAIN" DataType="text" Length="2" Origin="OTHER" def:Label="Domain Abbreviation">
+				<CodeListRef CodeListOID="CL.C66734.DOMAIN"/>
+			</ItemDef>
+			<ItemDef OID="EX.USUBJID" Name="USUBJID" DataType="text" Length="200" Origin="OTHER" def:Label="Unique Subject Identifier"/>
+			<ItemDef OID="EX.POOLID" Name="POOLID" DataType="text" Length="200" Origin="OTHER" Comment="not populated" def:Label="Pool Identifier"/>
+			<ItemDef OID="EX.EXSEQ" Name="EXSEQ" DataType="float" Length="200" Origin="OTHER" SignificantDigits="10" def:Label="Sequence Number"/>
+			<ItemDef OID="EX.EXTRT" Name="EXTRT" DataType="text" Length="200" Origin="COLLECTED" def:Label="Name of Actual Treatment"/>
+			<ItemDef OID="EX.EXDOSE" Name="EXDOSE" DataType="float" Length="200" Origin="COLLECTED" SignificantDigits="10" def:Label="Dose per Administration"/>
+			<ItemDef OID="EX.EXDOSTXT" Name="EXDOSTXT" DataType="text" Length="200" Origin="OTHER" Comment="not populated" def:Label="Dose Description"/>
+			<ItemDef OID="EX.EXDOSU" Name="EXDOSU" DataType="text" Length="200" Origin="COLLECTED" def:Label="Dose Units">
+				<CodeListRef CodeListOID="CL.C71620.UNIT"/>
+			</ItemDef>
+			<ItemDef OID="EX.EXDOSFRM" Name="EXDOSFRM" DataType="text" Length="200" Origin="COLLECTED" Comment="not populated" def:Label="Dose Form">
+				<CodeListRef CodeListOID="CL.C66726.FRM"/>
+			</ItemDef>
+			<ItemDef OID="EX.EXDOSFRQ" Name="EXDOSFRQ" DataType="text" Length="200" Origin="COLLECTED" def:Label="Dosing Frequency Per Interval">
+				<CodeListRef CodeListOID="CL.C71113.FREQ"/>
+			</ItemDef>
+			<ItemDef OID="EX.EXROUTE" Name="EXROUTE" DataType="text" Length="200" Origin="COLLECTED" def:Label="Route of Administration">
+				<CodeListRef CodeListOID="CL.C66729.ROUTE"/>
+			</ItemDef>
+			<ItemDef OID="EX.EXLOT" Name="EXLOT" DataType="text" Length="200" Origin="COLLECTED" Comment="not populated" def:Label="Lot Number"/>
+			<ItemDef OID="EX.EXLOC" Name="EXLOC" DataType="text" Length="200" Origin="OTHER" Comment="not populated" def:Label="Location of Dose Administration"/>
+			<ItemDef OID="EX.EXMETHOD" Name="EXMETHOD" DataType="text" Length="200" Origin="OTHER" Comment="not populated" def:Label="Method of Administration"/>
+			<ItemDef OID="EX.EXTRTV" Name="EXTRTV" DataType="text" Length="200" Origin="COLLECTED" def:Label="Treatment Vehicle"/>
+			<ItemDef OID="EX.EXVAMT" Name="EXVAMT" DataType="float" Length="200" Origin="OTHER" SignificantDigits="10" def:Label="Amount Administered"/>
+			<ItemDef OID="EX.EXVAMTU" Name="EXVAMTU" DataType="text" Length="200" Origin="OTHER" def:Label="Amount Administered Units">
+				<CodeListRef CodeListOID="CL.C71620.UNIT"/>
+			</ItemDef>
+			<ItemDef OID="EX.EXADJ" Name="EXADJ" DataType="text" Length="200" Origin="OTHER" Comment="not populated" def:Label="Reason for Dose Adjustment"/>
+			<ItemDef OID="EX.EXSTDTC" Name="EXSTDTC" DataType="datetime" Origin="COLLECTED" def:Label="Start Date/Time of Treatment">
+				<CodeListRef CodeListOID="CL.ISO8601"/>
+			</ItemDef>
+			<ItemDef OID="EX.EXENDTC" Name="EXENDTC" DataType="datetime" Origin="COLLECTED" Comment="not populated" def:Label="End Date/Time of Treatment">
+				<CodeListRef CodeListOID="CL.ISO8601"/>
+			</ItemDef>
+			<ItemDef OID="EX.EXSTDY" Name="EXSTDY" DataType="integer" Length="8" Origin="OTHER" def:ComputationMethodOID="CM.DY" def:Label="Study Day of Start of Treatment"/>
+			<ItemDef OID="EX.EXENDY" Name="EXENDY" DataType="integer" Length="8" Origin="OTHER" Comment="not populated" def:ComputationMethodOID="CM.DY" def:Label="Study Day of End of Treatment"/>
+			<ItemDef OID="EX.EXDUR" Name="EXDUR" DataType="text" Length="200" Origin="OTHER" Comment="not populated" def:Label="Duration of Treatment">
+				<CodeListRef CodeListOID="CL.ISO8601"/>
+			</ItemDef>
+			<ItemDef OID="EX.EXTPT" Name="EXTPT" DataType="text" Length="200" Origin="OTHER" def:Label="Planned Time Point Name"/>
+			<ItemDef OID="EX.EXTPTNUM" Name="EXTPTNUM" DataType="float" Length="200" Origin="OTHER" SignificantDigits="10" def:Label="Planned Time Point Number"/>
+			<ItemDef OID="EX.EXELTM" Name="EXELTM" DataType="text" Length="200" Origin="OTHER" Comment="not populated" def:Label="Planned Elapsed Time from Time Point Ref">
+				<CodeListRef CodeListOID="CL.ISO8601"/>
+			</ItemDef>
+			<ItemDef OID="EX.EXTPTREF" Name="EXTPTREF" DataType="text" Length="200" Origin="OTHER" Comment="not populated" def:Label="Time Point Reference"/>
+			<ItemDef OID="EX.EXRFTDTC" Name="EXRFTDTC" DataType="datetime" Origin="OTHER" Comment="not populated" def:Label="Date/Time of Reference Time Point">
+				<CodeListRef CodeListOID="CL.ISO8601"/>
+			</ItemDef>
+			<ItemDef OID="DS.STUDYID" Name="STUDYID" DataType="text" Length="200" Origin="OTHER" def:Label="Study Identifier"/>
+			<ItemDef OID="DS.DOMAIN" Name="DOMAIN" DataType="text" Length="2" Origin="OTHER" def:Label="Domain Abbreviation">
+				<CodeListRef CodeListOID="CL.C66734.DOMAIN"/>
+			</ItemDef>
+			<ItemDef OID="DS.USUBJID" Name="USUBJID" DataType="text" Length="200" Origin="COLLECTED" def:Label="Unique Subject Identifier"/>
+			<ItemDef OID="DS.DSSEQ" Name="DSSEQ" DataType="float" Length="200" Origin="OTHER" SignificantDigits="10" def:Label="Sequence Number"/>
+			<ItemDef OID="DS.DSTERM" Name="DSTERM" DataType="text" Length="200" Origin="COLLECTED" def:Label="Reported Term for the Disposition Event"/>
+			<ItemDef OID="DS.DSDECOD" Name="DSDECOD" DataType="text" Length="200" Origin="DERIVED" def:Label="Standardized Disposition Term">
+				<CodeListRef CodeListOID="CL.C89968.DSDECOD"/>
+			</ItemDef>
+			<ItemDef OID="DS.VISITDY" Name="VISITDY" DataType="integer" Length="8" Origin="DERIVED" def:ComputationMethodOID="CM.DY" def:Label="Planned Study Day of Disposition"/>
+			<ItemDef OID="DS.DSSTDTC" Name="DSSTDTC" DataType="datetime" Origin="COLLECTED" def:Label="Date/Time of Disposition">
+				<CodeListRef CodeListOID="CL.ISO8601"/>
+			</ItemDef>
+			<ItemDef OID="DS.DSSTDY" Name="DSSTDY" DataType="integer" Length="8" Origin="DERIVED" def:ComputationMethodOID="CM.DY" def:Label="Study Day of Disposition"/>
+			<ItemDef OID="BW.STUDYID" Name="STUDYID" DataType="text" Length="200" Origin="OTHER" def:Label="Study Identifier"/>
+			<ItemDef OID="BW.DOMAIN" Name="DOMAIN" DataType="text" Length="2" Origin="OTHER" def:Label="Domain Abbreviation">
+				<CodeListRef CodeListOID="CL.C66734.DOMAIN"/>
+			</ItemDef>
+			<ItemDef OID="BW.USUBJID" Name="USUBJID" DataType="text" Length="200" Origin="OTHER" def:Label="Unique Subject Identifier"/>
+			<ItemDef OID="BW.BWSEQ" Name="BWSEQ" DataType="float" Length="200" Origin="OTHER" SignificantDigits="15" def:Label="Sequence Number"/>
+			<ItemDef OID="BW.BWTESTCD" Name="BWTESTCD" DataType="text" Length="8" Origin="OTHER" def:Label="Test Short Name">
+				<CodeListRef CodeListOID="CL.C89962.BWTESTCD"/>
+			</ItemDef>
+			<ItemDef OID="BW.BWTEST" Name="BWTEST" DataType="text" Length="40" Origin="OTHER" def:Label="Test Name">
+				<CodeListRef CodeListOID="CL.C89961.BWTEST"/>
+			</ItemDef>
+			<ItemDef OID="BW.BWORRES" Name="BWORRES" DataType="text" Length="200" Origin="COLLECTED" def:Label="Result or Findings as Collected"/>
+			<ItemDef OID="BW.BWORRESU" Name="BWORRESU" DataType="text" Length="200" Origin="COLLECTED" def:Label="Unit of the Original Result">
+				<CodeListRef CodeListOID="CL.C71620.UNIT"/>
+			</ItemDef>
+			<ItemDef OID="BW.BWSTRESC" Name="BWSTRESC" DataType="text" Length="200" Origin="COLLECTED" def:Label="Standardized Result in Character Format"/>
+			<ItemDef OID="BW.BWSTRESN" Name="BWSTRESN" DataType="float" Length="200" Origin="DERIVED" SignificantDigits="15" def:Label="Standardized Result in Numeric Format"/>
+			<ItemDef OID="BW.BWSTRESU" Name="BWSTRESU" DataType="text" Length="200" Origin="DERIVED" def:Label="Unit of the Standardized Result">
+				<CodeListRef CodeListOID="CL.C71620.UNIT"/>
+			</ItemDef>
+			<ItemDef OID="BW.BWSTAT" Name="BWSTAT" DataType="text" Length="8" Origin="COLLECTED" def:Label="Examination Status">
+				<CodeListRef CodeListOID="CL.C66789.ND"/>
+			</ItemDef>
+			<ItemDef OID="BW.BWREASND" Name="BWREASND" DataType="text" Length="200" Origin="COLLECTED" def:Label="Reason Not Done"/>
+			<ItemDef OID="BW.BWBLFL" Name="BWBLFL" DataType="text" Length="2" Origin="DERIVED" Comment="not populated" def:Label="Baseline Flag">
+				<CodeListRef CodeListOID="CL.C66742.NY"/>
+			</ItemDef>
+			<ItemDef OID="BW.BWFAST" Name="BWFAST" DataType="text" Length="2" Origin="COLLECTED" Comment="not populated" def:Label="Fasting Status">
+				<CodeListRef CodeListOID="CL.C66742.NY"/>
+			</ItemDef>
+			<ItemDef OID="BW.BWEXCLFL" Name="BWEXCLFL" DataType="text" Length="2" Origin="COLLECTED" def:Label="Exclusion Flag">
+				<CodeListRef CodeListOID="CL.C66742.NY"/>
+			</ItemDef>
+			<ItemDef OID="BW.BWREASEX" Name="BWREASEX" DataType="text" Length="200" Origin="COLLECTED" def:Label="Reason for Exclusion"/>
+			<ItemDef OID="BW.VISITDY" Name="VISITDY" DataType="integer" Length="8" Origin="DERIVED" def:ComputationMethodOID="CM.DY" def:Label="Planned Study Day of Collection"/>
+			<ItemDef OID="BW.BWDTC" Name="BWDTC" DataType="datetime" Origin="COLLECTED" def:Label="Date/Time Animal Weighed">
+				<CodeListRef CodeListOID="CL.ISO8601"/>
+			</ItemDef>
+			<ItemDef OID="BW.BWDY" Name="BWDY" DataType="integer" Length="8" Origin="DERIVED" def:ComputationMethodOID="CM.DY" def:Label="Study Day Animal Weighed"/>
+			<ItemDef OID="BG.STUDYID" Name="STUDYID" DataType="text" Length="200" Origin="OTHER" def:Label="Study Identifier"/>
+			<ItemDef OID="BG.DOMAIN" Name="DOMAIN" DataType="text" Length="2" Origin="OTHER" def:Label="Domain Abbreviation">
+				<CodeListRef CodeListOID="CL.C66734.DOMAIN"/>
+			</ItemDef>
+			<ItemDef OID="BG.USUBJID" Name="USUBJID" DataType="text" Length="200" Origin="OTHER" def:Label="Unique Subject Identifier"/>
+			<ItemDef OID="BG.BGSEQ" Name="BGSEQ" DataType="float" Length="200" Origin="OTHER" SignificantDigits="15" def:Label="Sequence Number"/>
+			<ItemDef OID="BG.BGTESTCD" Name="BGTESTCD" DataType="text" Length="8" Origin="OTHER" def:Label="Test Short Name">
+				<CodeListRef CodeListOID="CL.C89960.BGTESTCD"/>
+			</ItemDef>
+			<ItemDef OID="BG.BGTEST" Name="BGTEST" DataType="text" Length="40" Origin="OTHER" def:Label="Test Name">
+				<CodeListRef CodeListOID="CL.C89959.BGTEST"/>
+			</ItemDef>
+			<ItemDef OID="BG.BGORRES" Name="BGORRES" DataType="text" Length="200" Origin="DERIVED" Comment="computed from BWORRES values for interval specified" def:Label="Result or Findings as Collected"/>
+			<ItemDef OID="BG.BGORRESU" Name="BGORRESU" DataType="text" Length="200" Origin="COLLECTED" def:Label="Unit of the Original Result">
+				<CodeListRef CodeListOID="CL.C71620.UNIT"/>
+			</ItemDef>
+			<ItemDef OID="BG.BGSTRESC" Name="BGSTRESC" DataType="text" Length="200" Origin="COLLECTED" def:Label="Standardized Result in Character Format"/>
+			<ItemDef OID="BG.BGSTRESN" Name="BGSTRESN" DataType="float" Length="200" Origin="DERIVED" SignificantDigits="15" def:Label="Standardized Result in Numeric Format"/>
+			<ItemDef OID="BG.BGSTRESU" Name="BGSTRESU" DataType="text" Length="200" Origin="DERIVED" def:Label="Unit of the Standardized Result">
+				<CodeListRef CodeListOID="CL.C71620.UNIT"/>
+			</ItemDef>
+			<ItemDef OID="BG.BGSTAT" Name="BGSTAT" DataType="text" Length="8" Origin="COLLECTED" def:Label="Examination Status">
+				<CodeListRef CodeListOID="CL.C66789.ND"/>
+			</ItemDef>
+			<ItemDef OID="BG.BGREASND" Name="BGREASND" DataType="text" Length="200" Origin="COLLECTED" def:Label="Reason Not Done"/>
+			<ItemDef OID="BG.BGEXCLFL" Name="BGEXCLFL" DataType="text" Length="2" Origin="OTHER" def:Label="Exclusion Flag">
+				<CodeListRef CodeListOID="CL.C66742.NY"/>
+			</ItemDef>
+			<ItemDef OID="BG.BGREASEX" Name="BGREASEX" DataType="text" Length="200" Origin="OTHER" def:Label="Reason for Exclusion"/>
+			<ItemDef OID="BG.BGDTC" Name="BGDTC" DataType="datetime" Origin="COLLECTED" def:Label="Date/Time Animal Weighed">
+				<CodeListRef CodeListOID="CL.ISO8601"/>
+			</ItemDef>
+			<ItemDef OID="BG.BGENDTC" Name="BGENDTC" DataType="datetime" Origin="COLLECTED" def:Label="End Date/Time Animal Weighed">
+				<CodeListRef CodeListOID="CL.ISO8601"/>
+			</ItemDef>
+			<ItemDef OID="BG.BGDY" Name="BGDY" DataType="integer" Length="8" Origin="DERIVED" def:ComputationMethodOID="CM.DY" def:Label="Study Day Animal Weighed"/>
+			<ItemDef OID="BG.BGENDY" Name="BGENDY" DataType="integer" Length="8" Origin="DERIVED" def:ComputationMethodOID="CM.DY" def:Label="Study Day of End of Weight Interval"/>
+			<ItemDef OID="BG.BGELTM" Name="BGELTM" DataType="text" Length="200" Origin="OTHER" Comment="not populated" def:Label="Planned Elapsed Time from Time Point Ref">
+				<CodeListRef CodeListOID="CL.ISO8601"/>
+			</ItemDef>
+			<ItemDef OID="BG.BGTPTREF" Name="BGTPTREF" DataType="text" Length="200" Origin="OTHER" Comment="not populated" def:Label="Time Point Reference"/>
+			<ItemDef OID="BG.BGRFTDTC" Name="BGRFTDTC" DataType="datetime" Origin="OTHER" Comment="not populated" def:Label="Date/Time of Reference Time Point">
+				<CodeListRef CodeListOID="CL.ISO8601"/>
+			</ItemDef>
+			<ItemDef OID="CL.STUDYID" Name="STUDYID" DataType="text" Length="200" Origin="OTHER" def:Label="Study Identifier"/>
+			<ItemDef OID="CL.DOMAIN" Name="DOMAIN" DataType="text" Length="2" Origin="OTHER" def:Label="Domain Abbreviation">
+				<CodeListRef CodeListOID="CL.C66734.DOMAIN"/>
+			</ItemDef>
+			<ItemDef OID="CL.USUBJID" Name="USUBJID" DataType="text" Length="200" Origin="OTHER" def:Label="Unique Subject Identifier"/>
+			<ItemDef OID="CL.POOLID" Name="POOLID" DataType="text" Length="200" Origin="OTHER" def:Label="Pool Identifier"/>
+			<ItemDef OID="CL.CLSEQ" Name="CLSEQ" DataType="float" Length="200" Origin="OTHER" SignificantDigits="15" def:Label="Sequence Number"/>
+			<ItemDef OID="CL.CLGRPID" Name="CLGRPID" DataType="text" Length="200" Origin="OTHER" Comment="not populated" def:Label="Group Identifier"/>
+			<ItemDef OID="CL.CLREFID" Name="CLREFID" DataType="text" Length="200" Origin="OTHER" def:Label="Reference ID"/>
+			<ItemDef OID="CL.CLSPID" Name="CLSPID" DataType="text" Length="200" Origin="OTHER" Comment="not populated" def:Label="Mass Identifier"/>
+			<ItemDef OID="CL.CLTESTCD" Name="CLTESTCD" DataType="text" Length="8" Origin="OTHER" def:Label="Test Short Name"/>
+			<ItemDef OID="CL.CLTEST" Name="CLTEST" DataType="text" Length="40" Origin="OTHER" def:Label="Test Name"/>
+			<ItemDef OID="CL.CLCAT" Name="CLCAT" DataType="text" Length="200" Origin="OTHER" def:Label="Category for Clinical Observations">
+				<CodeListRef CodeListOID="CL.C89963.CLCAT"/>
+			</ItemDef>
+			<ItemDef OID="CL.CLSCAT" Name="CLSCAT" DataType="text" Length="200" Origin="OTHER" Comment="not populated" def:Label="Subcategory for Clinical Observations"/>
+			<ItemDef OID="CL.CLBODSYS" Name="CLBODSYS" DataType="text" Length="200" Origin="OTHER" Comment="not populated" def:Label="Body System or Organ Class">
+			</ItemDef>
+			<ItemDef OID="CL.CLORRES" Name="CLORRES" DataType="text" Length="200" Origin="COLLECTED" def:Label="Result or Findings as Collected"/>
+			<ItemDef OID="CL.CLSTRESC" Name="CLSTRESC" DataType="text" Length="200" Origin="DERIVED" def:Label="Standardized Result in Character Format"/>
+			<ItemDef OID="CL.CLRESCAT" Name="CLRESCAT" DataType="text" Length="200" Origin="OTHER" Comment="not populated" def:Label="Result Category"/>
+			<ItemDef OID="CL.CLSTAT" Name="CLSTAT" DataType="text" Length="8" Origin="OTHER" Comment="not populated" def:Label="Examination Status">
+				<CodeListRef CodeListOID="CL.C66789.ND"/>
+			</ItemDef>
+			<ItemDef OID="CL.CLREASND" Name="CLREASND" DataType="text" Length="200" Origin="OTHER" Comment="not populated" def:Label="Reason Not Done"/>
+			<ItemDef OID="CL.CLLOC" Name="CLLOC" DataType="text" Length="200" Origin="DERIVED" Comment="not populated" def:Label="Location of a Finding"/>
+			<ItemDef OID="CL.CLEVAL" Name="CLEVAL" DataType="text" Length="200" Origin="OTHER" def:Label="Evaluator"/>
+			<ItemDef OID="CL.CLSEV" Name="CLSEV" DataType="text" Length="200" Origin="COLLECTED" Comment="not populated" def:Label="Severity"/>
+			<ItemDef OID="CL.CLEXCLFL" Name="CLEXCLFL" DataType="text" Length="2" Origin="COLLECTED" Comment="not populated" def:Label="Exclusion Flag">
+				<CodeListRef CodeListOID="CL.C66742.NY"/>
+			</ItemDef>
+			<ItemDef OID="CL.CLREASEX" Name="CLREASEX" DataType="text" Length="200" Origin="COLLECTED" Comment="not populated" def:Label="Reason for Exclusion"/>
+			<ItemDef OID="CL.VISITDY" Name="VISITDY" DataType="integer" Length="8" Origin="DERIVED" def:ComputationMethodOID="CM.DY" def:Label="Planned Study Day of Collection"/>
+			<ItemDef OID="CL.CLDTC" Name="CLDTC" DataType="datetime" Origin="COLLECTED" def:Label="Start Date/Time of Observation">
+				<CodeListRef CodeListOID="CL.ISO8601"/>
+			</ItemDef>
+			<ItemDef OID="CL.CLDY" Name="CLDY" DataType="integer" Length="8" Origin="DERIVED" def:ComputationMethodOID="CM.DY" def:Label="Study Day of Observation"/>
+			<ItemDef OID="CL.CLTPT" Name="CLTPT" DataType="text" Length="200" Origin="COLLECTED" Comment="not populated" def:Label="Planned Time Point Name"/>
+			<ItemDef OID="CL.CLTPTNUM" Name="CLTPTNUM" DataType="float" Length="200" Origin="OTHER" SignificantDigits="10" Comment="not populated" def:Label="Planned Time Point Number"/>
+			<ItemDef OID="CL.CLELTM" Name="CLELTM" DataType="text" Length="200" Origin="OTHER" Comment="not populated" def:Label="Planned Elapsed Time from Time Point Ref">
+				<CodeListRef CodeListOID="CL.ISO8601"/>
+			</ItemDef>
+			<ItemDef OID="CL.CLTPTREF" Name="CLTPTREF" DataType="text" Length="200" Origin="OTHER" Comment="not populated" def:Label="Time Point Reference"/>
+			<ItemDef OID="CL.CLRFTDTC" Name="CLRFTDTC" DataType="datetime" Origin="OTHER" Comment="not populated" def:Label="Date/Time of Reference Time Point">
+				<CodeListRef CodeListOID="CL.ISO8601"/>
+			</ItemDef>
+			<ItemDef OID="MA.STUDYID" Name="STUDYID" DataType="text" Length="200" Origin="OTHER" def:Label="Study Identifier"/>
+			<ItemDef OID="MA.DOMAIN" Name="DOMAIN" DataType="text" Length="2" Origin="OTHER" def:Label="Domain Abbreviation">
+				<CodeListRef CodeListOID="CL.C66734.DOMAIN"/>
+			</ItemDef>
+			<ItemDef OID="MA.USUBJID" Name="USUBJID" DataType="text" Length="200" Origin="OTHER" def:Label="Unique Subject Identifier"/>
+			<ItemDef OID="MA.MASEQ" Name="MASEQ" DataType="float" Length="200" Origin="OTHER" SignificantDigits="15" def:Label="Sequence Number"/>
+			<ItemDef OID="MA.MAGRPID" Name="MAGRPID" DataType="text" Length="200" Origin="OTHER" Comment="not populated" def:Label="Group Identifier"/>
+			<ItemDef OID="MA.MAREFID" Name="MAREFID" DataType="text" Length="200" Origin="OTHER" def:Label="Specimen Reference Identifier"/>
+			<ItemDef OID="MA.MASPID" Name="MASPID" DataType="text" Length="200" Origin="OTHER" Comment="not populated" def:Label="Mass Identifier"/>
+			<ItemDef OID="MA.MATESTCD" Name="MATESTCD" DataType="text" Length="8" Origin="OTHER" def:Label="Macroscopic Examination Short Name">
+				<CodeListRef CodeListOID="CL.C89972.MATESTCD"/>
+			</ItemDef>
+			<ItemDef OID="MA.MATEST" Name="MATEST" DataType="text" Length="40" Origin="OTHER" def:Label="Macroscopic Examination Name">
+				<CodeListRef CodeListOID="CL.C89971.MATEST"/>
+			</ItemDef>
+			<ItemDef OID="MA.MABODSYS" Name="MABODSYS" DataType="text" Length="200" Origin="OTHER" Comment="not populated" def:Label="Body System or Organ Class">
+			</ItemDef>
+			<ItemDef OID="MA.MAORRES" Name="MAORRES" DataType="text" Length="200" Origin="COLLECTED" def:Label="Result or Findings as Collected"/>
+			<ItemDef OID="MA.MASTRESC" Name="MASTRESC" DataType="text" Length="200" Origin="DERIVED" def:Label="Standardized Result in Character Format"/>
+			<ItemDef OID="MA.MASTAT" Name="MASTAT" DataType="text" Length="8" Origin="COLLECTED" Comment="not populated" def:Label="Examination Status">
+				<CodeListRef CodeListOID="CL.C66789.ND"/>
+			</ItemDef>
+			<ItemDef OID="MA.MAREASND" Name="MAREASND" DataType="text" Length="200" Origin="COLLECTED" Comment="not populated" def:Label="Reason Not Done"/>
+			<ItemDef OID="MA.MANAM" Name="MANAM" DataType="text" Length="200" Origin="OTHER" Comment="not populated" def:Label="Laboratory Name"/>
+			<ItemDef OID="MA.MASPEC" Name="MASPEC" DataType="text" Length="200" Origin="COLLECTED" def:Label="Specimen Material Type">
+				<CodeListRef CodeListOID="CL.C77529.SPEC"/>
+			</ItemDef>
+			<ItemDef OID="MA.MAANTREG" Name="MAANTREG" DataType="text" Length="200" Origin="DERIVED" def:Label="Anatomical Region of Specimen"/>
+			<ItemDef OID="MA.MASPCCND" Name="MASPCCND" DataType="text" Length="200" Origin="DERIVED" Comment="not populated" def:Label="Specimen Condition"/>
+			<ItemDef OID="MA.MASPCUFL" Name="MASPCUFL" DataType="text" Length="2" Origin="DERIVED" Comment="not populated" def:Label="Specimen Usability for the Test">
+				<CodeListRef CodeListOID="CL.C66742.NY"/>
+			</ItemDef>
+			<ItemDef OID="MA.MALAT" Name="MALAT" DataType="text" Length="200" Origin="DERIVED" Comment="not populated" def:Label="Specimen Laterality within Subject">
+				<CodeListRef CodeListOID="CL.C99073.LAT"/>
+			</ItemDef>
+			<ItemDef OID="MA.MADIR" Name="MADIR" DataType="text" Length="200" Origin="OTHER" Comment="not populated" def:Label="Specimen Directionality within Subject">
+			</ItemDef>
+			<ItemDef OID="MA.MAPORTOT" Name="MAPORTOT" DataType="text" Length="200" Origin="OTHER" Comment="not populated" def:Label="Portion or Totality">
+			</ItemDef>
+			<ItemDef OID="MA.MAEVAL" Name="MAEVAL" DataType="text" Length="200" Origin="OTHER" def:Label="Evaluator"/>
+			<ItemDef OID="MA.MASEV" Name="MASEV" DataType="text" Length="200" Origin="DERIVED" Comment="not populated" def:Label="Severity">
+				<CodeListRef CodeListOID="CL.C90000.SEV"/>
+			</ItemDef>
+			<ItemDef OID="MA.MADTHREL" Name="MADTHREL" DataType="text" Length="200" Origin="DERIVED" Comment="not populated" def:Label="Relationship to Death">
+				<CodeListRef CodeListOID="CL.C66742.NY"/>
+			</ItemDef>
+			<ItemDef OID="MA.MADTC" Name="MADTC" DataType="datetime" Origin="COLLECTED" def:Label="Date/Time of Collection">
+				<CodeListRef CodeListOID="CL.ISO8601"/>
+			</ItemDef>
+			<ItemDef OID="MA.MADY" Name="MADY" DataType="integer" Length="8" Origin="DERIVED" def:ComputationMethodOID="CM.DY" def:Label="Study Day of Specimen Collection"/>
+			<ItemDef OID="LB.STUDYID" Name="STUDYID" DataType="text" Length="200" Origin="OTHER" def:Label="Study Identifier"/>
+			<ItemDef OID="LB.DOMAIN" Name="DOMAIN" DataType="text" Length="2" Origin="OTHER" def:Label="Domain Abbreviation">
+				<CodeListRef CodeListOID="CL.C66734.DOMAIN"/>
+			</ItemDef>
+			<ItemDef OID="LB.USUBJID" Name="USUBJID" DataType="text" Length="200" Origin="OTHER" def:Label="Unique Subject Identifier"/>
+			<ItemDef OID="LB.POOLID" Name="POOLID" DataType="text" Length="200" Origin="OTHER" Comment="not populated" def:Label="Pool Identifier"/>
+			<ItemDef OID="LB.LBSEQ" Name="LBSEQ" DataType="float" Length="200" Origin="OTHER" SignificantDigits="15" def:Label="Sequence Number"/>
+			<ItemDef OID="LB.LBGRPID" Name="LBGRPID" DataType="text" Length="200" Origin="OTHER" Comment="not populated" def:Label="Group Identifier"/>
+			<ItemDef OID="LB.LBREFID" Name="LBREFID" DataType="text" Length="200" Origin="OTHER" Comment="not populated" def:Label="Specimen Identifier"/>
+			<ItemDef OID="LB.LBSPID" Name="LBSPID" DataType="text" Length="200" Origin="OTHER" Comment="not populated" def:Label="Sponsor-Defined Identifier"/>
+			<ItemDef OID="LB.LBTESTCD" Name="LBTESTCD" DataType="text" Length="8" Origin="OTHER" def:Label="Lab Test or Examination Short Name">
+				<CodeListRef CodeListOID="CL.C65047.LBTESTCD"/>
+			</ItemDef>
+			<ItemDef OID="LB.LBTEST" Name="LBTEST" DataType="text" Length="40" Origin="OTHER" def:Label="Lab Test or Examination Name">
+				<CodeListRef CodeListOID="CL.C67154.LBTEST"/>
+			</ItemDef>
+			<ItemDef OID="LB.LBCAT" Name="LBCAT" DataType="text" Length="200" Origin="OTHER" def:Label="Category for Lab Test"/>
+			<ItemDef OID="LB.LBSCAT" Name="LBSCAT" DataType="text" Length="200" Origin="OTHER" Comment="not populated" def:Label="Subcategory for Lab Test"/>
+			<ItemDef OID="LB.LBORRES" Name="LBORRES" DataType="text" Length="200" Origin="COLLECTED" def:Label="Result or Findings as Collected"/>
+			<ItemDef OID="LB.LBORRESU" Name="LBORRESU" DataType="text" Length="200" Origin="COLLECTED" def:Label="Unit of the Original Result">
+				<CodeListRef CodeListOID="CL.C71620.UNIT"/>
+			</ItemDef>
+			<ItemDef OID="LB.LBORNRLO" Name="LBORNRLO" DataType="float" Length="200" Origin="OTHER" Comment="not populated" def:Label="Reference Range Lower Limit-Orig Unit"/>
+			<ItemDef OID="LB.LBORNRHI" Name="LBORNRHI" DataType="float" Length="200" Origin="OTHER" Comment="not populated" def:Label="Reference Range Upper Limit-Orig Unit"/>
+			<ItemDef OID="LB.LBSTRESC" Name="LBSTRESC" DataType="text" Length="200" Origin="COLLECTED" def:Label="Standardized Result in Character Format"/>
+			<ItemDef OID="LB.LBSTRESN" Name="LBSTRESN" DataType="float" Length="200" Origin="DERIVED" SignificantDigits="15" def:Label="Standardized Result in Numeric Format"/>
+			<ItemDef OID="LB.LBSTRESU" Name="LBSTRESU" DataType="text" Length="200" Origin="COLLECTED" def:Label="Unit of the Standardized Result">
+				<CodeListRef CodeListOID="CL.C71620.UNIT"/>
+			</ItemDef>
+			<ItemDef OID="LB.LBSTNRLO" Name="LBSTNRLO" DataType="float" Length="200" Origin="OTHER" Comment="not populated" def:Label="Reference Range Lower Limit-Std Unit"/>
+			<ItemDef OID="LB.LBSTNRHI" Name="LBSTNRHI" DataType="float" Length="200" Origin="OTHER" Comment="not populated" def:Label="Reference Range Upper Limit-Std Unit"/>
+			<ItemDef OID="LB.LBSTNRC" Name="LBSTNRC" DataType="text" Length="200" Origin="OTHER" Comment="not populated" def:Label="Reference Range for Char Rslt-Std Unit"/>
+			<ItemDef OID="LB.LBNRIND" Name="LBNRIND" DataType="text" Length="200" Origin="OTHER" Comment="not populated" def:Label="Reference Range Indicator"/>
+			<ItemDef OID="LB.LBSTAT" Name="LBSTAT" DataType="text" Length="8" Origin="COLLECTED" def:Label="Completion Status">
+				<CodeListRef CodeListOID="CL.C66789.ND"/>
+			</ItemDef>
+			<ItemDef OID="LB.LBREASND" Name="LBREASND" DataType="text" Length="200" Origin="COLLECTED" def:Label="Reason Not Done"/>
+			<ItemDef OID="LB.LBNAM" Name="LBNAM" DataType="text" Length="200" Origin="OTHER" Comment="not populated" def:Label="Vendor Name"/>
+			<ItemDef OID="LB.LBSPEC" Name="LBSPEC" DataType="text" Length="200" Comment="not populated" Origin="OTHER" def:Label="Specimen Type">
+				<CodeListRef CodeListOID="CL.C77529.SPEC"/>
+			</ItemDef>
+			<ItemDef OID="LB.LBANTREG" Name="LBANTREG" DataType="text" Length="200" Origin="OTHER" Comment="not populated" def:Label="Anatomical Region of Specimen"/>
+			<ItemDef OID="LB.LBSPCCND" Name="LBSPCCND" DataType="text" Length="200" Origin="COLLECTED"  def:Label="Specimen Condition"/>
+			<ItemDef OID="LB.LBSPCUFL" Name="LBSPCUFL" DataType="text" Length="2" Origin="DERIVED"  def:Label="Specimen Usability for the Test">
+				<CodeListRef CodeListOID="CL.C66742.NY"/>
+			</ItemDef>
+			<ItemDef OID="LB.LBLOC" Name="LBLOC" DataType="text" Length="200" Origin="OTHER" Comment="not populated" def:Label="Specimen Collection Location"/>
+			<ItemDef OID="LB.LBLAT" Name="LBLAT" DataType="text" Length="200" Origin="OTHER" Comment="not populated" def:Label="Specimen Laterality within Subject">
+				<CodeListRef CodeListOID="CL.C99073.LAT"/>
+			</ItemDef>
+			<ItemDef OID="LB.LBDIR" Name="LBDIR" DataType="text" Length="200" Origin="OTHER" Comment="not populated" def:Label="Specimen Directionality within Subject">
+			</ItemDef>
+			<ItemDef OID="LB.LBPORTOT" Name="LBPORTOT" DataType="text" Length="200" Origin="OTHER" Comment="not populated" def:Label="Portion or Totality">
+			</ItemDef>
+			<ItemDef OID="LB.LBMETHOD" Name="LBMETHOD" DataType="text" Length="200" Origin="OTHER" def:Label="Method of Test or Examination"/>
+			<ItemDef OID="LB.LBBLFL" Name="LBBLFL" DataType="text" Length="2" Origin="DERIVED" Comment="not populated" def:Label="Baseline Flag">
+				<CodeListRef CodeListOID="CL.C66742.NY"/>
+			</ItemDef>
+			<ItemDef OID="LB.LBFAST" Name="LBFAST" DataType="text" Length="2" Origin="OTHER" Comment="not populated" def:Label="Fasting Status">
+				<CodeListRef CodeListOID="CL.C66742.NY"/>
+			</ItemDef>
+			<ItemDef OID="LB.LBDRVFL" Name="LBDRVFL" DataType="text" Length="2" Origin="OTHER"  def:Label="Derived Flag">
+				<CodeListRef CodeListOID="CL.C66742.NY"/>
+			</ItemDef>
+			<ItemDef OID="LB.LBTOX" Name="LBTOX" DataType="text" Length="200" Origin="OTHER" Comment="not populated" def:Label="Toxicity"/>
+			<ItemDef OID="LB.LBTOXGR" Name="LBTOXGR" DataType="text" Length="200" Origin="OTHER" Comment="not populated" def:Label="Standard Toxicity Grade"/>
+			<ItemDef OID="LB.LBEXCLFL" Name="LBEXCLFL" DataType="text" Length="2" Origin="COLLECTED" def:Label="Exclusion Flag">
+				<CodeListRef CodeListOID="CL.C66742.NY"/>
+			</ItemDef>
+			<ItemDef OID="LB.LBREASEX" Name="LBREASEX" DataType="text" Length="200" Origin="COLLECTED" def:Label="Reason for Exclusion"/>
+			<ItemDef OID="LB.VISITDY" Name="VISITDY" DataType="integer" Length="8" Origin="DERIVED" def:ComputationMethodOID="CM.DY" def:Label="Planned Study Day of Collection"/>
+			<ItemDef OID="LB.LBDTC" Name="LBDTC" DataType="datetime" Origin="COLLECTED" def:Label="Date/Time of Specimen Collection">
+				<CodeListRef CodeListOID="CL.ISO8601"/>
+			</ItemDef>
+			<ItemDef OID="LB.LBENDTC" Name="LBENDTC" DataType="datetime" Origin="OTHER" Comment="not populated" def:Label="End Date/Time of Specimen Collection">
+				<CodeListRef CodeListOID="CL.ISO8601"/>
+			</ItemDef>
+			<ItemDef OID="LB.LBDY" Name="LBDY" DataType="integer" Length="8" Origin="DERIVED" def:ComputationMethodOID="CM.DY" def:Label="Study Day of Specimen Collection"/>
+			<ItemDef OID="LB.LBENDY" Name="LBENDY" DataType="integer" Length="8" Origin="OTHER" Comment="not populated" def:ComputationMethodOID="CM.DY" def:Label="Study Day of End of Specimen Collection"/>
+			<ItemDef OID="LB.LBTPT" Name="LBTPT" DataType="text" Length="200" Origin="OTHER" Comment="not populated" def:Label="Planned Time Point Name"/>
+			<ItemDef OID="LB.LBTPTNUM" Name="LBTPTNUM" DataType="float" Length="200" Origin="OTHER" SignificantDigits="10" Comment="not populated" def:Label="Planned Time Point Number"/>
+			<ItemDef OID="LB.LBELTM" Name="LBELTM" DataType="text" Length="200" Origin="OTHER" Comment="not populated" def:Label="Planned Elapsed Time from Time Point Ref">
+				<CodeListRef CodeListOID="CL.ISO8601"/>
+			</ItemDef>
+			<ItemDef OID="LB.LBTPTREF" Name="LBTPTREF" DataType="text" Length="200" Origin="OTHER" Comment="not populated" def:Label="Time Point Reference"/>
+			<ItemDef OID="LB.LBRFTDTC" Name="LBRFTDTC" DataType="datetime" Origin="OTHER" Comment="not populated" def:Label="Date/Time of Reference Time Point">
+				<CodeListRef CodeListOID="CL.ISO8601"/>
+			</ItemDef>
+			<ItemDef OID="OM.STUDYID" Name="STUDYID" DataType="text" Length="200" Origin="OTHER" def:Label="Study Identifier"/>
+			<ItemDef OID="OM.DOMAIN" Name="DOMAIN" DataType="text" Length="2" Origin="OTHER" def:Label="Domain Abbreviation">
+				<CodeListRef CodeListOID="CL.C66734.DOMAIN"/>
+			</ItemDef>
+			<ItemDef OID="OM.USUBJID" Name="USUBJID" DataType="text" Length="200" Origin="OTHER" def:Label="Unique Subject Identifier"/>
+			<ItemDef OID="OM.OMSEQ" Name="OMSEQ" DataType="float" Length="200" Origin="OTHER" SignificantDigits="15" def:Label="Sequence Number"/>
+			<ItemDef OID="OM.OMTESTCD" Name="OMTESTCD" DataType="text" Length="8" Origin="OTHER" def:Label="Test Short Name">
+				<CodeListRef CodeListOID="CL.C89977.OMTESTCD"/>
+			</ItemDef>
+			<ItemDef OID="OM.OMTEST" Name="OMTEST" DataType="text" Length="40" Origin="OTHER" def:Label="Test Name">
+				<CodeListRef CodeListOID="CL.C89976.OMTEST"/>
+			</ItemDef>
+			<ItemDef OID="OM.OMORRES" Name="OMORRES" DataType="text" Length="200" Origin="MULTIPLE" Comment="Origin is COLLECTED when OMTESTCD = OW, otherwise DERIVED" def:Label="Result or Findings as Collected"/>
+			<ItemDef OID="OM.OMORRESU" Name="OMORRESU" DataType="text" Length="200" Origin="COLLECTED" def:Label="Unit of the Original Result">
+				<CodeListRef CodeListOID="CL.C71620.UNIT"/>
+			</ItemDef>
+			<ItemDef OID="OM.OMSTRESC" Name="OMSTRESC" DataType="text" Length="200" Origin="MULTIPLE" Comment="Origin is COLLECTED when OMTESTCD = OW, otherwise DERIVED" def:Label="Standardized Result in Character Format"/>
+			<ItemDef OID="OM.OMSTRESN" Name="OMSTRESN" DataType="float" Length="200" Origin="DERIVED" SignificantDigits="15" def:Label="Standardized Result in Numeric Format"/>
+			<ItemDef OID="OM.OMSTRESU" Name="OMSTRESU" DataType="text" Length="200" Origin="DERIVED" def:Label="Unit of the Standardized Result">
+				<CodeListRef CodeListOID="CL.C71620.UNIT"/>
+			</ItemDef>
+			<ItemDef OID="OM.OMSTAT" Name="OMSTAT" DataType="text" Length="8" Origin="COLLECTED"  def:Label="Finding Status">
+				<CodeListRef CodeListOID="CL.C66789.ND"/>
+			</ItemDef>
+			<ItemDef OID="OM.OMREASND" Name="OMREASND" DataType="text" Length="200" Origin="COLLECTED"  def:Label="Reason Not Done"/>
+			<ItemDef OID="OM.OMSPEC" Name="OMSPEC" DataType="text" Length="200" Origin="COLLECTED" def:Label="Specimen Material Type">
+				<CodeListRef CodeListOID="CL.C77529.SPEC"/>
+			</ItemDef>
+			<ItemDef OID="OM.OMANTREG" Name="OMANTREG" DataType="text" Length="200" Origin="OTHER" Comment="not populated" def:Label="Anatomical Region of Specimen"/>
+			<ItemDef OID="OM.OMSPCCND" Name="OMSPCCND" DataType="text" Length="200" Origin="OTHER" def:Label="Specimen Condition"/>
+			<ItemDef OID="OM.OMSPCUFL" Name="OMSPCUFL" DataType="text" Length="2" Origin="OTHER" Comment="not populated" def:Label="Specimen Usability for the Test">
+				<CodeListRef CodeListOID="CL.C66742.NY"/>
+			</ItemDef>
+			<ItemDef OID="OM.OMLAT" Name="OMLAT" DataType="text" Length="200" Origin="OTHER" def:Label="Specimen Laterality within Subject">
+				<CodeListRef CodeListOID="CL.C99073.LAT"/>
+			</ItemDef>
+			<ItemDef OID="OM.OMDIR" Name="OMDIR" DataType="text" Length="200" Origin="OTHER" Comment="not populated" def:Label="Specimen Directionality within Subject">
+			</ItemDef>
+			<ItemDef OID="OM.OMPORTOT" Name="OMPORTOT" DataType="text" Length="200" Origin="OTHER" Comment="not populated" def:Label="Portion or Totality">
+			</ItemDef>
+			<ItemDef OID="OM.OMEXCLFL" Name="OMEXCLFL" DataType="text" Length="2" Origin="COLLECTED" def:Label="Exclusion Flag">
+				<CodeListRef CodeListOID="CL.C66742.NY"/>
+			</ItemDef>
+			<ItemDef OID="OM.OMREASEX" Name="OMREASEX" DataType="text" Length="200" Origin="COLLECTED" def:Label="Reason for Exclusion"/>
+			<ItemDef OID="OM.OMDTC" Name="OMDTC" DataType="datetime" Origin="COLLECTED" def:Label="Date/Time Organ Weighed">
+				<CodeListRef CodeListOID="CL.ISO8601"/>
+			</ItemDef>
+			<ItemDef OID="OM.OMDY" Name="OMDY" DataType="integer" Length="8" Origin="DERIVED" def:ComputationMethodOID="CM.DY" def:Label="Study Day of Weighing"/>			
+			<ItemDef OID="MI.STUDYID" Name="STUDYID" DataType="text" Length="200" Origin="OTHER" def:Label="Study Identifier"/>
+			<ItemDef OID="MI.DOMAIN" Name="DOMAIN" DataType="text" Length="2" Origin="OTHER" def:Label="Domain Abbreviation">
+				<CodeListRef CodeListOID="CL.C66734.DOMAIN"/>
+			</ItemDef>
+			<ItemDef OID="MI.USUBJID" Name="USUBJID" DataType="text" Length="200" Origin="OTHER" def:Label="Unique Subject Identifier"/>
+			<ItemDef OID="MI.MISEQ" Name="MISEQ" DataType="float" Length="200" Origin="OTHER" SignificantDigits="15" def:Label="Sequence Number"/>
+			<ItemDef OID="MI.MIGRPID" Name="MIGRPID" DataType="text" Length="200" Origin="OTHER" def:Label="Group Identifier"/>
+			<ItemDef OID="MI.MIREFID" Name="MIREFID" DataType="text" Length="200" Origin="OTHER" def:Label="Specimen Reference Identifier"/>
+			<ItemDef OID="MI.MISPID" Name="MISPID" DataType="text" Length="200" Origin="OTHER" Comment="not populated" def:Label="Mass Identifier"/>
+			<ItemDef OID="MI.MITESTCD" Name="MITESTCD" DataType="text" Length="8" Origin="OTHER" def:Label="Microscopic Examination Short Name">
+				<CodeListRef CodeListOID="CL.C89974.MITESTCD"/>
+			</ItemDef>
+			<ItemDef OID="MI.MITEST" Name="MITEST" DataType="text" Length="40" Origin="OTHER" def:Label="Microscopic Examination Name">
+				<CodeListRef CodeListOID="CL.C89973.MITEST"/>
+			</ItemDef>
+			<ItemDef OID="MI.MIBODSYS" Name="MIBODSYS" DataType="text" Length="200" Origin="OTHER" Comment="not populated" def:Label="Body System or Organ Class">
+			</ItemDef>
+			<ItemDef OID="MI.MIORRES" Name="MIORRES" DataType="text" Length="200" Origin="COLLECTED" def:Label="Result or Findings as Collected"/>
+			<ItemDef OID="MI.MISTRESC" Name="MISTRESC" DataType="text" Length="200" Origin="DERIVED" def:Label="Standardized Result in Character Format"/>
+			<ItemDef OID="MI.MIRESCAT" Name="MIRESCAT" DataType="text" Length="200" Origin="COLLECTED" def:Label="Result Category">
+				<CodeListRef CodeListOID="CL.C90017.MIRESCAT"/>
+			</ItemDef>
+			<ItemDef OID="MI.MISTAT" Name="MISTAT" DataType="text" Length="8" Origin="COLLECTED" def:Label="Completion Status">
+				<CodeListRef CodeListOID="CL.C66789.ND"/>
+			</ItemDef>
+			<ItemDef OID="MI.MIREASND" Name="MIREASND" DataType="text" Length="200" Origin="COLLECTED" def:Label="Reason Not Done"/>
+			<ItemDef OID="MI.MINAM" Name="MINAM" DataType="text" Length="200" Origin="OTHER" Comment="not populated" def:Label="Laboratory Name"/>
+			<ItemDef OID="MI.MISPEC" Name="MISPEC" DataType="text" Length="200" Origin="COLLECTED" def:Label="Specimen Material Type">
+				<CodeListRef CodeListOID="CL.C77529.SPEC"/>
+			</ItemDef>
+			<ItemDef OID="MI.MIANTREG" Name="MIANTREG" DataType="text" Length="200" Origin="DERIVED" Comment="not populated" def:Label="Anatomical Region of Specimen"/>
+			<ItemDef OID="MI.MISPCCND" Name="MISPCCND" DataType="text" Length="200" Origin="DERIVED" def:Label="Specimen Condition"/>
+			<ItemDef OID="MI.MISPCUFL" Name="MISPCUFL" DataType="text" Length="2" Origin="DERIVED" def:Label="Specimen Usability for the Test">
+				<CodeListRef CodeListOID="CL.C66742.NY"/>
+			</ItemDef>
+			<ItemDef OID="MI.MIMETHOD" Name="MIMETHOD" DataType="text" Length="200" Origin="OTHER" Comment="not populated" def:Label="Method of Test or Examination"/>
+			<ItemDef OID="MI.MILAT" Name="MILAT" DataType="text" Length="200" Origin="DERIVED" def:Label="Specimen Laterality within Subject">
+				<CodeListRef CodeListOID="CL.C99073.LAT"/>
+			</ItemDef>
+			<ItemDef OID="MI.MIDIR" Name="MIDIR" DataType="text" Length="200" Origin="DERIVED" Comment="not populated" def:Label="Specimen Directionality within Subject">
+			</ItemDef>			
+			<ItemDef OID="MI.MIEVAL" Name="MIEVAL" DataType="text" Length="200" Origin="OTHER" def:Label="Evaluator"/>
+			<ItemDef OID="MI.MISEV" Name="MISEV" DataType="text" Length="200" Origin="COLLECTED" def:Label="Severity">
+				<CodeListRef CodeListOID="CL.C90000.SEV"/>
+			</ItemDef>
+			<ItemDef OID="MI.MIDTHREL" Name="MIDTHREL" DataType="text" Length="200" Origin="COLLECTED" def:Label="Relationship to Death">
+				<CodeListRef CodeListOID="CL.C66742.NY"/>
+			</ItemDef>
+			<ItemDef OID="MI.MIDTC" Name="MIDTC" DataType="datetime" Origin="COLLECTED" def:Label="Date/Time of Specimen Collection">
+				<CodeListRef CodeListOID="CL.ISO8601"/>
+			</ItemDef>
+			<ItemDef OID="MI.MIDY" Name="MIDY" DataType="integer" Length="8" Origin="DERIVED" def:ComputationMethodOID="CM.DY" def:Label="Study Day of Specimen Collection"/>
+			<ItemDef OID="PC.STUDYID" Name="STUDYID" DataType="text" Length="200" Origin="OTHER" def:Label="Study Identifier"/>
+			<ItemDef OID="PC.DOMAIN" Name="DOMAIN" DataType="text" Length="2" Origin="OTHER" def:Label="Domain Abbreviation">
+				<CodeListRef CodeListOID="CL.C66734.DOMAIN"/>
+			</ItemDef>
+			<ItemDef OID="PC.USUBJID" Name="USUBJID" DataType="text" Length="200" Origin="OTHER" def:Label="Unique Subject Identifier"/>
+			<ItemDef OID="PC.POOLID" Name="POOLID" DataType="text" Length="200" Origin="OTHER" Comment="not populated" def:Label="Pool Identifier"/>
+			<ItemDef OID="PC.PCSEQ" Name="PCSEQ" DataType="float" Length="200" Origin="OTHER" SignificantDigits="15" def:Label="Sequence Number"/>
+			<ItemDef OID="PC.PCGRPID" Name="PCGRPID" DataType="text" Length="200" Origin="OTHER" def:Label="Group Identifier"/>
+			<ItemDef OID="PC.PCREFID" Name="PCREFID" DataType="text" Length="200" Origin="OTHER" def:Label="Sample Identifier"/>
+			<ItemDef OID="PC.PCSPID" Name="PCSPID" DataType="text" Length="200" Origin="OTHER" Comment="not populated" def:Label="Sponsor Identifier"/>
+			<ItemDef OID="PC.PCTESTCD" Name="PCTESTCD" DataType="text" Length="8" Origin="COLLECTED" def:Label="Test Short Name"/>
+			<ItemDef OID="PC.PCTEST" Name="PCTEST" DataType="text" Length="40" Origin="COLLECTED" def:Label="Test Name"/>
+			<ItemDef OID="PC.PCCAT" Name="PCCAT" DataType="text" Length="200" Origin="COLLECTED" def:Label="Test Category"/>
+			<ItemDef OID="PC.PCSCAT" Name="PCSCAT" DataType="text" Length="200" Origin="OTHER" Comment="not populated" def:Label="Test Subcategory"/>
+			<ItemDef OID="PC.PCORRES" Name="PCORRES" DataType="text" Length="200" Origin="COLLECTED" def:Label="Result or Findings as Collected"/>
+			<ItemDef OID="PC.PCORRESU" Name="PCORRESU" DataType="text" Length="200" Origin="COLLECTED" def:Label="Unit of the Original Result">
+				<CodeListRef CodeListOID="CL.C85494.PKUNIT"/>
+			</ItemDef>
+			<ItemDef OID="PC.PCSTRESC" Name="PCSTRESC" DataType="text" Length="200" Origin="COLLECTED" def:Label="Standardized Result in Character Format"/>
+			<ItemDef OID="PC.PCSTRESN" Name="PCSTRESN" DataType="float" Length="200" Origin="DERIVED" SignificantDigits="15" def:Label="Standardized Result in Numeric Format"/>
+			<ItemDef OID="PC.PCSTRESU" Name="PCSTRESU" DataType="text" Length="200" Origin="DERIVED" def:Label="Unit of the Standardized Result">
+				<CodeListRef CodeListOID="CL.C85494.PKUNIT"/>
+			</ItemDef>
+			<ItemDef OID="PC.PCSTAT" Name="PCSTAT" DataType="text" Length="8" Origin="COLLECTED" def:Label="Completion Status">
+				<CodeListRef CodeListOID="CL.C66789.ND"/>
+			</ItemDef>
+			<ItemDef OID="PC.PCREASND" Name="PCREASND" DataType="text" Length="200" Origin="COLLECTED" def:Label="Reason Not Done"/>
+			<ItemDef OID="PC.PCNAM" Name="PCNAM" DataType="text" Length="200" Origin="OTHER" Comment="not populated" def:Label="Vendor Name"/>
+			<ItemDef OID="PC.PCSPEC" Name="PCSPEC" DataType="text" Length="200" Origin="COLLECTED" def:Label="Specimen Material Type">
+				<CodeListRef CodeListOID="CL.C77529.SPEC"/>
+			</ItemDef>
+			<ItemDef OID="PC.PCSPCCND" Name="PCSPCCND" DataType="text" Length="200" Origin="COLLECTED" def:Label="Specimen Condition"/>
+			<ItemDef OID="PC.PCMETHOD" Name="PCMETHOD" DataType="text" Length="200" Origin="OTHER" def:Label="Method of Test or Examination"/>
+			<ItemDef OID="PC.PCBLFL" Name="PCBLFL" DataType="text" Length="2" Origin="DERIVED" def:Label="Baseline Flag">
+				<CodeListRef CodeListOID="CL.C66742.NY"/>
+			</ItemDef>
+			<ItemDef OID="PC.PCFAST" Name="PCFAST" DataType="text" Length="2" Origin="OTHER" Comment="not populated" def:Label="Fasting Status">
+				<CodeListRef CodeListOID="CL.C66742.NY"/>
+			</ItemDef>
+			<ItemDef OID="PC.PCDRVFL" Name="PCDRVFL" DataType="text" Length="2" Origin="OTHER" def:Label="Derived Flag">
+				<CodeListRef CodeListOID="CL.C66742.NY"/>
+			</ItemDef>
+			<ItemDef OID="PC.PCLLOQ" Name="PCLLOQ" DataType="integer" Length="200" Origin="OTHER" def:Label="Lower Limit of Quantitation"/>
+			<ItemDef OID="PC.PCEXCLFL" Name="PCEXCLFL" DataType="text" Length="2" Origin="OTHER" def:Label="Exclusion Flag">
+				<CodeListRef CodeListOID="CL.C66742.NY"/>
+			</ItemDef>
+			<ItemDef OID="PC.PCREASEX" Name="PCREASEX" DataType="text" Length="200" Origin="OTHER" def:Label="Reason for Exclusion"/>
+			<ItemDef OID="PC.VISITDY" Name="VISITDY" DataType="integer" Length="8" Origin="DERIVED" def:ComputationMethodOID="CM.DY" def:Label="Visit Day"/>
+			<ItemDef OID="PC.PCDTC" Name="PCDTC" DataType="datetime" Origin="COLLECTED" def:Label="Date/Time of Specimen Collection">
+				<CodeListRef CodeListOID="CL.ISO8601"/>
+			</ItemDef>
+			<ItemDef OID="PC.PCENDTC" Name="PCENDTC" DataType="datetime" Origin="OTHER" Comment="not populated" def:Label="End Date/Time of Specimen Collection">
+				<CodeListRef CodeListOID="CL.ISO8601"/>
+			</ItemDef>
+			<ItemDef OID="PC.PCDY" Name="PCDY" DataType="integer" Length="8" Origin="DERIVED" def:ComputationMethodOID="CM.DY" def:Label="Study Day of Specimen Collection"/>
+			<ItemDef OID="PC.PCENDY" Name="PCENDY" DataType="integer" Length="8" Origin="DERIVED" Comment="not populated" def:ComputationMethodOID="CM.DY" def:Label="Study Day of End of Specimen Collection"/>
+			<ItemDef OID="PC.PCTPT" Name="PCTPT" DataType="text" Length="200" Origin="COLLECTED" def:Label="Planned Time Point Name"/>
+			<ItemDef OID="PC.PCTPTNUM" Name="PCTPTNUM" DataType="float" Length="200" Origin="DERIVED" SignificantDigits="10"  Comment="not populated" def:Label="Planned Time Point Number"/>
+			<ItemDef OID="PC.PCELTM" Name="PCELTM" DataType="text" Length="200" Origin="OTHER" Comment="not populated" def:Label="Planned Elapsed Time from Time Point Ref">
+				<CodeListRef CodeListOID="CL.ISO8601"/>
+			</ItemDef>
+			<ItemDef OID="PC.PCTPTREF" Name="PCTPTREF" DataType="text" Length="200" Origin="OTHER" Comment="not populated" def:Label="Time Point Reference"/>
+			<ItemDef OID="PC.PCRFTDTC" Name="PCRFTDTC" DataType="datetime" Origin="COLLECTED" Comment="not populated" def:Label="Date/Time of Reference Point">
+				<CodeListRef CodeListOID="CL.ISO8601"/>
+			</ItemDef>
+			<ItemDef OID="PC.PCEVLINT" Name="PCEVLINT" DataType="text" Length="200" Origin="OTHER" Comment="not populated" def:Label="Evaluation Interval">
+				<CodeListRef CodeListOID="CL.ISO8601"/>
+			</ItemDef>
+			<ItemDef OID="PP.STUDYID" Name="STUDYID" DataType="text" Length="200" Origin="OTHER" def:Label="Study Identifier"/>
+			<ItemDef OID="PP.DOMAIN" Name="DOMAIN" DataType="text" Length="2" Origin="OTHER" def:Label="Domain Abbreviation">
+				<CodeListRef CodeListOID="CL.C66734.DOMAIN"/>
+			</ItemDef>
+			<ItemDef OID="PP.USUBJID" Name="USUBJID" DataType="text" Length="200" Origin="OTHER" def:Label="Unique Subject Identifier"/>
+			<ItemDef OID="PP.POOLID" Name="POOLID" DataType="text" Length="200" Origin="OTHER" Comment="not populated" def:Label="Pool Identifier"/>
+			<ItemDef OID="PP.PPSEQ" Name="PPSEQ" DataType="float" Length="200" Origin="OTHER" SignificantDigits="15" def:Label="Sequence Number"/>
+			<ItemDef OID="PP.PPGRPID" Name="PPGRPID" DataType="text" Length="200" Origin="OTHER" def:Label="Group Identifier"/>
+			<ItemDef OID="PP.PPTESTCD" Name="PPTESTCD" DataType="text" Length="8" Origin="OTHER" def:Label="Parameter Short Name">
+				<CodeListRef CodeListOID="CL.C85839.PKPARMCD"/>
+			</ItemDef>
+			<ItemDef OID="PP.PPTEST" Name="PPTEST" DataType="text" Length="40" Origin="OTHER" def:Label="Parameter Name">
+				<CodeListRef CodeListOID="CL.C85493.PKPARM"/>
+			</ItemDef>
+			<ItemDef OID="PP.PPCAT" Name="PPCAT" DataType="text" Length="200" Origin="COLLECTED" def:Label="Parameter Category"/>
+			<ItemDef OID="PP.PPSCAT" Name="PPSCAT" DataType="text" Length="200" Origin="OTHER" Comment="not populated" def:Label="Parameter Subcategory"/>
+			<ItemDef OID="PP.PPORRES" Name="PPORRES" DataType="text" Length="200" Origin="DERIVED" def:Label="Result or Findings as Collected"/>
+			<ItemDef OID="PP.PPORRESU" Name="PPORRESU" DataType="text" Length="200" Origin="DERIVED" def:Label="Unit of the Original Result">
+				<CodeListRef CodeListOID="CL.C85494.PKUNIT"/>
+			</ItemDef>
+			<ItemDef OID="PP.PPSTRESC" Name="PPSTRESC" DataType="text" Length="200" Origin="DERIVED" def:Label="Standardized Result in Character Format"/>
+			<ItemDef OID="PP.PPSTRESN" Name="PPSTRESN" DataType="float" Length="200" Origin="DERIVED" SignificantDigits="15" def:Label="Standardized Result in Numeric Format"/>
+			<ItemDef OID="PP.PPSTRESU" Name="PPSTRESU" DataType="text" Length="200" Origin="DERIVED" def:Label="Unit of the Standardized Result">
+				<CodeListRef CodeListOID="CL.C85494.PKUNIT"/>
+			</ItemDef>
+			<ItemDef OID="PP.PPSTAT" Name="PPSTAT" DataType="text" Length="8" Origin="COLLECTED" def:Label="Completion Status">
+				<CodeListRef CodeListOID="CL.C66789.ND"/>
+			</ItemDef>
+			<ItemDef OID="PP.PPREASND" Name="PPREASND" DataType="text" Length="200" Origin="COLLECTED" def:Label="Reason Not Done"/>
+			<ItemDef OID="PP.PPSPEC" Name="PPSPEC" DataType="text" Length="200" Origin="OTHER" def:Label="Specimen Material Type">
+				<CodeListRef CodeListOID="CL.C77529.SPEC"/>
+			</ItemDef>
+			<ItemDef OID="PP.VISITDY" Name="VISITDY" DataType="integer" Length="8" Origin="DERIVED" def:ComputationMethodOID="CM.DY" def:Label="Planned Study Day of Collection"/>
+			<ItemDef OID="PP.PPTPTREF" Name="PPTPTREF" DataType="text" Length="200" Origin="COLLECTED" Comment="not populated" def:Label="Time Point Reference"/>
+			<ItemDef OID="PP.PPRFTDTC" Name="PPRFTDTC" DataType="datetime" Origin="COLLETED" Comment="not populated" def:Label="Date/Time of Reference Point">
+				<CodeListRef CodeListOID="CL.ISO8601"/>
+			</ItemDef>
+			<ItemDef OID="PP.PPSTINT" Name="PPSTINT" DataType="text" Length="200" Origin="COLLECTED" Comment="not populated" def:Label="Start of Evaluation Interval">
+				<CodeListRef CodeListOID="CL.ISO8601"/>
+			</ItemDef>
+			<ItemDef OID="PP.PPENINT" Name="PPENINT" DataType="text" Length="200" Origin="COLLECTED" Comment="not populated" def:Label="End of Evaluation Interval">
+				<CodeListRef CodeListOID="CL.ISO8601"/>
+			</ItemDef>
+			<ItemDef OID="TS.STUDYID" Name="STUDYID" DataType="text" Length="200" Origin="OTHER" def:Label="Study Identifier"/>
+			<ItemDef OID="TS.DOMAIN" Name="DOMAIN" DataType="text" Length="2" Origin="OTHER" def:Label="Domain Abbreviation">
+				<CodeListRef CodeListOID="CL.C66734.DOMAIN"/>
+			</ItemDef>
+			<ItemDef OID="TS.TSSEQ" Name="TSSEQ" DataType="float" Length="200" Origin="OTHER" SignificantDigits="15" def:Label="Sequence Number"/>
+			<ItemDef OID="TS.TSGRPID" Name="TSGRPID" DataType="text" Length="200" Origin="OTHER" Comment="not populated" def:Label="Group Identifier"/>
+			<ItemDef OID="TS.TSPARMCD" Name="TSPARMCD" DataType="text" Length="8" Origin="OTHER" def:Label="Trial Summary Parameter Short Name">
+				<CodeListRef CodeListOID="CL.C90009.STSPRMCD"/>
+			</ItemDef>
+			<ItemDef OID="TS.TSPARM" Name="TSPARM" DataType="text" Length="40" Origin="OTHER" def:Label="Trial Summary Parameter">
+				<CodeListRef CodeListOID="CL.C90007.STSPRM"/>
+			</ItemDef>
+			<ItemDef OID="TS.TSVAL" Name="TSVAL" DataType="text" Length="200" Origin="OTHER" def:Label="Parameter Value"/>
+			<ItemDef OID="SC.STUDYID" Name="STUDYID" DataType="text" Length="200" Origin="OTHER" def:Label="Study Identifier"/>
+			<ItemDef OID="SC.DOMAIN" Name="DOMAIN" DataType="text" Length="2" Origin="OTHER" def:Label="Domain Abbreviation">
+				<CodeListRef CodeListOID="CL.C66734.DOMAIN"/>
+			</ItemDef>
+			<ItemDef OID="SC.USUBJID" Name="USUBJID" DataType="text" Length="20" Origin="OTHER" def:Label="Unique Subject Identifier"/>
+			<ItemDef OID="SC.SCSEQ" Name="SCSEQ" DataType="float" Length="8" Origin="OTHER" def:Label="Sequence Number"/>
+			<ItemDef OID="SC.SCGRPID" Name="SCGRPID" DataType="text" Length="200" Origin="OTHER" Comment="not populated" def:Label="Group Identifier"/>			
+			<ItemDef OID="SC.SCTESTCD" Name="SCTESTCD" DataType="text" Length="8" Origin="OTHER" def:Label="Subject Characteristic Short Name">
+				<CodeListRef CodeListOID="CL.C89981.SBCCDSND"/>
+			</ItemDef>
+			<ItemDef OID="SC.SCTEST" Name="SCTEST" DataType="text" Length="40" Origin="OTHER" def:Label="Subject Characteristic">
+				<CodeListRef CodeListOID="CL.C89980.SBCSND"/>
+			</ItemDef>
+			<ItemDef OID="SC.SCORRES" Name="SCORRES" DataType="text" Length="200" Origin="COLLECTED" def:Label="Result or Findings as Collected"/>
+			<ItemDef OID="SC.SCORRESU" Name="SCORRESU" DataType="text" Length="200" Origin="COLLECTED" Comment="not populated" def:Label="Unit of the Original Result">
+				<CodeListRef CodeListOID="CL.C71620.UNIT"/>
+			</ItemDef>
+			<ItemDef OID="SC.SCSTRESC" Name="SCSTRESC" DataType="text" Length="200" Origin="COLLECTED" def:Label="Standardized Result in Character Format"/>
+			<ItemDef OID="SC.SCSTRESN" Name="SCSTRESN" DataType="float" Length="200" Origin="OTHER" Comment="not populated" def:Label="Standardized Result in Numeric Format"/>
+			<ItemDef OID="SC.SCSTRESU" Name="SCSTRESU" DataType="text" Length="200" Origin="OTHER" Comment="not populated" def:Label="Unit of the Standardized Result">			
+				<CodeListRef CodeListOID="CL.C71620.UNIT"/>
+			</ItemDef>
+			<ItemDef OID="SC.SCDTC" Name="SCDTC" DataType="datetime" Origin="COLLECTED" Comment="not populated" def:Label="Date/Time of Collection">
+				<CodeListRef CodeListOID="CL.ISO8601"/>
+			</ItemDef>
+			<ItemDef OID="SC.SCDY" Name="SCDY" DataType="integer" Length="8" Origin="DERIVED" Comment="not populated" def:Label="Study Day of Collection"/>
+			<ItemDef OID="POOLDEF.STUDYID" Name="STUDYID" DataType="text" Length="200" Origin="OTHER" def:Label="Study Identifier"/>
+			<ItemDef OID="POOLDEF.POOLID" Name="POOLID" DataType="text" Length="200" Origin="OTHER" def:Label="Pool Identifier"/>
+			<ItemDef OID="POOLDEF.USUBJID" Name="USUBJID" DataType="text" Length="200" Origin="OTHER" def:Label="Unique Subject Identifier"/>
+			<ItemDef OID="FW.STUDYID" Name="STUDYID" DataType="text" Length="200" Origin="OTHER" def:Label="Study Identifier"/>
+			<ItemDef OID="FW.DOMAIN" Name="DOMAIN" DataType="text" Length="2" Origin="OTHER" def:Label="Domain Abbreviation">
+				<CodeListRef CodeListOID="CL.C66734.DOMAIN"/>
+			</ItemDef>
+			<ItemDef OID="FW.USUBJID" Name="USUBJID" DataType="text" Length="200" Origin="OTHER" def:Label="Unique Subject Identifier"/>
+			<ItemDef OID="FW.POOLID" Name="POOLID" DataType="text" Length="200" Origin="OTHER" def:Label="Pool Identifier"/>
+			<ItemDef OID="FW.FWSEQ" Name="FWSEQ" DataType="float" Length="200" Origin="OTHER" SignificantDigits="15" def:Label="Sequence Number"/>
+			<ItemDef OID="FW.FWGRPID" Name="FWGRPID" DataType="text" Length="200" Origin="OTHER" Comment="not populated" def:Label="Group Identifier"/>
+			<ItemDef OID="FW.FWTESTCD" Name="FWTESTCD" DataType="text" Length="8" Origin="OTHER" def:Label="Food /Water Consumption Short Name">
+				<CodeListRef CodeListOID="CL.C89970.FWTESTCD"/>
+			</ItemDef>
+			<ItemDef OID="FW.FWTEST" Name="FWTEST" DataType="text" Length="40" Origin="OTHER" def:Label="Food /Water Consumption Name">
+				<CodeListRef CodeListOID="CL.C89969.FWTEST"/>
+			</ItemDef>
+			<ItemDef OID="FW.FWORRES" Name="FWORRES" DataType="text" Length="200" Origin="COLLECTED" def:Label="Result or Findings as Collected"/>
+			<ItemDef OID="FW.FWORRESU" Name="FWORRESU" DataType="text" Length="200" Origin="COLLECTED" def:Label="Unit of the Original Result">
+				<CodeListRef CodeListOID="CL.C71620.UNIT"/>
+			</ItemDef>
+			<ItemDef OID="FW.FWSTRESC" Name="FWSTRESC" DataType="text" Length="200" Origin="DERIVED" def:Label="Standardized Result in Character Format"/>
+			<ItemDef OID="FW.FWSTRESN" Name="FWSTRESN" DataType="float" Length="200" Origin="DERIVED" SignificantDigits="15" def:Label="Standardized Result in Numeric Format"/>
+			<ItemDef OID="FW.FWSTRESU" Name="FWSTRESU" DataType="text" Length="200" Origin="DERIVED" def:Label="Unit of the Standardized Result">
+				<CodeListRef CodeListOID="CL.C71620.UNIT"/>
+			</ItemDef>
+			<ItemDef OID="FW.FWSTAT" Name="FWSTAT" DataType="text" Length="8" Origin="COLLECTED" Comment="not populated" def:Label="Completion Status">
+				<CodeListRef CodeListOID="CL.C66789.ND"/>
+			</ItemDef>
+			<ItemDef OID="FW.FWREASND" Name="FWREASND" DataType="text" Length="200" Origin="COLLECTED" Comment="not populated" def:Label="Reason Not Done"/>
+			<ItemDef OID="FW.FWEXCLFL" Name="FWEXCLFL" DataType="text" Length="2" Origin="COLLECTED" Comment="not populated" def:Label="Exclusion Flag">
+				<CodeListRef CodeListOID="CL.C66742.NY"/>
+			</ItemDef>
+			<ItemDef OID="FW.FWREASEX" Name="FWREASEX" DataType="text" Length="200" Origin="COLLECTED" Comment="not populated" def:Label="Reason for Exclusion"/>
+			<ItemDef OID="FW.FWDTC" Name="FWDTC" DataType="datetime" Origin="COLLECTED" def:Label="Date/Time of Observation">
+				<CodeListRef CodeListOID="CL.ISO8601"/>
+			</ItemDef>
+			<ItemDef OID="FW.FWENDTC" Name="FWENDTC" DataType="datetime" Origin="COLLECTED" def:Label="End Date/Time of Observation">
+				<CodeListRef CodeListOID="CL.ISO8601"/>
+			</ItemDef>
+			<ItemDef OID="FW.FWDY" Name="FWDY" DataType="integer" Length="8" Origin="DERIVED" def:ComputationMethodOID="CM.DY" def:Label="Study Day of Observation"/>
+			<ItemDef OID="FW.FWENDY" Name="FWENDY" DataType="integer" Length="8" Origin="DERIVED" def:ComputationMethodOID="CM.DY" def:Label="Study Day of End of Observation"/>
+			<ItemDef OID="RELREC.STUDYID" Name="STUDYID" DataType="text" Length="200" Origin="OTHER" def:Label="Study Identifier"/>
+			<ItemDef OID="RELREC.RDOMAIN" Name="RDOMAIN" DataType="text" Length="8" Origin="OTHER" def:Label="Related Domain Abbreviation">
+				<CodeListRef CodeListOID="CL.C66734.DOMAIN"/>
+			</ItemDef>
+			<ItemDef OID="RELREC.USUBJID" Name="USUBJID" DataType="text" Length="200" Origin="OTHER" def:Label="Unique Subject Identifier"/>
+			<ItemDef OID="RELREC.POOLID" Name="POOLID" DataType="text" Length="200" Origin="OTHER" Comment="not populated" def:Label="Pool Identifier"/>
+			<ItemDef OID="RELREC.IDVAR" Name="IDVAR" DataType="text" Length="200" Origin="OTHER" def:Label="Identifying Variable"/>
+			<ItemDef OID="RELREC.IDVARVAL" Name="IDVARVAL" DataType="text" Length="200" Origin="OTHER" def:Label="Identifying Variable Value"/>			
+			<ItemDef OID="RELREC.RELTYPE" Name="RELTYPE" DataType="text" Length="200" Origin="OTHER" Comment="not populated" def:Label="Relationship Type"/>
+			<ItemDef OID="RELREC.RELID" Name="RELID" DataType="text" Length="200" Origin="OTHER" def:Label="Relationship Identifier"/>
+			<ItemDef OID="SUPPMA.STUDYID" Name="STUDYID" DataType="text" Length="200" Origin="OTHER" def:Label="Study Identifier"/>
+			<ItemDef OID="SUPPMA.RDOMAIN" Name="RDOMAIN" DataType="text" Length="8" Origin="OTHER" def:Label="Related Domain Abbreviation">
+				<CodeListRef CodeListOID="CL.C66734.DOMAIN"/>
+			</ItemDef>
+			<ItemDef OID="SUPPMA.USUBJID" Name="USUBJID" DataType="text" Length="200" Origin="OTHER" def:Label="Unique Subject Identifier"/>
+			<ItemDef OID="SUPPMA.POOLID" Name="POOLID" DataType="text" Length="200" Origin="OTHER" Comment="not populated" def:Label="Pool Identifier"/>
+			<ItemDef OID="SUPPMA.IDVAR" Name="IDVAR" DataType="text" Length="200" Origin="OTHER" def:Label="Identifying Variable"/>
+			<ItemDef OID="SUPPMA.IDVARVAL" Name="IDVARVAL" DataType="text" Length="200" Origin="OTHER" def:Label="Identifying Variable Value"/>
+			<ItemDef OID="SUPPMA.QNAM" Name="QNAM" DataType="text" Length="8" Origin="OTHER" def:Label="Qualifier Variable Name"/>
+			<ItemDef OID="SUPPMA.QLABEL" Name="QLABEL" DataType="text" Length="40" Origin="OTHER" def:Label="Qualifier Variable Label"/>
+			<ItemDef OID="SUPPMA.QVAL" Name="QVAL" DataType="text" Length="200" Origin="OTHER" def:Label="Data Value"/>
+			<ItemDef OID="SUPPMA.QORIG" Name="QORIG" DataType="text" Length="200" Origin="OTHER" def:Label="Origin"/>
+			<ItemDef OID="SUPPMA.QEVAL" Name="QEVAL" DataType="text" Length="200" Origin="OTHER" def:Label="Evaluator"/>
+			<ItemDef OID="SUPPMI.STUDYID" Name="STUDYID" DataType="text" Length="200" Origin="OTHER" def:Label="Study Identifier"/>
+			<ItemDef OID="SUPPMI.RDOMAIN" Name="RDOMAIN" DataType="text" Length="8" Origin="OTHER" def:Label="Related Domain Abbreviation">
+				<CodeListRef CodeListOID="CL.C66734.DOMAIN"/>
+			</ItemDef>
+			<ItemDef OID="SUPPMI.USUBJID" Name="USUBJID" DataType="text" Length="200" Origin="OTHER" def:Label="Unique Subject Identifier"/>
+			<ItemDef OID="SUPPMI.POOLID" Name="POOLID" DataType="text" Length="200" Origin="OTHER" Comment="not populated" def:Label="Pool Identifier"/>
+			<ItemDef OID="SUPPMI.IDVAR" Name="IDVAR" DataType="text" Length="200" Origin="OTHER" def:Label="Identifying Variable"/>
+			<ItemDef OID="SUPPMI.IDVARVAL" Name="IDVARVAL" DataType="text" Length="200" Origin="OTHER" def:Label="Identifying Variable Value"/>
+			<ItemDef OID="SUPPMI.QNAM" Name="QNAM" DataType="text" Length="8" Origin="OTHER" def:Label="Qualifier Variable Name"/>
+			<ItemDef OID="SUPPMI.QLABEL" Name="QLABEL" DataType="text" Length="40" Origin="OTHER" def:Label="Qualifier Variable Label"/>
+			<ItemDef OID="SUPPMI.QVAL" Name="QVAL" DataType="text" Length="200" Origin="OTHER" def:Label="Data Value"/>
+			<ItemDef OID="SUPPMI.QORIG" Name="QORIG" DataType="text" Length="200" Origin="OTHER" def:Label="Origin"/>
+			<ItemDef OID="SUPPMI.QEVAL" Name="QEVAL" DataType="text" Length="200" Origin="OTHER" def:Label="Evaluator"/>
+			<ItemDef OID="SUPPPP.STUDYID" Name="STUDYID" DataType="text" Length="200" Origin="OTHER" def:Label="Study Identifier"/>
+			<ItemDef OID="SUPPPP.RDOMAIN" Name="RDOMAIN" DataType="text" Length="8" Origin="OTHER" def:Label="Related Domain Abbreviation">
+				<CodeListRef CodeListOID="CL.C66734.DOMAIN"/>
+			</ItemDef>
+			<ItemDef OID="SUPPPP.USUBJID" Name="USUBJID" DataType="text" Length="200" Origin="OTHER" def:Label="Unique Subject Identifier"/>
+			<ItemDef OID="SUPPPP.POOLID" Name="POOLID" DataType="text" Length="200" Origin="OTHER" Comment="not populated" def:Label="Pool Identifier"/>
+			<ItemDef OID="SUPPPP.IDVAR" Name="IDVAR" DataType="text" Length="200" Origin="OTHER" def:Label="Identifying Variable"/>
+			<ItemDef OID="SUPPPP.IDVARVAL" Name="IDVARVAL" DataType="text" Length="200" Origin="OTHER" def:Label="Identifying Variable Value"/>
+			<ItemDef OID="SUPPPP.QNAM" Name="QNAM" DataType="text" Length="8" Origin="OTHER" def:Label="Qualifier Variable Name"/>
+			<ItemDef OID="SUPPPP.QLABEL" Name="QLABEL" DataType="text" Length="40" Origin="OTHER" def:Label="Qualifier Variable Label"/>
+			<ItemDef OID="SUPPPP.QVAL" Name="QVAL" DataType="text" Length="200" Origin="OTHER" def:Label="Data Value"/>
+			<ItemDef OID="SUPPPP.QORIG" Name="QORIG" DataType="text" Length="200" Origin="OTHER" def:Label="Origin"/>
+			<ItemDef OID="SUPPPP.QEVAL" Name="QEVAL" DataType="text" Length="200" Origin="OTHER" def:Label="Evaluator"/>
+			<CodeList OID="CL.ROLES" Name="Roles" DataType="text">
+				<CodeListItem CodedValue="IDENTIFIER">
+					<Decode>
+						<TranslatedText>Identifier</TranslatedText>
+					</Decode>
+				</CodeListItem>
+				<CodeListItem CodedValue="TOPIC">
+					<Decode>
+						<TranslatedText>Topic</TranslatedText>
+					</Decode>
+				</CodeListItem>
+				<CodeListItem CodedValue="QUALIFIER">
+					<Decode>
+						<TranslatedText>Qualifier</TranslatedText>
+					</Decode>
+				</CodeListItem>
+				<CodeListItem CodedValue="QUALIFIER.REC">
+					<Decode>
+						<TranslatedText>Record Qualifier</TranslatedText>
+					</Decode>
+				</CodeListItem>
+				<CodeListItem CodedValue="QUALIFIER.RES">
+					<Decode>
+						<TranslatedText>Result Qualifier</TranslatedText>
+					</Decode>
+				</CodeListItem>
+				<CodeListItem CodedValue="QUALIFIER.SYN">
+					<Decode>
+						<TranslatedText>Synonym Qualifier</TranslatedText>
+					</Decode>
+				</CodeListItem>
+				<CodeListItem CodedValue="QUALIFIER.VAR">
+					<Decode>
+						<TranslatedText>Variable Qualifier</TranslatedText>
+					</Decode>
+				</CodeListItem>
+				<CodeListItem CodedValue="QUALIFIER.GRP">
+					<Decode>
+						<TranslatedText>Grouping Qualifier</TranslatedText>
+					</Decode>
+				</CodeListItem>
+				<CodeListItem CodedValue="TIMING">
+					<Decode>
+						<TranslatedText>Timing</TranslatedText>
+					</Decode>
+				</CodeListItem>
+				<CodeListItem CodedValue="RULE">
+					<Decode>
+						<TranslatedText>Rule</TranslatedText>
+					</Decode>
+				</CodeListItem>
+			</CodeList>
+			<CodeList OID="CL.ISO8601" Name="ISO 8601 (Dates/Times)" DataType="text">
+				<ExternalCodeList Dictionary="ISO 8601"/>
+			</CodeList>
+			<CodeList OID="CL.C89963.CLCAT" Name="Category for Clinical Observation" DataType="text">
+				<CodeListItem CodedValue="CLINICAL SIGNS">
+					<Decode>
+						<TranslatedText>CLINICAL SIGNS</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="OPHTHALMOLOGY">
+					<Decode>
+						<TranslatedText>OPHTHALMOLOGY</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+			</CodeList>
+			<CodeList OID="CL.C66789.ND" Name="Not Done" DataType="text">
+				<CodeListItem CodedValue="NOT DONE">
+					<Decode>
+						<TranslatedText>NOT DONE</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+			</CodeList>
+			<CodeList OID="CL.C66742.NY" Name="No Yes Response" DataType="text">
+				<CodeListItem CodedValue="Y">
+					<Decode>
+						<TranslatedText>Y</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+			</CodeList>
+			<CodeList OID="CL.C66781.AGEU" Name="Age Unit" DataType="text">
+				<CodeListItem CodedValue="DAYS">
+					<Decode>
+						<TranslatedText>DAYS</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+			</CodeList>
+			<CodeList OID="CL.C66731.SEX" Name="Sex" DataType="text">
+				<CodeListItem CodedValue="F">
+					<Decode>
+						<TranslatedText>F</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="M">
+					<Decode>
+						<TranslatedText>M</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+			</CodeList>
+			<CodeList OID="CL.C77808.SPECIES" Name="Species" DataType="text">
+				<CodeListItem CodedValue="RAT">
+					<Decode>
+						<TranslatedText>RAT</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+			</CodeList>
+			<CodeList OID="CL.C77530.STRAIN" Name="Strain/Substrain" DataType="text">
+				<CodeListItem CodedValue="SPRAGUE-DAWLEY">
+					<Decode>
+						<TranslatedText>SPRAGUE-DAWLEY</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+			</CodeList>
+			<CodeList OID="CL.C71620.UNIT" Name="Unit" DataType="text">
+				<CodeListItem CodedValue="%">
+					<Decode>
+						<TranslatedText>%</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="/uL">
+					<Decode>
+						<TranslatedText>/uL</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="10^12/L">
+					<Decode>
+						<TranslatedText>10^12/L</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="10^9/L">
+					<Decode>
+						<TranslatedText>10^9/L</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="fL">
+					<Decode>
+						<TranslatedText>fL</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="g">
+					<Decode>
+						<TranslatedText>g</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="g/100g">
+					<Decode>
+						<TranslatedText>g/100g</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="g/day">
+					<Decode>
+						<TranslatedText>g/day</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="g/dL">
+					<Decode>
+						<TranslatedText>g/dL</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="mg/dL">
+					<Decode>
+						<TranslatedText>mg/dL</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="mg/kg">
+					<Decode>
+						<TranslatedText>mg/kg</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="mg/kg/day">
+					<Decode>
+						<TranslatedText>mg/kg/day</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="mL">
+					<Decode>
+						<TranslatedText>mL</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="mmol/L">
+					<Decode>
+						<TranslatedText>mmol/L</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="pg">
+					<Decode>
+						<TranslatedText>pg</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="RATIO">
+					<Decode>
+						<TranslatedText>RATIO</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="sec">
+					<Decode>
+						<TranslatedText>sec</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="U/L">
+					<Decode>
+						<TranslatedText>U/L</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+			</CodeList>
+			<CodeList OID="CL.C66726.FRM" Name="Pharmaceutical Dosage Form" DataType="text">
+				<CodeListItem CodedValue="SUSPENSION">
+					<Decode>
+						<TranslatedText>SUSPENSION</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+			</CodeList>
+			<CodeList OID="CL.C71113.FREQ" Name="Frequency" DataType="text">
+				<CodeListItem CodedValue="QD">
+					<Decode>
+						<TranslatedText>QD</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+			</CodeList>
+			<CodeList OID="CL.C66729.ROUTE" Name="Route of Administration" DataType="text">
+				<CodeListItem CodedValue="ORAL GAVAGE">
+					<Decode>
+						<TranslatedText>ORAL GAVAGE</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+			</CodeList>
+			<CodeList OID="CL.C89972.MATESTCD" Name="Macroscopic Findings Test Code" DataType="text">
+				<CodeListItem CodedValue="GROSPATH">
+					<Decode>
+						<TranslatedText>GROSPATH</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+			</CodeList>
+			<CodeList OID="CL.C89971.MATEST" Name="Macroscopic Findings Test Name" DataType="text">
+				<CodeListItem CodedValue="Gross Pathological Examination">
+					<Decode>
+						<TranslatedText>Gross Pathological Examination</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+			</CodeList>
+			<CodeList OID="CL.C77529.SPEC" Name="Specimen" DataType="text">
+				<CodeListItem CodedValue="ALL TISSUES">
+					<Decode>
+						<TranslatedText>ALL TISSUES</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="ARTERY, AORTA">
+					<Decode>
+						<TranslatedText>ARTERY, AORTA</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="BONE MARROW, FEMUR">
+					<Decode>
+						<TranslatedText>BONE MARROW, FEMUR</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="BONE MARROW, STERNUM">
+					<Decode>
+						<TranslatedText>BONE MARROW, STERNUM</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="BONE, STERNUM">
+					<Decode>
+						<TranslatedText>BONE, STERNUM</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="BRAIN">
+					<Decode>
+						<TranslatedText>BRAIN</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="CERVIX">
+					<Decode>
+						<TranslatedText>CERVIX</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="EPIDIDYMIS">
+					<Decode>
+						<TranslatedText>EPIDIDYMIS</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="ESOPHAGUS">
+					<Decode>
+						<TranslatedText>ESOPHAGUS</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="EYE">
+					<Decode>
+						<TranslatedText>EYE</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="GLAND, ADRENAL">
+					<Decode>
+						<TranslatedText>GLAND, ADRENAL</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="GLAND, CLITORAL">
+					<Decode>
+						<TranslatedText>GLAND, CLITORAL</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="GLAND, COAGULATING">
+					<Decode>
+						<TranslatedText>GLAND, COAGULATING</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="GLAND, HARDERIAN">
+					<Decode>
+						<TranslatedText>GLAND, HARDERIAN</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="GLAND, LACRIMAL">
+					<Decode>
+						<TranslatedText>GLAND, LACRIMAL</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="GLAND, MAMMARY">
+					<Decode>
+						<TranslatedText>GLAND, MAMMARY</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="GLAND, PARATHYROID">
+					<Decode>
+						<TranslatedText>GLAND, PARATHYROID</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="GLAND, PITUITARY">
+					<Decode>
+						<TranslatedText>GLAND, PITUITARY</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="GLAND, PREPUTIAL">
+					<Decode>
+						<TranslatedText>GLAND, PREPUTIAL</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="GLAND, PROSTATE">
+					<Decode>
+						<TranslatedText>GLAND, PROSTATE</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="GLAND, SALIVARY, PAROTID">
+					<Decode>
+						<TranslatedText>GLAND, SALIVARY, PAROTID</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="GLAND, SALIVARY, SUBLINGUAL">
+					<Decode>
+						<TranslatedText>GLAND, SALIVARY, SUBLINGUAL</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="GLAND, SALIVARY, SUBMANDIBULAR">
+					<Decode>
+						<TranslatedText>GLAND, SALIVARY, SUBMANDIBULAR</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="GLAND, SEMINAL VESICLE">
+					<Decode>
+						<TranslatedText>GLAND, SEMINAL VESICLE</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="GLAND, THYROID">
+					<Decode>
+						<TranslatedText>GLAND, THYROID</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="HEART">
+					<Decode>
+						<TranslatedText>HEART</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="JOINT, STIFLE">
+					<Decode>
+						<TranslatedText>JOINT, STIFLE</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="KIDNEY">
+					<Decode>
+						<TranslatedText>KIDNEY</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="LARGE INTESTINE, CECUM">
+					<Decode>
+						<TranslatedText>LARGE INTESTINE, CECUM</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="LARGE INTESTINE, COLON">
+					<Decode>
+						<TranslatedText>LARGE INTESTINE, COLON</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="LARGE INTESTINE, RECTUM">
+					<Decode>
+						<TranslatedText>LARGE INTESTINE, RECTUM</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="LARYNX">
+					<Decode>
+						<TranslatedText>LARYNX</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="LIVER">
+					<Decode>
+						<TranslatedText>LIVER</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="LUNG">
+					<Decode>
+						<TranslatedText>LUNG</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="LYMPH NODE, MESENTERIC">
+					<Decode>
+						<TranslatedText>LYMPH NODE, MESENTERIC</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="LYMPH NODE, POPLITEAL">
+					<Decode>
+						<TranslatedText>LYMPH NODE, POPLITEAL</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="MUSCLE, QUADRICEPS FEMORIS">
+					<Decode>
+						<TranslatedText>MUSCLE, QUADRICEPS FEMORIS</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="NERVE, OPTIC">
+					<Decode>
+						<TranslatedText>NERVE, OPTIC</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="NERVE, SCIATIC">
+					<Decode>
+						<TranslatedText>NERVE, SCIATIC</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="NOSE">
+					<Decode>
+						<TranslatedText>NOSE</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="OVARY">
+					<Decode>
+						<TranslatedText>OVARY</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="OVIDUCT">
+					<Decode>
+						<TranslatedText>OVIDUCT</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="PANCREAS">
+					<Decode>
+						<TranslatedText>PANCREAS</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="PEYER&apos;S PATCH">
+					<Decode>
+						<TranslatedText>PEYER&apos;S PATCH</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="PLASMA">
+					<Decode>
+						<TranslatedText>PLASMA</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="SERUM">
+					<Decode>
+						<TranslatedText>SERUM</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="SITE, MICROCHIP">
+					<Decode>
+						<TranslatedText>SITE, MICROCHIP</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="SKIN">
+					<Decode>
+						<TranslatedText>SKIN</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="SMALL INTESTINE, DUODENUM">
+					<Decode>
+						<TranslatedText>SMALL INTESTINE, DUODENUM</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="SMALL INTESTINE, ILEUM">
+					<Decode>
+						<TranslatedText>SMALL INTESTINE, ILEUM</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="SMALL INTESTINE, JEJUNUM">
+					<Decode>
+						<TranslatedText>SMALL INTESTINE, JEJUNUM</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="SPINAL CORD, CERVICAL">
+					<Decode>
+						<TranslatedText>SPINAL CORD, CERVICAL</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="SPINAL CORD, LUMBAR">
+					<Decode>
+						<TranslatedText>SPINAL CORD, LUMBAR</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="SPINAL CORD, THORACIC">
+					<Decode>
+						<TranslatedText>SPINAL CORD, THORACIC</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="SPLEEN">
+					<Decode>
+						<TranslatedText>SPLEEN</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="STOMACH">
+					<Decode>
+						<TranslatedText>STOMACH</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="SUBCUTIS">
+					<Decode>
+						<TranslatedText>SUBCUTIS</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="TESTIS">
+					<Decode>
+						<TranslatedText>TESTIS</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="THYMUS">
+					<Decode>
+						<TranslatedText>THYMUS</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="TONGUE">
+					<Decode>
+						<TranslatedText>TONGUE</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="TRACHEA">
+					<Decode>
+						<TranslatedText>TRACHEA</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="URETER">
+					<Decode>
+						<TranslatedText>URETER</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="URINARY BLADDER">
+					<Decode>
+						<TranslatedText>URINARY BLADDER</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="URINE">
+					<Decode>
+						<TranslatedText>URINE</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="UTERUS">
+					<Decode>
+						<TranslatedText>UTERUS</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="VAGINA">
+					<Decode>
+						<TranslatedText>VAGINA</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="WHOLE BLOOD">
+					<Decode>
+						<TranslatedText>WHOLE BLOOD</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+			</CodeList>
+			<CodeList OID="CL.C99073.LAT" Name="Laterality" DataType="text">
+				<CodeListItem CodedValue="BILATERAL">
+					<Decode>
+						<TranslatedText>BILATERAL</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="UNILATERAL">
+					<Decode>
+						<TranslatedText>UNILATERAL</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+			</CodeList>
+			<CodeList OID="CL.C90000.SEV" Name="Severity" DataType="text">
+				<CodeListItem CodedValue="MILD">
+					<Decode>
+						<TranslatedText>MILD</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="MODERATE">
+					<Decode>
+						<TranslatedText>MODERATE</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="SEVERE">
+					<Decode>
+						<TranslatedText>SEVERE</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+			</CodeList>
+			<CodeList OID="CL.C90003.SSTYP" Name="Study Type" DataType="text">
+				<CodeListItem CodedValue="SUBCHRONIC">
+					<Decode>
+						<TranslatedText>SUBCHRONIC</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+			</CodeList>
+			<CodeList OID="CL.C89968.DSDECOD" Name="Standardized Disposition Term" DataType="text">
+				<CodeListItem CodedValue="FOUND DEAD">
+					<Decode>
+						<TranslatedText>FOUND DEAD</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="TERMINAL SACRIFICE">
+					<Decode>
+						<TranslatedText>TERMINAL SACRIFICE</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+			</CodeList>
+			<CodeList OID="CL.C89974.MITESTCD" Name="Microscopic Findings Test Code" DataType="text">
+				<CodeListItem CodedValue="MIEXAM">
+					<Decode>
+						<TranslatedText>MIEXAM</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+			</CodeList>
+			<CodeList OID="CL.C89973.MITEST" Name="Microscopic Findings Test Name" DataType="text">
+				<CodeListItem CodedValue="Microscopic Examination">
+					<Decode>
+						<TranslatedText>Microscopic Examination</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+			</CodeList>
+			<CodeList OID="CL.C90017.MIRESCAT" Name="Microscopic Histopathology Result Category" DataType="text">
+				<CodeListItem CodedValue="NON-NEOPLASTIC">
+					<Decode>
+						<TranslatedText>NON-NEOPLASTIC</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+			</CodeList>
+			<CodeList OID="CL.C89977.OMTESTCD" Name="Organ Measurement Test Code" DataType="text">
+				<CodeListItem CodedValue="OWBR">
+					<Decode>
+						<TranslatedText>OWBR</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="OWBW">
+					<Decode>
+						<TranslatedText>OWBW</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="WEIGHT">
+					<Decode>
+						<TranslatedText>WEIGHT</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+			</CodeList>
+			<CodeList OID="CL.C89976.OMTEST" Name="Organ Measurement Test Name" DataType="text">
+				<CodeListItem CodedValue="Organ to Body Weight Ratio">
+					<Decode>
+						<TranslatedText>Organ to Body Weight Ratio</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Organ to Brain Weight Ratio">
+					<Decode>
+						<TranslatedText>Organ to Brain Weight Ratio</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Weight">
+					<Decode>
+						<TranslatedText>Weight</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+			</CodeList>
+			<CodeList OID="CL.C89981.SBCCDSND" Name="SEND Subject Characteristics Test Code" DataType="text">
+				<CodeListItem CodedValue="SPLRNAM">
+					<Decode>
+						<TranslatedText>SPLRNAM</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+			</CodeList>
+			<CodeList OID="CL.C89980.SBCSND" Name="SEND Subject Characteristics Test Name" DataType="text">
+				<CodeListItem CodedValue="Test Subject Supplier Name">
+					<Decode>
+						<TranslatedText>Test Subject Supplier Name</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+			</CodeList>
+			<CodeList OID="CL.C89962.BWTESTCD" Name="Body Weight Test Code" DataType="text">
+				<CodeListItem CodedValue="BW">
+					<Decode>
+						<TranslatedText>BW</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="TERMBW">
+					<Decode>
+						<TranslatedText>TERMBW</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+			</CodeList>
+			<CodeList OID="CL.C89961.BWTEST" Name="Body Weight Test Name" DataType="text">
+				<CodeListItem CodedValue="Body Weight">
+					<Decode>
+						<TranslatedText>Body Weight</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Terminal Body Weight">
+					<Decode>
+						<TranslatedText>Terminal Body Weight</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+			</CodeList>
+			<CodeList OID="CL.C89960.BGTESTCD" Name="Body Weight Gain Test Code" DataType="text">
+				<CodeListItem CodedValue="BWGAIN">
+					<Decode>
+						<TranslatedText>BWGAIN</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="BWGAINA">
+					<Decode>
+						<TranslatedText>BWGAINA</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="BWGAINP">
+					<Decode>
+						<TranslatedText>BWGAINP</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+			</CodeList>
+			<CodeList OID="CL.C89959.BGTEST" Name="Body Weight Gain Test Name" DataType="text">
+				<CodeListItem CodedValue="Average Body Weight Gain">
+					<Decode>
+						<TranslatedText>Average Body Weight Gain</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Body Weight Gain">
+					<Decode>
+						<TranslatedText>Body Weight Gain</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Percentage Body Weight Gain">
+					<Decode>
+						<TranslatedText>Percentage Body Weight Gain</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+			</CodeList>
+			<CodeList OID="CL.C65047.LBTESTCD" Name="Laboratory Test Code" DataType="text">
+				<CodeListItem CodedValue="ALB">
+					<Decode>
+						<TranslatedText>ALB</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="ALBGLOB">
+					<Decode>
+						<TranslatedText>ALBGLOB</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="ALP">
+					<Decode>
+						<TranslatedText>ALP</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="ALT">
+					<Decode>
+						<TranslatedText>ALT</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="AMORPHSD">
+					<Decode>
+						<TranslatedText>AMORPHSD</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="ANISO">
+					<Decode>
+						<TranslatedText>ANISO</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="APTT">
+					<Decode>
+						<TranslatedText>APTT</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="AST">
+					<Decode>
+						<TranslatedText>AST</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="BACT">
+					<Decode>
+						<TranslatedText>BACT</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="BASO">
+					<Decode>
+						<TranslatedText>BASO</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="BASOCE">
+					<Decode>
+						<TranslatedText>BASOCE</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="BILI">
+					<Decode>
+						<TranslatedText>BILI</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="BLAST">
+					<Decode>
+						<TranslatedText>BLAST</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="BLASTLE">
+					<Decode>
+						<TranslatedText>BLASTLE</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="BLSTNMCE">
+					<Decode>
+						<TranslatedText>BLSTNMCE</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="BUN">
+					<Decode>
+						<TranslatedText>BUN</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="CA">
+					<Decode>
+						<TranslatedText>CA</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="CASULPH">
+					<Decode>
+						<TranslatedText>CASULPH</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="CHOL">
+					<Decode>
+						<TranslatedText>CHOL</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="CL">
+					<Decode>
+						<TranslatedText>CL</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="CLARITY">
+					<Decode>
+						<TranslatedText>CLARITY</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="COLOR">
+					<Decode>
+						<TranslatedText>COLOR</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="CREAT">
+					<Decode>
+						<TranslatedText>CREAT</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="CSEPI">
+					<Decode>
+						<TranslatedText>CSEPI</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="CSFAT">
+					<Decode>
+						<TranslatedText>CSFAT</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="CSGRAN">
+					<Decode>
+						<TranslatedText>CSGRAN</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="CSHYAL">
+					<Decode>
+						<TranslatedText>CSHYAL</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="CSRBC">
+					<Decode>
+						<TranslatedText>CSRBC</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="CSWAX">
+					<Decode>
+						<TranslatedText>CSWAX</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="CSWBC">
+					<Decode>
+						<TranslatedText>CSWBC</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="CYBILI">
+					<Decode>
+						<TranslatedText>CYBILI</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="CYCACAR">
+					<Decode>
+						<TranslatedText>CYCACAR</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="CYCAOXA">
+					<Decode>
+						<TranslatedText>CYCAOXA</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="CYCAPHOS">
+					<Decode>
+						<TranslatedText>CYCAPHOS</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="CYCHOL">
+					<Decode>
+						<TranslatedText>CYCHOL</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="CYCYSTIN">
+					<Decode>
+						<TranslatedText>CYCYSTIN</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="CYSTARCH">
+					<Decode>
+						<TranslatedText>CYSTARCH</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="CYTRPHOS">
+					<Decode>
+						<TranslatedText>CYTRPHOS</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="CYTYRO">
+					<Decode>
+						<TranslatedText>CYTYRO</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="CYURIAC">
+					<Decode>
+						<TranslatedText>CYURIAC</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="EOS">
+					<Decode>
+						<TranslatedText>EOS</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="EOSCE">
+					<Decode>
+						<TranslatedText>EOSCE</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="EPIC">
+					<Decode>
+						<TranslatedText>EPIC</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="EPISQCE">
+					<Decode>
+						<TranslatedText>EPISQCE</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="EPITUCE">
+					<Decode>
+						<TranslatedText>EPITUCE</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="FATACFR">
+					<Decode>
+						<TranslatedText>FATACFR</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="FATDROP">
+					<Decode>
+						<TranslatedText>FATDROP</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="FIBRINO">
+					<Decode>
+						<TranslatedText>FIBRINO</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="GGT">
+					<Decode>
+						<TranslatedText>GGT</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="GLOBUL">
+					<Decode>
+						<TranslatedText>GLOBUL</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="GLUC">
+					<Decode>
+						<TranslatedText>GLUC</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="HCT">
+					<Decode>
+						<TranslatedText>HCT</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="HGB">
+					<Decode>
+						<TranslatedText>HGB</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="HPOCROM">
+					<Decode>
+						<TranslatedText>HPOCROM</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="HYPERCHR">
+					<Decode>
+						<TranslatedText>HYPERCHR</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="K">
+					<Decode>
+						<TranslatedText>K</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="KETONES">
+					<Decode>
+						<TranslatedText>KETONES</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="LGLUCLE">
+					<Decode>
+						<TranslatedText>LGLUCLE</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="LGUNSCE">
+					<Decode>
+						<TranslatedText>LGUNSCE</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="LYM">
+					<Decode>
+						<TranslatedText>LYM</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="LYMAT">
+					<Decode>
+						<TranslatedText>LYMAT</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="LYMATLE">
+					<Decode>
+						<TranslatedText>LYMATLE</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="LYMCE">
+					<Decode>
+						<TranslatedText>LYMCE</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="MACROCY">
+					<Decode>
+						<TranslatedText>MACROCY</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="MCH">
+					<Decode>
+						<TranslatedText>MCH</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="MCHC">
+					<Decode>
+						<TranslatedText>MCHC</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="MCV">
+					<Decode>
+						<TranslatedText>MCV</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="METAMY">
+					<Decode>
+						<TranslatedText>METAMY</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="METAMYCE">
+					<Decode>
+						<TranslatedText>METAMYCE</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="MICROCY">
+					<Decode>
+						<TranslatedText>MICROCY</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="MONO">
+					<Decode>
+						<TranslatedText>MONO</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="MONOCE">
+					<Decode>
+						<TranslatedText>MONOCE</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="MYCY">
+					<Decode>
+						<TranslatedText>MYCY</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="MYCYCE">
+					<Decode>
+						<TranslatedText>MYCYCE</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="NEUT">
+					<Decode>
+						<TranslatedText>NEUT</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="NEUTCE">
+					<Decode>
+						<TranslatedText>NEUTCE</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="OCCBLD">
+					<Decode>
+						<TranslatedText>OCCBLD</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="PH">
+					<Decode>
+						<TranslatedText>PH</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="PHOS">
+					<Decode>
+						<TranslatedText>PHOS</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="PLAT">
+					<Decode>
+						<TranslatedText>PLAT</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="PLATCLMP">
+					<Decode>
+						<TranslatedText>PLATCLMP</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="PLATLRG">
+					<Decode>
+						<TranslatedText>PLATLRG</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="PROMY">
+					<Decode>
+						<TranslatedText>PROMY</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="PROMYCE">
+					<Decode>
+						<TranslatedText>PROMYCE</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="PROT">
+					<Decode>
+						<TranslatedText>PROT</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="PT">
+					<Decode>
+						<TranslatedText>PT</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="RBC">
+					<Decode>
+						<TranslatedText>RBC</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="RBCNUCLE">
+					<Decode>
+						<TranslatedText>RBCNUCLE</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="RDW">
+					<Decode>
+						<TranslatedText>RDW</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="RETI">
+					<Decode>
+						<TranslatedText>RETI</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="RETIRBC">
+					<Decode>
+						<TranslatedText>RETIRBC</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="SODIUM">
+					<Decode>
+						<TranslatedText>SODIUM</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="SPERM">
+					<Decode>
+						<TranslatedText>SPERM</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="SPGRAV">
+					<Decode>
+						<TranslatedText>SPGRAV</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="TRIG">
+					<Decode>
+						<TranslatedText>TRIG</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="VOLUME">
+					<Decode>
+						<TranslatedText>VOLUME</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="WBC">
+					<Decode>
+						<TranslatedText>WBC</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="YEAST">
+					<Decode>
+						<TranslatedText>YEAST</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+			</CodeList>
+			<CodeList OID="CL.C67154.LBTEST" Name="Laboratory Test Name" DataType="text">
+				<CodeListItem CodedValue="Activated Partial Thromboplastin Time">
+					<Decode>
+						<TranslatedText>Activated Partial Thromboplastin Time</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Alanine Aminotransferase">
+					<Decode>
+						<TranslatedText>Alanine Aminotransferase</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Albumin">
+					<Decode>
+						<TranslatedText>Albumin</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Albumin/Globulin">
+					<Decode>
+						<TranslatedText>Albumin/Globulin</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Alkaline Phosphatase">
+					<Decode>
+						<TranslatedText>Alkaline Phosphatase</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Amorphous Sediment">
+					<Decode>
+						<TranslatedText>Amorphous Sediment</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Anisocytes">
+					<Decode>
+						<TranslatedText>Anisocytes</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Aspartate Aminotransferase">
+					<Decode>
+						<TranslatedText>Aspartate Aminotransferase</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Bacteria">
+					<Decode>
+						<TranslatedText>Bacteria</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Basophils">
+					<Decode>
+						<TranslatedText>Basophils</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Basophils/Total Cells">
+					<Decode>
+						<TranslatedText>Basophils/Total Cells</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Bilirubin">
+					<Decode>
+						<TranslatedText>Bilirubin</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Bilirubin Crystals">
+					<Decode>
+						<TranslatedText>Bilirubin Crystals</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Blasts">
+					<Decode>
+						<TranslatedText>Blasts</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Blasts/Leukocytes">
+					<Decode>
+						<TranslatedText>Blasts/Leukocytes</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Blood Urea Nitrogen">
+					<Decode>
+						<TranslatedText>Blood Urea Nitrogen</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Calcium">
+					<Decode>
+						<TranslatedText>Calcium</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Calcium Carbonate Crystals">
+					<Decode>
+						<TranslatedText>Calcium Carbonate Crystals</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Calcium Oxalate Crystals">
+					<Decode>
+						<TranslatedText>Calcium Oxalate Crystals</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Calcium Phosphate Crystals">
+					<Decode>
+						<TranslatedText>Calcium Phosphate Crystals</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Calcium Sulphate">
+					<Decode>
+						<TranslatedText>Calcium Sulphate</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Chloride">
+					<Decode>
+						<TranslatedText>Chloride</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Cholesterol">
+					<Decode>
+						<TranslatedText>Cholesterol</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Cholesterol Crystals">
+					<Decode>
+						<TranslatedText>Cholesterol Crystals</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Clarity">
+					<Decode>
+						<TranslatedText>Clarity</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Color">
+					<Decode>
+						<TranslatedText>Color</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Creatinine">
+					<Decode>
+						<TranslatedText>Creatinine</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Cystine Crystals">
+					<Decode>
+						<TranslatedText>Cystine Crystals</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Eosinophils">
+					<Decode>
+						<TranslatedText>Eosinophils</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Eosinophils/Total Cells">
+					<Decode>
+						<TranslatedText>Eosinophils/Total Cells</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Epithelial Casts">
+					<Decode>
+						<TranslatedText>Epithelial Casts</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Epithelial Cells">
+					<Decode>
+						<TranslatedText>Epithelial Cells</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Ery. Mean Corpuscular Hemoglobin">
+					<Decode>
+						<TranslatedText>Ery. Mean Corpuscular Hemoglobin</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Ery. Mean Corpuscular HGB Concentration">
+					<Decode>
+						<TranslatedText>Ery. Mean Corpuscular HGB Concentration</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Ery. Mean Corpuscular Volume">
+					<Decode>
+						<TranslatedText>Ery. Mean Corpuscular Volume</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Erythrocytes">
+					<Decode>
+						<TranslatedText>Erythrocytes</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Erythrocytes Distribution Width">
+					<Decode>
+						<TranslatedText>Erythrocytes Distribution Width</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Fat Droplet">
+					<Decode>
+						<TranslatedText>Fat Droplet</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Fatty Casts">
+					<Decode>
+						<TranslatedText>Fatty Casts</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Fibrinogen">
+					<Decode>
+						<TranslatedText>Fibrinogen</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Free Fatty Acid">
+					<Decode>
+						<TranslatedText>Free Fatty Acid</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Gamma Glutamyl Transferase">
+					<Decode>
+						<TranslatedText>Gamma Glutamyl Transferase</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Globulin">
+					<Decode>
+						<TranslatedText>Globulin</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Glucose">
+					<Decode>
+						<TranslatedText>Glucose</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Granular Casts">
+					<Decode>
+						<TranslatedText>Granular Casts</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Hematocrit">
+					<Decode>
+						<TranslatedText>Hematocrit</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Hemoglobin">
+					<Decode>
+						<TranslatedText>Hemoglobin</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Hyaline Casts">
+					<Decode>
+						<TranslatedText>Hyaline Casts</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Hyperchromia">
+					<Decode>
+						<TranslatedText>Hyperchromia</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Hypochromia">
+					<Decode>
+						<TranslatedText>Hypochromia</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Ketones">
+					<Decode>
+						<TranslatedText>Ketones</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Large Platelets">
+					<Decode>
+						<TranslatedText>Large Platelets</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Large Unstained Cells">
+					<Decode>
+						<TranslatedText>Large Unstained Cells</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Large Unstained Cells/Leukocytes">
+					<Decode>
+						<TranslatedText>Large Unstained Cells/Leukocytes</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Leukocytes">
+					<Decode>
+						<TranslatedText>Leukocytes</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Lymphocytes">
+					<Decode>
+						<TranslatedText>Lymphocytes</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Lymphocytes Atypical">
+					<Decode>
+						<TranslatedText>Lymphocytes Atypical</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Lymphocytes Atypical/Leukocytes">
+					<Decode>
+						<TranslatedText>Lymphocytes Atypical/Leukocytes</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Lymphocytes/Total Cells">
+					<Decode>
+						<TranslatedText>Lymphocytes/Total Cells</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Macrocytes">
+					<Decode>
+						<TranslatedText>Macrocytes</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Metamyelocytes">
+					<Decode>
+						<TranslatedText>Metamyelocytes</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Metamyelocytes/Total Cells">
+					<Decode>
+						<TranslatedText>Metamyelocytes/Total Cells</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Microcytes">
+					<Decode>
+						<TranslatedText>Microcytes</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Monocytes">
+					<Decode>
+						<TranslatedText>Monocytes</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Monocytes/Total Cells">
+					<Decode>
+						<TranslatedText>Monocytes/Total Cells</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Myelocytes">
+					<Decode>
+						<TranslatedText>Myelocytes</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Myelocytes/Total Cells">
+					<Decode>
+						<TranslatedText>Myelocytes/Total Cells</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Neutrophils">
+					<Decode>
+						<TranslatedText>Neutrophils</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Neutrophils/Total Cells">
+					<Decode>
+						<TranslatedText>Neutrophils/Total Cells</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Normoblasts/Total Cells">
+					<Decode>
+						<TranslatedText>Normoblasts/Total Cells</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Nucleated Erythrocytes/Leukocytes">
+					<Decode>
+						<TranslatedText>Nucleated Erythrocytes/Leukocytes</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Occult Blood">
+					<Decode>
+						<TranslatedText>Occult Blood</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="pH">
+					<Decode>
+						<TranslatedText>pH</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Phosphate">
+					<Decode>
+						<TranslatedText>Phosphate</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Platelet Clumps">
+					<Decode>
+						<TranslatedText>Platelet Clumps</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Platelets">
+					<Decode>
+						<TranslatedText>Platelets</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Potassium">
+					<Decode>
+						<TranslatedText>Potassium</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Promyelocytes">
+					<Decode>
+						<TranslatedText>Promyelocytes</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Promyelocytes/Total Cells">
+					<Decode>
+						<TranslatedText>Promyelocytes/Total Cells</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Protein">
+					<Decode>
+						<TranslatedText>Protein</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Prothrombin Time">
+					<Decode>
+						<TranslatedText>Prothrombin Time</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="RBC Casts">
+					<Decode>
+						<TranslatedText>RBC Casts</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Reticulocytes">
+					<Decode>
+						<TranslatedText>Reticulocytes</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Reticulocytes/Erythrocytes">
+					<Decode>
+						<TranslatedText>Reticulocytes/Erythrocytes</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Sodium">
+					<Decode>
+						<TranslatedText>Sodium</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Specific Gravity">
+					<Decode>
+						<TranslatedText>Specific Gravity</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Spermatozoa">
+					<Decode>
+						<TranslatedText>Spermatozoa</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Squamous Epithelial Cells">
+					<Decode>
+						<TranslatedText>Squamous Epithelial Cells</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Starch Crystals">
+					<Decode>
+						<TranslatedText>Starch Crystals</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Triglycerides">
+					<Decode>
+						<TranslatedText>Triglycerides</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Triple Phosphate Crystals">
+					<Decode>
+						<TranslatedText>Triple Phosphate Crystals</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Tubular Epithelial Cells">
+					<Decode>
+						<TranslatedText>Tubular Epithelial Cells</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Tyrosine Crystals">
+					<Decode>
+						<TranslatedText>Tyrosine Crystals</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Uric Acid Crystals">
+					<Decode>
+						<TranslatedText>Uric Acid Crystals</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Volume">
+					<Decode>
+						<TranslatedText>Volume</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Waxy Casts">
+					<Decode>
+						<TranslatedText>Waxy Casts</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="WBC Casts">
+					<Decode>
+						<TranslatedText>WBC Casts</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Yeast Cells">
+					<Decode>
+						<TranslatedText>Yeast Cells</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+			</CodeList>
+			<CodeList OID="CL.C89970.FWTESTCD" Name="Food and Water Consumption Test Code" DataType="text">
+				<CodeListItem CodedValue="FC">
+					<Decode>
+						<TranslatedText>FC</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="FCRELBW">
+					<Decode>
+						<TranslatedText>FCRELBW</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="FCRELD">
+					<Decode>
+						<TranslatedText>FCRELD</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="FDEFF">
+					<Decode>
+						<TranslatedText>FDEFF</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+			</CodeList>
+			<CodeList OID="CL.C89969.FWTEST" Name="Food and Water Consumption Test Name" DataType="text">
+				<CodeListItem CodedValue="Food Consumption">
+					<Decode>
+						<TranslatedText>Food Consumption</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Food Consumption Relative to Body Wt">
+					<Decode>
+						<TranslatedText>Food Consumption Relative to Body Wt</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Food Consumption Relative to Day">
+					<Decode>
+						<TranslatedText>Food Consumption Relative to Day</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Food Utilization Efficiency">
+					<Decode>
+						<TranslatedText>Food Utilization Efficiency</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+			</CodeList>
+			<CodeList OID="CL.C85494.PKUNIT" Name="PK Parameter Units of Measure" DataType="text">
+				<CodeListItem CodedValue="h">
+					<Decode>
+						<TranslatedText>h</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="h*ng/mL">
+					<Decode>
+						<TranslatedText>h*ng/mL</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="ng/mL">
+					<Decode>
+						<TranslatedText>ng/mL</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+			</CodeList>
+			<CodeList OID="CL.C85839.PKPARMCD" Name="PK Parameters Code" DataType="text">
+				<CodeListItem CodedValue="AUCIFO">
+					<Decode>
+						<TranslatedText>AUCIFO</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="AUCLST">
+					<Decode>
+						<TranslatedText>AUCLST</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="AUCTAU">
+					<Decode>
+						<TranslatedText>AUCTAU</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="CMAX">
+					<Decode>
+						<TranslatedText>CMAX</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="TLST">
+					<Decode>
+						<TranslatedText>TLST</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="TMAX">
+					<Decode>
+						<TranslatedText>TMAX</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+			</CodeList>
+			<CodeList OID="CL.C85493.PKPARM" Name="PK Parameters" DataType="text">
+				<CodeListItem CodedValue="AUC Infinity Obs">
+					<Decode>
+						<TranslatedText>AUC Infinity Obs</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="AUC Over Dosing Interval">
+					<Decode>
+						<TranslatedText>AUC Over Dosing Interval</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="AUC to Last Nonzero Conc">
+					<Decode>
+						<TranslatedText>AUC to Last Nonzero Conc</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Max Conc">
+					<Decode>
+						<TranslatedText>Max Conc</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Time of CMAX">
+					<Decode>
+						<TranslatedText>Time of CMAX</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Time of Last Nonzero Conc">
+					<Decode>
+						<TranslatedText>Time of Last Nonzero Conc</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+			</CodeList>
+			<CodeList OID="CL.C90009.STSPRMCD" Name="SEND Trial Summary Parameter Test Code" DataType="text">
+				<CodeListItem CodedValue="AGE">
+					<Decode>
+						<TranslatedText>AGE</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="AGETXT">
+					<Decode>
+						<TranslatedText>AGETXT</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="AGEU">
+					<Decode>
+						<TranslatedText>AGEU</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="ALTSTDID">
+					<Decode>
+						<TranslatedText>ALTSTDID</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="ASOCSTDY">
+					<Decode>
+						<TranslatedText>ASOCSTDY</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="CLASS">
+					<Decode>
+						<TranslatedText>CLASS</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="DOSDUR">
+					<Decode>
+						<TranslatedText>DOSDUR</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="EXPENDTC">
+					<Decode>
+						<TranslatedText>EXPENDTC</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="EXPSTDTC">
+					<Decode>
+						<TranslatedText>EXPSTDTC</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="GLPTYP">
+					<Decode>
+						<TranslatedText>GLPTYP</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="RECSAC">
+					<Decode>
+						<TranslatedText>RECSAC</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="ROUTE">
+					<Decode>
+						<TranslatedText>ROUTE</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="SDESIGN">
+					<Decode>
+						<TranslatedText>SDESIGN</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="SNDCTVER">
+					<Decode>
+						<TranslatedText>SNDCTVER</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="SNDIGVER">
+					<Decode>
+						<TranslatedText>SNDIGVER</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="SPECIES">
+					<Decode>
+						<TranslatedText>SPECIES</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="SPLRNAM">
+					<Decode>
+						<TranslatedText>SPLRNAM</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="SPREFID">
+					<Decode>
+						<TranslatedText>SPREFID</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="SSPONSOR">
+					<Decode>
+						<TranslatedText>SSPONSOR</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="SSTYP">
+					<Decode>
+						<TranslatedText>SSTYP</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="STCAT">
+					<Decode>
+						<TranslatedText>STCAT</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="STDIR">
+					<Decode>
+						<TranslatedText>STDIR</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="STENDTC">
+					<Decode>
+						<TranslatedText>STENDTC</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="STITLE">
+					<Decode>
+						<TranslatedText>STITLE</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="STRAIN">
+					<Decode>
+						<TranslatedText>STRAIN</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="STSTDTC">
+					<Decode>
+						<TranslatedText>STSTDTC</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="TFCNTRY">
+					<Decode>
+						<TranslatedText>TFCNTRY</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="TRMSAC">
+					<Decode>
+						<TranslatedText>TRMSAC</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="TRT">
+					<Decode>
+						<TranslatedText>TRT</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="TRTCAS">
+					<Decode>
+						<TranslatedText>TRTCAS</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="TRTV">
+					<Decode>
+						<TranslatedText>TRTV</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="TSTFLOC">
+					<Decode>
+						<TranslatedText>TSTFLOC</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="TSTFNAM">
+					<Decode>
+						<TranslatedText>TSTFNAM</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+			</CodeList>
+			<CodeList OID="CL.C90007.STSPRM" Name="SEND Trial Summary Parameter Test Name" DataType="text">
+				<CodeListItem CodedValue="Age">
+					<Decode>
+						<TranslatedText>Age</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Age Text">
+					<Decode>
+						<TranslatedText>Age Text</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Age Unit">
+					<Decode>
+						<TranslatedText>Age Unit</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Alternate Study ID">
+					<Decode>
+						<TranslatedText>Alternate Study ID</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Associated Study">
+					<Decode>
+						<TranslatedText>Associated Study</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Class Of Compound">
+					<Decode>
+						<TranslatedText>Class Of Compound</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Dosing Duration">
+					<Decode>
+						<TranslatedText>Dosing Duration</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Experimental End Date">
+					<Decode>
+						<TranslatedText>Experimental End Date</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Experimental Start Date">
+					<Decode>
+						<TranslatedText>Experimental Start Date</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Good Laboratory Practice Type">
+					<Decode>
+						<TranslatedText>Good Laboratory Practice Type</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Investigational Therapy or Treatment">
+					<Decode>
+						<TranslatedText>Investigational Therapy or Treatment</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Primary Treatment CAS Registry Number">
+					<Decode>
+						<TranslatedText>Primary Treatment CAS Registry Number</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Recovery Period">
+					<Decode>
+						<TranslatedText>Recovery Period</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+
+				<CodeListItem CodedValue="Route of Administration">
+					<Decode>
+						<TranslatedText>Route of Administration</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="SEND Controlled Terminology Version">
+					<Decode>
+						<TranslatedText>SEND Controlled Terminology Version</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="SEND Implementation Guide Version">
+					<Decode>
+						<TranslatedText>SEND Implementation Guide Version</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Species">
+					<Decode>
+						<TranslatedText>Species</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Sponsor&apos;s Reference ID">
+					<Decode>
+						<TranslatedText>Sponsor&apos;s Reference ID</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Sponsoring Organization">
+					<Decode>
+						<TranslatedText>Sponsoring Organization</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Strain/Substrain">
+					<Decode>
+						<TranslatedText>Strain/Substrain</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Study Category">
+					<Decode>
+						<TranslatedText>Study Category</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Study Design">
+					<Decode>
+						<TranslatedText>Study Design</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Study Director">
+					<Decode>
+						<TranslatedText>Study Director</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Study End Date">
+					<Decode>
+						<TranslatedText>Study End Date</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Study Start Date">
+					<Decode>
+						<TranslatedText>Study Start Date</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Study Title">
+					<Decode>
+						<TranslatedText>Study Title</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Study Type">
+					<Decode>
+						<TranslatedText>Study Type</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Test Facility Country">
+					<Decode>
+						<TranslatedText>Test Facility Country</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Test Facility Location">
+					<Decode>
+						<TranslatedText>Test Facility Location</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Test Facility Name">
+					<Decode>
+						<TranslatedText>Test Facility Name</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Test Subject Supplier">
+					<Decode>
+						<TranslatedText>Test Subject Supplier</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Time to Terminal Sacrifice">
+					<Decode>
+						<TranslatedText>Time to Terminal Sacrifice</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="Treatment Vehicle">
+					<Decode>
+						<TranslatedText>Treatment Vehicle</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+			</CodeList>
+			<CodeList OID="CL.C66734.DOMAIN" Name="Domain Abbreviation" DataType="text">
+				<CodeListItem CodedValue="BG">
+					<Decode>
+						<TranslatedText>BG</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="BW">
+					<Decode>
+						<TranslatedText>BW</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="CL">
+					<Decode>
+						<TranslatedText>CL</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="CO">
+					<Decode>
+						<TranslatedText>CO</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="DM">
+					<Decode>
+						<TranslatedText>DM</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="DS">
+					<Decode>
+						<TranslatedText>DS</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="EX">
+					<Decode>
+						<TranslatedText>EX</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="FW">
+					<Decode>
+						<TranslatedText>FW</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="LB">
+					<Decode>
+						<TranslatedText>LB</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="MA">
+					<Decode>
+						<TranslatedText>MA</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="MI">
+					<Decode>
+						<TranslatedText>MI</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="OM">
+					<Decode>
+						<TranslatedText>OM</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="PC">
+					<Decode>
+						<TranslatedText>PC</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="PP">
+					<Decode>
+						<TranslatedText>PP</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="SC">
+					<Decode>
+						<TranslatedText>SC</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+				<CodeListItem CodedValue="TS">
+					<Decode>
+						<TranslatedText>TS</TranslatedText>
+					</Decode>
+				</CodeListItem>	
+			</CodeList>
+		</MetaDataVersion>
+	</Study>
+</ODM>
