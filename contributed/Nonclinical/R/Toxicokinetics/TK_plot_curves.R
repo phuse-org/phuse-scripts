@@ -8,24 +8,46 @@ if (length(setdiff(packages, rownames(installed.packages()))) > 0) {
 }
 
 # Load Required Libraries
-library(foreign)
+library(SASxport)
 library(ggplot2)
-
-# Change Working Directory
-baseDir <- 'C:/Users/Kevin.Snyder/Documents/PhUSE/SEND/Dataset'
-studyDir <- 'PDSdata'
-setwd(paste(baseDir,studyDir,sep='/'))
+library(curl)
 
 # Set Variables
-LOQrule <- 'LOQ/2' # Set as '0', 'LOQ/2', or 'LOQ'
-LOQID <- 'BQL'
-plotIndividuals <- TRUE
+LOQrule <- '0' # Set as '0', 'LOQ/2', or 'LOQ'
+LOQID <- '[a-zA-Z]'
+plotIndividuals <- FALSE
 plotAverage <- TRUE
 analytes <- 'all' 
 days <- 'all'
 
+# Work Online or Offline
+online <- TRUE
+
+# Set File Locations
+baseDirOnline <- 'https://github.com/phuse-org/phuse-scripts/raw/master/data/send'
+baseDirOffline <- 'C:/Users/Kevin.Snyder/Documents/PhUSE/SEND/Dataset'
+studyDir <- 'instem/Xpt'
+onlineWD <- 'c:/Users/Kevin.Snyder/Documents/Temp' # NOTE: use a temp directory because all files in this directory will be deleted at start of this script
+
+if (online == TRUE) {
+  path <- paste(baseDirOnline,studyDir,sep='/')
+  setwd(onlineWD)
+  file.remove(list.files()) # !!! Deleting all files in temp directory !!!
+} else {
+  path <- paste(baseDirOffline,studyDir,sep='/')
+  setwd(path)
+}
+
 # Load Data and Extract Relevant Fields and Rename Them
-rawData <- read.xport('PC.xpt')
+if (online == TRUE) {
+  suppressWarnings(try(download.file(paste(path,'PC.xpt',sep='/'),'PC.xpt',mode='wb'),silent=TRUE))
+  suppressWarnings(try(rawData <- read.xport('PC.xpt'),silent=TRUE))
+  
+  suppressWarnings(try(download.file(paste(path,'pc.xpt',sep='/'),'PC.xpt',mode='wb'),silent=TRUE))
+  suppressWarnings(try(rawData <- read.xport('PC.xpt'),silent=TRUE))
+} else {
+  rawData <- read.xport('PC.xpt')
+}
 SENDfields <- c('USUBJID','PCTEST','PCORRES','VISITDY','PCTPTNUM')
 count <- 0
 colIndex <- NA
@@ -38,7 +60,15 @@ Data <- rawData[,colIndex]
 colnames(Data) <- c('Subject','Analyte','Concentration','Day','Hour')
 
 # Add Treatments to Dataset
-demData <- read.xport('DM.xpt')
+if (online == TRUE) {
+  suppressWarnings(try(download.file(paste(path,'DM.xpt',sep='/'),'DM.xpt',mode='wb'),silent=TRUE))
+  suppressWarnings(try(demData <- read.xport('DM.xpt'),silent=TRUE))
+  
+  suppressWarnings(try(download.file(paste(path,'dm.xpt',sep='/'),'DM.xpt',mode='wb'),silent=TRUE))
+  suppressWarnings(try(demData <- read.xport('DM.xpt'),silent=TRUE))
+} else {
+  demData <- read.xport('DM.xpt')
+}
 keyFields <- c('USUBJID','ARM')
 count <- 0
 keyIndex <- NA
