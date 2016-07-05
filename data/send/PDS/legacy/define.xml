@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="define1-0-0.xsl"?>
+<ODM FileOID="XX110003" FileType="Snapshot" CreationDateTime="2014-04-14T14:26:19" Originator="Formedix" SourceSystem="Origin Submission Modeller" SourceSystemVersion="2.9.2" ODMVersion="1.2" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:def="http://www.cdisc.org/ns/def/v1.0" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.cdisc.org/ns/odm/v1.2">
+	<Study OID="Define.xml">
+		<GlobalVariables>
+			<StudyName>PDS2014</StudyName>
+			<StudyDescription/>
+			<ProtocolName>PDS2014</ProtocolName>
+		</GlobalVariables>
+		<MetaDataVersion OID="CDISC SEND 3.0" Name="PDS2014, Data Definitions" Description="PDS2014, Data Definitions" def:DefineVersion="1.0" def:StandardName="CDISC SEND" def:StandardVersion="3.0">
+			<def:ComputationMethod OID="CM.DY">--DY = (date portion of --DTC) - (date portion of RFSTDTC) + 1 if --DTC is on or after RFSTDTC
+--DY = (date portion of --DTC) - (date portion of RFSTDTC) if --DTC precedes RFSTDTC</def:ComputationMethod>
+			<ItemGroupDef OID="TUMOR" Name="TUMOR" Repeating="Yes" SASDatasetName="TUMOR" Purpose="Tabulation" def:Label="Tumor Dataset For Statistical Analysis" def:Structure="One record per tumor per specimen per subject" def:Class="Findings" def:DomainKeys="" def:ArchiveLocationID="ARCHIVELOCATION.TUMOR">
+				<ItemRef ItemOID="TUMOR.STUDYNUM" Mandatory="Yes" OrderNumber="1" Role="IDENTIFIER" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="TUMOR.ANIMLNUM" Mandatory="Yes" OrderNumber="2" Role="TOPIC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="TUMOR.SPECIES" Mandatory="No" OrderNumber="3" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="TUMOR.SEX" Mandatory="Yes" OrderNumber="4" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="TUMOR.DOSEGP" Mandatory="Yes" OrderNumber="5" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="TUMOR.DTHSACTM" Mandatory="Yes" OrderNumber="6" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="TUMOR.DTHSACST" Mandatory="Yes" OrderNumber="7" Role="QUALIFIER.SYN" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="TUMOR.ANIMLEXM" Mandatory="Yes" OrderNumber="8" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="TUMOR.TUMORCOD" Mandatory="No" OrderNumber="9" Role="QUALIFIER.SYN" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="TUMOR.TUMORNAM" Mandatory="No" OrderNumber="10" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="TUMOR.ORGANCOD" Mandatory="No" OrderNumber="11" Role="QUALIFIER.SYN" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="TUMOR.ORGANNAM" Mandatory="No" OrderNumber="12" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="TUMOR.DETECTTM" Mandatory="No" OrderNumber="13" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="TUMOR.MALIGNST" Mandatory="No" OrderNumber="14" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="TUMOR.DEATHCAU" Mandatory="No" OrderNumber="15" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>
+				<ItemRef ItemOID="TUMOR.ORGANEXM" Mandatory="No" OrderNumber="16" Role="QUALIFIER.REC" RoleCodeListOID="CL.ROLES"/>								
+				<def:leaf xlink:href="tumor.xpt" ID="ARCHIVELOCATION.TUMOR">
+					<def:title>tumor.xpt</def:title>
+				</def:leaf>
+			</ItemGroupDef>
+			<ItemDef OID="TUMOR.STUDYNUM" Name="STUDYNUM" DataType="text" Length="200" Origin="OTHER" def:Label="Study number"/>
+			<ItemDef OID="TUMOR.ANIMLNUM" Name="ANIMLNUM" DataType="text" Length="20" Origin="OTHER" def:Label="Animal number"/>
+			<ItemDef OID="TUMOR.SPECIES" Name="SPECIES" DataType="text" Length="200" Origin="COLLECTED" Comment="M = mouse, R = rat" def:Label="Animal species"/>
+			<ItemDef OID="TUMOR.SEX" Name="SEX" DataType="text" Length="200" Origin="COLLECTED" Comment="M = male, F = female" def:Label="Sex"/>
+			<ItemDef OID="TUMOR.DOSEGP" Name="DOSEGP" DataType="integer" Length="8" Origin="OTHER" def:Label="Dose group"/>
+			<ItemDef OID="TUMOR.DTHSACTM" Name="DTHSACTM" DataType="integer" Length="8" Origin="DERIVED" def:Label="Time in days to death or sacrifice"/>
+			<ItemDef OID="TUMOR.DTHSACST" Name="DTHSACST" DataType="integer" Length="8" Origin="DERIVED" Comment="1 = Natural death or moribund sacrifice; 2 = Terminal sacrifice; 3 = Planned intermittent sacrifice; 4 = Accidental death" def:Label="Death or sacrifice status"/>
+			<ItemDef OID="TUMOR.ANIMLEXM" Name="ANIMLEXM" DataType="integer" Length="8" Origin="DERIVED" Comment="0 = No tissues were examined; 1 = At least one tissue was examined" def:Label="Animal microscopic examination code"/>
+			<ItemDef OID="TUMOR.TUMORCOD" Name="TUMORCOD" DataType="text" Length="200" Origin="COLLECTED" def:Label="Tumor type code"/>
+			<ItemDef OID="TUMOR.TUMORNAM" Name="TUMORNAM" DataType="text" Length="200" Origin="COLLECTED" def:Label="Tumor name"/>
+			<ItemDef OID="TUMOR.ORGANCOD" Name="ORGANCOD" DataType="text" Length="200" Origin="COLLECTED" def:Label="Organ/tissue code"/>
+			<ItemDef OID="TUMOR.ORGANNAM" Name="ORGANNAM" DataType="text" Length="200" Origin="COLLECTED" def:Label="Organ/tissue name"/>
+			<ItemDef OID="TUMOR.DETECTTM" Name="DETECTTM" DataType="integer" Length="8" Origin="DERIVED" def:Label="Time in days to detection of tumor"/>
+			<ItemDef OID="TUMOR.MALIGNST" Name="MALIGNST" DataType="integer" Length="8" Origin="DERIVED" Comment="1 = Malignant; 2 = Benign; 3 = Undetermined" def:Label="Malignancy status"/>
+			<ItemDef OID="TUMOR.DEATHCAU" Name="DEATHCAU" DataType="integer" Length="8" Origin="DERIVED" Comment="1 = Tumor caused death; 2 = Tumor did not cause death; 3 = Undetermined" def:Label="Cause of death"/>
+			<ItemDef OID="TUMOR.ORGANEXM" Name="ORGANEXM" DataType="integer" Length="8" Origin="DERIVED" Comment="1 = Organ/Tissue was examined and was usable; 2 = Organ/Tissue was examined but was not usable (e.g., autolyzed tissue); 3 = Organ/Tissue was not examined" def:Label="Organ/Tissue microscopic exam code"/>
+			<CodeList OID="CL.ROLES" Name="Roles" DataType="text">
+				<CodeListItem CodedValue="IDENTIFIER">
+					<Decode>
+						<TranslatedText>Identifier</TranslatedText>
+					</Decode>
+				</CodeListItem>
+				<CodeListItem CodedValue="TOPIC">
+					<Decode>
+						<TranslatedText>Topic</TranslatedText>
+					</Decode>
+				</CodeListItem>
+				<CodeListItem CodedValue="QUALIFIER">
+					<Decode>
+						<TranslatedText>Qualifier</TranslatedText>
+					</Decode>
+				</CodeListItem>
+				<CodeListItem CodedValue="QUALIFIER.REC">
+					<Decode>
+						<TranslatedText>Record Qualifier</TranslatedText>
+					</Decode>
+				</CodeListItem>
+				<CodeListItem CodedValue="QUALIFIER.RES">
+					<Decode>
+						<TranslatedText>Result Qualifier</TranslatedText>
+					</Decode>
+				</CodeListItem>
+				<CodeListItem CodedValue="QUALIFIER.SYN">
+					<Decode>
+						<TranslatedText>Synonym Qualifier</TranslatedText>
+					</Decode>
+				</CodeListItem>
+				<CodeListItem CodedValue="QUALIFIER.VAR">
+					<Decode>
+						<TranslatedText>Variable Qualifier</TranslatedText>
+					</Decode>
+				</CodeListItem>
+				<CodeListItem CodedValue="QUALIFIER.GRP">
+					<Decode>
+						<TranslatedText>Grouping Qualifier</TranslatedText>
+					</Decode>
+				</CodeListItem>
+				<CodeListItem CodedValue="TIMING">
+					<Decode>
+						<TranslatedText>Timing</TranslatedText>
+					</Decode>
+				</CodeListItem>
+				<CodeListItem CodedValue="RULE">
+					<Decode>
+						<TranslatedText>Rule</TranslatedText>
+					</Decode>
+				</CodeListItem>
+			</CodeList>
+			<CodeList OID="CL.ISO8601" Name="ISO 8601 (Dates/Times)" DataType="text">
+				<ExternalCodeList Dictionary="ISO 8601"/>
+			</CodeList>
+		</MetaDataVersion>
+	</Study>
+</ODM>
