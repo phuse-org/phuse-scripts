@@ -9,3 +9,11 @@ Other style sheets may be used as desired.
 The Xlsx Folder contains an excel format of the SEND datset. There is one file, with each domain in a separate sheet.
 
 contact submit@instem.com if there are any questions or issues about this dataset.
+
+Instem
+Diamond Way
+Stone Business Park
+Stone, Staffordshire
+ST15 0SD
+United Kingdom
++44 (0) 1785825600
