@@ -26,7 +26,7 @@ online <- TRUE
 # Set File Locations
 baseDirOnline <- 'https://github.com/phuse-org/phuse-scripts/raw/master/data/send'
 baseDirOffline <- 'C:/Users/Kevin.Snyder/Documents/PhUSE/SEND/Dataset'
-studyDir <- 'instem/Xpt'
+studyDir <- 'PDS/Xpt'
 onlineWD <- 'c:/Users/Kevin.Snyder/Documents/Temp' # NOTE: use a temp directory because all files in this directory will be deleted at start of this script
 
 if (online == TRUE) {
@@ -52,12 +52,17 @@ SENDfields <- c('USUBJID','PCTEST','PCORRES','VISITDY','PCTPTNUM')
 count <- 0
 colIndex <- NA
 for (field in SENDfields) {
+  # !!!! Add test to ensure we got all five columns (break and throw error message) !!!!
   count <- count + 1
   index <- which(colnames(rawData)==field)
   colIndex[count] <- index
 }
 Data <- rawData[,colIndex]
 colnames(Data) <- c('Subject','Analyte','Concentration','Day','Hour')
+# !!! Check that PCTPTNUM may not actually be hour !!!
+# Parse PCELTM (look for R library to do this)
+# https://cran.r-project.org/web/packages/parsedate/
+# !!! Try PCELTM first but if doesn't exist then use PCTPTNUM !!!
 
 # Add Treatments to Dataset
 if (online == TRUE) {
@@ -69,7 +74,7 @@ if (online == TRUE) {
 } else {
   demData <- read.xport('DM.xpt')
 }
-keyFields <- c('USUBJID','ARM')
+keyFields <- c('USUBJID','ARM') # Separate on Trial Sets (to be more robust with respect to recovery, etc.)
 count <- 0
 keyIndex <- NA
 for (field in keyFields) {
@@ -86,6 +91,8 @@ for (i in seq(dim(Data)[1])) {
   Treatment[i] <- as.character(key$Treatment[nameIndex])
 }
 Data <- cbind(Data,Treatment)
+
+### Left of here on 7/14/16
 
 # Order Dataframe Logically
 Data <- Data[order(Data$Treatment,Data$Subject,Data$Analyte,Data$Day,Data$Hour),]
