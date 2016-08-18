@@ -39,6 +39,18 @@ loadXPT <- function(xptFile) {
   return(rawData)
 }
 
+# function to check define.xml against .xpt files present
+
+
+# create R variables/data.frames for each .xpt file  !!!replace loadXPT !!!!
+# domains <- c('a','b','c') # list all .xpt files in folder
+# for (domain in domains) {
+#   tmp <- loadXPT(domain)
+#   assign(paste(domain),tmp)
+# }
+
+# write .xpt files from R data frames
+
 # Function to Extract Relevant Fields and Rename Them
 createData <- function(fields,names) {
   count <- 0
@@ -110,7 +122,8 @@ Data <- cbind(Data,Treatment)
 # Order Dataframe Logically
 Data <- Data[order(Data$Treatment,Data$Subject,Data$Analyte,Data$Day,Data$Hour),]
 
-# Standardize Days
+# Standardize Days !!!! document how the data was treated !!!!! left off here on 8/18/16
+# write this into a function
 subjects <- unique(Data$Subject)
 for (subject in subjects) {
   index <- which(Data$Subject==subject)
