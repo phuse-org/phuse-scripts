@@ -29,6 +29,35 @@ baseDirOffline <- 'C:/Users/Kevin.Snyder/Documents/PhUSE/SEND/Dataset'
 studyDir <- 'PDS/Xpt'
 onlineWD <- 'c:/Users/Kevin.Snyder/Documents/Temp' # NOTE: use a temp directory because all files in this directory will be deleted at start of this script
 
+# Source Functions
+
+# Function to download and read .xpt file
+loadXPT <- function(xptFile) {
+  suppressWarnings(try(download.file(paste(path,xptFile,sep='/'),xptFile,mode='wb'),silent=TRUE))
+  rawData <- read.xport(xptFile)
+  
+  return(rawData)
+}
+
+# Function to Extract Relevant Fields and Rename Them
+createData <- function(fields,names) {
+  count <- 0
+  colIndex <- NA
+  for (field in fields) {
+    count <- count + 1
+    if (length(which(colnames(rawData)==field))==1) { # test to make sure we get each column correctly
+      index <- which(colnames(rawData)==field)
+    } else {
+      stop(paste(field,' Not Present in Dataset!',sep='')) # break and throw error message
+    }
+    colIndex[count] <- index
+  }
+  Data <- rawData[,colIndex]
+  colnames(Data) <- names
+  return(Data)
+}
+
+# Set working directory
 if (online == TRUE) {
   path <- paste(baseDirOnline,studyDir,sep='/')
   setwd(onlineWD)
@@ -40,50 +69,34 @@ if (online == TRUE) {
 
 # Load Data and Extract Relevant Fields and Rename Them
 if (online == TRUE) {
-  suppressWarnings(try(download.file(paste(path,'PC.xpt',sep='/'),'PC.xpt',mode='wb'),silent=TRUE))
-  suppressWarnings(try(rawData <- read.xport('PC.xpt'),silent=TRUE))
-  
-  suppressWarnings(try(download.file(paste(path,'pc.xpt',sep='/'),'PC.xpt',mode='wb'),silent=TRUE))
-  suppressWarnings(try(rawData <- read.xport('PC.xpt'),silent=TRUE))
+  suppressWarnings(try(rawData <- loadXPT('PC.xpt'),silent=TRUE))
+  suppressWarnings(try(rawData <- loadXPT('pc.xpt'),silent=TRUE))
 } else {
   rawData <- read.xport('PC.xpt')
 }
 SENDfields <- c('USUBJID','PCTEST','PCORRES','VISITDY','PCTPTNUM')
-count <- 0
-colIndex <- NA
-for (field in SENDfields) {
-  # !!!! Add test to ensure we got all five columns (break and throw error message) !!!!
-  count <- count + 1
-  index <- which(colnames(rawData)==field)
-  colIndex[count] <- index
-}
-Data <- rawData[,colIndex]
-colnames(Data) <- c('Subject','Analyte','Concentration','Day','Hour')
+SENDfields_names <- c('Subject','Analyte','Concentration','Day','Hour')
+Data <- createData(SENDfields,SENDfields_names)
+
+
 # !!! Check that PCTPTNUM may not actually be hour !!!
 # Parse PCELTM (look for R library to do this)
 # https://cran.r-project.org/web/packages/parsedate/
 # !!! Try PCELTM first but if doesn't exist then use PCTPTNUM !!!
 
+
 # Add Treatments to Dataset
 if (online == TRUE) {
-  suppressWarnings(try(download.file(paste(path,'DM.xpt',sep='/'),'DM.xpt',mode='wb'),silent=TRUE))
-  suppressWarnings(try(demData <- read.xport('DM.xpt'),silent=TRUE))
-  
-  suppressWarnings(try(download.file(paste(path,'dm.xpt',sep='/'),'DM.xpt',mode='wb'),silent=TRUE))
-  suppressWarnings(try(demData <- read.xport('DM.xpt'),silent=TRUE))
+  suppressWarnings(try(rawData <- loadXPT('DM.xpt'),silent=TRUE))
+  suppressWarnings(try(rawData <- loadXPT('dm.xpt'),silent=TRUE))
 } else {
   demData <- read.xport('DM.xpt')
 }
 keyFields <- c('USUBJID','ARM') # Separate on Trial Sets (to be more robust with respect to recovery, etc.)
-count <- 0
-keyIndex <- NA
-for (field in keyFields) {
-  count <- count + 1
-  index <- which(colnames(demData)==field)
-  keyIndex[count] <- index
-}
-key <- demData[,keyIndex]
-colnames(key) <- c('Subject','Treatment')
+keyFields_names <- c('Subject','Treatment')
+key <- createData(keyFields,keyFields_names)
+
+# Merge Relevant PC.xpt and DM.xpt Fields
 Treatment <- NA
 for (i in seq(dim(Data)[1])) {
   name <- as.character(Data$Subject[i])
