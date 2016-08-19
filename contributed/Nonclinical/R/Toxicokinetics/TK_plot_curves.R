@@ -33,7 +33,7 @@ tmpPath <- path.expand('~/Temp_R_Working_Directory') # All files in this directo
 
 # Set working directory and source functions
 if (useGitHub == TRUE) {
-  source(paste(baseDirOnline,functionsLocation,sep='/'))
+  source(paste(baseDirGitHub,functionsLocation,sep='/'))
   if (dir.exists(tmpPath)==FALSE) {
     dir.create(tmpPath)
   }
