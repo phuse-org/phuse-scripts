@@ -2,7 +2,7 @@
 rm(list=ls())
 
 # check if packages installed and then install if necessary
-packages <- c('foreign','ggplot2')
+packages <- c('SASxport','ggplot2','httr')
 if (length(setdiff(packages, rownames(installed.packages()))) > 0) {
   install.packages(setdiff(packages, rownames(installed.packages())))  
 }
@@ -10,7 +10,7 @@ if (length(setdiff(packages, rownames(installed.packages()))) > 0) {
 # Load Required Libraries
 library(SASxport)
 library(ggplot2)
-library(curl)
+library(httr)
 
 # Set Variables
 LOQrule <- '0' # Set as '0', 'LOQ/2', or 'LOQ'
@@ -20,75 +20,38 @@ plotAverage <- TRUE
 analytes <- 'all' 
 days <- 'all'
 
-# Work Online or Offline
-online <- TRUE
+# Work Directly Off of GitHub or Locally
+useGitHub <- TRUE
+GitHubRepo <- 'phuse-org/phuse-scripts'
 
-# Set File Locations
-baseDirOnline <- 'https://github.com/phuse-org/phuse-scripts/raw/master/data/send'
-baseDirOffline <- 'C:/Users/Kevin.Snyder/Documents/PhUSE/SEND/Dataset'
-studyDir <- 'PDS/Xpt'
-onlineWD <- 'c:/Users/Kevin.Snyder/Documents/Temp' # NOTE: use a temp directory because all files in this directory will be deleted at start of this script
+# Set File/Folder Locations
+baseDirGitHub <- paste('https://github.com',GitHubRepo,'raw/master',sep='/')
+baseDirLocal <- path.expand('~/PhUSE/Repo/trunk')
+studyDir <- 'data/send/PDS/Xpt'
+functionsLocation <- 'contributed/Nonclinical/R/Functions/TK_functions.R'
+tmpPath <- path.expand('~/Temp_R_Working_Directory') # All files in this directory will be deleted!
 
-# Source Functions
-
-# Function to download and read .xpt file
-loadXPT <- function(xptFile) {
-  suppressWarnings(try(download.file(paste(path,xptFile,sep='/'),xptFile,mode='wb'),silent=TRUE))
-  rawData <- read.xport(xptFile)
-  
-  return(rawData)
-}
-
-# function to check define.xml against .xpt files present
-
-
-# create R variables/data.frames for each .xpt file  !!!replace loadXPT !!!!
-# domains <- c('a','b','c') # list all .xpt files in folder
-# for (domain in domains) {
-#   tmp <- loadXPT(domain)
-#   assign(paste(domain),tmp)
-# }
-
-# write .xpt files from R data frames
-
-# Function to Extract Relevant Fields and Rename Them
-createData <- function(fields,names) {
-  count <- 0
-  colIndex <- NA
-  for (field in fields) {
-    count <- count + 1
-    if (length(which(colnames(rawData)==field))==1) { # test to make sure we get each column correctly
-      index <- which(colnames(rawData)==field)
-    } else {
-      stop(paste(field,' Not Present in Dataset!',sep='')) # break and throw error message
-    }
-    colIndex[count] <- index
+# Set working directory and source functions
+if (useGitHub == TRUE) {
+  source(paste(baseDirOnline,functionsLocation,sep='/'))
+  if (dir.exists(tmpPath)==FALSE) {
+    dir.create(tmpPath)
   }
-  Data <- rawData[,colIndex]
-  colnames(Data) <- names
-  return(Data)
-}
-
-# Set working directory
-if (online == TRUE) {
-  path <- paste(baseDirOnline,studyDir,sep='/')
-  setwd(onlineWD)
-  file.remove(list.files()) # !!! Deleting all files in temp directory !!!
+  setwd(tmpPath)
+  file.remove(list.files())
+  downloadGitHubFolder(GitHubRepo,baseDirGitHub,studyDir)
 } else {
-  path <- paste(baseDirOffline,studyDir,sep='/')
+  path <- paste(baseDirLocal,studyDir,sep='/')
   setwd(path)
+  source(paste(baseDirLocal,functionsLocation,sep='/'))
 }
 
 # Load Data and Extract Relevant Fields and Rename Them
-if (online == TRUE) {
-  suppressWarnings(try(rawData <- loadXPT('PC.xpt'),silent=TRUE))
-  suppressWarnings(try(rawData <- loadXPT('pc.xpt'),silent=TRUE))
-} else {
-  rawData <- read.xport('PC.xpt')
-}
+SENDdata <- loadXPTfiles()
+rawData <- SENDdata$pc.xpt
 SENDfields <- c('USUBJID','PCTEST','PCORRES','VISITDY','PCTPTNUM')
 SENDfields_names <- c('Subject','Analyte','Concentration','Day','Hour')
-Data <- createData(SENDfields,SENDfields_names)
+Data <- createData(SENDfields,SENDfields_names,rawData)
 
 
 # !!! Check that PCTPTNUM may not actually be hour !!!
@@ -98,15 +61,10 @@ Data <- createData(SENDfields,SENDfields_names)
 
 
 # Add Treatments to Dataset
-if (online == TRUE) {
-  suppressWarnings(try(rawData <- loadXPT('DM.xpt'),silent=TRUE))
-  suppressWarnings(try(rawData <- loadXPT('dm.xpt'),silent=TRUE))
-} else {
-  demData <- read.xport('DM.xpt')
-}
+demData <- SENDdata$dm.xpt
 keyFields <- c('USUBJID','ARM') # Separate on Trial Sets (to be more robust with respect to recovery, etc.)
 keyFields_names <- c('Subject','Treatment')
-key <- createData(keyFields,keyFields_names)
+key <- createData(keyFields,keyFields_names,demData)
 
 # Merge Relevant PC.xpt and DM.xpt Fields
 Treatment <- NA
