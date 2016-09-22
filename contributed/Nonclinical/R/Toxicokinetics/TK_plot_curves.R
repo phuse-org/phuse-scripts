@@ -31,10 +31,10 @@ LOQID <- '[a-zA-Z]'
 plotIndividuals <- TRUE
 plotAverage <- TRUE
 analytes <- 'all' 
-days <- '29'
+days <- 'all'
 
 # Work directly Off of GitHub or locally
-useGitHub <- FALSE
+useGitHub <- TRUE
 GitHubRepo <- 'phuse-org/phuse-scripts'
 
 # Set file/folder locations
