@@ -1,3 +1,16 @@
+####################################################################################
+# Script Improvement Ideas:
+# > Enable compatibility with .csv as well as .xpt files
+# > Handle PCTPTNUM, PCELTM, and PCTP more robustly
+# > Handle treatment arms/demographics with more sophistication 
+####################################################################################
+
+####################################################################################
+# Functions to Create from TK Plotting Script:
+# > standardize.days (handles Day 1, Hour 24 vs. Day 2, Hour 24)
+# > fix.LOQ.values (handles values below LOQ)
+####################################################################################
+
 # Clear All
 rm(list=ls())
 
@@ -7,26 +20,26 @@ if (length(setdiff(packages, rownames(installed.packages()))) > 0) {
   install.packages(setdiff(packages, rownames(installed.packages())))  
 }
 
-# Load Required Libraries
+# Load required packages
 library(SASxport)
 library(ggplot2)
 library(httr)
 
-# Set Variables
+# Set variables
 LOQrule <- '0' # Set as '0', 'LOQ/2', or 'LOQ'
 LOQID <- '[a-zA-Z]'
-plotIndividuals <- FALSE
+plotIndividuals <- TRUE
 plotAverage <- TRUE
 analytes <- 'all' 
-days <- 'all'
+days <- '29'
 
-# Work Directly Off of GitHub or Locally
-useGitHub <- TRUE
+# Work directly Off of GitHub or locally
+useGitHub <- FALSE
 GitHubRepo <- 'phuse-org/phuse-scripts'
 
-# Set File/Folder Locations
+# Set file/folder locations
 baseDirGitHub <- paste('https://github.com',GitHubRepo,'raw/master',sep='/')
-baseDirLocal <- path.expand('~/PhUSE/Repo/trunk')
+baseDirLocal <- path.expand('~/PhUSE/Repo/trunk') # Fill in path to your local copy of the repo
 studyDir <- 'data/send/PDS/Xpt'
 functionsLocation <- 'contributed/Nonclinical/R/Functions/TK_functions.R'
 tmpPath <- path.expand('~/Temp_R_Working_Directory') # All files in this directory will be deleted!
@@ -39,34 +52,25 @@ if (useGitHub == TRUE) {
   }
   setwd(tmpPath)
   file.remove(list.files())
-  downloadGitHubFolder(GitHubRepo,baseDirGitHub,studyDir)
+  download.GitHub.folder(GitHubRepo,baseDirGitHub,studyDir)
 } else {
   path <- paste(baseDirLocal,studyDir,sep='/')
   setwd(path)
   source(paste(baseDirLocal,functionsLocation,sep='/'))
 }
 
-# Load Data and Extract Relevant Fields and Rename Them
-SENDdata <- loadXPTfiles()
+# Load data and extract relevant fields and rename them
+SENDdata <- load.xpt.files()
 rawData <- SENDdata$pc.xpt
 SENDfields <- c('USUBJID','PCTEST','PCORRES','VISITDY','PCTPTNUM')
 SENDfields_names <- c('Subject','Analyte','Concentration','Day','Hour')
-Data <- createData(SENDfields,SENDfields_names,rawData)
+Data <- subTable(SENDfields,SENDfields_names,rawData)
 
-
-# !!! Check that PCTPTNUM may not actually be hour !!!
-# Parse PCELTM (look for R library to do this)
-# https://cran.r-project.org/web/packages/parsedate/
-# !!! Try PCELTM first but if doesn't exist then use PCTPTNUM !!!
-
-
-# Add Treatments to Dataset
+# Add treatments to the dataset
 demData <- SENDdata$dm.xpt
 keyFields <- c('USUBJID','ARM') # Separate on Trial Sets (to be more robust with respect to recovery, etc.)
 keyFields_names <- c('Subject','Treatment')
-key <- createData(keyFields,keyFields_names,demData)
-
-# Merge Relevant PC.xpt and DM.xpt Fields
+key <- subTable(keyFields,keyFields_names,demData)
 Treatment <- NA
 for (i in seq(dim(Data)[1])) {
   name <- as.character(Data$Subject[i])
@@ -75,13 +79,11 @@ for (i in seq(dim(Data)[1])) {
 }
 Data <- cbind(Data,Treatment)
 
-### Left of here on 7/14/16
-
-# Order Dataframe Logically
+# Order dataframe logically
 Data <- Data[order(Data$Treatment,Data$Subject,Data$Analyte,Data$Day,Data$Hour),]
 
-# Standardize Days !!!! document how the data was treated !!!!! left off here on 8/18/16
-# write this into a function
+# Create Function: standardize.days
+# Standardize the handling of days/hours
 subjects <- unique(Data$Subject)
 for (subject in subjects) {
   index <- which(Data$Subject==subject)
@@ -93,9 +95,10 @@ for (subject in subjects) {
       Data$Day[index][item] <- today
     }
   }
-}  
+}
 
-# Deal with Values Below LOQ
+# Create Function: fix.LOQ.values
+# Fix values below LOQ
 Data$Concentration <- as.character(Data$Concentration)
 stringConc <- Data$Concentration
 index <- grep(LOQID,Data$Concentration)
@@ -117,7 +120,7 @@ if (LOQrule == 'LOQ/2') {
   Data$Concentration[index] <- Data$Concentration[index]/2
 }
 
-# Create Sets of Factors
+# Create vectors to loop through
 if (days == 'all') {
   days <- sort(unique(Data$Day))
 }
@@ -127,7 +130,7 @@ if (analytes == 'all') {
 hours <- unique(Data$Hour)
 treatments <- unique(Data$Treatment)
 
-# Create Average Data
+# Create dataset of average values for each treatment group
 avgData <- rep(NA,length(analytes)*length(treatments)*length(days)*length(hours)*6)
 dim(avgData) <- c(length(analytes)*length(treatments)*length(days)*length(hours),6)
 colnames(avgData) <- c('Analyte','Treatment','Day','Hour','Concentration','SE')
@@ -154,7 +157,7 @@ avgData$SE <- as.numeric(avgData$SE)
 finiteIndex <- which(is.finite(avgData$Concentration))
 avgData <- avgData[finiteIndex,]
 
-# Plot Individual Data
+# Plot individual data
 if (plotIndividuals == TRUE) {
   for (analyte in analytes) {
     analyteIndex <- which(Data$Analyte==analyte)
@@ -164,7 +167,8 @@ if (plotIndividuals == TRUE) {
       print(
         ggplot(Data[index1,],aes(x=Hour,y=Concentration,group=Subject,color=Treatment)) +
           geom_line() + geom_point() + 
-          ggtitle(paste('Day: ',day,'\n Analyte: ',analyte,sep=''))
+          ggtitle(paste('Day: ',day,'\n Analyte: ',analyte,sep='')) + labs(x="Hours Postdose",y="Concentration (ng/mL)") +
+          theme(title=element_text(size=16),legend.text=element_text(size=16),axis.text=element_text(size=12))
       )
       if (day!=days[length(days)]) {
       } else if (analyte!=analytes[length(analytes)]) {
@@ -173,7 +177,7 @@ if (plotIndividuals == TRUE) {
   }
 }
 
-# Plot Average Data
+# Plot average data
 if (plotAverage == TRUE) {
   for (analyte in analytes) {
     analyteIndex <- which(avgData$Analyte==analyte)
@@ -184,7 +188,8 @@ if (plotAverage == TRUE) {
       print(
         ggplot(avgData[index1,],aes(x=Hour,y=Concentration,group=Treatment,color=Treatment)) +
           geom_line() + geom_point() + geom_errorbar(limits,width=1) + xlim(0,max(Data$Hour)) +
-          ggtitle(paste('Day: ',day,'\n Analyte: ',analyte,sep=''))
+          ggtitle(paste('Day: ',day,'\n Analyte: ',analyte,sep='')) + labs(x="Hours Postdose",y="Concentration (ng/mL)") +
+          theme(title=element_text(size=16),legend.text=element_text(size=16),axis.text=element_text(size=12))
       )
       if (day!=days[length(days)]) {
       } else if (analyte!=analytes[length(analytes)]) {

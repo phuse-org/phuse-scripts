@@ -1,5 +1,43 @@
+####################################################################################
+#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Function Ideas !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+####################################################################################
+
+
+# > standardize.days (handles Day 1, Hour 24 vs. Day 2, Hour 24)
+
+
+# > fix.LOQ.values (handles values below LOQ)
+
+
+# > check.define.xml (checks define.xml against .xpt files present)
+
+
+# > subset.list (isolate rows from all tables in a list corresponding to subjects with a particular demographic characteristic)
+# > subset.table (isolate rows in table corresponding to subjects with a particular demographic characteristic)
+# > subset.column (isolate rows in column corresponding to subjects with a particular demographic characteristic)
+# EXAMPLE: select all data from control animals
+# EXAMPLE: select all data collected before a particular date
+# How to account for cage level linking with subjects?
+# Identify nesting structures (nestings may overlap)
+
+
+# > write.xpt (write .xpt file from R data frame)
+
+
+# > SEND.to.xls (write an excel file with all .xpt files as different tabs or single files with a description tab)
+
+
+####################################################################################
+
+
+
+####################################################################################
+#!!!!!!!!!!!!!!!!!!!!!!!!!!!! Working Functions !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+####################################################################################
+
+
 # Function to download all files from a GitHub folder
-downloadGitHubFolder <- function(GitHubRepo,baseDirGitHub,studyDir) {
+download.GitHub.folder <- function(GitHubRepo,baseDirGitHub,studyDir) {
   # NOTE: this function requires the package: "httr"
   req <- GET(paste('https://api.github.com/repos',GitHubRepo,'contents',studyDir,sep='/'))
   contents <- content(req,as='parsed')
@@ -9,11 +47,9 @@ downloadGitHubFolder <- function(GitHubRepo,baseDirGitHub,studyDir) {
   }
 }
 
-# Create function to check define.xml against .xpt files present
 
-
-# Function to create R dataframes for each .xpt file
-loadXPTfiles <- function(path=getwd()) {
+# Function to create a list of R dataframes for each .xpt file
+load.xpt.files <- function(path=getwd()) {
   # NOTE: this function requries the packages: SASxport and Hmisc
   xptFiles <- list.files(pattern="*.xpt")
   dataFrames <- list()
@@ -26,10 +62,9 @@ loadXPTfiles <- function(path=getwd()) {
   return(dataFrames)
 }
 
-# Create function write .xpt files from R data frames?
 
-# Function to Extract Relevant Fields and Rename Them
-createData <- function(fields,names,rawData) {
+# Function to extract relevant fields and rename them
+subTable <- function(fields,names,rawData) {
   count <- 0
   colIndex <- NA
   for (field in fields) {
