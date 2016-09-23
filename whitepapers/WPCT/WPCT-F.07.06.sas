@@ -108,13 +108,8 @@ end HEADER ***/
   *** user processing and settings ***
   ************************************/
 
-
-	OPTIONS sasautos=(	"\\quintiles.net\enterprise\Apps\sasdata\StatOpB\CSV\PhUSE\phuse-scripts\whitepapers\utilities" 
-						"\\quintiles.net\enterprise\Apps\sasdata\StatOpB\CSV\PhUSE\phuse-scripts\whitepapers\ADaM" %sysfunc(getoption(sasautos)));
     %put WARNING: (WPCT-F.07.06) User must ensure PhUSE CS utilities are in the AUTOCALL path.;
 
-*\\quintiles.net\enterprise\Apps\sasdata\StatOpB\CSV\PhUSE\phuse-scripts\whitepapers\utilities;
-	
     /*** 1) PhUSE CS utilities in autocall paths (see "Macro Library", above)
 
       EXECUTE ONE TIME only as needed
@@ -124,13 +119,21 @@ end HEADER ***/
 
     ***/
 
+	*Set root to location where GitHUB Repository Saved on Network or Local machine up to .\PhUSE\phuse-scripts\;
+	%let Root = Set Root Location;
+
+*The following needs to be updated;
+	OPTIONS sasautos=(	"&Root\PhUSE\phuse-scripts\whitepapers\utilities" 
+						"&Root\PhUSE\phuse-scripts\whitepapers\ADaM" %sysfunc(getoption(sasautos)));
 
     /*** 2a) REMOTE ACCESS data, by default PhUSE CS test data, and create WORK copy.                ***/
     /***     NB: If remote access to test data files does not work, see local override, below. ***/
       *%util_access_test_data(advs, folder=cdisc-split)
 
       *--- NB: LOCAL PhUSE CS test data, override remote access by providing a local path ---*;
-       %util_access_test_data(advs, local=\\quintiles.net\enterprise\Apps\sasdata\StatOpB\CSV\PhUSE\phuse-scripts\data\adam\cdisc-split\) ;
+
+		*Update the following to point to Data;
+       %util_access_test_data(advs, local=&Root\PhUSE\phuse-scripts\data\adam\cdisc-split\) ;
 
     %*--- 2.a.1) Key user settings ---*;
 	
@@ -167,7 +170,8 @@ end HEADER ***/
       %let max_boxes_per_page = 20;
 
 	  *--Specify proper output location;
-      %let outputs_folder = \\quintiles.net\enterprise\Apps\sasdata\StatOpB\CSV\PhUSE\phuse-scripts\whitepapers\WPCT\GB_Test;
+	  *Update the following to indictate output location;
+      %let outputs_folder = &Root\PhUSE\phuse-scripts\whitepapers\WPCT\GB_Test;
 
 	  *--Specify TRTPN and short treatment values;
 	proc format;
