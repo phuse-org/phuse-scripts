@@ -109,8 +109,12 @@ end HEADER ***/
   ************************************/
 
 
+	OPTIONS sasautos=(	"\\quintiles.net\enterprise\Apps\sasdata\StatOpB\CSV\PhUSE\phuse-scripts\whitepapers\utilities" 
+						"\\quintiles.net\enterprise\Apps\sasdata\StatOpB\CSV\PhUSE\phuse-scripts\whitepapers\ADaM" %sysfunc(getoption(sasautos)));
     %put WARNING: (WPCT-F.07.06) User must ensure PhUSE CS utilities are in the AUTOCALL path.;
 
+*\\quintiles.net\enterprise\Apps\sasdata\StatOpB\CSV\PhUSE\phuse-scripts\whitepapers\utilities;
+	
     /*** 1) PhUSE CS utilities in autocall paths (see "Macro Library", above)
 
       EXECUTE ONE TIME only as needed
@@ -123,50 +127,36 @@ end HEADER ***/
 
     /*** 2a) REMOTE ACCESS data, by default PhUSE CS test data, and create WORK copy.                ***/
     /***     NB: If remote access to test data files does not work, see local override, below. ***/
-      %util_access_test_data(advs, folder=cdisc-split)
+      *%util_access_test_data(advs, folder=cdisc-split)
 
       *--- NB: LOCAL PhUSE CS test data, override remote access by providing a local path ---*;
-        %* %util_access_test_data(advs, local=C:\CSS\phuse-scripts\data\adam\cdisc-split\) ;
+       %util_access_test_data(advs, local=\\quintiles.net\enterprise\Apps\sasdata\StatOpB\CSV\PhUSE\phuse-scripts\data\adam\cdisc-split\) ;
 
+    %*--- 2.a.1) Key user settings ---*;
+	
+	*--Specify ADaM BDS dataset;
+      %let ds = ADVS;
 
-    /*** 2b) USER SUBSET of data, to limit number of box plot outputs, and to shorten Tx labels ***/
+	*--Specify population;
+	  %let p_fl = SAFFL;
+	
+	*--Specify test for analysis;
+	  %let param = 'SYSBP';
+	
+	*--Specify any additional criteria;
+	  %let cond = %str(and atptn in (815 817));
 
-      data advs_sub;
-        set work.advs;
-        where (paramcd in ('DIABP') and atptn in (815 817));
-
-        attrib trtp_short length=$6 label='Planned Treatment, abbreviated';
-
-        select (trtp);
-          when ('Placebo')              trtp_short = 'P';
-          when ('Xanomeline High Dose') trtp_short = 'X-high';
-          when ('Xanomeline Low Dose')  trtp_short = 'X-low';
-          otherwise                     trtp_short = 'UNEXPECTED';
-        end;
-      run;
-
-      %*--- Use PhUSE CS derivation of LAST, MIN or MAX Post-Baseline measures, with Change from corresponding Baseline ---*;
-        %let lmm = last;
-        %derive_lastminmax_measure(advs_sub, &LMM, 
-                                   flvars=anl02fl, 
-                                   grpvars=studyid usubjid trtpn paramcd atptn, 
-                                   ordvars=avisitn, 
-                                   incl=trtp_short saffl param atpt anrlo anrhi,
-                                   dsout=advs_&LMM)
-
-
-    %*--- 3) Key user settings ---*;
+	%*--- Use PhUSE CS derivation of LAST, MIN or MAX Post-Baseline measures, with Change from corresponding Baseline ---*;
+      %let lmm = last;
 
       %let m_lb   = work;
-      %let m_ds   = advs_&LMM;
+      %let m_ds   = &ds._&LMM;
 
       %let t_var  = trtp_short;
       %let tn_var = trtpn;
       %let m_var  = aval;
       %let lo_var = anrlo;
       %let hi_var = anrhi;
-
-      %let p_fl = saffl;
 
       *--- C_MODE is a label for &A_FL, which identifies 1 Baseline and 1 Post-baseline obs for each STUDYID USUBJID PARAMCD ATPT ---*;
         %let c_mode = &LMM;
@@ -176,7 +166,38 @@ end HEADER ***/
 
       %let max_boxes_per_page = 20;
 
-      %let outputs_folder = C:\CSS\phuse-scripts\whitepapers\WPCT\outputs_sas;
+	  *--Specify proper output location;
+      %let outputs_folder = \\quintiles.net\enterprise\Apps\sasdata\StatOpB\CSV\PhUSE\phuse-scripts\whitepapers\WPCT\GB_Test;
+
+	  *--Specify TRTPN and short treatment values;
+	proc format;
+		value trt_short
+		0 = 'P'
+		54 = 'X-high'
+		81 = 'X-low'
+		other = 'UNEXPECTED';
+	run;
+
+
+    /*** 2b) USER SUBSET of data, to limit number of box plot outputs, and to shorten Tx labels ***/
+
+      data &ds._sub;
+        set work.&ds;
+        where (paramcd in (&param) &cond);
+
+        attrib trtp_short length=$10 label='Planned Treatment, abbreviated';
+
+		trtp_short = put(&tn_var,trt_short.);
+      run;
+
+        %derive_lastminmax_measure(&ds._sub, &LMM, 
+                                   flvars=&a_fl, 
+                                   grpvars=studyid usubjid &tn_var paramcd atptn, 
+                                   ordvars=avisitn, 
+                                   incl=trtp_short &p_fl param atpt anrlo anrhi,
+                                   dsout=&ds._&LMM)
+
+
 
   /*** end USER PROCESSING AND SETTINGS ***********************************
    *** RELAX.                                                           ***
@@ -197,9 +218,11 @@ end HEADER ***/
 
     %let ana_variables = STUDYID USUBJID &p_fl &a_fl &t_var &tn_var PARAM PARAMCD &m_var &lo_var &hi_var AVISITN ATPT ATPTN;
 
+	options mlogic;
     %*--- Global boolean symbol CONTINUE, used with macro assert_continue(), warns user of invalid environment. Processing should HALT. ---*;
       %let CONTINUE = %assert_depend(OS=%str(AIX,WIN,HP IPF),
-                                     SASV=9.4M2,
+/*                                     SASV=9.4M2,*/
+	  								SASV=9.4M1,
                                      SYSPROD=,
                                      vars=%str(&m_lb..&m_ds : &ana_variables),
                                      macros=assert_continue util_labels_from_var util_count_unique_values 
@@ -209,8 +232,7 @@ end HEADER ***/
                                              ref_lines max_boxes_per_page outputs_folder
                                     );
 
-      %assert_continue(After asserting the dependencies of this script)
-
+      %assert_continue(After asserting the dependencies of this script);
 
     /*** Data Prep
       1. Restrict analysis to SAFETY POP (&p_fl) and ANALYSIS RECORDS (&a_fl)
@@ -229,7 +251,7 @@ end HEADER ***/
 
       %*--- Expect non-missing measurements ---*;
         %let CONTINUE = %assert_var_nonmissing(css_safana, &m_var);
-        %assert_continue(After restricting analysis data - No missing values for "&c_mode" measurements in %upcase(&m_var))
+       %assert_continue(After restricting analysis data - No missing values for "&c_mode" measurements in %upcase(&m_var));
 
         data css_safana;
           set css_safana;
