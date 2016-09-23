@@ -29,7 +29,16 @@ Scripts below by default produce outputs based on a specific ADaM domain such as
 * Test Automation:
   * testing Standard Scripts on various data, in various environments
   * testing SAS utility macros in various environments
-  * can me make testing automatic rather than rather manual?
+  * can me make testing automatic rather than rather manual? No as each Company has a different enviroment setup.
+
+**Current Review Process**
+1. [Review Specification for Script, and update where applicable.]
+2. [Review Code for Script, and update where applicable.]
+3. [Set as Ready to Relasese.]
+4. [Evaluate if any formal document is required to specify that Review is complete.]
+5. [Only Release package once all scripts for Paper has been Reviewed.]
+6. [Inform Communication wing of group to Promote use of Scripts in conjunction with the White paper.]
+
 
 #### WPCT Figures & Scripts, with Qualification details
 
