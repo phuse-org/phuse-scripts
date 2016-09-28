@@ -38,7 +38,7 @@
  * Reason           : 
  ******************************************************************************/
 
-%LET path = /by-sasp/patdb/projects/bsp_macros/dtools/stat/test/pgms/phuse;
+%LET path = /base/phuse;
 %INCLUDE "&path./src/definexml_v1.sas";
 %INCLUDE "&path./src/definexml_v1_attributes_for.sas";
 
