@@ -37,8 +37,11 @@
 
 
 # Function to download all files from a GitHub folder
-download.GitHub.folder <- function(GitHubRepo,baseDirGitHub,studyDir) {
-  # NOTE: this function requires the package: "httr"
+# NOTE: this function requires the package: "httr"
+download.GitHub.folder <- function (
+    GitHubRepo="phuse-org/phuse-scripts"
+  , baseDirGitHub="https://github.com/phuse-org/phuse-scripts/raw/master"
+  , studyDir="data/send/PDS/Xpt") {
   req <- GET(paste('https://api.github.com/repos',GitHubRepo,'contents',studyDir,sep='/'))
   contents <- content(req,as='parsed')
   for (i in seq(length(contents))) {
@@ -46,7 +49,6 @@ download.GitHub.folder <- function(GitHubRepo,baseDirGitHub,studyDir) {
     download.file(paste(baseDirGitHub,filePath,sep='/'),basename(filePath),mode='wb')
   }
 }
-
 
 # Function to create a list of R dataframes for each .xpt file
 load.xpt.files <- function(path=getwd()) {
