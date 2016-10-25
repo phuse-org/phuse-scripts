@@ -80,3 +80,21 @@ subTable <- function(fields,names,rawData) {
   colnames(Data) <- names
   return(Data)
 }
+
+# Function to read a file from github
+# NOTE: this function requries the packages: SASxport and Hmisc
+read.github.xpt.file <- function (
+    fName
+  , bURL="https://raw.githubusercontent.com/phuse-org/phuse-scripts/master"
+  , fPath="data/send/PDS/Xpt"
+  , tDir=getwd() 
+  ) {
+  # bURL  = https://raw.githubusercontent.com/phuse-org/phuse-scripts/master
+  # fPath = data/send/PDS/Xpt
+  # fName = a_file_name
+  # tDir  = target/local dir
+  tFN <- paste(tDir,fName,sep='/')
+  download.file(paste(bURL,fPath,fName,sep='/'),tFN,mode='wb')
+  r <- read.xport(tFN)
+  return(r)
+}
