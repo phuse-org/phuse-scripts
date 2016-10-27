@@ -15,10 +15,23 @@
 # > subset.list (isolate rows from all tables in a list corresponding to subjects with a particular demographic characteristic)
 # > subset.table (isolate rows in table corresponding to subjects with a particular demographic characteristic)
 # > subset.column (isolate rows in column corresponding to subjects with a particular demographic characteristic)
+
+
 # EXAMPLE: select all data from control animals
+#   How to deal with multiple treatments (combination product)?
+#       There is an optional shortcut for this but may not be included in all datasets
+#   Take general approach:
+#       (1) in dm.xpt identify SETCD
+#       (2) in tx.xpt use SETCD to get the Value in TXPARMCD (i.e. TCNTRL)
+#   
+#   Or use ex.xpt approach
+
+
+
 # EXAMPLE: select all data collected before a particular date
 # How to account for cage level linking with subjects?
 # Identify nesting structures (nestings may overlap)
+
 
 
 # > write.xpt (write .xpt file from R data frame)

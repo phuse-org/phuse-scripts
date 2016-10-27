@@ -170,9 +170,9 @@ if (plotIndividuals == TRUE) {
           ggtitle(paste('Day: ',day,'\n Analyte: ',analyte,sep='')) + labs(x="Hours Postdose",y="Concentration (ng/mL)") +
           theme(title=element_text(size=16),legend.text=element_text(size=16),axis.text=element_text(size=12))
       )
-      if (day!=days[length(days)]) {
-      } else if (analyte!=analytes[length(analytes)]) {
-      }
+#       if (day!=days[length(days)]) {
+#       } else if (analyte!=analytes[length(analytes)]) {
+#       }
     }
   }
 }
@@ -191,9 +191,9 @@ if (plotAverage == TRUE) {
           ggtitle(paste('Day: ',day,'\n Analyte: ',analyte,sep='')) + labs(x="Hours Postdose",y="Concentration (ng/mL)") +
           theme(title=element_text(size=16),legend.text=element_text(size=16),axis.text=element_text(size=12))
       )
-      if (day!=days[length(days)]) {
-      } else if (analyte!=analytes[length(analytes)]) {
-      }
+#       if (day!=days[length(days)]) {
+#       } else if (analyte!=analytes[length(analytes)]) {
+#       }
     }
   }
 }
