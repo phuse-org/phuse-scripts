@@ -32,7 +32,7 @@
 # How to account for cage level linking with subjects?
 # Identify nesting structures (nestings may overlap)
 
-
+# Is it possible to read xpt files into dataframes without downloading the .xpt file?
 
 # > write.xpt (write .xpt file from R data frame)
 
