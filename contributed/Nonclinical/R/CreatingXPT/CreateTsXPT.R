@@ -1,16 +1,29 @@
-####################################################################################
-# Script Improvement Ideas:
-# > Add correct labels for each column
-####################################################################################
 
 ####################################################################################
 # Functions to Create from ts.xpt files from excel spreadsheet
 # See example spreadsheet - it can be expanded with other parameters and any number of studies
 # Expects to place output in c:/temp/r testing/xpt output - can be changed with mainDir variable
-##################################################################################### Note - had # need Java on windows path to run, for example
+####################################################################################
+# Setup instructions
+# You need Java on windows path to run, for example
 #   : C:\Program Files\Java\jdk1.8.0_111\jre\bin\server\
-install.packages("XLConnect")
-install.packages("SASxport")
+#   If running R-64bit, ensure you are also running Java 64-bit
+####################################################################################
+# XLConnect documentation here:
+# https://cran.r-project.org/web/packages/XLConnect/vignettes/XLConnect.pdf
+# SASxport documentation here:
+# https://cran.r-project.org/web/packages/SASxport/SASxport.pdf
+####################################################################################
+####################################################################################
+# Script Improvement Ideas:
+# > Check sizes on each field
+####################################################################################
+####################################################################################
+####################################################################################
+# You may need next two lines first time
+# install.packages("XLConnect")
+# install.packages("SASxport")
+####################################################################################
 require(XLConnect)
 require(SASxport)
 # Select file to read
@@ -23,10 +36,13 @@ df <- readWorksheetFromFile(myFile,
                             sheet=1,
                             startRow = 1,
                             endCol = 7)
-# make copy skipping first row
+# make copy skipping first two rows (field type and field label)
  df2 = df[-1,]
+ df2 = df2[-1,]
 # for those that are num, transform to numeric
- df2=transform(df2, TSGRPID = as.numeric(TSGRPID))
+  df2=transform(df2, TSGRPID = as.numeric(TSGRPID))
+# set labels for each field 
+  label(df2)=df[2,]
 # For each set of rows belonging to a study create TS.XPT file
 studyList <- unique(df2$STUDYID)
 for(aStudy in studyList){
