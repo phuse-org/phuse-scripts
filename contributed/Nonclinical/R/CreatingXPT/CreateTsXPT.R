@@ -15,17 +15,19 @@
 # https://cran.r-project.org/web/packages/SASxport/SASxport.pdf
 ####################################################################################
 ####################################################################################
-# Script Improvement Ideas:
-# > Check sizes on each field
-####################################################################################
-####################################################################################
-####################################################################################
 # You may need next two lines first time
 # install.packages("XLConnect")
 # install.packages("SASxport")
 ####################################################################################
 require(XLConnect)
 require(SASxport)
+# Here is temporary override of write xport function to get desired minimum variable lengths.
+# Use environment for other function in package to allow use of unexported functions in package
+	source("c:/temp/r testing/write.xport2.R")
+	tmpfun <- get("read.xport", envir = asNamespace("SASxport"))
+	environment(write.xport2) <- environment(tmpfun)
+	attributes(write.xport2) <- attributes(tmpfun)
+	assignInNamespace("write.xport", write.xport2, ns="SASxport")
 # Select file to read
 mainDir <- "c:/temp/r testing/xpt output"
 # Set output files
@@ -40,9 +42,9 @@ df <- readWorksheetFromFile(myFile,
  df2 = df[-1,]
  df2 = df2[-1,]
 # for those that are num, transform to numeric
-  df2=transform(df2, TSGRPID = as.numeric(TSGRPID))
+  df2=transform(df2, TSSEQ = as.numeric(TSSEQ))
 # set labels for each field 
-  label(df2)=df[2,]
+  Hmisc::label(df2)=df[2,]
 # For each set of rows belonging to a study create TS.XPT file
 studyList <- unique(df2$STUDYID)
 for(aStudy in studyList){
@@ -57,12 +59,14 @@ for(aStudy in studyList){
 	}
 	# filter to this study
 	studyData <- subset(df2, STUDYID==aStudy)
+	# Set length for character fields
+	SASformat(studyData$DOMAIN) <-"$2."	
 	# place this dataset into a list with a name
 	aList = list(studyData)
 	# name it
 	names(aList)[1]<-"Data"
 	# write out dataframe
-	write.xport(
+	write.xport2(
 		list=aList,
 		file = "ts.xpt",
 		verbose=FALSE,
