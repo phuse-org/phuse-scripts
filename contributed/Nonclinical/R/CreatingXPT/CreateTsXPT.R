@@ -14,6 +14,9 @@
 # SASxport documentation here:
 # https://cran.r-project.org/web/packages/SASxport/SASxport.pdf
 ####################################################################################
+# Improvements to make
+#    TSGRPID if empty should be set to 1 character length
+#    Could use file chooser result directory to use for output location
 ####################################################################################
 # You may need next two lines first time
 # install.packages("XLConnect")
