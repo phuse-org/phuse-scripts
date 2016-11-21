@@ -2,21 +2,54 @@ Key: [defKPI01]
 Term: database lock
 Acronyms: DBL
 Synonyms: Locked Database, Database Freeze
-Description: >
-  Action taken to prevent further changes to a clinical trial database.
-  NOTE: Locking of a database is done after review, query resolution, and 
-  a determination has been made that the database is ready for analysis.  
-Definition Source: CDISC Glossary
+Definition: > 
+   Action taken to prevent further changes to a clinical trial database. 
+   NOTE: Locking of a database is done after review, query resolution, 
+   and a determination has been made that the database is ready for 
+   analysis
+Source: CDISC Glossary 
 Business Raitonale: >
-  
-KPI:
-  Category: 
-  Type:  
-Calculated/Determined As: 
-Related Compliance Metrics: 
-Related Quality Metrics: > 
-  Number of DB Un-lock / Re-Locks, Number of snapshots after DB-lock snapshot
-  due to data changes in EDC system 
-Related Efficiency/Productivity/Cost Metrics: 
-Related Volumetric Metrics: 
+  Database lock is a big milestone in clinical data management. Metrics related to 
+  DBL will reflict the quality, efficiency and compliance of the data collection process. 
+KPI Metrics: the metrics related to DBL terminology. 
+  - Name: number of Days From DBL to Final SDTM
+    Value: xxx
+    Unit: days 
+    Type: Performance
+    Method: >
+	  calculate the number of days from the date the database was locked to 
+	  the date the final SDTM was created.  
+    Date: 11/21/2016 
+    Provider: Hanming Tu 
+    Source: PhUSE 
+  - Name: number of Days From DBL to Final TFLs
+    Value: xxx
+    Unit: days  
+    Type: Performance
+    Method: >
+	  calculate the number of days from the date the database was locked to 
+	  the date the final TFLs were created.  
+    Date: 11/21/2016 
+    Provider: Hanming Tu 
+    Source: PhUSE 
+  - Name: number of days From DBL to Final ADaM
+    Value: xxx
+    Unit: days  
+    Type: Performance
+    Method: >
+	  calculate the number of days from the date the database was locked to 
+	  the date the final ADaM datasets were created.  
+    Date: 11/21/2016 
+    Provider: Hanming Tu 
+    Source: PhUSE 
+  - Name: number of Days From DBL to Submission
+    Value: xxx
+    Unit: days  
+    Type: Performance
+    Method: >
+	  calculate the number of days from the date the database was locked to 
+	  the date the final submisison was done.  
+    Date: 11/21/2016 
+    Provider: Hanming Tu 
+    Source: PhUSE 
 
