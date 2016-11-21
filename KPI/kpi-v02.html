@@ -1,0 +1,157 @@
+<html>
+<head><title>PhUSE KPI Project</title>
+<style type="text/css">
+.tooltip {
+  font-size:10pt;
+  background-color:#FFFFCC;
+  border:1px solid black;
+  padding:2px
+}
+</style>
+<style type="text/css">
+.tooltip {
+  position:absolute;
+  display:none
+}
+</style>
+</head>
+<body>
+
+<script type="text/javascript">
+tooltip = null;
+document.onmousemove = updateTooltip;
+function updateTooltip(e) {
+try {
+if (document.all) {
+if (document.documentElement && document.documentElement.scrollTop) { // Explorer 6 Strict
+x = document.documentElement.scrollLeft + window.event.x;
+y = document.documentElement.scrollTop + window.event.y;
+}
+else { // all other Explorers
+x = document.body.scrollLeft + window.event.x;
+y = document.body.scrollTop + window.event.y;
+}
+}
+else {
+x = e.pageX;
+y = e.pageY;
+}
+if (tooltip != null) {
+o = 20;
+var sx, sy;
+if (self.pageYOffset) { // all except Explorer
+sx = self.pageXOffset;
+sy = self.pageYOffset;
+}
+else if (document.documentElement && document.documentElement.scrollTop) { // Explorer 6 Strict
+sx = document.documentElement.scrollLeft;
+sy = document.documentElement.scrollTop;
+}
+else if (document.body) { // all other Explorers
+sx = document.body.scrollLeft;
+sy = document.body.scrollTop;
+}
+t = y + o + tooltip.offsetHeight;
+w = sy + document.body.clientHeight;
+if (t > w) {
+y = y - o - tooltip.offsetHeight;
+}
+else {
+y = y + o;
+}
+t = x + o + tooltip.offsetWidth;
+w = sx + document.body.clientWidth;
+if (t > w) {
+x = x - o - tooltip.offsetWidth;
+}
+else {
+x = x + o;
+}
+if ((tooltip.style.top == '' || tooltip.style.top == 0) && (tooltip.style.left == '' || tooltip.style.left == 0))
+{
+tooltip.style.width = tooltip.offsetWidth + 'px';
+tooltip.style.height = tooltip.offsetHeight + 'px';
+}
+tooltip.style.left = x + "px";
+tooltip.style.top = y + "px";
+}
+} catch (error) { error = null; }
+}
+function showTooltip(id) {
+try {
+tooltip = document.getElementById(id);
+tooltip.style.display = "block";
+} catch (error) { error = null; }
+}
+function hideTooltip() {
+try {
+tooltip.style.display = "none";
+} catch (error) { error = null; }
+}
+</script>
+
+<div class="tooltip" id="n0">defKPI01</div>
+<div class="tooltip" id="n1">defKPI03</div>
+<div class="tooltip" id="n2">Final SDTM</div>
+<div class="tooltip" id="n3">defKPI09</div>
+<div class="tooltip" id="n4">DB Transfer</div>
+<div class="tooltip" id="n5">defKPI02</div>
+<div class="tooltip" id="n6">defKPI03</div>
+<div class="tooltip" id="n7">ADaM/ADS</div>
+<div class="tooltip" id="n8">defKPI02</div>
+<div class="tooltip" id="n9">Submission Package<br>Content Checklist</div>
+<div class="tooltip" id="n10">defKPI09</div>
+<div class="tooltip" id="n11">Final ADaM/ADS</div>
+<div class="tooltip" id="n12">defKPI09</div>
+<div class="tooltip" id="n13">Submission Last Study <br>Decision Timepoint</div>
+<div class="tooltip" id="n14">Handover To Regulatory <br>Department Timepoint</div>
+<div class="tooltip" id="n15">defKPI03</div>
+<div class="tooltip" id="n16">SDTM</div>
+<div class="tooltip" id="n17">Regulatory Agency <br>Submission Package<br>Content Agreement  Timepoint</div>
+<div class="tooltip" id="n18">PhUSE Data Science Metric Reporting & KPI Project</div>
+<div class="tooltip" id="n19">PhUSE KPI Terminology <br>Definition Template (pdf)</div>
+<div class="tooltip" id="n20">PhUSE KPI Metric <br>Defintion Template (pdf)</div>
+<div class="tooltip" id="n21">CDISC Glossary </div>
+<div class="tooltip" id="n22">CDISC Acronyms</div>
+<div class="tooltip" id="n23">Metrics-Condensed 12-Nov-16</div>
+<div class="tooltip" id="n24">[AR kpi-v02]</div>
+<div class="tooltip" id="e0">defKPI05</div>
+
+<map name="image1_1">
+  <area shape="poly" coords="365,630,518,411,509,405,357,624,365,630,365,630" href="kpiDefinitions.html#defKPI05" alt="" onmouseover="showTooltip('e0')" onmouseout="hideTooltip()" target="_blank"/>
+  <area shape="rect" coords="20,717,89,733" alt="" onmouseover="showTooltip('n24')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="16,60,224,88" alt="" onmouseover="showTooltip('n23')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="960,602,999,655" href="act1210_049_058_acronyms.pdf" alt="" onmouseover="showTooltip('n22')" onmouseout="hideTooltip()" target="_blank"/>
+  <area shape="rect" coords="854,602,893,655" href="act1211_011_043_gr_glossary.pdf" alt="" onmouseover="showTooltip('n21')" onmouseout="hideTooltip()" target="_blank"/>
+  <area shape="rect" coords="962,497,1001,550" href="KPI-Metric-Definition.pdf" alt="" onmouseover="showTooltip('n20')" onmouseout="hideTooltip()" target="_blank"/>
+  <area shape="rect" coords="854,497,893,550" href="KPI-Terminology-Definition.pdf" alt="" onmouseover="showTooltip('n19')" onmouseout="hideTooltip()" target="_blank"/>
+  <area shape="rect" coords="15,15,338,43" alt="" onmouseover="showTooltip('n18')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="619,104,649,134" alt="" onmouseover="showTooltip('n17')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="307,421,337,451" alt="" onmouseover="showTooltip('n16')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="109,628,139,658" href="C:\Users\arichardson\Documents\LifeSciencesPractice\PhUSE Data Metrics & KPI\KPI-Terminology-Definition.docx" alt="" onmouseover="showTooltip('n15')" onmouseout="hideTooltip()" target="_blank"/>
+  <area shape="rect" coords="619,194,649,224" alt="" onmouseover="showTooltip('n14')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="259,194,289,224" alt="" onmouseover="showTooltip('n13')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="1009,194,1039,224" href="kpiDefinitions.html#defKPI09" alt="" onmouseover="showTooltip('n12')" onmouseout="hideTooltip()" target="_blank"/>
+  <area shape="rect" coords="364,374,394,404" alt="" onmouseover="showTooltip('n11')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="859,104,889,134" href="kpiDefinitions.html#defKPI09" alt="" onmouseover="showTooltip('n10')" onmouseout="hideTooltip()" target="_blank"/>
+  <area shape="rect" coords="439,104,469,134" alt="" onmouseover="showTooltip('n9')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="529,584,559,614" href="kpiDefinitions.html#defKPI02" alt="" onmouseover="showTooltip('n8')" onmouseout="hideTooltip()" target="_blank"/>
+  <area shape="rect" coords="439,420,469,450" alt="" onmouseover="showTooltip('n7')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="559,434,589,464" href="C:\Users\arichardson\Documents\LifeSciencesPractice\PhUSE Data Metrics & KPI\KPI-Terminology-Definition.docx" alt="" onmouseover="showTooltip('n6')" onmouseout="hideTooltip()" target="_blank"/>
+  <area shape="rect" coords="668,524,698,554" href="kpiDefinitions.html#defKPI02" alt="" onmouseover="showTooltip('n5')" onmouseout="hideTooltip()" target="_blank"/>
+  <area shape="rect" coords="109,542,139,572" alt="" onmouseover="showTooltip('n4')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="499,298,529,328" href="kpiDefinitions.html#defKPI09" alt="" onmouseover="showTooltip('n3')" onmouseout="hideTooltip()" target="_blank"/>
+  <area shape="rect" coords="218,354,248,384" alt="" onmouseover="showTooltip('n2')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="512,374,542,404" href="kpiDefinitions.html#defKPI03" alt="" onmouseover="showTooltip('n1')" onmouseout="hideTooltip()" target="_blank"/>
+  <area shape="rect" coords="338,625,368,655" href="https://github.com/phuse-org/phuse-scripts/blob/master/KPI/Definition/KPI_DBL.yml" alt="" onmouseover="showTooltip('n0')" onmouseout="hideTooltip()" target="_blank"/>
+</map>
+
+
+    <table class="yimagetable" cellspacing="0" cellpadding="0" border="0">
+      <tr>
+        <td><img class="yimage" src="kpi-v021_1.png" usemap="#image1_1" border="0" alt=""/></td>
+      </tr>
+    </table>
+
+</body>
+</html>
