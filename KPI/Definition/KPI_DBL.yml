@@ -1,0 +1,14 @@
+Term: database lock
+Acronyms: DBL
+Synonyms: Locked Database, Database Freeze
+Description: >
+  Action taken to prevent further changes to a clinical trial database.NOTE: Locking of a database is done after review, query resolution, and a determination has been made that the database is ready for analysis.  [CDISC Glossary] 
+Calculated/Determined As
+KPI Category: 
+Related Compliance Metrics: 
+Related Quality Metrics: > 
+  Number of DB Un-lock / Re-Locks, Number of snapshots after DB-lock snapshot due to data changes in EDC system 
+Related Efficiency/Productivity/Cost Metrics: 
+Related Volumetric Metrics: 
+Source: 
+Key: [defKPI01]
