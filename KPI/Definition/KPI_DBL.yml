@@ -10,5 +10,5 @@ Related Quality Metrics: >
   Number of DB Un-lock / Re-Locks, Number of snapshots after DB-lock snapshot due to data changes in EDC system 
 Related Efficiency/Productivity/Cost Metrics: 
 Related Volumetric Metrics: 
-Source: 
-Key: [defKPI01]
+Source: CDISC 
+Key: [defKPI01] 
