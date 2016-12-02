@@ -1,0 +1,53 @@
+Definition: ../kpi-v02.html
+KPI Metrics: the metrics related to DBL terminology. 
+  - Name: number of Days From DBL to Final SDTM
+    Value: 
+    Unit: days 
+    Type: Performance
+    Method: >
+	  calculate the number of days from the date the database was locked to 
+	  the date the final SDTM was created.  
+    Date:  
+    Provider: 
+    Source:  
+  - Name: number of Days From DBL to Final TFLs
+    Value: 
+    Unit:  days 
+    Type: Performance
+    Method: >
+	  calculate the number of days from the date the database was locked to 
+	  the date the final TFLs were created.  
+    Date:  
+    Provider:  
+    Source:  
+  - Name: number of days From DBL to Final ADaM
+    Value: 
+    Unit: days  
+    Type: Performance
+    Method: >
+	  calculate the number of days from the date the database was locked to 
+	  the date the final ADaM datasets were created.  
+    Date:  
+    Provider: 
+    Source:  
+  - Name: number of Days From DBL to Submission
+    Value: 
+    Unit: days  
+    Type: Performance
+    Method: >
+	  calculate the number of days from the date the database was locked to 
+	  the date the final submisison was done.  
+    Date:  
+    Provider:  
+    Source:  
+KPI Metrics: the metrics related to data transfer terminology. 
+  - Name: % of Data Transfers Delivered on time
+    Value: xxx
+    Unit: percent
+    Type: Efficiency
+    Method: >
+	  calculate the number of data files or data sets were transferred on schedule.  
+    Date: 11/21/2016 
+    Provider: Hanming Tu 
+    Source: PhUSE 
+

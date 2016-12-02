@@ -10,15 +10,5 @@ Business Raitonale: >
   Data or database transfer is a common task in clinical data management. It is important 
   to measure the efficency, accuracy, and quality. 
   
-KPI Metrics: the metrics related to data transfer terminology. 
-  - Name: % of Data Transfers Delivered on time
-    Value: xxx
-    Unit: percent
-    Type: Efficiency
-    Method: >
-	  calculate the number of data files or data sets were transferred on schedule.  
-    Date: 11/21/2016 
-    Provider: Hanming Tu 
-    Source: PhUSE 
 
 
