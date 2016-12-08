@@ -66,6 +66,7 @@ download.GitHub.folder <- function (
 # Function to create a list of R dataframes for each .xpt file
 load.xpt.files <- function(path=getwd()) {
   # NOTE: this function requries the packages: SASxport and Hmisc
+  setwd(path)
   xptFiles <- list.files(pattern="*.xpt")
   dataFrames <- list()
   count <- 0
@@ -112,4 +113,22 @@ read.github.xpt.file <- function (
   download.file(paste(bURL,fPath,fName,sep='/'),tFN,mode='wb')
   r <- read.xport(tFN)
   return(r)
+}
+
+# Function to get the value from field based on category in another field (e.g., check a TXVAL given a TXPARMCD and SETCD)
+getFieldValue <- function(dataset,queryField,indexFields,indexValues) {
+  for (i in 1:length(indexFields)) {
+    indexTmp <- which(dataset[,indexFields[i]]==indexValues[i])
+    if (i == 1) {
+      index <- indexTmp
+    } else {
+      index <- intersect(index,indexTmp)
+    }
+  }
+  fieldValue <- dataset[index,queryField]
+  if (length(levels(dataset[,queryField])) > 0) {
+    return(levels(dataset[,queryField])[fieldValue])
+  } else {
+    return(fieldValue)
+  }
 }
