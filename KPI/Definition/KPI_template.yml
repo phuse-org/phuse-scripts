@@ -1,13 +1,21 @@
-Key: a unique identifier for the KPI terminology
-Term: the name of the KPI terminology
-Acronyms: abbreviation of the KPI terminology
-Synonyms: other names used for the terminology
-Definition: > 
-  a detailed and long definiiton/description of the KPI terminology. More detail. 
-  
-Source: source of the KPI terminology such as CDISC Glossary, NCI terminology, etc. 
-Business Raitonale: >
-  What are the business benefit or rationale for collecting such a KPI. 
+Definition:
+  - Key: a unique identifier for the KPI terminology
+    Term: the name of the KPI terminology
+    Acronyms: abbreviation of the KPI terminology
+    Synonyms: other names used for the terminology
+    Definition: > 
+      a detailed and long definiiton/description of the KPI terminology. More detail. 
+    Source: source of the KPI terminology such as CDISC Glossary, NCI terminology, etc. 
+    Business Raitonale: >
+      What are the business benefit or rationale for collecting such a KPI. 
+  - Key: 
+    Term: 
+    Acronyms: 
+    Synonyms: 
+    Definition: > 
+      
+    Source: 
+    Business Raitonale: >
  
 KPI Metrics: the metrics related to this KPI terminology. 
   - Name: KPI metrics name
@@ -17,14 +25,14 @@ KPI Metrics: the metrics related to this KPI terminology.
     Method: > 
 	  the method or formula for calculating or deriving the KPI. 
     Date: date the metrics are collected or published
-    Provider: person who provided the metrics 
-    Source: which company or organization provided the metrics.
-  - Name: KPI metrics name
-    Value: the value of the metrics
-    Unit: which unit of the metrics such as number of days, percentage of, etc. 
-    Type: metric type or category such as compliance, quality, performance, productivity, efficiency, time, cost, volumetrics, etc. 	
+    Provider: person or organization who provided the metrics 
+    Type of Organizaiton: which type of company or organization provided the metrics.
+  - Name: 
+    Value: 
+    Unit:  
+    Type: 	
     Method: > 
-	  the method or formula for calculating or deriving the KPI. 
-    Date: date the metrics are collected or published
-    Provider: person who provided the metrics 
-    Source: which company or organization provided the metrics.
+	  
+    Date: 
+    Provider:
+    Type of Organizaiton: 

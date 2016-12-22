@@ -8,8 +8,8 @@ KPI Metrics: the metrics related to DBL terminology.
 	  calculate the number of days from the date the database was locked to 
 	  the date the final SDTM was created.  
     Date:  
-    Provider: 
-    Source:  
+    Provider:
+    Type of Organizaiton: 
   - Name: number of Days From DBL to Final TFLs
     Value: 
     Unit:  days 
@@ -18,8 +18,8 @@ KPI Metrics: the metrics related to DBL terminology.
 	  calculate the number of days from the date the database was locked to 
 	  the date the final TFLs were created.  
     Date:  
-    Provider:  
-    Source:  
+    Provider:
+    Type of Organizaiton: 
   - Name: number of days From DBL to Final ADaM
     Value: 
     Unit: days  
@@ -28,8 +28,8 @@ KPI Metrics: the metrics related to DBL terminology.
 	  calculate the number of days from the date the database was locked to 
 	  the date the final ADaM datasets were created.  
     Date:  
-    Provider: 
-    Source:  
+    Provider:
+    Type of Organizaiton: 
   - Name: number of Days From DBL to Submission
     Value: 
     Unit: days  
@@ -38,16 +38,55 @@ KPI Metrics: the metrics related to DBL terminology.
 	  calculate the number of days from the date the database was locked to 
 	  the date the final submisison was done.  
     Date:  
-    Provider:  
-    Source:  
-KPI Metrics: the metrics related to data transfer terminology. 
+    Provider:
+    Type of Organizaiton: 
+# KPI Metrics: the metrics related to data transfer terminology. 
   - Name: % of Data Transfers Delivered on time
-    Value: xxx
+    Value: 
     Unit: percent
     Type: Efficiency
     Method: >
 	  calculate the number of data files or data sets were transferred on schedule.  
-    Date: 11/21/2016 
-    Provider: Hanming Tu 
-    Source: PhUSE 
+    Date:  
+    Provider:
+    Type of Organizaiton: 
+  - Name: % of Dataset Specifications Delivered on time
+    Value: 
+    Unit: percent
+    Type: Efficiency
+    Method: >
+	  calculate the number of data specificatioin files were transferred on schedule.  
+    Date:  
+    Provider:
+    Type of Organizaiton: 
+  - Name: % of Dataset Specifications Delivered on time
+    Value: 
+    Unit: percent
+    Type: Efficiency
+    Method: >
+	  calculate the number of data specificatioin files were transferred on schedule.  
+    Date:  
+    Provider:
+    Type of Organizaiton: 
 
+	
+
+% of TFL Delivered on time TFL Deliver to who? What time? % of What?
+% of ADS Changed after Delivery ADS Which ADS? Deliver to who? % of What? ADS, fADS
+% of TFL Changed after Delivery TFL Which TFLs? Deliver to who? % of What? TFL, fTFL
+No of Days from decision of last study to be included in submission until hand‐over to the sponsor's internal regulatory
+department
+AgencyAgreement HandToReg fStudyPackage Whose decision? Agency, Sponsor
+% of items on submission checklist available SubmissionTOC At what time? 0‐100%
+No of Days from last study package available to hand the complete submission package over to the sponsor's internal
+regulatory department
+fStudyPackage HandToReg What is the time delay? 0 days?
+No of re‐iterations after the final delivery of the items on submission checklist for each study and on submission level SubmissionTOC fStudyPackage fSubmissionPackage Iterations resulting from What?
+No of Days from package defined (scope / content / data standards relevant to programming and stat) and agreed with the
+agency to complete until final submission package ready
+AgencyAgreement fStudyPackage fSubmissionPackage
+No of versions of SAP/shells from the version on which programming was started through submission DSSpec fStudyPackage	
+
+
+	
+	
