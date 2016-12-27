@@ -1,6 +1,6 @@
 #' @importFrom Hmisc label
 #' @export
-# From github master, then changed to allow minimum variable length to be 1 or 2, depending upon keepNA
+# From github master, then changed to allow minimum variable length to be 1 
 write.xport2 <- function(...,
                         list=base::list(),
                         file = stop("'file' must be specified"),
@@ -140,7 +140,10 @@ write.xport2 <- function(...,
       {
 
         df <- dfList[[i]]
-
+	# get any attributes as well from original dataframe, copy will not work
+        dfLabel <- label(list, default="", self=TRUE )
+        dfType <- SAStype(list, default="")
+	#
         if(is.null(colnames(df)))
            colnames(df) <- rep("", length=ncol(df))
 
@@ -160,8 +163,6 @@ write.xport2 <- function(...,
                                   "offset"=rep(NA, length(varNames)) )
         rownames(offsetTable) <- offsetTable[,"name"]
 
-        dfLabel <- label(df, default="", self=TRUE )
-        dfType <- SAStype(df, default="")
 
         scat("Write data frame header ...")
         out( xport.member.header(dfName=i, cDate=cDate, sasVer=sasVer, osType=osType,
@@ -190,16 +191,12 @@ write.xport2 <- function(...,
             df[[i]] <- var <- toSAS(var, format.info=formats)
 
             # compute variable length
-            # From R 3.3.0 NA is returned by nchar if the 
-            # the argument is NA, unless keepNA = FALSE is supplied
-            # In older versions nchar(NA) is 2, and this is the
-            # behavior we need now
             if(is.character(var)) {
-              if ("keepNA" %in% names(as.list(args(nchar)))) {
-                varLen <- max(c(2,nchar(var, keepNA = FALSE) ) )
-              } else {
-                varLen <- max(c(1,nchar(var) ) )
-              }
+                varLen <- max(c(1,nchar(var)) )
+		# if length is NA, means empty, use 1
+                if (is.na(nchar(var) )[1] ) {
+		  varLen <- 1	
+		}
             } else {
               varLen <- 8
             }

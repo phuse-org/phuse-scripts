@@ -15,7 +15,6 @@
 # https://cran.r-project.org/web/packages/SASxport/SASxport.pdf
 ####################################################################################
 # Improvements to make
-#    TSGRPID if empty should be set to 1 character length
 #    Could use file chooser result directory to use for output location
 ####################################################################################
 # You may need next two lines first time
@@ -61,13 +60,15 @@ for(aStudy in studyList){
 	    setwd(file.path(mainDir, aStudy))
 	}
 	# filter to this study
-	studyData <- subset(df2, STUDYID==aStudy)
+	studyData <- subset(df2, STUDYID==aStudy,keepNA=FALSE)
 	# Set length for character fields
 	SASformat(studyData$DOMAIN) <-"$2."	
 	# place this dataset into a list with a name
 	aList = list(studyData)
 	# name it
-	names(aList)[1]<-"Data"
+	names(aList)[1]<-"TS"
+	# and label it
+	attr(aList,"label") <- "TRIAL SUMMARY"
 	# write out dataframe
 	write.xport2(
 		list=aList,
