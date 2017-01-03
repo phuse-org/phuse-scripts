@@ -1,18 +1,13 @@
 /*** HEADER
-
     Display:     Figure 7.3 Box plot - Observed Values and Change from Baseline by Analysis Timepoint, Visit and Treatment
     White paper: Central Tendency
-
     User Guide:     https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/CentralTendency-UserGuide.txt
     Macro Library:  https://github.com/phuse-org/phuse-scripts/tree/master/whitepapers/utilities
     Specs:          https://github.com/phuse-org/phuse-scripts/tree/master/whitepapers/specification
     Test Data:      https://github.com/phuse-org/phuse-scripts/tree/master/data/adam/cdisc
     Sample Output:  https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/WPCT/outputs_sas/WPCT-F.07.03_Box_plot_DIABP_with_change_by_visit_for_timepoint_815.pdf
-
     Using this program:
-
       * Figure 7.3 combines analyses from Figures 7.1 and 7.2 as side-by-side graphics on a PDF page.
-
       * See USER PROCESSING AND SETTINGS, below, to configure this program for your environment and data
       * Program will plot all visits, ordered by AVISITN, with maximum of 20 boxes on a page (default)
         + see user option MAX_BOXES_PER_PAGE, below, to change limit of 20 boxes per page
@@ -24,11 +19,8 @@
         in the input data, and add a footnote that explains your short Tx codes
         + This program contains custom code to shorted Tx labels in the PhUSE CS test data
         + See "2b) USER SUBSET of data", below
-
     TO DO list for program:
-
       * Reduce the title/footnotes font size, to match Fig. 7.1 and Fig. 7.2 (or increase those to match this Fig. 7.3)
-
       * Complete and confirm specifications (see Outliers & Reference limit discussions, below)
           https://github.com/phuse-org/phuse-scripts/tree/master/whitepapers/specification
       * The footnote could dynamically describe any normal range lines that appear. See the Fig. 7.1 specifications.
@@ -40,7 +32,6 @@
           - Handle all of these within one template program? 
             Or separate them (and accept some redundancy)?
           - NB: Currently vars like AVISIT, AVISITN, ATPT, ATPTN are hard-coded in this program
-
 end HEADER ***/
 
 
@@ -48,44 +39,35 @@ end HEADER ***/
   /************************************
    *** USER PROCESSING AND SETTINGS ***
    ************************************
-
     1) REQUIRED - PhUSE CS Utilities macro library.
        These templates require the PhUSE CS macro utilities:
          https://github.com/phuse-org/phuse-scripts/tree/master/whitepapers/utilities
        User must ensure that SAS can find PhUSE CS macros in the SASAUTOS path (see EXECUTE ONE TIME, below)
-
     2) OPTIONAL - Subset measurement data, to limit resulting plots to specific
          - Parameters
          - Analysis Timepoints
          - Visits
-
     3) REQUIRED - Key user settings (libraries, data sets, variables and box plot options)
        M_LB:   Libname containing ADaM measurement data, such as ADVS.
                WORK by default, since step (2) creates the desired WORK subset.
        M_DS:   Measuments data set, such as ADVS.
-
        T_VAR:  Variable in M_DS with the Treatment Name, such as TRTP, TRTA.
        TN_VAR: Variable in M_DS with the Treatment Number (display controls order), such as TRTPN, TRTAN.
        M_VAR:  Variable in M_DS with measurements data, such as AVAL.
        C_VAR:  Variable in M_DS with change-from-baseline data, such as CHG.
-
        LO_VAR: Variable in M_DS with LOWER LIMIT of reference range, such as ANRLO.
                Required to highlight values outside reference range (RED DOT in box plot), and reference lines
        HI_VAR: Variable in M_DS with UPPER LIMIT of reference range, such as ANRHI.
                Required to highlight values outside reference range (RED DOT in box plot), and reference lines
-
        B_VAR:    (Leave blank to omit p-value from summary table.) Variable in M_DS with baseline measurements
        REF_TRTN: (Leave blank to omit p-value from summary table.) Numeric value of TN_VAR for reference (comparator) treatment
-
        B_VISN: Visit number that represents Baseline in AVISITN (e.g., 0)
        E_VISN: Visit number that represents endpoint in AVISITN for chg-from-baseline comparison (e.g., 99)
                OPTIONAL: Include additional visits BETWEEN baseline and endpoint.
                          List space-delimited, INCREASING visit numbers in E_VISN.
                          The LAST (greatest) visit number in E_VISN is the endpoint visit.
-
        P_FL:  Population flag variable. 'Y' indicates record is in population of interest.
        A_FL:  Analysis Flag variable.   'Y' indicates that record is selected for analysis.
-
        REF_LINES:
              Option to specify which Normal Range reference lines to include in box plots
              <NONE | UNIFORM | NARROW | ALL | numeric-value(s)> See discussion in Central Tendency White Paper 
@@ -94,36 +76,30 @@ end HEADER ***/
              NARROW  - Default. Display only the narrow normal limits: max LOW, and min HIGH limits
              ALL     - Discouraged, since displaying ALL reference lines confuses review of data display
              numeric-values - space-delimited list of reference line values, such as a 0 reference line for displays of change.
-
        MAX_BOXES_PER_PAGE:
              Maximum number of boxes to display per plot page (see "Notes", above)
-
        OUTPUTS_FOLDER:
              Location to write PDF outputs (WITHOUT final back- or forward-slash)
-
   ************************************
   *** user processing and settings ***
   ************************************/
 
 
-    %put WARNING: (WPCT-F.07.03) User must ensure PhUSE CS utilities are in the AUTOCALL path.;
+    /***%put WARNING: (WPCT-F.07.03) User must ensure PhUSE CS utilities are in the AUTOCALL path.;
 
     /*** 1) PhUSE CS utilities in autocall paths (see "Macro Library", above)
-
       EXECUTE ONE TIME only as needed
-      NB: The following line is necessary only when PhUSE CS utilities are NOT in your default AUTOCALL paths
-
-      OPTIONS sasautos=(%sysfunc(getoption(sasautos)) "C:\CSS\phuse-scripts\whitepapers\utilities");
-
-    ***/
+      NB: The following line is necessary only when PhUSE CS utilities are NOT in your default AUTOCALL paths***/
+      OPTIONS sasautos=(%sysfunc(getoption(sasautos)) ""); *JMS-I had to leave this line uncommented for each run through batch-submit; set to local environment in "". Suggest turning into a %let above and using macro var in this statement;
+    
 
 
     /*** 2a) REMOTE ACCESS data, by default PhUSE CS test data, and create WORK copy.                ***/
     /***     NB: If remote access to test data files does not work, see local override, below. ***/
-      %util_access_test_data(advs)
+      *%util_access_test_data(advs); *JMS-This macro call seems to try to go to the github site to download the dataset and kept erroring out;
 
       *--- NB: LOCAL PhUSE CS test data, override remote access by providing a local path ---*;
-        %* %util_access_test_data(advs, local=C:\CSS\phuse-scripts\data\adam\cdisc\) ;
+         %util_access_test_data(advs, local=) ; *JMS-I had to set this line based on local environment (local=). Suggest turning into a %let above and using macro var in this statement;
 
 
     /*** 2b) USER SUBSET of data, to limit number of box plot outputs, and to shorten Tx labels ***/
@@ -169,7 +145,7 @@ end HEADER ***/
 
       %let max_boxes_per_page = 10;
 
-      %let outputs_folder = C:\CSS\phuse-scripts\whitepapers\WPCT\outputs_sas;
+      %let outputs_folder = ; *JMS-Ihad to set this var based on my local environment; recommend moving up for eash-of-use.;
 
   /*** end USER PROCESSING AND SETTINGS ***********************************
    *** RELAX.                                                           ***
@@ -181,7 +157,6 @@ end HEADER ***/
 
   /*** SETUP & CHECK DEPENDENCIES
     Explain to user in case environment or data do not support this analysis
-
     Keep just those variables and records required for this analysis
     For details, see specifications at top
   ***/
@@ -223,23 +198,18 @@ end HEADER ***/
 
   /*** GATHER INFO for data-driven processing
     Collect required information about these measurements:
-
     Number, Names and Labels of PARAMCDs - used to cycle through parameters that have measurements
       &PARAMCD_N count of parameters
       &PARAMCD_VAL1 to &&&PARAMCD_VAL&PARAMCD_N series of parameter codes
       &PARAMCD_LAB1 to &&&PARAMCD_LAB&PARAMCD_N series of parameter labels
-
     Number of treatments - used for handling treatments categories
       &TRTN
-
     Baseline visit value & label
       &b_visn_val1
       &b_visn_lab1
-
     Endpoint visit value & label
       &ep_visn_val1
       &ep_visn_lab1
-
   ***/
 
     %*--- User may specify optional intermediate visits in E_VISN. ---*;
@@ -274,22 +244,17 @@ end HEADER ***/
 
 
   /*** BOXPLOT for each PARAMETER and ANALYSIS TIMEPOINT in selected data
-
     Two box plots per page for each PARAMETER and ANALYSIS TIMEPOINT.
     By Visit number and Treatment.
-
     In case of many visits and treatments, each PARAM/TIMEPOINT will use multiple pages.
-
     UTIL_PROC_TEMPLATE parameters:
       TEMPLATE     Positional parameter, the name of the template to compile.
       DESIGNWIDTH  Default is 260mm, suitable for one full-page landscape Letter/A4 plot.
                    130mm is suitable for these 2 side-by-side plots.
       DESIGNHEIGHT Default is 170mm, suitable for one full-page landscape Letter/A4 plot.
-
     BOXPLOT_EACH_PARAM_TP parameters:      
       CLEANUP      Default is 1, delete intermediate data sets. 
                    Set to 0 (zero) to preserve temp data sets from the final loop.
-
   ***/
 
     %util_proc_template(phuseboxplot, designwidth=130mm)
