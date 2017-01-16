@@ -16,7 +16,9 @@ title:
 Language:
 name : R
 version: 3.2.2
-Comments: > For legacy study submissions, FDA requires small trial summary xpt file especially for study start date
+Comments: > For legacy study submissions, FDA requires small trial summary xpt file especially for study start date. 
+Although the FDA requires for legacy studies only the STSTDTC parameters, they have requested this set of parameters 
+SSPONSOR, TRT, SPECIES, SSTYP, DOSDUR, TRTCAS, STSTDTC
 Inputs:
 datasets:
 P1:
