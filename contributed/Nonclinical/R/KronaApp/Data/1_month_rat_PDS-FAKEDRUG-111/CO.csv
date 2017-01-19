@@ -1,0 +1,111 @@
+"STUDYID","DOMAIN","RDOMAIN","USUBJID","COSEQ","IDVAR","IDVARVAL","COREF","COVAL","COEVAL","CODTC","CODY"
+"PDS2014","CO","BW","PDS2014-0010",1,"BWSEQ","325",NA,"perfusion animal",NA,NA,NA
+"PDS2014","CO","BW","PDS2014-0030",2,"BWSEQ","933",NA,"weight not needed",NA,NA,NA
+"PDS2014","CO","BW","PDS2014-0050",3,"BWSEQ","1351",NA,"perfusion animal",NA,NA,NA
+"PDS2014","CO","BW","PDS2014-0070",4,"BWSEQ","1769",NA,"weight not needed",NA,NA,NA
+"PDS2014","CO","BW","PDS2014-0110",5,"BWSEQ","2377",NA,"weight not needed",NA,NA,NA
+"PDS2014","CO","BW","PDS2014-0130",6,"BWSEQ","2956",NA,"perfusion animal",NA,NA,NA
+"PDS2014","CO","BW","PDS2014-0150",7,"BWSEQ","3374",NA,"weight not needed",NA,NA,NA
+"PDS2014","CO","BW","PDS2014-0170",8,"BWSEQ","3792",NA,"perfusion animal",NA,NA,NA
+"PDS2014","CO","MI","PDS2014-0002",9,"MISEQ","70",NA,"-one focus with giant cell (multinucleated)",NA,NA,NA
+"PDS2014","CO","MI","PDS2014-0003",10,"MISEQ","124",NA,"-alveolitis",NA,NA,NA
+"PDS2014","CO","MI","PDS2014-0006",11,"MISEQ","273",NA,"-at the papillary muscle",NA,NA,NA
+"PDS2014","CO","MI","PDS2014-0008",12,"MISEQ","409",NA,"-in subcutis",NA,NA,NA
+"PDS2014","CO","MI","PDS2014-0043",13,"MISEQ","610",NA,"-with prominent medullary mineralization",NA,NA,NA
+"PDS2014","CO","MI","PDS2014-0064",14,"MISEQ","817",NA,"-close to the apex",NA,NA,NA
+"PDS2014","CO","MI","PDS2014-0067",15,"MISEQ","1007",NA,"-considered blood sampling related",NA,NA,NA
+"PDS2014","CO","MI","PDS2014-0102",16,"MISEQ","1262",NA,"-subpleural",NA,NA,NA
+"PDS2014","CO","MI","PDS2014-0110",17,"MISEQ","1695",NA,"-considered necropsy related",NA,NA,NA
+"PDS2014","CO","MI","PDS2014-0114",18,"MISEQ","1741",NA,"-uterine stage noted in the 'vagina' localization",NA,NA,NA
+"PDS2014","CO","MI","PDS2014-0115",19,"MISEQ","1746",NA,"-foci with hemoglobin crystals and foci with pigmented macrophages",NA,NA,NA
+"PDS2014","CO","MI","PDS2014-0126",20,"MISEQ","1790",NA,"-no vagina on slides -uterine stage noted in 'vagina' localization",NA,NA,NA
+"PDS2014","CO","MI","PDS2014-0127",21,"MISEQ","1799",NA,"-no vagina on slides -uterine stage noted in the 'vagina' localization",NA,NA,NA
+"PDS2014","CO","MI","PDS2014-0128",22,"MISEQ","1804",NA,"-individual cells, diffuse",NA,NA,NA
+"PDS2014","CO","MI","PDS2014-0128",23,"MISEQ","1808",NA,"-no vagina on slides -uterine stage noted in the 'vagina' localization",NA,NA,NA
+"PDS2014","CO","MI","PDS2014-0130",24,"MISEQ","1823",NA,"-no vagina on slides -uterine stage noted in the 'vagina' localization",NA,NA,NA
+"PDS2014","CO","MI","PDS2014-0150",25,"MISEQ","1887",NA,"-no vagina on slides -uterine stage noted in the 'vagina' localization",NA,NA,NA
+"PDS2014","CO","MI","PDS2014-0168",26,"MISEQ","2273",NA,"-subpleural",NA,NA,NA
+"PDS2014","CO","MI","PDS2014-0169",27,"MISEQ","2325",NA,"-focal -subpleural",NA,NA,NA
+"PDS2014","CO","MI","PDS2014-0172",28,"MISEQ","2425",NA,"-uterine stage noted in the 'vagina' localization",NA,NA,NA
+"PDS2014","CO","MI","PDS2014-0174",29,"MISEQ","2440",NA,"-uterine stage noted in the 'vagina' localization",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0010",30,"OMSEQ","91",NA,"perfusion animal",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0010",31,"OMSEQ","92",NA,"perfusion animal",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0010",32,"OMSEQ","93",NA,"perfusion animal",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0010",33,"OMSEQ","94",NA,"perfusion animal",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0010",34,"OMSEQ","95",NA,"perfusion animal",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0010",35,"OMSEQ","96",NA,"perfusion animal",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0010",36,"OMSEQ","97",NA,"perfusion animal",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0010",37,"OMSEQ","98",NA,"perfusion animal",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0010",38,"OMSEQ","99",NA,"perfusion animal",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0010",39,"OMSEQ","100",NA,"perfusion animal",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0030",40,"OMSEQ","241",NA,"perfusion",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0030",41,"OMSEQ","242",NA,"perfusion animal",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0030",42,"OMSEQ","243",NA,"perfusion animal",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0030",43,"OMSEQ","244",NA,"perfusion animal",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0030",44,"OMSEQ","245",NA,"perfusion animal",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0030",45,"OMSEQ","246",NA,"perfusion animal",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0030",46,"OMSEQ","247",NA,"perfusion animal",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0030",47,"OMSEQ","248",NA,"perfusion animal",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0030",48,"OMSEQ","249",NA,"perfusion animal",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0030",49,"OMSEQ","250",NA,"perfusion",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0050",50,"OMSEQ","341",NA,"perfusion animal",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0050",51,"OMSEQ","342",NA,"perfusion animal",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0050",52,"OMSEQ","343",NA,"perfusion animal",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0050",53,"OMSEQ","344",NA,"perfusion animal",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0050",54,"OMSEQ","345",NA,"perfusion animal",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0050",55,"OMSEQ","346",NA,"perfusion animal",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0050",56,"OMSEQ","347",NA,"perfusion animal",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0050",57,"OMSEQ","348",NA,"perfusion animal",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0050",58,"OMSEQ","349",NA,"perfusion animal",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0050",59,"OMSEQ","350",NA,"perfusion animal",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0070",60,"OMSEQ","441",NA,"animal perfusion",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0070",61,"OMSEQ","442",NA,"animal perfusion",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0070",62,"OMSEQ","443",NA,"animal perfusion",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0070",63,"OMSEQ","444",NA,"animal perfusion",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0070",64,"OMSEQ","445",NA,"animal perfusion",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0070",65,"OMSEQ","446",NA,"perfusion animal",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0070",66,"OMSEQ","447",NA,"perfusion animal",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0070",67,"OMSEQ","448",NA,"animal perfusion",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0070",68,"OMSEQ","449",NA,"animal perfusion",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0070",69,"OMSEQ","450",NA,"animal perfusion",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0106",70,"OMSEQ","553",NA,"weight out of range, no confirmation, weight deleted by programm, liver could not be weighed again because it was already processed",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0110",71,"OMSEQ","591",NA,"perfusion animal",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0110",72,"OMSEQ","592",NA,"perfusion animal",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0110",73,"OMSEQ","593",NA,"perfusion animal",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0110",74,"OMSEQ","594",NA,"perfusion animal",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0110",75,"OMSEQ","595",NA,"perfusion animal",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0110",76,"OMSEQ","596",NA,"perfusion animal",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0110",77,"OMSEQ","597",NA,"perfusion animal",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0110",78,"OMSEQ","598",NA,"perfusion animal",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0110",79,"OMSEQ","599",NA,"perfusion animal",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0110",80,"OMSEQ","600",NA,"perfusion animal",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0130",81,"OMSEQ","741",NA,"perfusion animal",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0130",82,"OMSEQ","742",NA,"perfusion animal",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0130",83,"OMSEQ","743",NA,"perfusion animal",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0130",84,"OMSEQ","744",NA,"perfusion animal",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0130",85,"OMSEQ","745",NA,"perfusion animal",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0130",86,"OMSEQ","746",NA,"perfusion animal",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0130",87,"OMSEQ","747",NA,"perfusion animal",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0130",88,"OMSEQ","748",NA,"perfusion animal",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0130",89,"OMSEQ","749",NA,"perfusion animal",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0130",90,"OMSEQ","750",NA,"perfusion animal",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0150",91,"OMSEQ","841",NA,"perfusion animal",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0150",92,"OMSEQ","842",NA,"perfusion animal",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0150",93,"OMSEQ","843",NA,"perfusion animal",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0150",94,"OMSEQ","844",NA,"perfusion animal",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0150",95,"OMSEQ","845",NA,"perfusion animal",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0150",96,"OMSEQ","846",NA,"perfusion animal",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0150",97,"OMSEQ","847",NA,"perfusion animal",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0150",98,"OMSEQ","848",NA,"perfusion animal",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0150",99,"OMSEQ","849",NA,"perfusion animal",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0150",100,"OMSEQ","850",NA,"perfusion animal",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0170",101,"OMSEQ","941",NA,"perfusion animal",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0170",102,"OMSEQ","942",NA,"perfusion animal",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0170",103,"OMSEQ","943",NA,"perfusion animal",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0170",104,"OMSEQ","944",NA,"perfusion animal",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0170",105,"OMSEQ","945",NA,"perfusion animal",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0170",106,"OMSEQ","946",NA,"perfusion animal",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0170",107,"OMSEQ","947",NA,"perfusion animal",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0170",108,"OMSEQ","948",NA,"perfusion animal",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0170",109,"OMSEQ","949",NA,"perfusion animal",NA,NA,NA
+"PDS2014","CO","OM","PDS2014-0170",110,"OMSEQ","950",NA,"perfusion animal",NA,NA,NA
