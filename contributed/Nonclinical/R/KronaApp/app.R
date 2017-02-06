@@ -1,6 +1,14 @@
+#!!!!!!!!!! IDEAS FOR SCRIPT IMPROVEMENT !!!!!!!!!!!!#
+# 1. Allow choice of web browser in GUI
+
+list.of.packages <- c("shiny","XLConnect","rChoiceDialogs","SASxport")
+new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
+if(length(new.packages)) install.packages(new.packages,repos='http://cran.us.r-project.org')
+
 library(shiny)
 library(XLConnect)
 library(rChoiceDialogs)
+library(SASxport)
 
 source('directoryInput.R')
 source('Functions.R')
@@ -8,23 +16,9 @@ source('Functions.R')
 # Default Study Folder
 defaultStudyFolder <- path.expand('~')
 
+#!!!!!!!!! Add a launch file !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 server <- function(input, output,session) {
-  # Handle choosing the App directory
-  observeEvent(
-    ignoreNULL = TRUE,
-    eventExpr = {
-      input$studyfolder
-    },
-    handlerExpr = {
-      if (input$studyfolder > 0) {
-        path = rchoose.dir(default = readDirectoryInput(session,'studyfolder'))
-        updateDirectoryInput(session,'studyfolder',value = path)
-        updateDirectoryInput(session,'directory1',value = path)
-        updateDirectoryInput(session,'directory2',value = path)
-      }
-    }
-  )
-  
   # Handle choosing Study 1 directory
   observeEvent(
     ignoreNULL = TRUE,
@@ -61,9 +55,8 @@ server <- function(input, output,session) {
   
   # Create Krona plot from SEND data when Submit button is clicked
   createKronaPlot <- observeEvent(input$submit,{
-    # Set working directory
-    WD <- readDirectoryInput(session,'studyfolder')
-    setwd(WD)
+    # Store working directory
+    WD <- getwd()
 
     # Read in user-defined parameters
     path1 <- readDirectoryInput(session,'directory1')
@@ -115,7 +108,7 @@ server <- function(input, output,session) {
     if (dir.exists(kronaPath)==FALSE) {dir.create(kronaPath)}
     setwd(kronaPath)
     
-#    # Set Excel File Path
+    # Set Excel File Path
     outputFilePath <- 'temp/template.xlsm'
     
     # Create Empty Template File
@@ -124,14 +117,34 @@ server <- function(input, output,session) {
     # Generate Data Tables from SEND
     for (i in seq(length(studyPath))) {
       # Get Histopath Data from MI Domain
-      histoData <- read.csv(paste(studyPath[i],'MI.csv',sep='/'))
+      if (file.exists(paste(studyPath[i],'mi.xpt',sep='/'))) {
+        histoData <- read.xport(paste(studyPath[i],'mi.xpt',sep='/'))
+      } else if (file.exists(paste(studyPath[i],'MI.xpt',sep='/'))) {
+        histoData <- read.xport(paste(studyPath[i],'MI.xpt',sep='/'))
+      } else if (file.exists(paste(studyPath[i],'mi.csv',sep='/'))) {
+        histoData <- read.csv(paste(studyPath[i],'mi.csv',sep='/'))
+      } else if (file.exists(paste(studyPath[i],'MI.csv',sep='/'))) {
+        histoData <- read.csv(paste(studyPath[i],'MI.csv',sep='/'))
+      } else {
+        stop('MI Domain Missing!')
+      }
       histoFields <- c('STUDYID','USUBJID','MISTRESC','MISPEC','MISEV')
       histoNames <- c('StudyID','SubjectID','Finding','Organ','Severity')
       DataTmp <- subTable(histoFields,histoNames,histoData)
       DataTmp <- DataTmp[which(DataTmp$Finding!=""),]
       
       # Get Metadata from DM and TX Domains
-      demData <- read.csv(paste(studyPath[i],'DM.csv',sep='/'))
+      if (file.exists(paste(studyPath[i],'dm.xpt',sep='/'))) {
+        demData <- read.xport(paste(studyPath[i],'dm.xpt',sep='/'))
+      } else if (file.exists(paste(studyPath[i],'DM.xpt',sep='/'))) {
+        demData <- read.xport(paste(studyPath[i],'DM.xpt',sep='/'))
+      } else if (file.exists(paste(studyPath[i],'dm.csv',sep='/'))) {
+        demData <- read.csv(paste(studyPath[i],'dm.csv',sep='/'))
+      } else if (file.exists(paste(studyPath[i],'DM.csv',sep='/'))) {
+        demData <- read.csv(paste(studyPath[i],'DM.csv',sep='/'))
+      } else {
+        stop('DM Domain Missing!')
+      }
       demFields <- c('USUBJID','SETCD','SEX')
       demFieldNames <- c('SubjectID','TrialSet','Sex')
       metaDataTmp <- subTable(demFields,demFieldNames,demData)
@@ -143,14 +156,34 @@ server <- function(input, output,session) {
         }
       }
       
-      txData <- read.csv(paste(studyPath[i],'TX.csv',sep='/'))
+      if (file.exists(paste(studyPath[i],'tx.xpt',sep='/'))) {
+        txData <- read.xport(paste(studyPath[i],'tx.xpt',sep='/'))
+      } else if (file.exists(paste(studyPath[i],'TX.xpt',sep='/'))) {
+        txData <- read.xport(paste(studyPath[i],'TX.xpt',sep='/'))
+      } else if (file.exists(paste(studyPath[i],'tx.csv',sep='/'))) {
+        txData <- read.csv(paste(studyPath[i],'tx.csv',sep='/'))
+      } else if (file.exists(paste(studyPath[i],'TX.csv',sep='/'))) {
+        txData <- read.csv(paste(studyPath[i],'TX.csv',sep='/'))
+      } else {
+        stop('TX Domain Missing!')
+      }
       trialFields <- c('SET','TXVAL','TXPARMCD','SETCD')
       trialFieldNames <- trialFields
       trialDataTmp <- subTable(trialFields,trialFieldNames,txData)
       StudyID <- rep(DataTmp$StudyID[1],dim(trialDataTmp)[1])
       trialDataTmp <- cbind(trialDataTmp,StudyID)
       
-      EXdataCSV <- read.csv(paste(studyPath[i],'EX.csv',sep='/'))
+      if (file.exists(paste(studyPath[i],'ex.xpt',sep='/'))) {
+        EXdataCSV <- read.xport(paste(studyPath[i],'ex.xpt',sep='/'))
+      } else if (file.exists(paste(studyPath[i],'EX.xpt',sep='/'))) {
+        EXdataCSV <- read.xport(paste(studyPath[i],'EX.xpt',sep='/'))
+      } else if (file.exists(paste(studyPath[i],'ex.csv',sep='/'))) {
+        EXdataCSV <- read.csv(paste(studyPath[i],'ex.csv',sep='/'))
+      } else if (file.exists(paste(studyPath[i],'EX.csv',sep='/'))) {
+        EXdataCSV <- read.csv(paste(studyPath[i],'EX.csv',sep='/'))
+      } else {
+        stop('EX Domain Missing!')
+      }
       if ('EXSTDY' %in% colnames(EXdataCSV)) {
         EXfields <- c('USUBJID','EXENDY','EXSTDY')
         EXfieldNames <- c('SubjectID','EndDay','StartDay')
@@ -163,7 +196,17 @@ server <- function(input, output,session) {
         EXdataTmp <- cbind(EXdataTmp,StartDay)
       }
       
-      DSdataCSV <- read.csv(paste(studyPath[i],'DS.csv',sep='/'))
+      if (file.exists(paste(studyPath[i],'ds.xpt',sep='/'))) {
+        DSdataCSV <- read.xport(paste(studyPath[i],'ds.xpt',sep='/'))
+      } else if (file.exists(paste(studyPath[i],'DS.xpt',sep='/'))) {
+        DSdataCSV <- read.xport(paste(studyPath[i],'DS.xpt',sep='/'))
+      } else if (file.exists(paste(studyPath[i],'ds.csv',sep='/'))) {
+        DSdataCSV <- read.csv(paste(studyPath[i],'ds.csv',sep='/'))
+      } else if (file.exists(paste(studyPath[i],'DS.csv',sep='/'))) {
+        DSdataCSV <- read.csv(paste(studyPath[i],'DS.csv',sep='/'))
+      } else {
+        stop('MI Domain Missing!')
+      }
       if ('DSSTDY' %in% colnames(DSdataCSV)) {
         DSfields <- c('USUBJID','VISITDY','DSSTDY')
         DSfieldNames <- c('SubjectID','PlannedDay','SacrificeDay')
@@ -421,8 +464,6 @@ server <- function(input, output,session) {
     quantifiers <- as.data.frame(cbind(colnames(newData)[1],'Severity'))
     writeWorksheetToFile(outputFilePath,quantifiers,"Krona",startRow=5,startCol=1,header=FALSE)
     
-    print(getwd())
-    
     shell(shQuote(paste(kronaPath,'runKrona.vbs',sep='/')))
 
     output$text <- renderText({paste('Finished Running Analysis of',basename(studyIDs),'\n')})
@@ -438,7 +479,7 @@ ui <- fluidPage(
   
   # Sidebar with a slider input for parameters
   fluidRow(
-    column(4,
+    column(6,
            h3('Study 1'),
            directoryInput('directory1',label = 'Directory:',value=defaultStudyFolder),
            textInput('study1Name',label='Study 1 Label:',value='Study 1'),br(),
@@ -451,9 +492,10 @@ ui <- fluidPage(
            checkboxInput("filterControl",label='Filter Out Control Findings? (broken)',value=FALSE),
            selectInput('severityFilter',label='Filter Severity Less than: (broken)',
                        choices = list(" "='blank',"Minimal"='minimal',"Mild"='mild',"Moderate"='moderate',"Marked"='marked',"Severe"='severe')),br(),
-           actionButton("submit","Submit")
+           actionButton("submit","Submit"),br(),br(),
+           verbatimTextOutput("text")
     ),
-    column(4,
+    column(6,
            h3('Preset Category Organization'),
            selectInput("organizeBy",label="Organize By:",
                        choices = list("Organ"='Organ',"Subject"='Subject',"Custom"='Custom')),
@@ -472,10 +514,7 @@ ui <- fluidPage(
                        choices = list(" "='blank',"Organ"='Organ',"Finding"='Finding',"Treatment"='Treatment',"Sex"='Sex',"Recovery"='Recovery',"SubjectID"='SubjectID')),
            selectInput("track",label="Report Incidence or Counts?",
                        choices = list("Incidence"='incidence',"Counts"='counts'))
-    ),
-    column(4,
-           directoryInput('studyfolder',label = 'Change App Folder',value=defaultStudyFolder),br(),
-           verbatimTextOutput("text"))
+    )
   )
 )
 
