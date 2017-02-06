@@ -11,7 +11,7 @@
 /*******************************************************************************/
 
 %MACRO XML(domain);
-	libname myxpt xport "c:\SAS-play\&domain..xpt";
+	libname myxpt xport "C:\PhUSE Script Repository\phuse-scripts\trunk\data\send\instem\Xpt\&domain..xpt";
 	data &domain;
 		set myxpt.&domain;
 	run;
