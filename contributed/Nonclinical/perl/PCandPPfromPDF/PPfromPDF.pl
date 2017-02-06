@@ -15,6 +15,7 @@
 ###YYYY-MM-DD#########################################################################################
 #  2016-12-13	W. Houser initially created this script.
 #  2017-02-02   W. Houser minor adjustments to recogize other white space as field seperators
+#  2017-02-06   W. Houser corrected value of $ppgrpid to use $ppcat instead of $pptest 
 ######################################################################################################
 
 use List::Util qw[min max];
@@ -161,7 +162,7 @@ while (<>)
 						{
 							die("The column header for PP parameters is expected to be in the form parameter(unit).\n");
 						}
-						$ppgrpid=$pptest."-DAY".$ppnomdy."-".$usubjid;
+						$ppgrpid=$ppcat."-DAY".$ppnomdy."-".$usubjid;
 						#assume the column header is the number of hours post dose.
 						$visitdy=$ppnomdy;
 						$pptptref="";
