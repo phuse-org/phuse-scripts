@@ -1,8 +1,0 @@
-"STUDYID","DOMAIN","ETCD","ELEMENT","TESTRL","TEENRL","TEDUR"
-"GLP003","TE","C_1","0 mg/kg/day Vehicle Control","First day of Vehicle Control",NA,"P1M"
-"GLP003","TE","C_2","0 mg/kg/day Negative Control","First day of Negative Control",NA,"P1M"
-"GLP003","TE","D_3","60 mg/kg/day XYZ-12345","First day of Dosing with 60 mg/kg/day XYZ-12345",NA,"P1M"
-"GLP003","TE","D_4","200 mg/kg/day XYZ-12345","First day of Dosing with 200 mg/kg/day XYZ-12345",NA,"P1M"
-"GLP003","TE","D_5","600 mg/kg/day XYZ-12345","First day of Dosing with 600 mg/kg/day XYZ-12345",NA,"P1M"
-"GLP003","TE","SCREEN","Screening","Start of screening","First day of dosing with drug or vehicle control",NA
-"GLP003","TE","RECOVERY","Recovery","After 1 month of dosing",NA,"P2W"
