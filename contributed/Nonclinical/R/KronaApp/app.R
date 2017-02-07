@@ -524,6 +524,9 @@ server <- function(input, output,session) {
     # Run Visual Basic Script to Generate Plot via Excel Macro
     shell(shQuote(paste(kronaPath,'runKrona.vbs',sep='/')))
     
+    # Return to Application Directory
+    setwd(basePath)
+    
     # Output Text Upon Completion
     output$text <- renderText({paste('Finished Running Analysis of',basename(studyIDs),'\n')})
     
