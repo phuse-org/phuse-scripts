@@ -1,25 +1,36 @@
 #!!!!!!!!!! IDEAS FOR SCRIPT IMPROVEMENT !!!!!!!!!!!!#
 # 1. Allow choice of web browser in GUI
+#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!#
 
+
+################ Setup Application ########################################################
+
+# Check for Required Packages, Install if Necessary, and Load
 list.of.packages <- c("shiny","XLConnect","rChoiceDialogs","SASxport")
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages,repos='http://cran.us.r-project.org')
-
 library(shiny)
 library(XLConnect)
 library(rChoiceDialogs)
 library(SASxport)
 
+# Source Required Functions
 source('directoryInput.R')
 source('Functions.R')
 
 # Default Study Folder
 defaultStudyFolder <- path.expand('~')
 
-#!!!!!!!!! Add a launch file !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+############################################################################################
+
+
+################# Define Functional Response to GUI Input ##################################
 
 server <- function(input, output,session) {
-  # Handle choosing Study 1 directory
+  
+  ##################### Handle Choosing Study Directories ##################################
+  
+  # Handle Choosing Study 1 Directory
   observeEvent(
     ignoreNULL = TRUE,
     eventExpr = {
@@ -36,7 +47,7 @@ server <- function(input, output,session) {
     }
   )
   
-  # Handle choosing Study 2 directory
+  # Handle Choosing Study 2 Directory
   observeEvent(
     ignoreNULL = TRUE,
     eventExpr = {
@@ -53,11 +64,15 @@ server <- function(input, output,session) {
     }
   )
   
-  # Create Krona plot from SEND data when Submit button is clicked
+  ##########################################################################################
+  
+  
+  ####### Create Krona plot from SEND data when Submit button is clicked ###################
+  
   createKronaPlot <- observeEvent(input$submit,{
-    # Store working directory
-    WD <- getwd()
-
+    
+    ############## Set Parameters Based on GUI Input #############################
+    
     # Read in user-defined parameters
     path1 <- readDirectoryInput(session,'directory1')
     path2 <- readDirectoryInput(session,'directory2')
@@ -96,8 +111,13 @@ server <- function(input, output,session) {
     updateSelectInput(session,'layer5',selected=reorderNames[7])
     updateSelectInput(session,'layer6',selected=reorderNames[8])
     
+    ##########################################################################################
+    
+    
+    ################ Prepare Files/Paths #####################################################
+    
     # Set File Paths for Studies
-    basePath <- WD
+    basePath <- getwd()
     studyPath <- NA
     for (i in seq(length(studyIDs))) {
       studyPath[i] <- studyIDs[i]
@@ -114,8 +134,14 @@ server <- function(input, output,session) {
     # Create Empty Template File
     file.copy("Krona2-4.xlsm",outputFilePath,overwrite = TRUE)
     
-    # Generate Data Tables from SEND
+    ##########################################################################################
+    
+    
+    ############# Generate Data Tables from SEND #############################################
     for (i in seq(length(studyPath))) {
+      
+      ########## Load in SEND Data and Extract/Rename Relevant Fields ########################
+      
       # Get Histopath Data from MI Domain
       if (file.exists(paste(studyPath[i],'mi.xpt',sep='/'))) {
         histoData <- read.xport(paste(studyPath[i],'mi.xpt',sep='/'))
@@ -133,7 +159,7 @@ server <- function(input, output,session) {
       DataTmp <- subTable(histoFields,histoNames,histoData)
       DataTmp <- DataTmp[which(DataTmp$Finding!=""),]
       
-      # Get Metadata from DM and TX Domains
+      # Get Metadata from DM Domain
       if (file.exists(paste(studyPath[i],'dm.xpt',sep='/'))) {
         demData <- read.xport(paste(studyPath[i],'dm.xpt',sep='/'))
       } else if (file.exists(paste(studyPath[i],'DM.xpt',sep='/'))) {
@@ -155,7 +181,11 @@ server <- function(input, output,session) {
           metaDataTmp$Sex[j] <- 'F'
         }
       }
+      # Remove Subjects that do not have Histopath Data in the MI domain
+      keepIndex <- which(metaDataTmp$SubjectID %in% DataTmp$SubjectID)
+      metaDataTmp <- metaDataTmp[keepIndex,]
       
+      # Get Trial Data from TX Domain
       if (file.exists(paste(studyPath[i],'tx.xpt',sep='/'))) {
         txData <- read.xport(paste(studyPath[i],'tx.xpt',sep='/'))
       } else if (file.exists(paste(studyPath[i],'TX.xpt',sep='/'))) {
@@ -173,6 +203,7 @@ server <- function(input, output,session) {
       StudyID <- rep(DataTmp$StudyID[1],dim(trialDataTmp)[1])
       trialDataTmp <- cbind(trialDataTmp,StudyID)
       
+      # Get Dosing Data from EX Domain
       if (file.exists(paste(studyPath[i],'ex.xpt',sep='/'))) {
         EXdataCSV <- read.xport(paste(studyPath[i],'ex.xpt',sep='/'))
       } else if (file.exists(paste(studyPath[i],'EX.xpt',sep='/'))) {
@@ -196,6 +227,7 @@ server <- function(input, output,session) {
         EXdataTmp <- cbind(EXdataTmp,StartDay)
       }
       
+      # Get Timing of Sacrifice Data from DS Domain
       if (file.exists(paste(studyPath[i],'ds.xpt',sep='/'))) {
         DSdataCSV <- read.xport(paste(studyPath[i],'ds.xpt',sep='/'))
       } else if (file.exists(paste(studyPath[i],'DS.xpt',sep='/'))) {
@@ -205,7 +237,7 @@ server <- function(input, output,session) {
       } else if (file.exists(paste(studyPath[i],'DS.csv',sep='/'))) {
         DSdataCSV <- read.csv(paste(studyPath[i],'DS.csv',sep='/'))
       } else {
-        stop('MI Domain Missing!')
+        stop('DS Domain Missing!')
       }
       if ('DSSTDY' %in% colnames(DSdataCSV)) {
         DSfields <- c('USUBJID','VISITDY','DSSTDY')
@@ -219,6 +251,11 @@ server <- function(input, output,session) {
         DSdataTmp <- cbind(DSdataTmp,SacrificeDay)
       }
       
+      ########################################################################################
+      
+      
+      #################### Combine Study Data Sets (if necessary) ############################
+      
       if (i == 1) {
         Data <- DataTmp
         metaData <- metaDataTmp
@@ -230,19 +267,20 @@ server <- function(input, output,session) {
         metaData <- rbind(metaData,metaDataTmp)
         trialData <- rbind(trialData,trialDataTmp)
         
-        if (is.numeric(EXdata$SubjectID[1])) {
-          if (is.numeric(EXdataTmp$SubjectID[1])) {
+        if (length(levels(EXdata$SubjectID)) < 1) {
+          if (length(levels(EXdataTmp$SubjectID)) < 1) {
             EXdataSubjectID <- c(EXdata$SubjectID,EXdataTmp$SubjectID)
           } else {
             EXdataSubjectID <- c(EXdata$SubjectID,levels(EXdataTmp$SubjectID)[EXdataTmp$SubjectID])
           }
         } else {
-          if (is.numeric(EXdataTmp$SubjectID[1])) {
+          if (length(levels(EXdataTmp$SubjectID)) < 1) {
             EXdataSubjectID <- c(levels(EXdata$SubjectID)[EXdata$SubjectID],EXdataTmp$SubjectID)
           } else {
             EXdataSubjectID <- c(levels(EXdata$SubjectID)[EXdata$SubjectID],levels(EXdataTmp$SubjectID)[EXdataTmp$SubjectID])
           }
         }
+        
         EXdataEndDay <- c(EXdata$EndDay,EXdataTmp$EndDay)
         EXdataStartDay <- c(EXdata$StartDay,EXdataTmp$StartDay)
         EXdata <- cbind(EXdataSubjectID,EXdataEndDay,EXdataStartDay)
@@ -251,19 +289,20 @@ server <- function(input, output,session) {
         EXdata$EndDay <- as.numeric(as.character(EXdata$EndDay))
         EXdata$StartDay <- as.numeric(as.character(EXdata$StartDay))
         
-        if (is.numeric(DSdata$SubjectID[1])) {
-          if (is.numeric(DSdataTmp$SubjectID[1])) {
+        if  (length(levels(DSdata$SubjectID)) < 1) {
+          if (length(levels(DSdataTmp$SubjectID)) < 1) {
             DSdataSubjectID <- c(DSdata$SubjectID,DSdataTmp$SubjectID)
           } else {
             DSdataSubjectID <- c(DSdata$SubjectID,levels(DSdataTmp$SubjectID)[DSdataTmp$SubjectID])
           }
         } else {
-          if (is.numeric(DSdataTmp$SubjectID[1])) {
+          if (length(levels(DSdataTmp$SubjectID)) < 1) {
             DSdataSubjectID <- c(levels(DSdata$SubjectID)[DSdata$SubjectID],DSdataTmp$SubjectID)
           } else {
             DSdataSubjectID <- c(levels(DSdata$SubjectID)[DSdata$SubjectID],levels(DSdataTmp$SubjectID)[DSdataTmp$SubjectID])
           }
         }
+        
         DSdataPlannedDay <- c(DSdata$PlannedDay,DSdataTmp$PlannedDay)
         DSdataSacrificeDay <- c(DSdata$SacrificeDay,DSdataTmp$SacrificeDay)
         DSdata <- cbind(DSdataSubjectID,DSdataPlannedDay,DSdataSacrificeDay)
@@ -272,9 +311,19 @@ server <- function(input, output,session) {
         DSdata$PlannedDay <- as.numeric(as.character(DSdata$PlannedDay))
         DSdata$SacrificeDay <- as.numeric(as.character(DSdata$PlannedDay))
       }
+      
+      ########################################################################################
+      
+      
     }
     
-    # Determine Treatment and Recovery Status for Each Subject
+    
+    
+    ##########################################################################################
+    
+    
+    ############ Determine Treatment and Recovery Status for Each Subject ####################
+
     Treatment <- NA
     Recovery <- NA
     for (i in seq(dim(metaData)[1])) {
@@ -325,6 +374,11 @@ server <- function(input, output,session) {
       }
     }
     metaData <- cbind(metaData,Treatment,Recovery)
+    
+    ########################################################################################
+    
+    
+    ############### Organize Data for Plotting #############################################
     
     # Map Metadata onto Histopath Data
     Sex <- rep(NA,dim(Data)[1])
@@ -421,9 +475,7 @@ server <- function(input, output,session) {
           }
         }
       }
-      
       reorderNames <- c(reorderNames[1:2],'Incidence2','SeverityNumber2',reorderNames[3:length(reorderNames)])
-      
       if (trackIncidence==FALSE) {
         incidenceIndex2 <- which(colnames(Data)=="Incidence2")
         colnames(Data)[incidenceIndex2] <- "Counts2"
@@ -448,6 +500,11 @@ server <- function(input, output,session) {
     # remove studyID from newData
     newData <- newData[,1:(dim(newData)[2]-1)]
     
+    ########################################################################################
+    
+    
+    ##################### Write Data to Krona Excel Template and Display Plot ##############
+    
     # Write Data into Excel Template
     if (length(studyIDs) == 2) {
       writeWorksheetToFile(outputFilePath,newData,"Krona",startRow=6,startCol=1,header=FALSE)
@@ -464,41 +521,67 @@ server <- function(input, output,session) {
     quantifiers <- as.data.frame(cbind(colnames(newData)[1],'Severity'))
     writeWorksheetToFile(outputFilePath,quantifiers,"Krona",startRow=5,startCol=1,header=FALSE)
     
+    # Run Visual Basic Script to Generate Plot via Excel Macro
     shell(shQuote(paste(kronaPath,'runKrona.vbs',sep='/')))
-
+    
+    # Output Text Upon Completion
     output$text <- renderText({paste('Finished Running Analysis of',basename(studyIDs),'\n')})
+    
+    ########################################################################################
+    
+    
   })
+  
+  ##########################################################################################
+  
+  
 }
 
+############################################################################################
 
-# Define UI for application that draws a histogram
+
+############################### Define GUI for Application #################################
+
 ui <- fluidPage(
   
   # Application title
   titlePanel("Create Krona Plot"),
   
-  # Sidebar with a slider input for parameters
+  # Create GUI Parameter Options
   fluidRow(
     column(6,
+           
+           # Define Study 1 Directory
            h3('Study 1'),
            directoryInput('directory1',label = 'Directory:',value=defaultStudyFolder),
            textInput('study1Name',label='Study 1 Label:',value='Study 1'),br(),
+           
+           # Define Study 2 Directory
            h3('Study 2 (optional)'),
            directoryInput('directory2',label = 'Directory:',value=defaultStudyFolder),
            textInput('study2Name',label='Label:',value='Study 2'),br(),
+           
+           # Define Filters
            h3('Filters'),
            checkboxInput("includeNormal",label="Include Normal Findings?",value=TRUE),
            checkboxInput("includeUnscheduled",label='Separate Unscheduled Deaths? (broken)',value=TRUE),
            checkboxInput("filterControl",label='Filter Out Control Findings? (broken)',value=FALSE),
            selectInput('severityFilter',label='Filter Severity Less than: (broken)',
                        choices = list(" "='blank',"Minimal"='minimal',"Mild"='mild',"Moderate"='moderate',"Marked"='marked',"Severe"='severe')),br(),
+           
+           # Define Submit Button
            actionButton("submit","Submit"),br(),br(),
+           
+           # Define Output Text Box
            verbatimTextOutput("text")
     ),
     column(6,
+           # Define Drop Down for Preset Category Organization
            h3('Preset Category Organization'),
            selectInput("organizeBy",label="Organize By:",
                        choices = list("Organ"='Organ',"Subject"='Subject',"Custom"='Custom')),
+           
+           # Define Drop Downs for Custom Category Organization
            h3('Custom Category Organization'),
            selectInput("layer1",label="Category 1",
                        choices = list(" "='blank',"Organ"='Organ',"Finding"='Finding',"Treatment"='Treatment',"Sex"='Sex',"Recovery"='Recovery',"SubjectID"='SubjectID')),
@@ -518,4 +601,8 @@ ui <- fluidPage(
   )
 )
 
+############################################################################################
+
+
+# Run Shiny App
 shinyApp(ui = ui, server = server)
