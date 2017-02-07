@@ -92,7 +92,7 @@ server <- function(input, output,session) {
     # Set Order of Rings and Implement Incidence or Count Decision
     if (organizeBy == 'Organ') {
       trackIncidence <- TRUE
-      reorderNames <- c("Incidence","SeverityNumber","Organ","Recovery","Finding","Treatment","Sex","SubjectID","StudyID")
+      reorderNames <- c("Incidence","SeverityNumber","Organ","Finding","Recovery","Treatment","Sex","SubjectID","StudyID")
     } else if (organizeBy == 'Subject') {
       trackIncidence <- FALSE
       reorderNames <- c("Incidence","SeverityNumber","Recovery","Treatment","Sex","SubjectID","Organ","Finding","StudyID")
