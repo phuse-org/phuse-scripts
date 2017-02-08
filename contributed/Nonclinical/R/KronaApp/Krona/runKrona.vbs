@@ -1,7 +1,7 @@
+Set oShell = CreateObject("WScript.Shell")
+strHomeFolder = oShell.ExpandEnvironmentStrings("%USERPROFILE%")
 Set FSO = CreateObject("Scripting.FileSystemObject")
-scriptPath = FSO.GetParentFolderName(WScript.ScriptFullName)
-textFilePath = FSO.BuildPath(scriptPath, "temp\template.xlsm")
-
+textFilePath = FSO.BuildPath(strHomeFolder,"Documents\KronaTemp\template.xlsm")
 Set objExcel = CreateObject("Excel.Application")
 Set book = objExcel.Workbooks.Open(textFilePath,,TRUE)
 objExcel.Run "writeChart"

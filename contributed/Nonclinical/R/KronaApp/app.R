@@ -129,7 +129,8 @@ server <- function(input, output,session) {
     setwd(kronaPath)
     
     # Set Excel File Path
-    outputFilePath <- 'temp/template.xlsm'
+    if (dir.exists(path.expand('~/KronaTemp'))==FALSE) {dir.create(path.expand('~/KronaTemp'))}
+    outputFilePath <- path.expand('~/KronaTemp/template.xlsm')
     
     # Create Empty Template File
     file.copy("Krona2-4.xlsm",outputFilePath,overwrite = TRUE)
@@ -556,7 +557,8 @@ ui <- fluidPage(
            
            # Define Study 1 Directory
            h3('Study 1'),
-           directoryInput('directory1',label = 'Directory:',value=defaultStudyFolder),
+           # directoryInput('directory1',label = 'Directory:',value=defaultStudyFolder),
+           directoryInput('directory1',label = 'Directory:',value="C:/Users/Kevin.Snyder/Documents/PhUSE/SEND/Dataset/PDSdata"),
            textInput('study1Name',label='Study 1 Label:',value='Study 1'),br(),
            
            # Define Study 2 Directory
