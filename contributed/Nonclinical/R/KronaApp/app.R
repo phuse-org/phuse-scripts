@@ -523,7 +523,7 @@ server <- function(input, output,session) {
     writeWorksheetToFile(outputFilePath,quantifiers,"Krona",startRow=5,startCol=1,header=FALSE)
     
     # Run Visual Basic Script to Generate Plot via Excel Macro
-    shell(shQuote(paste(kronaPath,'runKrona.vbs',sep='/')))
+    shell(shQuote(paste(kronaPath,'/runKrona.vbs ',input$webBrowser,sep='')))
     
     # Return to Application Directory
     setwd(basePath)
@@ -557,8 +557,7 @@ ui <- fluidPage(
            
            # Define Study 1 Directory
            h3('Study 1'),
-           # directoryInput('directory1',label = 'Directory:',value=defaultStudyFolder),
-           directoryInput('directory1',label = 'Directory:',value="C:/Users/Kevin.Snyder/Documents/PhUSE/SEND/Dataset/PDSdata"),
+           directoryInput('directory1',label = 'Directory:',value=defaultStudyFolder),
            textInput('study1Name',label='Study 1 Label:',value='Study 1'),br(),
            
            # Define Study 2 Directory
@@ -573,6 +572,10 @@ ui <- fluidPage(
            checkboxInput("filterControl",label='Filter Out Control Findings? (broken)',value=FALSE),
            selectInput('severityFilter',label='Filter Severity Less than: (broken)',
                        choices = list(" "='blank',"Minimal"='minimal',"Mild"='mild',"Moderate"='moderate',"Marked"='marked',"Severe"='severe')),br(),
+           
+           # Define Web Browser Selection
+           selectInput('webBrowser',label='Choose Your Web Browser:',
+                       choices = list("Internet Explorer" = 'IE',"Firefox" = 'Firefox',"Google Chrome" = 'Chrome')),
            
            # Define Submit Button
            actionButton("submit","Submit"),br(),br(),
