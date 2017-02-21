@@ -1,3 +1,10 @@
+####### Issues to Resolve #################################################################
+#
+# 1) Modified versions of Krona are not allowed to use the trademark Krona.  Need to come
+#    up with another name and change the name icons and references in the script
+#
+###########################################################################################
+
 ################ Setup Application ########################################################
 
 # Check for Required Packages, Install if Necessary, and Load
@@ -598,7 +605,7 @@ ui <- fluidPage(
                        choices = list(" "='blank',"Organ"='Organ',"Finding"='Finding',"Treatment"='Treatment',"Sex"='Sex',"Recovery"='Recovery',"SubjectID"='SubjectID')),
            selectInput("layer6",label="Category 6",
                        choices = list(" "='blank',"Organ"='Organ',"Finding"='Finding',"Treatment"='Treatment',"Sex"='Sex',"Recovery"='Recovery',"SubjectID"='SubjectID')),
-           selectInput("track",label="Report Incidence or Counts?",
+           selectInput("track",label="Report Incidence Rate or Counts?",
                        choices = list("Incidence Rate"='incidence',"Counts"='counts'))
     )
   )
