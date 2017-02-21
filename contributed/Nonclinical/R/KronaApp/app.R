@@ -1,8 +1,3 @@
-#!!!!!!!!!! IDEAS FOR SCRIPT IMPROVEMENT !!!!!!!!!!!!#
-# 1. Allow choice of web browser in GUI
-#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!#
-
-
 ################ Setup Application ########################################################
 
 # Check for Required Packages, Install if Necessary, and Load
@@ -604,7 +599,7 @@ ui <- fluidPage(
            selectInput("layer6",label="Category 6",
                        choices = list(" "='blank',"Organ"='Organ',"Finding"='Finding',"Treatment"='Treatment',"Sex"='Sex',"Recovery"='Recovery',"SubjectID"='SubjectID')),
            selectInput("track",label="Report Incidence or Counts?",
-                       choices = list("Incidence"='incidence',"Counts"='counts'))
+                       choices = list("Incidence Rate"='incidence',"Counts"='counts'))
     )
   )
 )
