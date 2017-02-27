@@ -40,7 +40,7 @@
           - What visits/time-points are relevant to LAB/ECG box plots?
           - Handle all of these within one template program? 
             Or separate them (and accept some redundancy)?
-          - NB: Currently vars like AVISIT, AVISITN, ATPT, ATPTN are hard-coded in this program
+          - NB: Currently vars like AVISIT, AVISITN, ATPT, ATPTN are hard-coded in this program CS: attempted to remove hardcode of these variables. 
 
 end HEADER ***/
 
@@ -82,7 +82,7 @@ end HEADER ***/
        P_FL:  Population flag variable, such as SAFFL. 'Y' indicates record is in population of interest.
 
        ANALYSIS FLAGS: Define all macro vars. At least one must be non-missing.
-                   NB: Each obs can only be flagged for 1 analysis: Last, Min or Max.
+                   NB: Each obs can only be flagged for 1 analysis: Last, Min or Max. CS: Why can't an obs be last AND min (or max)? If it is both...
          A_LASTFL: Variable flagging LAST post-baseline measures. 'Y' identifies subject values for LAST baseline, LAST post-baseline, and CHANGE.
          A_MINFL:  Variable flagging MIN  post-baseline measures. 'Y' identifies subject values for MIN  baseline, MIN  post-baseline, and CHANGE.
          A_MAXFL:  Variable flagging MAX  post-baseline measures. 'Y' identifies subject values for MAX  baseline, MAX  post-baseline, and CHANGE.
@@ -105,7 +105,8 @@ end HEADER ***/
   ************************************
   *** user processing and settings ***
   ************************************/
-
+	OPTIONS sasautos=(	"\\quintiles.net\enterprise\Apps\sasdata\StatOpB\CSV\PhUSE\phuse-scripts\whitepapers\utilities" 
+						"\\quintiles.net\enterprise\Apps\sasdata\StatOpB\CSV\PhUSE\phuse-scripts\whitepapers\ADaM" %sysfunc(getoption(sasautos)));
 
     %put WARNING: (WPCT-F.07.08) User must ensure PhUSE CS utilities are in the AUTOCALL path.;
 
@@ -119,44 +120,23 @@ end HEADER ***/
     ***/
 
 
-    /*** 2a) REMOTE ACCESS data, by default PhUSE CS test data, and create WORK copy.                ***/
+    /*** 2) REMOTE ACCESS data, by default PhUSE CS test data, and create WORK copy.                ***/
     /***     NB: If remote access to test data files does not work, see local override, below. ***/
-      %util_access_test_data(advs)
 
-      *--- NB: LOCAL PhUSE CS test data, override remote access by providing a local path ---*;
-        %* %util_access_test_data(advs, local=C:\CSS\phuse-scripts\data\adam\cdisc-split\) ;
+	%let ds = ADVS;
 
-
-    /*** 2b) USER SUBSET of data, to limit number of box plot outputs, and to shorten Tx labels ***/
-
-      data advs_sub;
-        set work.advs;
-        where (paramcd in ('DIABP') and 
-               atptn in (815 817) and 
-               trtpn in (0 81));
-
-        attrib trtp_short length=$6 label='Planned Treatment, abbreviated';
-
-        select (trtp);
-          when ('Placebo')              trtp_short = 'P';
-          when ('Xanomeline High Dose') trtp_short = 'X-high';
-          otherwise                     trtp_short = 'UNEXPECTED';
-        end;
-      run;
-
-      %derive_lastminmax_measure(advs_sub, LAST MIN MAX, 
-                                 flvars=anl12fl anl14fl anl16fl,
-                                 grpvars=studyid usubjid trtpn paramcd atptn, 
-                                 ordvars=avisitn, 
-                                 incl=trtp_short saffl param atpt anrlo anrhi,
-                                 dsout=advs_chg)
+      *%util_access_test_data(advs) *--- NB: LOCAL PhUSE CS test data, override remote access by providing a local path ---*;
+       %util_access_test_data(&ds, local=\\quintiles.net\enterprise\Apps\sasdata\StatOpB\CSV\PhUSE\phuse-scripts\data\adam\cdisc-split\) ;
 
 
-    %*--- 3) Key user settings ---*;
+   
+
+    %*--- 3a) Key user settings ---*;
 
       %let m_lb   = work;
-      %let m_ds   = advs_chg;
-
+      %let m_ds   = &ds._chg;
+	  %let param = 'DIABP';
+	  %let cond = %str((atptn in (817) and trtpn in (0 81)));
       %let t_var  = trtp_short;
       %let tn_var = trtpn;
       %let m_var  = aval;
@@ -170,15 +150,48 @@ end HEADER ***/
 
       %let p_fl = saffl;
 
+	  %let timepoint = atpt;
+	  %let timepointn = atptn;
+
       %let a_lastfl = anl12fl;
       %let a_minfl  = anl14fl;
       %let a_maxfl  = anl16fl;
 
       %let ref_lines = NARROW;
 
+	  %let ordvars = avisitn;
+
+	  %let visit = avisit;
+	  %let visitn = avisitn;
+
       %let max_boxes_per_page = 12;
 
-      %let outputs_folder = C:\CSS\phuse-scripts\whitepapers\WPCT\outputs_sas;
+      %let root = \\quintiles.net\enterprise\Apps\sasdata\StatOpB\CSV;
+      %let outputs_folder = &Root\PhUSE\phuse-scripts\whitepapers\WPCT\GB_Test;
+
+	   /*** 3b) USER SUBSET of data, to limit number of box plot outputs, and to shorten Tx labels ***/
+
+      data &ds._sub;
+        set work.&ds.;
+        where paramcd in (&param) and &cond;
+               
+
+        attrib trtp_short length=$6 label='Planned Treatment, abbreviated';
+
+        select (trtp);
+          when ('Placebo')              trtp_short = 'P';
+          when ('Xanomeline High Dose') trtp_short = 'X-high';
+          otherwise                     trtp_short = 'UNEXPECTED';
+        end;
+      run;
+
+      %derive_lastminmax_measure(&ds._sub, LAST MIN MAX, 
+                                 flvars=&a_lastfl &a_minfl &a_maxfl,
+                                 grpvars=studyid usubjid &tn_var paramcd &timepointn, 
+                                 ordvars=&ordvars, 
+                                 incl=trtp_short &p_fl param &timepoint &lo_var &hi_var,
+                                 dsout=&ds._chg)
+
 
   /*** end USER PROCESSING AND SETTINGS ***********************************
    *** RELAX.                                                           ***
@@ -197,7 +210,7 @@ end HEADER ***/
 
     options nocenter mautosource mrecall mprint msglevel=I mergenoby=WARN ls=max ps=max;
 
-    %let ana_variables = STUDYID USUBJID &p_fl &a_lastfl &a_minfl &a_maxfl &t_var &tn_var PARAM PARAMCD &m_var &c_var &b_var &lo_var &hi_var AVISITN ATPT ATPTN;
+    %let ana_variables = STUDYID USUBJID &p_fl &a_lastfl &a_minfl &a_maxfl &t_var &tn_var PARAM PARAMCD &m_var &c_var &b_var &lo_var &hi_var &visitn &timepoint &timepointn;
 
     %*--- Global boolean symbol CONTINUE, used with macro assert_continue(), warns user of invalid environment. Processing should HALT. ---*;
       %let CONTINUE = %assert_depend(OS=%str(AIX,WIN,HP IPF),
@@ -260,46 +273,46 @@ end HEADER ***/
 
       *--- Replace AVISIT and AVISITN with plot-specific text. NB: Expect exactly 2 visits / usubj, BL & P-BL ---*;
         proc sort data=css_pooled;
-          by chgtypen &tn_var paramcd atptn usubjid avisitn;
+          by chgtypen &tn_var paramcd &timepointn usubjid &visitn;
         run;
 
         data css_pooled;
           set css_pooled;
-          by chgtypen &tn_var paramcd atptn usubjid avisitn;
+          by chgtypen &tn_var paramcd &timepointn usubjid &visitn;
 
-          attrib avisit label='BASE or POST, to match user-specified Baseline and Post-baseline visits';
+          attrib &visit label='BASE or POST, to match user-specified Baseline and Post-baseline visits';
 
           if first.usubjid and not last.usubjid then do;
-            avisit = 'BASE';
-            avisitn= 1;
+            &visit = 'BASE';
+            &visitn= 1;
           end;
           else if not first.usubjid and last.usubjid then do;
-            avisit = 'POST';
-            avisitn= 2;
+            &visit = 'POST';
+            &visitn= 2;
           end;
           else do;
-            if first.usubjid then put 'WARNING: (WPCT-F.07.08) Expecting exactly 2 visits (not 1) for ' &tn_var= usubjid= paramcd= atptn= avisitn=;
-            else put 'WARNING: (WPCT-F.07.08) Unexpected extra visit for ' &tn_var= usubjid= paramcd= atptn= avisitn=;
-            avisit = 'UNK';
-            avisitn=99;
+            if first.usubjid then put 'WARNING: (WPCT-F.07.08) Expecting exactly 2 visits (not 1) for ' &tn_var= usubjid= paramcd= &timepointn= &visitn=;
+            else put 'WARNING: (WPCT-F.07.08) Unexpected extra visit for ' &tn_var= usubjid= paramcd= &timepointn= &visitn=;
+            &visit = 'UNK';
+            &visitn=99;
           end;
         run;
 
       *--- Create CHGTYPEVISITN with plot-specific DISCRETE VALUEs for X-Axis, based on CHGTYPE and AVISIT ---*;
         proc sort data=css_pooled;
-          by chgtypen avisitn &tn_var;
+          by chgtypen &visitn &tn_var;
         run;
 
         data css_anadata;
           set css_pooled;
-          by chgtypen avisitn &tn_var;
+          by chgtypen &visitn &tn_var;
 
           attrib chgtypevisitn label='X-Axis discrete numeric values for plot, from (Change Mode).(Visit Seq)';
           if first.chgtypen then do;
             chgtypevisitn = floor(chgtypevisitn);
             chgtypevisitn + 1;
           end;
-          if first.avisitn then chgtypevisitn + 0.1;
+          if first.&visitn then chgtypevisitn + 0.1;
       run;
 
 
@@ -352,7 +365,7 @@ end HEADER ***/
           run;
 
         %*--- Analysis Timepoints for this parameter: Num (&ATPTN_N), Names (&ATPTN_VAL1 ...) and Labels (&ATPTN_LAB1 ...) ---*;
-          %util_labels_from_var(css_nextparam, atptn, atpt)
+          %util_labels_from_var(css_nextparam, &timepointn, &timepoint)
 
         %*--- Create NXT_REFLINES: a list of reference lines for this parameter, across all timepoints ---*;
           %util_get_reference_lines(css_nextparam, nxt_reflines,
@@ -370,9 +383,9 @@ end HEADER ***/
            *** Loop through each TIMEPOINT for this parameter, working with ALL Change Types ***
            *** NB: PROC SORT here is REQUIRED in order to merge on STAT details, below       ***
            *************************************************************************************/
-            proc sort data=css_nextparam (where=(atptn = &&atptn_val&tdx))
+            proc sort data=css_nextparam (where=(&timepointn = &&atptn_val&tdx))
                        out=css_nexttimept;
-              by chgtypen avisitn &tn_var;
+              by chgtypen &visitn &tn_var;
             run;
 
           %*--- Y-AXIS alternative: Set Y-Axis MIN/MAX based on this timepoint. See Y-AXIS alternative, above. ---*;
@@ -385,22 +398,22 @@ end HEADER ***/
             %util_value_format(css_nexttimept, &c_var, sym=chg_value_format)
 
           %*--- Create macro variable BOXPLOT_BLOCK_RANGES, to subset change-type/visit into box plot pages ---*;
-            %util_boxplot_block_ranges(css_nexttimept, blockvar=chgtypen, catvars=avisitn &tn_var)
+            %util_boxplot_block_ranges(css_nexttimept, blockvar=chgtypen, catvars=&visitn &tn_var)
 
 
           *--- Calculate summary statistics for VALUEs and CHANGE. KEEP LABELS of CHANGE TYPE, AVISIT and TRT for plotting, below ---*;
             proc summary data=css_nexttimept noprint;
-              by chgtypen avisitn &tn_var chgtype avisit &t_var chgtypevisitn;
+              by chgtypen &visitn &tn_var chgtype &visit &t_var chgtypevisitn;
               var &m_var;
               output out=css_stats (drop=_type_ _freq_) 
                      n=n mean=mean std=std median=median min=datamin max=datamax q1=q1 q3=q3;
             run;
 
             %local endpoint_definition;
-            %let endpoint_definition = avisit = 'POST';
+            %let endpoint_definition = &visit = 'POST';
 
             proc summary data=css_nexttimept (where=(&endpoint_definition)) noprint;
-              by chgtypen avisitn &tn_var chgtype avisit &t_var chgtypevisitn;
+              by chgtypen &visitn &tn_var chgtype &visit &t_var chgtypevisitn;
               var &c_var;
               output out=css_c_stats (drop=_type_ _freq_) 
                      n=c_n mean=c_mean std=c_std median=c_median min=c_datamin max=c_datamax q1=c_q1 q3=c_q3;
@@ -416,7 +429,7 @@ end HEADER ***/
               ods output parameterestimates = &css_pval_ds;
 
               proc glm data=css_nexttimept;
-                by chgtypen avisitn chgtypevisitn;
+                by chgtypen &visitn chgtypevisitn;
                 where &endpoint_definition;
                 class &tn_var (ref="&ref_trtn");
                 model &c_var = &b_var &tn_var / solution;
@@ -425,12 +438,12 @@ end HEADER ***/
               *--- UPDATE CSS_C_STATS with p-values for active arms, at Endpoint visit ---*;
                 data temp;
                   *--- We simply need the structure of these vars, for subsequent merge ---*;
-                  set css_c_stats (keep=chgtypen avisitn chgtypevisitn &tn_var);
+                  set css_c_stats (keep=chgtypen &visitn chgtypevisitn &tn_var);
                   STOP;
                 run;
 
                 data &css_pval_ds;
-                  set temp &css_pval_ds (keep=chgtypen avisitn chgtypevisitn parameter probt 
+                  set temp &css_pval_ds (keep=chgtypen &visitn chgtypevisitn parameter probt 
                                          rename=(probt=pval)
                                          where=(parameter=:"%upcase(&tn_var)"));
                   label pval="GLM ANCOVA p-value: Reference is %upcase(&tn_var) = &ref_trtn";
@@ -439,12 +452,12 @@ end HEADER ***/
                 run;
 
                 proc sort data=&css_pval_ds;
-                  by chgtypen avisitn &tn_var;
+                  by chgtypen &visitn &tn_var;
                 run;
 
                 data css_c_stats;
-                  merge css_c_stats &css_pval_ds (keep=chgtypen avisitn &tn_var pval);
-                  by chgtypen avisitn &tn_var;
+                  merge css_c_stats &css_pval_ds (keep=chgtypen &visitn &tn_var pval);
+                  by chgtypen &visitn &tn_var;
                 run;
 
                 %util_delete_dsets(temp);

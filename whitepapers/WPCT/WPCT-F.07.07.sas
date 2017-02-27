@@ -33,7 +33,7 @@
       * LABS & ECG - ADaM VS/LAB/ECG domains have some different variables and variable naming conventions.
           - What variables are used for LAB/ECG box plots?
           - What visits/time-points are relevant to LAB/ECG box plots?
-          - Handle all of these within one template program? 
+          - Handle all of these within one template program?
             Or separate them (and accept some redundancy)?
           - NB: Currently vars like AVISIT, AVISITN, ATPT, ATPTN are hard-coded in this program
 
@@ -91,6 +91,35 @@ end HEADER ***/
   *** user processing and settings ***
   ************************************/
 
+%*--- 3) Key user settings ---*;
+**Specify ADaM BDS Dataset;
+%let DS = ADVS;
+%let param = 'DIABP';
+
+%let m_lb   = work;
+%let m_ds   = &ds._&LMM;
+
+%let t_var  = trtp_short;
+%let tn_var = trtpn;
+%let c_var  = chg;
+
+%let b_var  = base;
+%let ref_trtn = 0;
+
+%let p_fl = saffl;
+
+%let lmm = MIN;
+
+*--- C_MODE is a label for &A_FL, which identifies one record for each STUDYID USUBJID PARAMCD ATPT ---*;
+%let c_mode = &LMM;
+%let a_fl = anl02fl;
+
+%let max_boxes_per_page = 20;
+
+%let outputs_folder = \\quintiles.net\enterprise\Apps\sasdata\StatOpB\CSV\PhUSE\phuse-scripts\whitepapers\WPCT\GB_Test;
+
+OPTIONS sasautos=(	"\\quintiles.net\enterprise\Apps\sasdata\StatOpB\CSV\PhUSE\phuse-scripts\whitepapers\utilities"
+						"\\quintiles.net\enterprise\Apps\sasdata\StatOpB\CSV\PhUSE\phuse-scripts\whitepapers\ADaM" %sysfunc(getoption(sasautos)));
 
     %put WARNING: (WPCT-F.07.07) User must ensure PhUSE CS utilities are in the AUTOCALL path.;
 
@@ -106,17 +135,17 @@ end HEADER ***/
 
     /*** 2a) REMOTE ACCESS data, by default PhUSE CS test data, and create WORK copy.                ***/
     /***     NB: If remote access to test data files does not work, see local override, below. ***/
-      %util_access_test_data(advs, folder=cdisc-split)
+      *%util_access_test_data(&ds, folder=cdisc-split)
 
       *--- NB: LOCAL PhUSE CS test data, override remote access by providing a local path ---*;
-        %* %util_access_test_data(advs, local=C:\CSS\phuse-scripts\data\adam\cdisc-split\) ;
+%util_access_test_data(&ds, local=\\quintiles.net\enterprise\Apps\sasdata\StatOpB\CSV\PhUSE\phuse-scripts\data\adam\cdisc-split\) ;
 
 
     /*** 2b) USER SUBSET of data, to limit number of box plot outputs, and to shorten Tx labels ***/
 
-      data advs_sub;
-        set work.advs;
-        where (paramcd in ('DIABP') and atptn in (815 817));
+      data &ds._sub;
+        set work.&ds;
+        where (paramcd in (&param) and atptn in (815 817));
 
         attrib trtp_short length=$6 label='Planned Treatment, abbreviated';
 
@@ -129,41 +158,17 @@ end HEADER ***/
       run;
 
       %*--- Use PhUSE CS derivation of LAST, MIN or MAX Post-Baseline measures, with Change from corresponding Baseline ---*;
-        %let lmm = MIN;
-        %derive_lastminmax_measure(advs_sub, &LMM, 
-                                   flvars=anl02fl, 
-                                   grpvars=studyid usubjid trtpn paramcd atptn, 
-                                   ordvars=avisitn, 
-                                   incl=trtp_short saffl param atpt,
-                                   dsout=advs_&LMM)
+        %derive_lastminmax_measure(&ds._sub, &LMM,
+                                   flvars=&a_fl,
+                                   grpvars=studyid usubjid &tn_var paramcd atptn,
+                                   ordvars=avisitn,
+                                   incl=trtp_short &p_fl param atpt,
+                                   dsout=&ds._&LMM)
         *--- but program requires ONLY POST-BASELINE obs ---*;
-          data advs_&LMM;
-            set advs_&LMM;
+          data &ds._&LMM;
+            set &ds._&LMM;
             where avisit =: 'Post-baseline';
           run;
-
-
-    %*--- 3) Key user settings ---*;
-
-      %let m_lb   = work;
-      %let m_ds   = advs_&LMM;
-
-      %let t_var  = trtp_short;
-      %let tn_var = trtpn;
-      %let c_var  = chg;
-
-      %let b_var  = base;
-      %let ref_trtn = 0;
-
-      %let p_fl = saffl;
-
-      *--- C_MODE is a label for &A_FL, which identifies one record for each STUDYID USUBJID PARAMCD ATPT ---*;
-        %let c_mode = &LMM;
-        %let a_fl = anl02fl;
-
-      %let max_boxes_per_page = 20;
-
-      %let outputs_folder = C:\CSS\phuse-scripts\whitepapers\WPCT\outputs_sas;
 
   /*** end USER PROCESSING AND SETTINGS ***********************************
    *** RELAX.                                                           ***
@@ -189,7 +194,7 @@ end HEADER ***/
                                      SASV=9.4M2,
                                      SYSPROD=,
                                      vars=%str(&m_lb..&m_ds : &ana_variables),
-                                     macros=assert_continue assert_var_nonmissing assert_unique_keys util_labels_from_var 
+                                     macros=assert_continue assert_var_nonmissing assert_unique_keys util_labels_from_var
                                             util_count_unique_values util_proc_template util_get_var_min_max util_value_format
                                             util_boxplot_block_ranges util_axis_order util_delete_dsets,
                                      symbols=m_lb m_ds t_var tn_var c_var b_var ref_trtn p_fl c_mode a_fl
@@ -270,8 +275,8 @@ end HEADER ***/
                    130mm is suitable for these 2 side-by-side plots.
       DESIGNHEIGHT Default is 170mm, suitable for one full-page landscape Letter/A4 plot.
 
-    BOXPLOT_EACH_PARAM_TP parameters:      
-      CLEANUP      Default is 1, delete intermediate data sets. 
+    BOXPLOT_EACH_PARAM_TP parameters:
+      CLEANUP      Default is 1, delete intermediate data sets.
                    Set to 0 (zero) to preserve temp data sets from the final loop.
 
   ***/
@@ -324,7 +329,7 @@ end HEADER ***/
             proc summary data=css_nexttimept noprint;
               by studyid &tn_var studynum &t_var;
               var &c_var;
-              output out=css_stats (drop=_type_ _freq_) 
+              output out=css_stats (drop=_type_ _freq_)
                      n=n mean=mean std=std median=median min=datamin max=datamax q1=q1 q3=q3;
             run;
 
@@ -373,7 +378,7 @@ end HEADER ***/
                 run;
 
                 data &css_pval_a;
-                  set temp &css_pval_a (keep=studynum parameter probt 
+                  set temp &css_pval_a (keep=studynum parameter probt
                                          rename=(probt=pval));
                   label pval="GLM ANCOVA p-value: Reference is %upcase(&tn_var) = &ref_trtn";
                   &tn_var = input(scan(parameter,-1,' '), best8.);
@@ -389,7 +394,7 @@ end HEADER ***/
                 run;
 
                 %util_delete_dsets(temp);
-            %end;          
+            %end;
 
 
             /***
@@ -438,10 +443,10 @@ end HEADER ***/
               %let nxtvis = %qscan(&boxplot_block_ranges,&vdx,|);
 
               proc sgrender data=css_plot (where=( %unquote(&nxtvis) )) template=PhUSEboxplot ;
-                dynamic 
+                dynamic
                         _MARKERS    = "&t_var"
-                        _BLOCKLABEL = 'studyid' 
-                        _XVAR       = 'studynum' 
+                        _BLOCKLABEL = 'studyid'
+                        _XVAR       = 'studynum'
                         _YVAR       = "&c_var"
                         _REFLINES   = '0'
                         _YLABEL     = "&&paramcd_lab&pdx"

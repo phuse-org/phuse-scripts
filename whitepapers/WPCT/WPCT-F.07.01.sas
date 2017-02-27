@@ -33,7 +33,7 @@
       * LABS & ECG - ADaM VS/LAB/ECG domains have some different variables and variable naming conventions.
           - What variables are used for LAB/ECG box plots?
           - What visits/time-points are relevant to LAB/ECG box plots?
-          - Handle all of these within one template program? 
+          - Handle all of these within one template program?
             Or separate them (and accept some redundancy)?
           - NB: Currently vars like AVISIT, AVISITN, ATPT, ATPTN are hard-coded in this program
 
@@ -73,7 +73,7 @@ end HEADER ***/
 
        REF_LINES:
              Option to specify which Normal Range reference lines to include in box plots
-             <NONE | UNIFORM | NARROW | ALL | numeric-value(s)> See discussion in Central Tendency White Paper 
+             <NONE | UNIFORM | NARROW | ALL | numeric-value(s)> See discussion in Central Tendency White Paper
              NONE    - No reference lines on box plot
              UNIFORM - Default. preferred alternative to default. Only plot LOW/HIGH ref lines if uniform for all obs
              NARROW  - Display only the narrow normal limits: max LOW, and min HIGH limits
@@ -90,7 +90,8 @@ end HEADER ***/
   *** user processing and settings ***
   ************************************/
 
-
+	OPTIONS sasautos=(	"\\quintiles.net\enterprise\Apps\sasdata\StatOpB\CSV\9_GB_Phuse\phuse-scripts\whitepapers\utilities"
+						"\\quintiles.net\enterprise\Apps\sasdata\StatOpB\CSV\9_GB_Phuse\phuse-scripts\whitepapers\ADaM" %sysfunc(getoption(sasautos)));
     %put WARNING: (WPCT-F.07.01) User must ensure PhUSE CS utilities are in the AUTOCALL path.;
 
     /*** 1) PhUSE CS utilities in autocall paths (see "Macro Library", above)
@@ -101,44 +102,27 @@ end HEADER ***/
       OPTIONS sasautos=(%sysfunc(getoption(sasautos)) "C:\CSS\phuse-scripts\whitepapers\utilities");
 
     ***/
-
+      %let ds = ADLBC;
 
     /*** 2a) REMOTE ACCESS data, by default PhUSE CS test data, and create WORK copy.                ***/
     /***     NB: If remote access to test data files does not work, see local override, below. ***/
-      %util_access_test_data(advs)
+       %util_access_test_data(&ds, local=\\quintiles.net\enterprise\Apps\sasdata\StatOpB\CSV\9_GB_Phuse\phuse-scripts\data\adam\cdisc-split\) ;
 
       *--- NB: LOCAL PhUSE CS test data, override remote access by providing a local path ---*;
-        %* %util_access_test_data(advs, local=C:\CSS\phuse-scripts\data\adam\cdisc\) ;
+        %* %util_access_test_data(&ds, local=C:\CSS\phuse-scripts\data\adam\cdisc\) ;
 
 
-    /*** 2b) USER SUBSET of data, to limit number of box plot outputs, and to shorten Tx labels ***/
-
-      data advs_sub;
-        set work.advs;
-        where (paramcd in ('DIABP') and atptn in (815)) or 
-              (paramcd in ('SYSBP') and atptn in (816));
-
-        attrib trtp_short length=$6 label='Planned Treatment, abbreviated';
-
-        select (trtp);
-          when ('Placebo')              trtp_short = 'P';
-          when ('Xanomeline High Dose') trtp_short = 'X-high';
-          when ('Xanomeline Low Dose')  trtp_short = 'X-low';
-          otherwise                     trtp_short = 'UNEXPECTED';
-        end;
-      run;
-
-
-    %*--- 3) Key user settings ---*;
-
+    %*--- 3a) Key user settings ---*;
       %let m_lb   = work;
-      %let m_ds   = advs_sub;
+      %let m_ds   = &ds._sub;
+	  %let param = 'ALB';
+	  %let cond = %str(and AVISITN in (0 2 4 6));
 
       %let t_var  = trtp_short;
       %let tn_var = trtpn;
       %let m_var  = aval;
-      %let lo_var = anrlo;
-      %let hi_var = anrhi;
+      %let lo_var = a1lo;
+      %let hi_var = a1hi;
 
       %let p_fl = saffl;
       %let a_fl = anl01fl;
@@ -147,7 +131,29 @@ end HEADER ***/
 
       %let max_boxes_per_page = 20;
 
-      %let outputs_folder = C:\CSS\phuse-scripts\whitepapers\WPCT\outputs_sas;
+	  %let root = \\quintiles.net\enterprise\Apps\sasdata\StatOpB\CSV;
+      %let outputs_folder = &Root\9_GB_PhUSE\phuse-scripts\whitepapers\WPCT\GB_Test;
+
+	*--Specify TRTPN and short treatment values;
+	proc format;
+		value trt_short
+		0 = 'P'
+		54 = 'X-high'
+		81 = 'X-low'
+		other = 'UNEXPECTED';
+	run;
+
+	  /*** 3b) USER SUBSET of data, to limit number of box plot outputs, and to shorten Tx labels ***/
+      data &ds._sub;
+        set work.&ds;
+        where (paramcd in (&param) &cond);
+
+        attrib trtp_short length=$6 label='Planned Treatment, abbreviated';
+
+		trtp_short = put(&tn_var,trt_short.);
+
+		%assert_timepoint_exist(ds=&ds._sub);
+      run;
 
   /*** end USER PROCESSING AND SETTINGS ***********************************
    *** RELAX.                                                           ***
@@ -170,13 +176,13 @@ end HEADER ***/
 
     %*--- Global boolean symbol CONTINUE, used with macro assert_continue(), warns user of invalid environment. Processing should HALT. ---*;
       %let CONTINUE = %assert_depend(OS=%str(AIX,WIN,HP IPF),
-                                     SASV=9.4M2,
+                                     SASV=9.4M1,
                                      SYSPROD=,
                                      vars=%str(&m_lb..&m_ds : &ana_variables),
-                                     macros=assert_continue util_labels_from_var util_count_unique_values 
+                                     macros=assert_continue util_labels_from_var util_count_unique_values
                                             util_get_reference_lines util_proc_template util_get_var_min_max
                                             util_value_format util_boxplot_block_ranges util_axis_order util_delete_dsets,
-                                     symbols=m_lb m_ds t_var tn_var m_var lo_var hi_var p_fl a_fl 
+                                     symbols=m_lb m_ds t_var tn_var m_var lo_var hi_var p_fl a_fl
                                              ref_lines max_boxes_per_page outputs_folder
                                     );
 
@@ -187,7 +193,7 @@ end HEADER ***/
       data css_anadata;
         set &m_lb..&m_ds (keep=&ana_variables);
         where &p_fl = 'Y' and &a_fl = 'Y';
-
+		%assert_timepoint_exist(ds=css_anadata);
         *--- Create a Normal Range Outlier variable, for scatter plot overlay ---*;
           if (2 = n(&m_var, &lo_var) and &m_var < &lo_var) or
              (2 = n(&m_var, &hi_var) and &m_var > &hi_var) then m_var_outlier = &m_var;
@@ -228,8 +234,8 @@ end HEADER ***/
                    130mm is suitable for these 2 side-by-side plots.
       DESIGNHEIGHT Default is 170mm, suitable for one full-page landscape Letter/A4 plot.
 
-    BOXPLOT_EACH_PARAM_TP parameters:      
-      CLEANUP      Default is 1, delete intermediate data sets. 
+    BOXPLOT_EACH_PARAM_TP parameters:
+      CLEANUP      Default is 1, delete intermediate data sets.
                    Set to 0 (zero) to preserve temp data sets from the final loop.
 
   ***/
@@ -290,7 +296,7 @@ end HEADER ***/
             proc summary data=css_nexttimept noprint;
               by avisitn &tn_var avisit &t_var;
               var &m_var;
-              output out=css_stats (drop=_type_ _freq_) 
+              output out=css_stats (drop=_type_ _freq_)
                      n=n mean=mean std=std median=median min=datamin max=datamax q1=q1 q3=q3;
             run;
 
@@ -342,10 +348,10 @@ end HEADER ***/
               %let nxtvis = %qscan(&boxplot_block_ranges,&vdx,|);
 
               proc sgrender data=css_plot (where=( %unquote(&nxtvis) )) template=PhUSEboxplot ;
-                dynamic 
+                dynamic
                         _MARKERS    = "&t_var"
-                        _XVAR       = 'avisitn' 
-                        _BLOCKLABEL = 'avisit' 
+                        _XVAR       = 'avisitn'
+                        _BLOCKLABEL = 'avisit'
                         _YVAR       = "&m_var"
                         _YOUTLIERS  = 'm_var_outlier'
 
