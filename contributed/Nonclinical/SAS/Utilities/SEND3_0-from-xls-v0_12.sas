@@ -89,7 +89,54 @@
 /* Aug  8, 2016   W. Houser  Atted PM changed to v0.11                         */
 /* Aug 23, 2016   W. Houser  Set size of TS.DOMAIN to be 2 characters.         */
 /* Nov  2, 2016   W. Houser  Added SUPPMA changed to v0.12                     */
+/* Feb 17, 2017   W. Houser  Added SUPPMI and the "change" macro to set the    */
+/*                           variable lengths to the size of the data          */
+/*                           Corrected order of DM variables to match SENDIG   */
 /*******************************************************************************/
+
+%macro change(dsn);                                         
+/* copied this macro from http://support.sas.com/kb/35/230.html */                                                            
+data _null_;                                                
+  set &dsn;                                                 
+  array qqq(*) _character_;                                 
+  call symput('siz',put(dim(qqq),5.-L));                    
+  stop;                                                     
+run;                                                        
+                                                            
+data _null_;                                                
+  set &dsn end=done;                                        
+  array qqq(&siz) _character_;                              
+  array www(&siz.);                                         
+  if _n_=1 then do i= 1 to dim(www);                        
+    www(i)=0;                                               
+  end;                                                      
+  do i = 1 to &siz.;                                        
+    www(i)=max(www(i),length(qqq(i)));                      
+  end;                                                      
+  retain _all_;                                             
+  if done then do;                                          
+    do i = 1 to &siz.;                                      
+      length vvv $50;                                       
+      vvv=catx(' ','length',vname(qqq(i)),'$',www(i),';');  
+      fff=catx(' ','format ',vname(qqq(i))||' '||           
+          compress('$'||put(www(i),3.)||'.;'),' ');         
+      call symput('lll'||put(i,3.-L),vvv) ;                 
+      call symput('fff'||put(i,3.-L),fff) ;                 
+    end;                                                    
+  end;                                                      
+run;                                                        
+                                                            
+data &dsn.;                                                
+  %do i = 1 %to &siz.;                                      
+    &&lll&i                                                 
+    &&fff&i                                                 
+  %end;                                                     
+  set &dsn;                                                 
+run;                                                        
+                                                            
+%mend;                                                      
+                                                            
+%change(work.kyle);  
 
 /* DM **********************************************/
 PROC IMPORT OUT=WORK.read
@@ -104,8 +151,8 @@ DATA MyData; /*Remove the row that identifies the datatype, and keep only SEND d
 	SET read (keep =
 		STUDYID
 		DOMAIN
-		SUBJID
 		USUBJID
+		SUBJID
 		RFSTDTC
 		RFENDTC
 		SITEID
@@ -123,14 +170,15 @@ DATA MyData; /*Remove the row that identifies the datatype, and keep only SEND d
 		);
 	IF Lowcase(DOMAIN) eq 'char' THEN DELETE;
 	IF DOMAIN eq '' THEN DELETE;
+%change(MyData)
 /* export as *.xpt file*/
 LIBNAME sasxpt XPORT 'c:\sas-play\dm.xpt';
 DATA sasxpt.dm (label='DEMOGRAPHICS'); 
 	LABEL 
 		STUDYID	= 'Study Identifier'
 		DOMAIN	= 'Domain Abbreviation'
-		SUBJID	= 'Subject Identifier for the Study'
 		USUBJID	= 'Unique Subject Identifier'
+		SUBJID	= 'Subject Identifier for the Study'
 		RFSTDTC	= 'Subject Reference Start Date/Time'
 		RFENDTC	= 'Subject Reference End Date/Time'
 		SITEID	= 'Study Site Identifier'
@@ -181,22 +229,12 @@ DATA MyData; /*Remove the row that identifies the datatype, and keep only SEND d
 		COVAL7
 		COVAL8
 		COVAL9
-		COVAL10
-		COVAL11
-		COVAL12
-		COVAL13
-		COVAL14
-		COVAL15
-		COVAL16
-		COVAL17
-		COVAL18
-		COVAL19
-		COVAL20
 		COEVAL
 		CODTC
 		CODY);
 	IF Lowcase(DOMAIN)='char' THEN DELETE;
 	IF DOMAIN='' THEN DELETE;
+%change(MyData)
 /* export as *.xpt file*/
 LIBNAME sasxpt XPORT 'c:\sas-play\co.xpt';
 DATA sasxpt.CO (label='COMMENTS'); 
@@ -219,24 +257,10 @@ DATA sasxpt.CO (label='COMMENTS');
 		COVAL7	= 'Comment'
 		COVAL8	= 'Comment'
 		COVAL9	= 'Comment'
-		COVAL10	= 'Comment'
-		COVAL11	= 'Comment'
-		COVAL12	= 'Comment'
-		COVAL13	= 'Comment'
-		COVAL14	= 'Comment'
-		COVAL15	= 'Comment'
-		COVAL16	= 'Comment'
-		COVAL17	= 'Comment'
-		COVAL18	= 'Comment'
-		COVAL19	= 'Comment'
-		COVAL20	= 'Comment'
 		COEVAL	= 'Evaluator'
 		CODTC	= 'Date/Time of Comment'
 		CODY    = 'Study Day of Comment'
 	   ;
-	LENGTH
-		IDVAR $ 8
-		;
 	SET MyData; 
 RUN;
 PROC DATASETS;
@@ -263,6 +287,7 @@ DATA MyData; /*Remove the row that identifies the datatype, and keep only SEND d
 		);
 	IF Lowcase(DOMAIN)='char' THEN DELETE;
 	IF DOMAIN='' THEN DELETE;
+%change(MyData)
 /* export as *.xpt file*/
 LIBNAME sasxpt XPORT 'c:\sas-play\se.xpt';
 DATA sasxpt.se (label='SUBJECT ELEMENTS'); 
@@ -325,6 +350,7 @@ DATA MyData; /*Remove the row that identifies the datatype, and keep only SEND d
 		);
 	IF Lowcase(DOMAIN)='char' THEN DELETE;
 	IF DOMAIN='' THEN DELETE;
+%change(MyData)
 /* export as *.xpt file*/
 LIBNAME sasxpt XPORT 'c:\sas-play\ex.xpt';
 DATA sasxpt.ex (label='EXPOSURE'); 
@@ -387,6 +413,7 @@ DATA MyData; /*Remove the row that identifies the datatype, and keep only SEND d
 		);
 	IF Lowcase(DOMAIN)='char' THEN DELETE;
 	IF DOMAIN='' THEN DELETE;
+%change(MyData)
 /* export as *.xpt file*/
 LIBNAME sasxpt XPORT 'c:\sas-play\ds.xpt';
 DATA sasxpt.ds (label='DISPOSITION'); 
@@ -447,6 +474,7 @@ DATA MyData; /*Remove the row that identifies the datatype, and keep only SEND d
 		);
 	IF Lowcase(DOMAIN)='char' THEN DELETE;
 	IF DOMAIN='' THEN DELETE;
+%change(MyData)
 /* export as *.xpt file*/
 LIBNAME sasxpt XPORT 'c:\sas-play\bw.xpt';
 DATA sasxpt.bw (label='BODY WEIGHT'); 
@@ -519,6 +547,7 @@ DATA MyData; /*Remove the row that identifies the datatype, and keep only SEND d
 		);
 	IF Lowcase(DOMAIN)='char' THEN DELETE;
 	IF DOMAIN='' THEN DELETE;
+%change(MyData)
 /* export as *.xpt file*/
 LIBNAME sasxpt XPORT 'c:\sas-play\bg.xpt';
 DATA sasxpt.bg (label='BODY WEIGHT GAIN'); 
@@ -604,6 +633,7 @@ DATA MyData; /*Remove the row that identifies the datatype, and keep only SEND d
 		);
 	IF Lowcase(DOMAIN)='char' THEN DELETE;
 	IF DOMAIN='' THEN DELETE;
+%change(MyData)
 /* export as *.xpt file*/
 LIBNAME sasxpt XPORT 'c:\sas-play\cl.xpt';
 DATA sasxpt.cl (label='CLINICAL OBSERVATIONS'); 
@@ -670,6 +700,7 @@ DATA MyData; /*Remove the row that identifies the datatype, and keep only SEND d
 		);
 	IF Lowcase(DOMAIN)='char' THEN DELETE;
 	IF DOMAIN='' THEN DELETE;
+%change(MyData)
 /* export as *.xpt file*/
 LIBNAME sasxpt XPORT 'c:\sas-play\dd.xpt';
 DATA sasxpt.dd (label='DEATH DIAGNOSIS'); 
@@ -733,6 +764,7 @@ DATA MyData; /*Remove the row that identifies the datatype, and keep only SEND d
 		);
 	IF Lowcase(DOMAIN)='char' THEN DELETE;
 	IF DOMAIN='' THEN DELETE;
+%change(MyData)
 /* export as *.xpt file*/
 LIBNAME sasxpt XPORT 'c:\sas-play\fw.xpt';
 DATA sasxpt.fw (label='FOOD AND WATER CONSUMPTION'); 
@@ -843,6 +875,7 @@ DATA MyData; /*Remove the row that identifies the datatype, and keep only SEND d
 		);
 	IF Lowcase(DOMAIN)='char' THEN DELETE;
 	IF DOMAIN='' THEN DELETE;
+%change(MyData)
 /* export as *.xpt file*/
 LIBNAME sasxpt XPORT 'c:\sas-play\lb.xpt';
 DATA sasxpt.lb (label='LABORATORY TEST RESULTS'); 
@@ -955,6 +988,7 @@ DATA MyData; /*Remove the row that identifies the datatype, and keep only SEND d
 		);
 	IF Lowcase(DOMAIN)='char' THEN DELETE;
 	IF DOMAIN='' THEN DELETE;
+%change(MyData)
 /* export as *.xpt file*/
 LIBNAME sasxpt XPORT 'c:\sas-play\ma.xpt';
 DATA sasxpt.ma (label='MACROSCOPIC FINDINGS'); 
@@ -1044,6 +1078,7 @@ DATA MyData; /*Remove the row that identifies the datatype, and keep only SEND d
 		);
 	IF Lowcase(DOMAIN)='char' THEN DELETE;
 	IF DOMAIN='' THEN DELETE;
+%change(MyData)
 /* export as *.xpt file*/
 LIBNAME sasxpt XPORT 'c:\sas-play\mi.xpt';
 DATA sasxpt.mi (label='MICROSCOPIC FINDINGS'); 
@@ -1130,6 +1165,7 @@ DATA MyData; /*Remove the row that identifies the datatype, and keep only SEND d
 		);
 	IF Lowcase(DOMAIN)='char' THEN DELETE;
 	IF DOMAIN='' THEN DELETE;
+%change(MyData)
 /* export as *.xpt file*/
 LIBNAME sasxpt XPORT 'c:\sas-play\om.xpt';
 DATA sasxpt.om (label='ORGAN MEASUREMENTS'); 
@@ -1201,6 +1237,7 @@ DATA MyData; /*Remove the row that identifies the datatype, and keep only SEND d
 		);
 	IF Lowcase(DOMAIN)='char' THEN DELETE;
 	IF DOMAIN='' THEN DELETE;
+%change(MyData)
 /* export as *.xpt file*/
 LIBNAME sasxpt XPORT 'c:\sas-play\pm.xpt';
 DATA sasxpt.pm (label='PALPABLE MASSES'); 
@@ -1295,6 +1332,7 @@ DATA MyData; /*Remove the row that identifies the datatype, and keep only SEND d
 		);
 	IF Lowcase(DOMAIN)='char' THEN DELETE;
 	IF DOMAIN='' THEN DELETE;
+%change(MyData)
 /* export as *.xpt file*/
 LIBNAME sasxpt XPORT 'c:\sas-play\pc.xpt';
 DATA sasxpt.pc (label='PHARMACOKINETICS CONCENTRATIONS'); 
@@ -1390,6 +1428,7 @@ DATA MyData; /*Remove the row that identifies the datatype, and keep only SEND d
 		);
 	IF Lowcase(DOMAIN)='char' THEN DELETE;
 	IF DOMAIN='' THEN DELETE;
+%change(MyData)
 /* export as *.xpt file*/
 LIBNAME sasxpt XPORT 'c:\sas-play\pp.xpt';
 DATA sasxpt.pp (label='PHARMACOKINETICS PARAMETERS'); 
@@ -1465,6 +1504,7 @@ DATA MyData; /*Remove the row that identifies the datatype, and keep only SEND d
 		);
 	IF Lowcase(DOMAIN)='char' THEN DELETE;
 	IF DOMAIN='' THEN DELETE;
+%change(MyData)
 /* export as *.xpt file*/
 LIBNAME sasxpt XPORT 'c:\sas-play\tf.xpt';
 DATA sasxpt.tf (label='TUMOR FINDINGS'); 
@@ -1555,6 +1595,7 @@ DATA MyData; /*Remove the row that identifies the datatype, and keep only SEND d
 		);
 	IF Lowcase(DOMAIN)='char' THEN DELETE;
 	IF DOMAIN='' THEN DELETE;
+%change(MyData)
 /* export as *.xpt file*/
 LIBNAME sasxpt XPORT 'c:\sas-play\vs.xpt';
 DATA sasxpt.vs (label='VITAL SIGNS'); 
@@ -1650,6 +1691,7 @@ DATA MyData; /*Remove the row that identifies the datatype, and keep only SEND d
 		);
 	IF Lowcase(DOMAIN)='char' THEN DELETE;
 	IF DOMAIN='' THEN DELETE;
+%change(MyData)
 /* export as *.xpt file*/
 LIBNAME sasxpt XPORT 'c:\sas-play\eg.xpt';
 DATA sasxpt.eg (label='ECG TEST RESULTS'); 
@@ -1718,6 +1760,7 @@ DATA MyData; /*Remove the row that identifies the datatype, and keep only SEND d
 		);
 	IF Lowcase(DOMAIN)='char' THEN DELETE;
 	IF DOMAIN='' THEN DELETE;
+%change(MyData)
 /* export as *.xpt file*/
 LIBNAME sasxpt XPORT 'c:\sas-play\te.xpt';
 DATA sasxpt.te (label='TRIAL ELEMENTS'); 
@@ -1766,6 +1809,7 @@ DATA MyData; /*Remove the row that identifies the datatype, and keep only SEND d
 		);
 	IF Lowcase(DOMAIN)='char' THEN DELETE;
 	IF DOMAIN='' THEN DELETE;
+%change(MyData)
 /* export as *.xpt file*/
 LIBNAME sasxpt XPORT 'c:\sas-play\ta.xpt';
 DATA sasxpt.ta (label='TRIAL ARMS'); 
@@ -1813,6 +1857,7 @@ DATA MyData; /*Remove the row that identifies the datatype, and keep only SEND d
 		);
 	IF Lowcase(DOMAIN)='char' THEN DELETE;
 	IF DOMAIN='' THEN DELETE;
+%change(MyData)
 /* export as *.xpt file*/
 LIBNAME sasxpt XPORT 'c:\sas-play\tx.xpt';
 DATA sasxpt.tx (label='TRIAL SETS'); 
@@ -1880,6 +1925,7 @@ DATA MyData; /*Remove the row that identifies the datatype, and keep only SEND d
 		);
 	IF Lowcase(DOMAIN)='char' THEN DELETE;
 	IF DOMAIN='' THEN DELETE;
+%change(MyData)
 /* export as *.xpt file*/
 LIBNAME sasxpt XPORT 'c:\sas-play\ts.xpt';
 DATA sasxpt.ts (label='TRIAL SUMMARY'); 
@@ -1924,6 +1970,7 @@ DATA MyData; /*Remove the row that identifies the datatype, and keep only SEND d
 		);
 	IF Lowcase(RDOMAIN)='char' THEN DELETE;
 	IF RDOMAIN='' THEN DELETE;
+%change(MyData)
 /* export as *.xpt file*/
 LIBNAME sasxpt XPORT 'c:\sas-play\suppex.xpt';
 DATA sasxpt.suppex (label='SUPPLEMENTAL QUALIFIERS FOR EX'); 
@@ -1967,9 +2014,54 @@ DATA MyData; /*Remove the row that identifies the datatype, and keep only SEND d
 		);
 	IF Lowcase(RDOMAIN)='char' THEN DELETE;
 	IF RDOMAIN='' THEN DELETE;
+%change(MyData)
 /* export as *.xpt file*/
 LIBNAME sasxpt XPORT 'c:\sas-play\suppma.xpt';
 DATA sasxpt.suppma (label='SUPPLEMENTAL QUALIFIERS FOR MA'); 
+	LABEL 
+		STUDYID = 'Study Identifier'
+		RDOMAIN = 'Related Domain Abbreviation'
+		USUBJID	= 'Unique Subject Identifier'
+		POOLID	= 'Pool Identifier'
+		IDVAR	= 'Identifying Variable'
+		IDVARVAL= 'Identifying Variable Value'
+		QNAM	= 'Qualifier Variable Name'
+		QLABEL	= 'Qualifier Variable Label'
+		QVAL	= 'Data Value'
+		QORIG	= 'Origin'
+		QEVAL	= 'Evaluator'
+	   ;
+	SET MyData;
+RUN;
+PROC DATASETS;
+	DELETE MyData;
+RUN;
+/* SUPPMI **********************************************/
+PROC IMPORT OUT=WORK.read
+		DATAFILE="C:\SAS-play\Study.xls"
+		DBMS=EXCEL2000 REPLACE;
+		RANGE="SUPPMI$"; /*to select the sheet*/
+RUN;
+DATA MyData; /*Remove the row that identifies the datatype, and keep only SEND defined columns*/
+	SET read (keep =
+		STUDYID
+		RDOMAIN
+		USUBJID
+		POOLID
+		IDVAR
+		IDVARVAL
+		QNAM
+		QLABEL
+		QVAL
+		QORIG
+		QEVAL
+		);
+	IF Lowcase(RDOMAIN)='char' THEN DELETE;
+	IF RDOMAIN='' THEN DELETE;
+%change(MyData)
+/* export as *.xpt file*/
+LIBNAME sasxpt XPORT 'c:\sas-play\suppmi.xpt';
+DATA sasxpt.suppmi (label='SUPPLEMENTAL QUALIFIERS FOR MI'); 
 	LABEL 
 		STUDYID = 'Study Identifier'
 		RDOMAIN = 'Related Domain Abbreviation'
@@ -2014,6 +2106,7 @@ DATA MyData; /*Remove the row that identifies the datatype, and keep only SEND d
 		);
 	IF Lowcase(RDOMAIN)='char' THEN DELETE;
 	IF RDOMAIN='' THEN DELETE;
+%change(MyData)
 /* export as *.xpt file*/
 LIBNAME sasxpt XPORT 'c:\sas-play\relrec.xpt';
 DATA sasxpt.relrec (label='RELATED RECORDS'); 
@@ -2046,6 +2139,7 @@ DATA MyData; /*Remove the row that identifies the datatype, and keep only SEND d
 		);
 	IF Lowcase(POOLID)='char' THEN DELETE;
 	IF POOLID='' THEN DELETE;
+%change(MyData)
 /* export as *.xpt file*/
 LIBNAME sasxpt XPORT 'c:\sas-play\pooldef.xpt';
 DATA sasxpt.pooldef (label='POOLED DEFINITION'); 
