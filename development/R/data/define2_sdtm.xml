@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="../stylesheets/define2-0-0.xsl"?>
+<!-- ********************************************************************************** -->
+<!-- File: define2-0-0-example-sdtm.xml                                                 -->
+<!-- Author: CDISC XML Technologies Team                                                -->
+<!-- Description: This is an example define.xml V2.0.0 document based on the define.xml -->
+<!--    example of the published Metadata Submission Guideline (SDTM-MSG) V1, with      -->
+<!--    metadata adjustments to comply with the Define-XML 2.0 Specification            -->
+<!--    and to illustrate new features.                                                 -->
+<!-- Release Notes:                                                                     -->
+<!-- 1. If the define.xml document includes a style sheet reference (i.e, uncommented   -->
+<!--    line #2 in  this example) and the style sheet is available in the location      -->
+<!--    specified in the href attribute, most browser applications will display and     -->
+<!--    format the contents of the define.xml document based on the stylesheet          -->
+<!--    instructions.                                                                   -->
+<!--    a. The href attribute should be adjusted as necessary to reflect the            -->
+<!--       corresponding stylesheet location.                                           -->
+<!--    b. The stylesheet should have been developed to interpret the Define-XML        -->
+<!--       specification version indicated in the define.xml document.                  -->
+<!--    c. The resulting HTML presentation and the availability and usability of        -->
+<!--       functions will vary depending upon which browser application is used.        -->
+<!--    d. At the time this example was released, the Google Chrome browser does not    -->
+<!--       render an XML file by using an XSL stylesheet on a local system, and for     --> 
+<!--       other browsers it may depend on extensions that the user has installed.      -->
+<!-- ********************************************************************************** -->
+<ODM 
+  xmlns="http://www.cdisc.org/ns/odm/v1.3" 
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:def="http://www.cdisc.org/ns/def/v2.0"
+  ODMVersion="1.3.2"
+  FileOID="www.cdisc.org.Studycdisc01-Define-XML_2.0.0"
+  FileType="Snapshot"
+  CreationDateTime="2013-03-03T17:04:44"
+  Originator="CDISC XML Technologies Team"
+  SourceSystem="MH-System"
+  SourceSystemVersion="2.0.1"
+  > 
+
+  <!-- ******************************************  -->
+  <!-- OID conventions used in this example:       -->
+  <!--    MetaDataVersion         = MDV.           -->
+  <!--    def:leaf, leafID        = LF.            -->
+  <!--    def:ValueListDef        = VL.            -->
+  <!--    def:WhereClauseDef      = WC.            -->
+  <!--    ItemGroupDef            = IG.            -->
+  <!--    ItemDef                 = IT.            -->
+  <!--    CodeList                = CL.            -->
+  <!--    MethodDef               = MT.            -->
+  <!--    def:CommentDef          = COM.           -->
+  <!-- ******************************************  -->
+
+  <!-- ******************************************  -->
+  <!-- This example does not include Value Level   -->
+  <!-- Metadata (def:ValueListDef) for all items   -->
+  <!-- that may need separate definitions.         -->
+  <!-- The cases included are included for         -->
+  <!-- illustration purposes only.                 -->
+  <!-- ******************************************  -->
+  
+  <Study OID="cdisc01">
+    <GlobalVariables>
+      <StudyName>CDISC01</StudyName>
+      <StudyDescription>CDISC Test Study</StudyDescription>
+      <ProtocolName>CDISC01</ProtocolName>
+    </GlobalVariables>
+    <MetaDataVersion OID="MDV.CDISC01.SDTMIG.3.1.2.SDTM.1.2"
+      Name="Study CDISC01, Data Definitions"
+      Description="Study CDISC01, Data Definitions"
+      def:DefineVersion="2.0.0"
+      def:StandardName="SDTM-IG"
+      def:StandardVersion="3.1.2">
+
+      <!-- ******************** -->
+      <!-- Supporting Documents -->
+      <!-- ******************** -->
+
+      <def:AnnotatedCRF>
+        <def:DocumentRef leafID="LF.blankcrf"/>
+      </def:AnnotatedCRF>
+
+      <def:SupplementalDoc>
+        <def:DocumentRef leafID="LF.ReviewersGuide"/>
+        <def:DocumentRef leafID="LF.ComplexAlgorithms"/>
+      </def:SupplementalDoc>
+ 
+
+      <!-- ************************************************************************************************************************ -->
+      <!-- Value List Definitions Section (Required for Supplemental Qualifiers, Optional for other Normalized (Vertical) Datasets) -->
+      <!--       (Note that any definitions not provided at a Value Level will be inherited from the parent item definition)        -->
+      <!-- ************************************************************************************************************************ -->
+
+      <def:ValueListDef OID="VL.DA.DAORRES">
+        <ItemRef ItemOID="IT.DA.DAORRES.DISPAMT" OrderNumber="1" Mandatory="Yes">
+          <def:WhereClauseRef WhereClauseOID="WC.DA.DATESTCD.DISPAMT"/>
+        </ItemRef>
+        <ItemRef ItemOID="IT.DA.DAORRES.RETAMT" OrderNumber="2" Mandatory="No">
+          <def:WhereClauseRef WhereClauseOID="WC.DA.DATESTCD.RETAMT"/>
+        </ItemRef>
+      </def:ValueListDef>
+      <def:ValueListDef OID="VL.EG.EGORRES">
+        <ItemRef ItemOID="IT.EG.EGORRES.INTP" OrderNumber="1" Mandatory="No">
+          <def:WhereClauseRef WhereClauseOID="WC.EG.EGTESTCD.INTP"/>
+        </ItemRef>
+        <ItemRef ItemOID="IT.EG.EGORRES.PRMEAN" OrderNumber="2" Mandatory="No">
+          <def:WhereClauseRef WhereClauseOID="WC.EG.EGTESTCD.PRMEAN"/>
+        </ItemRef>
+        <ItemRef ItemOID="IT.EG.EGORRES.QRSDUR" OrderNumber="3" Mandatory="No">
+          <def:WhereClauseRef WhereClauseOID="WC.EG.EGTESTCD.QRSDUR"/>
+        </ItemRef>
+        <ItemRef ItemOID="IT.EG.EGORRES.QTMEAN" OrderNumber="4" Mandatory="No">
+          <def:WhereClauseRef WhereClauseOID="WC.EG.EGTESTCD.QTMEAN"/>
+        </ItemRef>
+        <ItemRef ItemOID="IT.EG.EGORRES.VRMEAN" OrderNumber="5" Mandatory="No">
+          <def:WhereClauseRef WhereClauseOID="WC.EG.EGTESTCD.VRMEAN"/>
+        </ItemRef>
+      </def:ValueListDef>
+ 
+      <def:ValueListDef OID="VL.VS.VSORRESU">
+        <ItemRef ItemOID="IT.VS.VSORRESU.HEIGHT.DM.COUNTRY.CMETRIC" OrderNumber="1" Mandatory="Yes">
+          <def:WhereClauseRef WhereClauseOID="WC.VS.VSTESTCD.HEIGHT.[DM].COUNTRY.CMETRIC"/>
+        </ItemRef>
+        <ItemRef ItemOID="IT.VS.VSORRESU.HEIGHT.DM.COUNTRY.CNMETRIC" OrderNumber="2" Mandatory="Yes">
+          <def:WhereClauseRef WhereClauseOID="WC.VS.VSTESTCD.HEIGHT.[DM].COUNTRY.CNMETRIC"/>
+        </ItemRef>
+        <ItemRef ItemOID="IT.VS.VSORRESU.WEIGHT.DM.COUNTRY.CMETRIC" OrderNumber="3" Mandatory="Yes">
+          <def:WhereClauseRef WhereClauseOID="WC.VS.VSTESTCD.WEIGHT.[DM].COUNTRY.CMETRIC"/>
+        </ItemRef>
+        <ItemRef ItemOID="IT.VS.VSORRESU.WEIGHT.DM.COUNTRY.CNMETRIC" OrderNumber="4" Mandatory="Yes">
+          <def:WhereClauseRef WhereClauseOID="WC.VS.VSTESTCD.WEIGHT.[DM].COUNTRY.CNMETRIC"/>
+        </ItemRef>
+      </def:ValueListDef>
+
+
+      <!-- ************************************************************************** -->
+      <!-- WhereClause Definitions Section (Used/Referenced in Value List Definitions) -->
+      <!-- ************************************************************************** -->
+
+      <def:WhereClauseDef OID="WC.DA.DATESTCD.DISPAMT">
+        <RangeCheck SoftHard="Soft" def:ItemOID="IT.DA.DATESTCD" Comparator="EQ">
+          <CheckValue>DISPAMT</CheckValue>
+        </RangeCheck>
+      </def:WhereClauseDef>
+      <def:WhereClauseDef OID="WC.VS.VSTESTCD.WEIGHT.[DM].COUNTRY.CNMETRIC" def:CommentOID="COM.SUBJECTDATA-JOIN-DM">
+        <RangeCheck SoftHard="Soft" def:ItemOID="IT.VS.VSTESTCD" Comparator="EQ">
+          <CheckValue>WEIGHT</CheckValue>
+        </RangeCheck>
+        <RangeCheck SoftHard="Soft" def:ItemOID="IT.DM.COUNTRY" Comparator="EQ">
+          <CheckValue>USA</CheckValue>
+        </RangeCheck>
+      </def:WhereClauseDef>
+
+
+      <!-- ************************************************************************************ -->
+      <!-- ItemGroupDef Definitions Section (Datasets and and first set of variable properties) -->
+      <!-- ************************************************************************************ -->
+
+      <!-- Dataset Definition (TA) -->
+      <ItemGroupDef OID="IG.TA"
+        Domain="TA"
+        Name="TA"
+        Repeating="No"
+        IsReferenceData="Yes"
+        SASDatasetName="TA"
+        Purpose="Tabulation"
+        def:Structure="One record per planned Element per Arm"
+        def:Class="TRIAL DESIGN"
+        def:ArchiveLocationID="LF.TA">
+        <Description>
+          <TranslatedText xml:lang="en">Trial Arms</TranslatedText>
+        </Description>
+        <ItemRef ItemOID="IT.STUDYID" OrderNumber="1" Mandatory="Yes" KeySequence="1"/>
+        <ItemRef ItemOID="IT.TA.DOMAIN" OrderNumber="2" Mandatory="Yes"/>
+        <ItemRef ItemOID="IT.TA.ARMCD" OrderNumber="3" Mandatory="Yes" KeySequence="2"/>
+        <ItemRef ItemOID="IT.TA.ARM" OrderNumber="4" Mandatory="Yes"/>
+        <ItemRef ItemOID="IT.TA.TAETORD" OrderNumber="5" Mandatory="Yes" KeySequence="3"/>
+        <ItemRef ItemOID="IT.TA.ETCD" OrderNumber="6" Mandatory="Yes"/>
+        <ItemRef ItemOID="IT.TA.ELEMENT" OrderNumber="7" Mandatory="No"/>
+        <ItemRef ItemOID="IT.TA.TABRANCH" OrderNumber="8" Mandatory="No"/>
+        <ItemRef ItemOID="IT.TA.TATRANS" OrderNumber="9" Mandatory="No"/>
+        <ItemRef ItemOID="IT.TA.EPOCH" OrderNumber="10" Mandatory="Yes"/>
+        <def:leaf ID="LF.TA" xlink:href="ta.xpt">
+          <def:title>ta.xpt</def:title>
+        </def:leaf>
+      </ItemGroupDef>
+      <!-- Dataset Definition (TE) -->
+      <ItemGroupDef OID="IG.TE"
+        Domain="TE"
+        Name="TE"
+        Repeating="No"
+        IsReferenceData="Yes"
+        SASDatasetName="TE"
+        Purpose="Tabulation"
+        def:Structure="One record per planned Element"
+        def:Class="TRIAL DESIGN"
+        def:ArchiveLocationID="LF.TE">
+        <Description>
+          <TranslatedText xml:lang="en">Trial Elements</TranslatedText>
+        </Description>
+        <ItemRef ItemOID="IT.STUDYID" OrderNumber="1" Mandatory="Yes" KeySequence="1"/>
+        <ItemRef ItemOID="IT.TE.DOMAIN" OrderNumber="2" Mandatory="Yes"/>
+        <ItemRef ItemOID="IT.TE.ETCD" OrderNumber="3" Mandatory="Yes" KeySequence="2"/>
+        <ItemRef ItemOID="IT.TE.ELEMENT" OrderNumber="4" Mandatory="Yes"/>
+        <ItemRef ItemOID="IT.TE.TESTRL" OrderNumber="5" Mandatory="Yes"/>
+        <ItemRef ItemOID="IT.TE.TEDUR" OrderNumber="6" Mandatory="No"/>
+        <def:leaf ID="LF.TE" xlink:href="te.xpt">
+          <def:title>te.xpt</def:title>
+        </def:leaf>
+      </ItemGroupDef>
+ 
+      <!-- **************************************************************************** -->
+      <!-- ItemDef Definitions Section (Variables and Value List, remaining properties) -->
+      <!-- **************************************************************************** -->
+
+      <ItemDef OID="IT.AE.AEACN" Name="AEACN" DataType="text" Length="30" SASFieldName="AEACN">
+        <Description>
+          <TranslatedText xml:lang="en">Action Taken with Study Treatment</TranslatedText>
+        </Description>
+        <CodeListRef CodeListOID="CL.ACN"/>
+        <def:Origin Type="CRF">
+          <def:DocumentRef leafID="LF.blankcrf">
+            <def:PDFPageRef PageRefs="21" Type="PhysicalRef"/>
+          </def:DocumentRef>
+        </def:Origin>
+      </ItemDef>
+  
+      <!-- ******************************** -->
+      <!-- Code List Definitions Section    -->
+      <!-- ******************************** -->
+
+      <CodeList OID="CL.ACN" Name="Action Taken with Study Treatment" DataType="text">
+        <EnumeratedItem CodedValue="DOSE NOT CHANGED" OrderNumber="1">
+          <Alias Name="C49504" Context="nci:ExtCodeID"/>
+        </EnumeratedItem>
+        <EnumeratedItem CodedValue="DOSE REDUCED" OrderNumber="2">
+          <Alias Name="C49505" Context="nci:ExtCodeID"/>
+        </EnumeratedItem>
+        <EnumeratedItem CodedValue="DRUG INTERRUPTED" OrderNumber="3">
+          <Alias Name="C49501" Context="nci:ExtCodeID"/>
+        </EnumeratedItem>
+        <EnumeratedItem CodedValue="DRUG WITHDRAWN" OrderNumber="4">
+          <Alias Name="C49502" Context="nci:ExtCodeID"/>
+        </EnumeratedItem>
+        <Alias Name="C66767" Context="nci:ExtCodeID"/>
+      </CodeList>
+      <CodeList OID="CL.AE.DOMAIN" Name="Domain Abbreviation (AE)" DataType="text" SASFormatName="$AEDOMAI">
+        <CodeListItem CodedValue="AE">
+          <Decode>
+            <TranslatedText xml:lang="en">Adverse Events</TranslatedText>
+          </Decode>
+          <Alias Name="C49562" Context="nci:ExtCodeID"/>
+        </CodeListItem>
+        <Alias Name="C66734" Context="nci:ExtCodeID"/>
+      </CodeList>
+      <CodeList OID="CL.TREASFF" Name="Reported Term for the Disposition Record" DataType="text">
+        <EnumeratedItem CodedValue="COMPLETED"/>
+        <EnumeratedItem CodedValue="DID NOT MEET INCLUSION CRITERIA #3"/>
+        <EnumeratedItem CodedValue="DISCONTINUED DUE TO ADVERSE EVENT"/>
+        <EnumeratedItem CodedValue="DISCONTINUED DUE TO CONSENT WITHDRAWEL"/>
+        <EnumeratedItem CodedValue="DISCONTINUED DUE TO LACK OF THERAPEUTIC RESPONSE"/>
+        <EnumeratedItem CodedValue="DISCONTINUED DUE TO LOST TO FOLLOW UP"/>
+        <EnumeratedItem CodedValue="DISCONTINUED DUE TO SPONSOR/INVESTIGATOR DECISION"/>
+        <EnumeratedItem CodedValue="INFORMED CONSENT OBTAINED"/>
+        <EnumeratedItem CodedValue="PATIENT DID NOT MEET INCLUSION/EXCLUSION CRITERIA AT SCREENING"/>
+        <EnumeratedItem CodedValue="PROTOCOL VIOLATION"/>
+        <EnumeratedItem CodedValue="RANDOMIZED"/>
+      </CodeList>
+   
+      <!-- ******************************** -->
+      <!-- Methods Definitions Section      -->
+      <!-- ******************************** -->
+
+      <MethodDef OID="MT.AEENDY" Name="Algorithm to derive AEENDY" Type="Computation">
+        <Description>
+          <TranslatedText xml:lang="en">AEENDY = AEENDTC -RFSTDTC+1 if AEENDTC is on or after RFSTDTC. AEENDTC - RFSTDTC if AEENDTC
+precedes RFSTDTC</TranslatedText>
+        </Description>
+      </MethodDef>
+      <MethodDef OID="MT.AESTDY" Name="Algorithm to derive AESTDY" Type="Computation">
+        <Description>
+          <TranslatedText xml:lang="en">AESTDY = AESTDTC - RFSTDTC+1 if AESTDTC is on or after RFSTDTC. AESTDTC - RFSTDTC if
+AESTDTC precedes RFSTDTC</TranslatedText>
+        </Description>
+      </MethodDef>
+ 
+      <!-- ******************************** -->
+      <!-- Comments Definitions Section     -->
+      <!-- ******************************** -->
+
+      <def:CommentDef OID="COM.AGEU">
+        <Description>
+          <TranslatedText xml:lang="en">Defaulted to YEARS</TranslatedText>
+        </Description>
+      </def:CommentDef>
+       <!-- Comment Definition: Long Comment, included in a PDF file -->
+      <def:CommentDef OID="COM.DOMAIN.QS">
+        <Description>
+          <TranslatedText xml:lang="en">QS is submitted as a split dataset. The split was done based on QSCAT as QSCG (CLINICAL
+GLOBAL IMPRESSIONS), QSCS (CORNELL SCALE FOR DEPRESSION INDEMENTIA) and QSMM (MINI MENTAL STATE EXAMINATION). See additional
+documentation in the Reviewer's Guide, Split Datasets Section.</TranslatedText>
+        </Description>
+        <def:DocumentRef leafID="LF.ReviewersGuide"/>
+      </def:CommentDef>
+ 
+      <!-- ******************************** -->
+      <!-- Leafs Definitions Section        -->
+      <!-- ******************************** -->
+
+      <def:leaf ID="LF.blankcrf" xlink:href="blankcrf.pdf">
+        <def:title>Annotated Case Report Form</def:title>
+      </def:leaf>
+
+      <def:leaf ID="LF.ReviewersGuide" xlink:href="reviewersguide.pdf">
+        <def:title>Reviewers Guide</def:title>
+      </def:leaf>
+
+      <def:leaf ID="LF.ComplexAlgorithms" xlink:href="complexalgorithms.pdf">
+        <def:title>Complex Algorithms</def:title>
+      </def:leaf>
+ 
+
+    <!-- ***********************************     -->
+    <!-- End of Metadata Definitions Section     -->
+    <!-- ***********************************     -->
+
+    </MetaDataVersion>
+  </Study>
+</ODM>

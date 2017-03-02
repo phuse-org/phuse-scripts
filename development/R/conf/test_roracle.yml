@@ -1,0 +1,9 @@
+Oracle_CS:
+  usr: std_mdr
+  pwd: std_mdr
+  host: adevscan.adevgns.orst.com
+  service_name: adevpdb
+  port: 1521
+Table_Info
+  src_tab:  
+  tgt_tab: 
