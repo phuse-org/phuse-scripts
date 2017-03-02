@@ -69,18 +69,13 @@ load.df2ora = function(con, df, table_name, tmp_tab = '' , drop_tmp = TRUE, trun
 
   # trucate the target table
   if (trunc_tgt) {
-    if (dbExistsTable(con, table_name, schema = NULL)) {
-     dbSendQuery(con, paste("truncate table", table_name)) }
+     dbSendQuery(con, paste("truncate table", table_name))
   }
 
   # insert into target table
-  if (dbExistsTable(con, table_name, schema = NULL)) {
-    cmd <- paste("insert into ", table_name, "select * from ", tmp_tab)
-    r1.ins <- dbSendQuery(con, cmd)
-    if (dbHasCompleted(r1.ins)) { dbSendQuery(con, "commit") }
-  } else {
-    r1.ins <- dbWriteTable(con,table_name,df)
-  }
+  cmd <- paste("insert into ", table_name, "select * from ", tmp_tab)
+  r1.ins <- dbSendQuery(con, cmd)
+  if (dbHasCompleted(r1.ins)) { dbSendQuery(con, "commit") }
 
   # drop the temp table
   if (drop_tmp) {
