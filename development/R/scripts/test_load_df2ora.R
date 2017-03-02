@@ -8,38 +8,41 @@
 rm(list=ls())
 
 # check if packages installed and then install if necessary
-packages <- c('openxlsx','ROracle')
+packages <- c('openxlsx','ROracle','yaml')
 if (length(setdiff(packages, rownames(installed.packages()))) > 0) {
   install.packages(setdiff(packages, rownames(installed.packages())))
 }
-setwd("./Codes/R")
-
-
 library('openxlsx')
 library(ROracle)
-source("libs/Func_comm.R")
+library(yaml)
+
+# 2. read configuration file and set environment
+cfg <- yaml.load_file('scripts/test_load_df2ora.yml')
+
+setwd(cfg$work_dir)
+source(cfg$lib_file)
+
+
 #
-# 2. read sheets to data frames
-
-sdir <- 'data'
-ifn <- paste0(sdir,"/", "testfile.xlsx")
-
+# 3. read sheets to data frames
+ifn <- cfg$source_file
+tgt_tab <- cfg$table_info$tgt_tab
 df <- read.xlsx(ifn, sheet = 1)
 
 #
-# 3. connect to Oracle database
+# 4. connect to Oracle database
 #
-con <- get_conn("std_mdr", "std_mdr", "test.orst.com",service_name="adevpdb")
+usr <- cfg$oracle_cs$usr
+pwd <- cfg$oracle_cs$pwd
+hn  <- cfg$oracle_cs$host
+sn  <- cfg$oracle_cs$service_name
+con <- get_conn(usr, pwd, hn, service_name = sn)
 
 #
-# 4. create temporary tables
+# 5. load the dataframe to Oracle table
 #
-tgt_tab <- 'XXX_TEST'
+tgt_tab <- cfg$table_info$tgt_tab
+
 load.df2ora(con,df,tgt_tab)
 
-
 # End of the program
-
-
-
-
