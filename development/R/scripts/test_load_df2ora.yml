@@ -1,0 +1,16 @@
+
+work_dir: C:/Users/hanming.h.tu/Google Drive/ACN/Codes/R
+oracle_cs:
+  usr: std_mdr
+  pwd: std_mdr
+  host: adevscan.adevgns.orst.com
+  service_name: adevpdb
+  port: 1521
+source_file: data/testfile.xlsx
+lib_file: libs/Func_comm.R
+table_info:
+  src_tab:
+  tmp_tab:
+  tgt_tab: XXX_TEST
+
+# end of file
