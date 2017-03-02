@@ -12,7 +12,7 @@ packages <- c('openxlsx','ROracle')
 if (length(setdiff(packages, rownames(installed.packages()))) > 0) {
   install.packages(setdiff(packages, rownames(installed.packages())))
 }
-setwd("C:/Users/hanming.h.tu/Google Drive/ACN/Codes/R")
+setwd("./Codes/R")
 
 
 library('openxlsx')
@@ -29,7 +29,7 @@ df <- read.xlsx(ifn, sheet = 1)
 #
 # 3. connect to Oracle database
 #
-con <- get_conn("std_mdr", "std_mdr", "adevscan.adevgns.orst.com",service_name="adevpdb")
+con <- get_conn("std_mdr", "std_mdr", "test.orst.com",service_name="adevpdb")
 
 #
 # 4. create temporary tables
