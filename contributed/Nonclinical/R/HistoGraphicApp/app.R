@@ -7,12 +7,10 @@
 #       - Not sure this can be done in a reliable way (eliminated option from GUI)
 # 3) Add feature to filter out findings of equal or lesser incidence/severity than controls
 #       - Completed (but still requires more testing)
-# 4) Add feature to filter out findings of based on severity
-#       - Completed!
-# 5) Allow studies to be displayed in the same chart (study as a ring)
-#       - Completed!
-# 6) Make color contrast more drastic (and more friendly for the red/green color blind)
-#    and fix it to work better with severity filter
+# 4) Allow studies to be displayed in the same chart (study as a ring)
+#       - Completed (but maybe I should also add rings for species/duration/drug if applicable)
+# 5) Make color contrast more drastic (and more friendly for the red/green color blind)
+#       - Completed (but not sure if I picked the best possible color scheme)
 #
 ###########################################################################################
 
@@ -165,6 +163,7 @@ server <- function(input, output,session) {
     path5 <- readDirectoryInput(session,'directory5')
     organizeBy <- input$organizeBy
     includeNormal <- input$includeNormal
+    removeNormal <- input$removeNormal
     severityFilter <- as.numeric(input$severityFilter)
     filterControls <- input$filterControls
     if (input$numStudies < 2) {
@@ -446,7 +445,7 @@ server <- function(input, output,session) {
       
     }
     
-    
+    print('SEND data loaded into R...')
     ##########################################################################################
     
     
@@ -570,10 +569,15 @@ server <- function(input, output,session) {
     Data <- cbind(Data,SeverityNumber,Treatment,Sex,Recovery)
     
     # Filter Out Organs Based on Input Parameters
+    severityFlag <- FALSE
     if ((includeNormal == TRUE)|(severityFilter < 0)) {
       for (organ in unique(Data$Organ)) {
         index <- which(Data$Organ==organ)
         notIndex <- which(Data$Organ!=organ)
+        if (length(notIndex)==0) {
+          severityFlag <- TRUE
+          break
+        }
         if (includeNormal == TRUE) {
           if ((length(unique(Data$Finding[index]))==1)&(unique(Data$Finding[index])[1]=="NORMAL")) {
             Data <- Data[notIndex,]
@@ -584,6 +588,11 @@ server <- function(input, output,session) {
           Data <- Data[notIndex,]
         }
       }
+    }
+    
+    # Remove Normal Findings
+    if (removeNormal == TRUE) {
+      Data <- Data[which(Data$Finding!="NORMAL"),]
     }
     
     # Order Data Logically
@@ -693,40 +702,52 @@ server <- function(input, output,session) {
     if (addStudyCategory == FALSE) {
       newData <- newData[,1:(dim(newData)[2]-1)]
     }
+    
+    print('Data processed and formatted for plotting...')
     ########################################################################################
     
     toolName <- 'HistoGraphic'
     
-    ##################### Write Data to HistoGraphic Excel Template and Display Plot ##############
+    ############## Write Data to HistoGraphic Excel Template and Display Plot ##############
+    
+    # NOTE: May need to chunk the writing of data to the Excel template to reduce RAM usage
     
     # Write Data into Excel Template
-    if ((length(studyIDs) == 2)&(addStudyCategory == FALSE)) {
-      writeWorksheetToFile(outputFilePath,newData,toolName,startRow=6,startCol=1,header=FALSE)
-      study1Name <- as.data.frame(input$study1Name)
-      writeWorksheetToFile(outputFilePath,study1Name,toolName,startRow=4,startCol=1,header=FALSE)
-      study2Name <- as.data.frame(input$study2Name)
-      writeWorksheetToFile(outputFilePath,study2Name,toolName,startRow=4,startCol=3,header=FALSE)
+    if (severityFlag == TRUE) {
+      output$text <- renderText({'No findings present with such severity!'})
+      setwd(basePath)
     } else {
-      numberData <- newData[,1:2]
-      categoryData <- newData[,3:dim(newData)[2]]
-      writeWorksheetToFile(outputFilePath,numberData,toolName,startRow=6,header=FALSE)
-      writeWorksheetToFile(outputFilePath,categoryData,toolName,startRow=6,startCol=5,header=FALSE)
+      if (trackIncidence == TRUE) {
+        quantifiers <- as.data.frame(cbind('Incidence','Severity'))
+      } else {
+        quantifiers <- as.data.frame(cbind('Counts','Severity'))
+      }
+      writeWorksheetToFile(outputFilePath,quantifiers,toolName,startRow=5,startCol=1,header=FALSE)
+      if ((length(studyIDs) == 2)&(addStudyCategory == FALSE)) {
+        writeWorksheetToFile(outputFilePath,newData,toolName,startRow=6,startCol=1,header=FALSE)
+        study1Name <- as.data.frame(input$study1Name)
+        writeWorksheetToFile(outputFilePath,study1Name,toolName,startRow=4,startCol=1,header=FALSE)
+        study2Name <- as.data.frame(input$study2Name)
+        writeWorksheetToFile(outputFilePath,study2Name,toolName,startRow=4,startCol=3,header=FALSE)
+      } else {
+        numberData <- newData[,1:2]
+        categoryData <- newData[,3:dim(newData)[2]]
+        writeWorksheetToFile(outputFilePath,numberData,toolName,startRow=6,header=FALSE)
+        writeWorksheetToFile(outputFilePath,categoryData,toolName,startRow=6,startCol=5,header=FALSE)
+      }
+      
+      # Run Visual Basic Script to Generate Plot via Excel Macro
+      shell(shQuote(paste(HistoGraphicPath,'/runHistoGraphic.vbs ',input$webBrowser,sep='')))
+      
+      # Return to Application Directory
+      setwd(basePath)
+      
+      # Output Text Upon Completion
+      output$text <- renderText({paste('Finished Running Analysis of',basename(studyIDs),'\n')})
     }
-    quantifiers <- as.data.frame(cbind(colnames(newData)[1],'Severity'))
-    writeWorksheetToFile(outputFilePath,quantifiers,toolName,startRow=5,startCol=1,header=FALSE)
-    
-    # Run Visual Basic Script to Generate Plot via Excel Macro
-    shell(shQuote(paste(HistoGraphicPath,'/runHistoGraphic.vbs ',input$webBrowser,sep='')))
-    
-    # Return to Application Directory
-    setwd(basePath)
-    
-    # Output Text Upon Completion
-    output$text <- renderText({paste('Finished Running Analysis of',basename(studyIDs),'\n')})
-    
     ########################################################################################
     
-    
+    print('Plotting complete!')
   })
   
   ##########################################################################################
@@ -811,6 +832,7 @@ ui <- fluidPage(
            # Define Filters
            h3('Filters:'),
            checkboxInput("includeNormal",label="Filter Out Organs without Abnormal Findings",value=TRUE),
+           checkboxInput("removeNormal",label="Remove Normal Findings",value=FALSE),
            selectInput('severityFilter',label='Filter Out Organs with Findings of Severity Less than:',
                        choices = list(" "=0,"Minimal"=-1,"Mild"=-2,"Moderate"=-3,"Marked"=-4,"Severe"=-5)),
            checkboxInput("filterControls",label='Filter Out Findings with Equal or Greater Incidence and/or Severity in Controls',value=FALSE),br(),
