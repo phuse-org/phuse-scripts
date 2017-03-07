@@ -21,7 +21,9 @@ list.of.packages <- c("shiny","XLConnect","rChoiceDialogs","SASxport")
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages,repos='http://cran.us.r-project.org')
 library(shiny)
+options(java.parameters = "-Xmx4g" )
 library(XLConnect)
+# library(openxlsx)
 library(rChoiceDialogs)
 library(SASxport)
 
@@ -257,6 +259,7 @@ server <- function(input, output,session) {
     # Set Excel File Path
     if (dir.exists(path.expand('~/HistoGraphicTemp'))==FALSE) {dir.create(path.expand('~/HistoGraphicTemp'))}
     outputFilePath <- path.expand('~/HistoGraphicTemp/template.xlsm')
+    outputCSVPath <- path.expand('~/HistoGraphicTemp/rawData.csv')
     
     # Create Empty Template File
     file.copy("HistoGraphic.xlsm",outputFilePath,overwrite = TRUE)
@@ -703,6 +706,7 @@ server <- function(input, output,session) {
       newData <- newData[,1:(dim(newData)[2]-1)]
     }
     
+
     print('Data processed and formatted for plotting...')
     ########################################################################################
     
@@ -723,8 +727,8 @@ server <- function(input, output,session) {
         quantifiers <- as.data.frame(cbind('Counts','Severity'))
       }
       writeWorksheetToFile(outputFilePath,quantifiers,toolName,startRow=5,startCol=1,header=FALSE)
+      xlcFreeMemory()
       if ((length(studyIDs) == 2)&(addStudyCategory == FALSE)) {
-        writeWorksheetToFile(outputFilePath,newData,toolName,startRow=6,startCol=1,header=FALSE)
         study1Name <- as.data.frame(input$study1Name)
         writeWorksheetToFile(outputFilePath,study1Name,toolName,startRow=4,startCol=1,header=FALSE)
         study2Name <- as.data.frame(input$study2Name)
@@ -732,9 +736,10 @@ server <- function(input, output,session) {
       } else {
         numberData <- newData[,1:2]
         categoryData <- newData[,3:dim(newData)[2]]
-        writeWorksheetToFile(outputFilePath,numberData,toolName,startRow=6,header=FALSE)
-        writeWorksheetToFile(outputFilePath,categoryData,toolName,startRow=6,startCol=5,header=FALSE)
+        blankData <- cbind(rep('',dim(newData)[1]),rep('',dim(newData)[1]))
+        newData <- cbind(numberData,blankData,categoryData)
       }
+      write.table(newData,outputCSVPath,col.names=FALSE,row.names=FALSE,sep=',')
       
       # Run Visual Basic Script to Generate Plot via Excel Macro
       shell(shQuote(paste(HistoGraphicPath,'/runHistoGraphic.vbs ',input$webBrowser,sep='')))
