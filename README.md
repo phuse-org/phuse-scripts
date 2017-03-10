@@ -1,8 +1,8 @@
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/phuse-org/phuse-scripts/blob/master/LICENSE.md)
 
-### PhUSE CS Standard Analyses Working Group
+## PhUSE CS Standard Analyses Working Group
 
-# Links to PhUSE Wiki Site
+#### Links to PhUSE Wiki Site
 
 * PhUSE CS Standard Analyses Working Group (SAWG)<br/>
   [details available in the PhUSE Wiki](http://www.phusewiki.org/wiki/index.php?title=Standard_Scripts)
