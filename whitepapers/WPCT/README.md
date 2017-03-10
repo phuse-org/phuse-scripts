@@ -2,12 +2,14 @@
 
 This folder contains Standard Scripts in SAS and R, to produce data displays as specified in the [PhUSE CS White Paper on Central Tendencies](http://www.phuse.eu/publications.aspx).
 
+SAS Standard Scripts for this White Paper has been Qualified.
+
 See our [WPCT to-do list](./TODO.md) for ways to participate and contribute.
 
 ### Contents
 
-* Each WPCT figure should have a corresponding SAS and R script.
-* Each SAS and R script should have a YML metadata file that describes the script (not the display that it implements).
+* Each WPCT figure should have a corresponding SAS script.
+* Each SAS script should have a YML metadata file that describes the script (not the display that it implements).
 * A [template for the YML metadata file](http://github.com/phuse-org/phuse-scripts/blob/master/MetaData_template.yml) is available in the repository.
 * Output (listings, plots, pdfs) and artifacts (logs) from these scripts are in the language-specific output subfolders.
 
