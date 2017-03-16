@@ -1,3 +1,4 @@
+
 ####### Issues to Resolve/Feature to Add ##################################################
 #
 # 1) Modified versions of Krona are not allowed to use the trademark Krona.  Need to come
@@ -11,7 +12,7 @@
 #       - Completed (but maybe I should also add rings for species/duration/drug if applicable)
 # 5) Make color contrast more drastic (and more friendly for the red/green color blind)
 #       - Completed (but not sure if I picked the best possible color scheme)
-#
+# 6) Display parameter setting on side of plot
 ###########################################################################################
 
 ################ Setup Application ########################################################
@@ -21,9 +22,7 @@ list.of.packages <- c("shiny","XLConnect","rChoiceDialogs","SASxport")
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages,repos='http://cran.us.r-project.org')
 library(shiny)
-options(java.parameters = "-Xmx4g" )
 library(XLConnect)
-# library(openxlsx)
 library(rChoiceDialogs)
 library(SASxport)
 
@@ -53,9 +52,11 @@ server <- function(input, output,session) {
       if (input$directory1 == 1) {
         path = rchoose.dir(default = defaultStudyFolder)
         updateDirectoryInput(session, 'directory1', value = path)
+        updateTextInput(session,'study1Name',value=basename(path))
       } else if (input$directory1 > 1) {
         path = rchoose.dir(default = readDirectoryInput(session, 'directory1'))
         updateDirectoryInput(session, 'directory1', value = path)
+        updateTextInput(session,'study1Name',value=basename(path))
       }
     }
   )
@@ -71,13 +72,16 @@ server <- function(input, output,session) {
         if (input$directory1 >= 1) {
           path = rchoose.dir(default = readDirectoryInput(session,'directory1'))
           updateDirectoryInput(session, 'directory2', value = path)
+          updateTextInput(session,'study2Name',value=basename(path))
         } else {
           path = rchoose.dir(default = defaultStudyFolder)
           updateDirectoryInput(session, 'directory2', value = path)
+          updateTextInput(session,'study2Name',value=basename(path))
         }
       } else if (input$directory2 > 1) {
         path = rchoose.dir(default = readDirectoryInput(session, 'directory2'))
         updateDirectoryInput(session, 'directory2', value = path)
+        updateTextInput(session,'study2Name',value=basename(path))
       }
     }
   )
@@ -93,13 +97,16 @@ server <- function(input, output,session) {
         if (input$directory1 >= 1) {
           path = rchoose.dir(default = readDirectoryInput(session,'directory1'))
           updateDirectoryInput(session, 'directory3', value = path)
+          updateTextInput(session,'study3Name',value=basename(path))
         } else {
           path = rchoose.dir(default = defaultStudyFolder)
           updateDirectoryInput(session, 'directory3', value = path)
+          updateTextInput(session,'study3Name',value=basename(path))
         }
       } else if (input$directory3 > 1) {
         path = rchoose.dir(default = readDirectoryInput(session, 'directory3'))
         updateDirectoryInput(session, 'directory3', value = path)
+        updateTextInput(session,'study3Name',value=basename(path))
       }
     }
   )
@@ -115,13 +122,16 @@ server <- function(input, output,session) {
         if (input$directory1 >= 1) {
           path = rchoose.dir(default = readDirectoryInput(session,'directory1'))
           updateDirectoryInput(session, 'directory4', value = path)
+          updateTextInput(session,'study4Name',value=basename(path))
         } else {
           path = rchoose.dir(default = defaultStudyFolder)
           updateDirectoryInput(session, 'directory4', value = path)
+          updateTextInput(session,'study4Name',value=basename(path))
         }
       } else if (input$directory4 > 1) {
         path = rchoose.dir(default = readDirectoryInput(session, 'directory4'))
         updateDirectoryInput(session, 'directory4', value = path)
+        updateTextInput(session,'study4Name',value=basename(path))
       }
     }
   )
@@ -137,13 +147,16 @@ server <- function(input, output,session) {
         if (input$directory1 >= 1) {
           path = rchoose.dir(default = readDirectoryInput(session,'directory1'))
           updateDirectoryInput(session, 'directory5', value = path)
+          updateTextInput(session,'study5Name',value=basename(path))
         } else {
           path = rchoose.dir(default = defaultStudyFolder)
           updateDirectoryInput(session, 'directory5', value = path)
+          updateTextInput(session,'study5Name',value=basename(path))
         }
       } else if (input$directory5 > 1) {
         path = rchoose.dir(default = readDirectoryInput(session, 'directory5'))
         updateDirectoryInput(session, 'directory5', value = path)
+        updateTextInput(session,'study5Name',value=basename(path))
       }
     }
   )
@@ -844,7 +857,7 @@ ui <- fluidPage(
            
            # Define Web Browser Selection
            selectInput('webBrowser',label='Choose Your Web Browser:',
-                       choices = list("Internet Explorer" = 'IE',"Firefox" = 'Firefox',"Google Chrome" = 'Chrome')),
+                       choices = list("Firefox" = 'Firefox',"Google Chrome" = 'Chrome',"Internet Explorer" = 'IE')),
            
            # Define Submit Button
            actionButton("submit","Submit"),br(),br(),
