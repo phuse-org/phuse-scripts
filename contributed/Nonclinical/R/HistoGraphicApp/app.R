@@ -32,7 +32,6 @@ source('Functions.R')
 
 # Default Study Folder
 defaultStudyFolder <- path.expand('~')
-
 ############################################################################################
 
 

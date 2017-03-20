@@ -1,7 +1,8 @@
 # Name:
-# Purpose: Read xlsx
+# Purpose: Read xlsx file and upload it to an Oracle table
 # Developer
 #   11/14/2016 (htu) - initial creation
+#   03/02/2017 (htu) - added YML configuration
 #
 # 1. load the required libraries
 # Clear All
@@ -17,16 +18,20 @@ library(ROracle)
 library(yaml)
 
 # 2. read configuration file and set environment
-cfg <- yaml.load_file('scripts/test_load_df2ora.yml')
+cfg <- yaml.load_file('C:/Users/hanming.h.tu/Documents/R/scripts/test_load_df2ora.yml')
 
-setwd(cfg$work_dir)
-source(cfg$lib_file)
+curWorkDir <- getwd()
+if ("work_dir" %in% names(cfg)) { setwd(cfg$work_dir) }
+if (is.null(cfg[["files"]])) { stop("Could not find input files.") }
+if (is.null(cfg[["table_info"]])) { stop("Could not find table names.") }
 
+fns <- cfg$files
+
+if ("lib_file" %in% names(fns)) { source(fns$lib_file) }
 
 #
 # 3. read sheets to data frames
-ifn <- cfg$source_file
-tgt_tab <- cfg$table_info$tgt_tab
+if ("source_file" %in% names(fns)) { ifn <- fns$source_file }
 df <- read.xlsx(ifn, sheet = 1)
 
 #
@@ -41,8 +46,12 @@ con <- get_conn(usr, pwd, hn, service_name = sn)
 #
 # 5. load the dataframe to Oracle table
 #
-tgt_tab <- cfg$table_info$tgt_tab
+tab <- cfg$table_info
+tgt_tab <- NULL
+if ("tgt_tab" %in% names(tab)) { tgt_tab <- tab$tgt_tab }
 
+if (is.null(tgt_tab)) { stop("Could not find target table name.") }
 load.df2ora(con,df,tgt_tab)
 
+setwd(curWorkDir)
 # End of the program
