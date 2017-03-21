@@ -10,3 +10,9 @@ Starting Point is the PhUSE Good Programming Practice Guide:
 
 PhUSE CS project guidelines available in PhUSE wiki:
 * http://phusewiki.org/wiki/index.php?title=WG5_P02_Programming_Guidelines
+
+Utility Folder Macros Description:
+* assert_complete_refds.sas  
+  Assertion that according to listed unique KEYS, a reference dset (e.g., ADSL) contains info
+  for all observations that appear in remaining dsets (e.g., ADAE, ADVS, ADLBC, ...)
+  
