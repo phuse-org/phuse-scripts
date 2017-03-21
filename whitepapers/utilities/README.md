@@ -16,3 +16,8 @@ Utility Folder Macros Description:
   Assertion that according to listed unique KEYS, a reference dset (e.g., ADSL) contains info
   for all observations that appear in remaining dsets (e.g., ADAE, ADVS, ADLBC, ...)
   
+* assert_continue.sas
+   Error Handling - This defines the error handling of the PhUSE CS template programs.
+   In case of error, continue checking syntax, but do not waste time or effort to process data.
+* assert_depend.sas  
+  
