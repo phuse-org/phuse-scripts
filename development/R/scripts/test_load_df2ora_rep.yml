@@ -12,10 +12,10 @@ files:
   lib_file:     libs/Func_comm.R
   yml_file:     scripts/test_load_df2ora.yml
 oracle_cs:
-  usr:          ***
-  pwd:          ***
-  host:         ***
-  service_name: ***
+  usr:          xxx
+  pwd:          xxx
+  host:         xxx
+  service_name: xxx
   port:         1521
 table_info:
   src_tab:
