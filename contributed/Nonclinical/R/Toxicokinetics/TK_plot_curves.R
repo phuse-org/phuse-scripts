@@ -41,7 +41,7 @@ GitHubRepo <- 'phuse-org/phuse-scripts'
 baseDirGitHub <- paste('https://github.com',GitHubRepo,'raw/master',sep='/')
 baseDirLocal <- path.expand('~/PhUSE/Repo/trunk') # Fill in path to your local copy of the repo
 studyDir <- 'data/send/PDS/Xpt'
-functionsLocation <- 'contributed/Nonclinical/R/Functions/TK_functions.R'
+functionsLocation <- 'contributed/Nonclinical/R/Functions/Functions.R'
 tmpPath <- path.expand('~/Temp_R_Working_Directory') # All files in this directory will be deleted!
 
 # Set working directory and source functions
