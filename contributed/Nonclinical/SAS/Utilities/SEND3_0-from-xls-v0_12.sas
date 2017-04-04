@@ -92,6 +92,7 @@
 /* Feb 17, 2017   W. Houser  Added SUPPMI and the "change" macro to set the    */
 /*                           variable lengths to the size of the data          */
 /*                           Corrected order of DM variables to match SENDIG   */
+/* Mar 14, 2017   W. Houser  Added SC domain                                   */
 /*******************************************************************************/
 
 %macro change(dsn);                                         
@@ -1463,6 +1464,55 @@ PROC DATASETS;
 	DELETE MyData;
 RUN;
 /* SC **********************************************/
+PROC IMPORT OUT=WORK.read
+		DATAFILE="C:\SAS-play\Study.xls"
+		DBMS=EXCEL2000 REPLACE;
+		RANGE="SC$"; /*to select the sheet*/
+RUN;
+DATA MyData; /*Remove the row that identifies the datatype, and keep only SEND defined columns*/
+	SET read (keep =
+		STUDYID
+		DOMAIN
+		USUBJID
+		SCSEQ
+		SCGRPID
+		SCTESTCD
+		SCTEST
+		SCORRES
+		SCORRESU
+		SCSTRESC
+		SCSTRESN
+		SCSTRESU
+		SCDTC
+		SCDY
+		);
+	IF Lowcase(DOMAIN)='char' THEN DELETE;
+	IF DOMAIN='' THEN DELETE;
+%change(MyData)
+/* export as *.xpt file*/
+LIBNAME sasxpt XPORT 'c:\sas-play\sc.xpt';
+DATA sasxpt.sc (label='SUBJECT CHARACTERISTICS'); 
+	LABEL
+		STUDYID	= 'Study Identifier'
+		DOMAIN	= 'Domain Abbreviation'
+		USUBJID	= 'Unique Subject Identifier'
+		SCSEQ	= 'Sequence Number'
+		SCGRPID	= 'Group Identifier'
+		SCTESTCD	= 'Subject Characteristic Short Name'
+		SCTEST	= 'Subject Characteristic'
+		SCORRES	= 'Result or Findings as Collected'
+		SCORRESU	= 'Unit of the Original Result'
+		SCSTRESC	= 'Standardized Result in Character Format'
+		SCSTRESN	= 'Standardized Result in Numeric Format'
+		SCSTRESU	= 'Unit of the Standardized Result'
+		SCDTC	= 'Date/Time of Collection'
+		SCDY	= 'Study Day of Collection'
+	;
+	SET MyData; 
+RUN;
+PROC DATASETS;
+	DELETE MyData;
+RUN;
 /* TF **********************************************/
 PROC IMPORT OUT=WORK.read
 		DATAFILE="C:\SAS-play\Study.xls"
