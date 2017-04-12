@@ -3,6 +3,17 @@
 /*                                                                             */
 /*  A tool to read SAS XPT files and create an  *.xml for excel to load.       */
 /*                                                                             */
+/*  The way I have used it is this:                                            */
+/*   *  I already had created a directory named “c:\sas-play” which is where   */
+/*      the output will be placed.                                             */
+/*   *  I double click on the xpt files and they open in SAS 9.2.              */
+/*   *  Then I drag the script file into the SAS 9.2 window to open it.        */
+/*   *  I click the icon of a running person to “submit” the script for        */
+/*      execution.                                                             */
+/*   *  A window appears asking if I want to open or save the *.xml.           */
+/*   *  If I choose "open", the dataset opens in Excel.                        */
+/*                                                                             */
+/*                                                                             */
 /*                                                                             */
 /*******************************************************************************/
 /* Jun 27,2011   W. houser   Created initial version that creates single-tab   */

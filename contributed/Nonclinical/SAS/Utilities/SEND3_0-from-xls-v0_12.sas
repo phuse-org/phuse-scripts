@@ -137,8 +137,6 @@ run;
                                                             
 %mend;                                                      
                                                             
-%change(work.kyle);  
-
 /* DM **********************************************/
 PROC IMPORT OUT=WORK.read
 		DATAFILE="C:\SAS-play\Study.xls"
