@@ -1,15 +1,17 @@
 ################ Setup Application ########################################################
 
 # Check for Required Packages, Install if Necessary, and Load
-list.of.packages <- c("shiny","SASxport","rChoiceDialogs")
+list.of.packages <- c("shiny","SASxport","rChoiceDialogs","ggplot2")
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages,repos='http://cran.us.r-project.org')
 library(shiny)
 library(SASxport)
 library(rChoiceDialogs)
+library(ggplot2)
 
 # Source Required Functions
 source('directoryInput.R')
+source('https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/contributed/Nonclinical/R/Functions/Functions.R')
 
 # Default Study Folder
 defaultStudyFolder <- path.expand('~')
@@ -26,8 +28,8 @@ server <- function(input, output,session) {
       input$directory
     },
     handlerExpr = {
-      if (input$directory == 1) {
-        path = rchoose.dir(default = defaultStudyFolder)
+      if (input$directory >= 1) {
+        path <- rchoose.dir(default = defaultStudyFolder)
         updateDirectoryInput(session, 'directory', value = path)
       }
     }
@@ -35,18 +37,25 @@ server <- function(input, output,session) {
   
   output$BWplot <- renderPlot({
     
-    n <- input$n
-    x <- 1:n
+    path <- readDirectoryInput(session,'directory')
     
-    for (i in seq(length(x))) {
-      if (i == 1) {
-        y <- x[i] + rnorm(1,0,1)
-      } else {
-        y[i] <- x[i] + rnorm(1,0,1)
-      }
-    }
+    setwd(path)
     
-    plot(x,y,xlab='Days',ylab='BW',main='Body Weight')
+    Data <- load.xpt.files()
+    
+    bw <- Data$bw
+    dm <- Data$dm
+    
+    print(head(bw))
+    print(head(dm))
+    
+    # Tasks
+    # 1) Add grouping variable -- Bob
+    # 2) Add percent difference from day 0 -- Tony/Bill
+    # 3) Add body weight gain with selected interval -- Kevin
+    
+    p <- ggplot(bw,aes(x=BWDY,y=BWSTRESN)) + geom_point()
+    print(p)
     
   })
   
@@ -66,7 +75,7 @@ ui <- fluidPage(
       h3('Select Study'),
       directoryInput('directory',label = 'Directory:',value=defaultStudyFolder),
       
-      sliderInput('n','Number of Days',min=1,max=100,value=50)
+      sliderInput('n','Interval Length',min=1,max=20,value=10)
     ),
     
     mainPanel(
