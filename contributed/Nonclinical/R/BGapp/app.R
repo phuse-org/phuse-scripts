@@ -2,6 +2,9 @@
 # Prerequisites include:
 #   Install shiny
 #   Install Java, set Java_home
+#   Java must be set correctly on the path, and must be Java 1.7 or later,
+#   for example, set environment variable for this run:
+#      set path=c:\progra~1\java\jdk1.7.0_131\bin
 #
 #####################################################
 # Completed Tasks
@@ -14,6 +17,13 @@
 # 2) Add percent difference from day 0 -- Tony/Bill
 # 3) Add body weight gain with selected interval -- Kevin
 # 4) Why does Nimble fail? Wrong case on file names?
+# 5) Check if instem dataset should have control water tk as supplier group 2?
+# 6) Since nimble set does not have BWDY, should this script calculate if missing? BWDTC difference from RFSTDTC in days
+#####################################################
+# Hints
+#      If the directory selection dialog does not appear when clicking on the "..." button, then
+# the Java path is not correct. 
+# Test with this R command:   system("java -version");
 #####################################################
 # Check for Required Packages, Install if Necessary, and Load
 list.of.packages <- c("shiny","SASxport","rChoiceDialogs","ggplot2","ini")
@@ -73,9 +83,11 @@ server <- function(input, output,session) {
       if (input$directory >= 1) {
         path <- rchoose.dir(default = defaultStudyFolder)
         updateDirectoryInput(session, 'directory', value = path)
+        # Show selection in console
+        print(path)
         # and save for next run if good one selected
         if (dir.exists(path)) {
-          defaultStudyFolder=path
+          print("Valid directory selected")
           setDefaultStudyFolder(path) 
         }
       }
@@ -83,7 +95,11 @@ server <- function(input, output,session) {
   )
   
   data <- reactive({
+    print(" Now checking new directory")
     path <- readDirectoryInput(session,'directory')
+    print(path)
+    defaultStudyFolder=path
+    print(file.path(defaultStudyFolder,"bw.xpt"))
     validate(
       need(dir.exists(defaultStudyFolder),label="Select a valid directory with a SEND dataset")
     )
