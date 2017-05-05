@@ -163,9 +163,65 @@ server <- function(input, output,session) {
     }
     # colour and shape by group
     p <- ggplot(bwdmtxFilt,aes(x=BWDY,y=BWSTRESN,colour=Group)) +
-      geom_point()
+      geom_point() + ggtitle('Body Weight Plot')
     print(p) 
   })
+    
+    output$BGplot <- renderPlot({
+      data()
+      # filter now based on group selection
+      if (is.null(input$Groups) ) { 
+        bwdmtxFilt <- bwdmtx
+      }
+      else if ( length(input$Groups) == 0 ) { 
+        bwdmtxFilt <- bwdmtx
+      } 
+      else {
+        bwdmtxFilt <- bwdmtx[bwdmtx$Group  %in% input$Groups, ]  
+      }
+      
+      # Order Dataset by Subject and then by Day
+      bgdmtxFilt <- bwdmtxFilt[order(bwdmtxFilt$USUBJID,bwdmtxFilt$BWDY),]
+      
+      # Calculate Body Weight Gains and Filter by Interval Length
+      bgdmtxFilt$BGSTRESN <- bgdmtxFilt$BWSTRESN
+      for (subject in unique(bgdmtxFilt$USUBJID)) {
+        index <- which(bgdmtxFilt$USUBJID==subject)
+        subjectData <- bgdmtxFilt[index,]
+        for (i in seq(length(index))) {
+          if (i == 1) {
+            bgDataTmp <- 0
+            skippedLastInterval <- FALSE
+          } else {
+            if (skippedLastInterval == TRUE) {
+              if ((subjectData$BWDY[i]-subjectData$BWDY[i-interval]>=input$n)|(subjectData$BWDY[i]==1)) {
+                bgDataTmp[i] <- subjectData$BWSTRESN[i] - subjectData$BWSTRESN[i-interval]
+                skippedLastInterval <- FALSE
+              } else {
+                bgDataTmp[i] <- NA
+                interval <- interval + 1
+              }
+            } else {
+              if ((subjectData$BWDY[i]-subjectData$BWDY[i-1]>=input$n)|(subjectData$BWDY[i]==1)) {
+                bgDataTmp[i] <- subjectData$BWSTRESN[i] - subjectData$BWSTRESN[i-1]
+              } else {
+                bgDataTmp[i] <- NA
+                interval <- 2
+                skippedLastInterval <- TRUE
+              }
+            }
+          }
+        }
+        bgdmtxFilt$BGSTRESN[index] <- bgDataTmp
+      }
+      
+      bgdmtxFilt <- bgdmtxFilt[which(is.finite(bgdmtxFilt$BGSTRESN)),]
+      
+      # colour and shape by group
+      p <- ggplot(bgdmtxFilt,aes(x=BWDY,y=BGSTRESN,group=USUBJID,colour=Group)) +
+        geom_point() + geom_line() + ggtitle('Body Weight Gain Plot')
+      print(p) 
+    })
   
 }
 
@@ -182,12 +238,14 @@ ui <- fluidPage(
     sidebarPanel(
       h3('Select Study'),
       directoryInput('directory',label = 'Directory:',value=defaultStudyFolder),
-      sliderInput('n','Interval Length',min=1,max=20,value=10),
+      numericInput('n','Interval of at Least n Days:',min=1,max=10,value=1),
       checkboxGroupInput("Groups", "Groups", choices = groupList)
     ),
     
     mainPanel(
-      plotOutput("BWplot")
+      plotOutput("BWplot"),
+      br(),
+      plotOutput("BGplot")
     ) 
   )
 )
