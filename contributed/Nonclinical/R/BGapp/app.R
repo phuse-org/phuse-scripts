@@ -196,7 +196,8 @@ server <- function(input, output,session) {
           bgDataTmp <- 0
           interval <- 1
         } else {
-          # Check if next datapoint is at or past user-defined interval
+          # Check if next datapoint is at or past user-defined interval or Day 1
+          ## NOTE: maybe we should check if 
           if ((subjectData$BWDY[i]-subjectData$BWDY[i-interval]>=input$n)|(subjectData$BWDY[i]==1)) {
             # if it is, then record body weight gain across interval
             bgDataTmp[i] <- subjectData$BWSTRESN[i] - subjectData$BWSTRESN[i-interval]
