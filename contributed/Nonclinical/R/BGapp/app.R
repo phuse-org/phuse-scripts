@@ -149,14 +149,15 @@ server <- function(input, output,session) {
     updateCheckboxGroupInput(session,"Groups", choices = groupList)
   })  
   
-    output$BWplot <- renderPlot({
+  # Plot Body Weights
+  output$BWplot <- renderPlot({
     data()
     # filter now based on group selection
     if (is.null(input$Groups) ) { 
       bwdmtxFilt <- bwdmtx
     }
     else if ( length(input$Groups) == 0 ) { 
-        bwdmtxFilt <- bwdmtx
+      bwdmtxFilt <- bwdmtx
     } 
     else {
       bwdmtxFilt <- bwdmtx[bwdmtx$Group  %in% input$Groups, ]  
@@ -166,62 +167,58 @@ server <- function(input, output,session) {
       geom_point() + ggtitle('Body Weight Plot')
     print(p) 
   })
+  
+  # Plot Body Weight Gains (using user-defined interval)
+  output$BGplot <- renderPlot({
+    data()
+    # filter now based on group selection
+    if (is.null(input$Groups) ) { 
+      bwdmtxFilt <- bwdmtx
+    }
+    else if ( length(input$Groups) == 0 ) { 
+      bwdmtxFilt <- bwdmtx
+    } 
+    else {
+      bwdmtxFilt <- bwdmtx[bwdmtx$Group  %in% input$Groups, ]  
+    }
     
-    output$BGplot <- renderPlot({
-      data()
-      # filter now based on group selection
-      if (is.null(input$Groups) ) { 
-        bwdmtxFilt <- bwdmtx
-      }
-      else if ( length(input$Groups) == 0 ) { 
-        bwdmtxFilt <- bwdmtx
-      } 
-      else {
-        bwdmtxFilt <- bwdmtx[bwdmtx$Group  %in% input$Groups, ]  
-      }
-      
-      # Order Dataset by Subject and then by Day
-      bgdmtxFilt <- bwdmtxFilt[order(bwdmtxFilt$USUBJID,bwdmtxFilt$BWDY),]
-      
-      # Calculate Body Weight Gains and Filter by Interval Length
-      bgdmtxFilt$BGSTRESN <- bgdmtxFilt$BWSTRESN
-      for (subject in unique(bgdmtxFilt$USUBJID)) {
-        index <- which(bgdmtxFilt$USUBJID==subject)
-        subjectData <- bgdmtxFilt[index,]
-        for (i in seq(length(index))) {
-          if (i == 1) {
-            bgDataTmp <- 0
-            skippedLastInterval <- FALSE
+    # Order Dataset by Subject and then by Day
+    bgdmtxFilt <- bwdmtxFilt[order(bwdmtxFilt$USUBJID,bwdmtxFilt$BWDY),]
+    
+    # Calculate Body Weight Gains and Filter by Interval Length
+    bgdmtxFilt$BGSTRESN <- bgdmtxFilt$BWSTRESN
+    for (subject in unique(bgdmtxFilt$USUBJID)) {
+      index <- which(bgdmtxFilt$USUBJID==subject)
+      subjectData <- bgdmtxFilt[index,]
+      for (i in seq(length(index))) {
+        if (i == 1) {
+          # Set initial datapoint at zero
+          bgDataTmp <- 0
+          interval <- 1
+        } else {
+          # Check if next datapoint is at or past user-defined interval
+          if ((subjectData$BWDY[i]-subjectData$BWDY[i-interval]>=input$n)|(subjectData$BWDY[i]==1)) {
+            # if it is, then record body weight gain across interval
+            bgDataTmp[i] <- subjectData$BWSTRESN[i] - subjectData$BWSTRESN[i-interval]
+            interval <- 1
           } else {
-            if (skippedLastInterval == TRUE) {
-              if ((subjectData$BWDY[i]-subjectData$BWDY[i-interval]>=input$n)|(subjectData$BWDY[i]==1)) {
-                bgDataTmp[i] <- subjectData$BWSTRESN[i] - subjectData$BWSTRESN[i-interval]
-                skippedLastInterval <- FALSE
-              } else {
-                bgDataTmp[i] <- NA
-                interval <- interval + 1
-              }
-            } else {
-              if ((subjectData$BWDY[i]-subjectData$BWDY[i-1]>=input$n)|(subjectData$BWDY[i]==1)) {
-                bgDataTmp[i] <- subjectData$BWSTRESN[i] - subjectData$BWSTRESN[i-1]
-              } else {
-                bgDataTmp[i] <- NA
-                interval <- 2
-                skippedLastInterval <- TRUE
-              }
-            }
+            # if it is not, record datapoint as NA
+            bgDataTmp[i] <- NA
+            interval <- interval + 1
           }
         }
-        bgdmtxFilt$BGSTRESN[index] <- bgDataTmp
       }
-      
-      bgdmtxFilt <- bgdmtxFilt[which(is.finite(bgdmtxFilt$BGSTRESN)),]
-      
-      # colour and shape by group
-      p <- ggplot(bgdmtxFilt,aes(x=BWDY,y=BGSTRESN,group=USUBJID,colour=Group)) +
-        geom_point() + geom_line() + ggtitle('Body Weight Gain Plot')
-      print(p) 
-    })
+      bgdmtxFilt$BGSTRESN[index] <- bgDataTmp
+    }
+    
+    # Remove NA values from dataset
+    bgdmtxFilt <- bgdmtxFilt[which(is.finite(bgdmtxFilt$BGSTRESN)),]
+    
+    # plot with color by group and lines connecting subjects
+    p <- ggplot(bgdmtxFilt,aes(x=BWDY,y=BGSTRESN,group=USUBJID,colour=Group)) +
+      geom_point() + geom_line() + ggtitle('Body Weight Gain Plot')
+    print(p) 
+  })
   
 }
 
