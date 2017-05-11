@@ -12,13 +12,13 @@
 #  Also placed read into a data function, so as to validate data and replace error message on startup
 #  Also, remember last directory to a file
 #  And added group filter
+# 2) Add body weight gain with selected interval -- Kevin
 #####################################################
 # Tasks
-# 2) Add percent difference from day 0 -- Tony/Bill
-# 3) Add body weight gain with selected interval -- Kevin
-# 4) Why does Nimble fail? Wrong case on file names?
-# 5) Check if instem dataset should have control water tk as supplier group 2?
-# 6) Since nimble set does not have BWDY, should this script calculate if missing? BWDTC difference from RFSTDTC in days
+# 1) Add percent difference from day 1 -- Tony/Bill
+# 2) Check if instem dataset should have control water tk as supplier group 2? -- Bob emailed about this
+# 3) Add button toggle between BWDY and VISITDY -- Bob (create BWDY if missing from BW:BWDTC and DM:RFSTDTC)
+# 4) Adding means and buttons for connecting dots -- Kevin
 #####################################################
 # Hints
 #      If the directory selection dialog does not appear when clicking on the "..." button, then
@@ -236,7 +236,7 @@ ui <- fluidPage(
     sidebarPanel(
       h3('Select Study'),
       directoryInput('directory',label = 'Directory:',value=defaultStudyFolder),
-      numericInput('n','Interval of at Least n Days:',min=1,max=10,value=1),
+      numericInput('n','Interval of at Least n Days:',min=1,max=100,value=1),
       checkboxGroupInput("Groups", "Groups", choices = groupList)
     ),
     
