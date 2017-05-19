@@ -765,8 +765,21 @@ server <- function(input, output,session) {
       # Order Data Logically
       Data <- Data[order(Data$StudyID,Data$Organ,Data$Finding,Data$Treatment),]
       
-      # Calculate Incidence Rates
+      # Calculate Incidence Rates and Fold-Change
       Data$Incidence <- NA
+      
+      if (input$foldChange==TRUE) {
+        # Identify Controls
+        controlIndex <- NA
+        count <- 1
+        for (i in seq(length(Data$Treatment))) {
+          if (length(grep('[1-9]',Data$Treatment[i]))==0) {
+            controlIndex[count] <- i
+            count <- count + 1
+          }
+        }
+      }
+      
       for (i in seq(length(Data$Incidence))) {
         if ((trackIncidence==TRUE)|(filterControls==TRUE)) {
           studyIndex <- which(Data$StudyID==Data$StudyID[i])
@@ -785,27 +798,39 @@ server <- function(input, output,session) {
           studyIndex <- which(Data$StudyID==Data$StudyID[i])
           sexIndex <- which(Data$Sex==Data$Sex[i])
           index <- intersect(studyIndex,sexIndex)
+          if (input$foldChange==TRUE) {
+            recoveryIndex <- which(Data$Recovery==Data$Recovery[i])
+            index <- intersect(recoveryIndex,index)
+            index <- intersect(controlIndex,index)
+          }
           group <- unique(Data$Subject[index])
           labIndexS <- which(labData$Subject %in% group)
           labIndexT <- which(labData$ShortName==input$param)
           labIndex <- intersect(labIndexS,labIndexT)
+          if (length(labIndex)>0) {
+            trueLabIndex <- NA
+            for (j in seq(length(unique(labData$Subject[labIndex])))) {
+              labSubjectIndex <- which(labData$Subject[labIndex]==unique(labData$Subject[labIndex])[j])
+              trueLabIndex[j] <- labIndex[labSubjectIndex[which(labData$Day[labIndex][labSubjectIndex]==max(labData$Day[labIndex][labSubjectIndex]))]]
+            }
+            labIndex <- trueLabIndex
+          }
           groupMean <- mean(labData$Value[labIndex],na.rm=TRUE)
-          groupSD <- sd(labData$Value[labIndex],na.rm=TRUE)
-          if (is.finite(Data$SeverityNumber[i])) {
-            if (input$zScore==TRUE) {
-              zScore <- (Data$SeverityNumber[i]-groupMean)/groupSD
-              Data$SeverityNumber[i] <- zScore
+          if ((is.finite(Data$SeverityNumber[i]))&(is.finite(groupMean))) {
+            if (input$foldChange==TRUE) {
+              foldChange <- Data$SeverityNumber[i]/groupMean
+              Data$SeverityNumber[i] <- foldChange
             }
           } else {
-            if (input$zScore==TRUE) {
-              Data$SeverityNumber[i] <- 0
+            if (input$foldChange==TRUE) {
+              Data$SeverityNumber[i] <- 1
             } else {
               Data$SeverityNumber[i] <- groupMean
             }
           }
         }
       }
-      if ((input$includeSeverity==TRUE)&(input$zScore==TRUE)) {
+      if ((input$includeSeverity==TRUE)&(input$foldChange==TRUE)) {
         newNORMALseverity <- min(Data$SeverityNumber)
         newSEVEREseverity <- max(Data$SeverityNumber)
         newMINIMALseverity <- newNORMALseverity+.2*(newSEVEREseverity-newNORMALseverity)
@@ -871,7 +896,7 @@ server <- function(input, output,session) {
       
       # Separate Incidence Rates from Study 1 and Study 2
       if (((addStudyCategory == FALSE)&(length(studyIDs) == 2))|input$includeSeverity==TRUE) {
-        if ((input$zScore==TRUE)|(input$colorBy=='severity')) {
+        if ((input$foldChange==TRUE)|(input$colorBy=='severity')) {
           meanSeverity <- 0
         } else {
           meanSeverity <- mean(Data$SeverityNumber,na.rm=TRUE)
@@ -1134,7 +1159,7 @@ ui <- fluidPage(
              ######################### FIX THIS TO Z-SCORE based on CONTROL VALUES !!!!!!!!!!!!!!!!!!!!!!!!!!!!
              ######################### MAYBE FOLD of CONTROL IS MORE CLEAR         !!!!!!!!!!!!!!!!!!!!!!!!!!!!
              
-             checkboxInput('zScore','Z-Score Values by Sex within each Study',value=FALSE)
+             checkboxInput('foldChange','Fold-Change from Control by Sex within each Study',value=FALSE)
            ),
            
            conditionalPanel(

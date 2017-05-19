@@ -16,8 +16,8 @@ subTable <- function(fields,names,rawData) {
   return(Data)
 }
 
-# Function to get the value 
-# Function to check a TXVAL given a TXPARMCD and SETCD
+# Function to get the value of a row within a field defined by values in other fields
+# For example: to check a TXVAL given a TXPARMCD and SETCD
 getFieldValue <- function(dataset,queryField,indexFields,indexValues) {
   for (i in 1:length(indexFields)) {
     indexTmp <- which(dataset[,indexFields[i]]==indexValues[i])
