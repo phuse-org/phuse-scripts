@@ -4,7 +4,7 @@ source("https://github.com/phuse-org/phuse-scripts/raw/master/contributed/Noncli
 # setwd("C:/PhUSE Script Repository/phuse-scripts/trunk/data/send/PDS/Xpt")
 setwd("C:/Users/Kevin.Snyder/Documents/PhUSE/Repo/trunk/data/send/PDS/Xpt")
 xptdata <- load.xpt.files()
-ex <- xptdata$ex.xpt
+ex <- xptdata$ex
 zeroDoseIndex <- which(ex$EXDOSE==0)
 controlIDs <- unique(ex$USUBJID[zeroDoseIndex])
 

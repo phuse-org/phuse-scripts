@@ -13,12 +13,14 @@
 #  Also, remember last directory to a file
 #  And added group filter
 # 2) Add body weight gain with selected interval -- Kevin
+# 3) Adding means and buttons for connecting dots -- Kevin
 #####################################################
 # Tasks
 # 1) Add percent difference from day 1 -- Tony/Bill
 # 2) Check if instem dataset should have control water tk as supplier group 2? -- Bob emailed about this
 # 3) Add button toggle between BWDY and VISITDY -- Bob (create BWDY if missing from BW:BWDTC and DM:RFSTDTC)
-# 4) Adding means and buttons for connecting dots -- Kevin
+# 5) Filter groups by categories -- Kevin (in progress)
+# 6) Resolve issue of different units
 #####################################################
 # Hints
 #      If the directory selection dialog does not appear when clicking on the "..." button, then
@@ -26,7 +28,7 @@
 # Test with this R command:   system("java -version");
 #####################################################
 # Check for Required Packages, Install if Necessary, and Load
-list.of.packages <- c("shiny","SASxport","rChoiceDialogs","ggplot2","ini")
+list.of.packages <- c("shiny","SASxport","rChoiceDialogs","ggplot2","ini",'tools')
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages,repos='http://cran.us.r-project.org')
 library(shiny)
@@ -37,7 +39,8 @@ library(ini)
 
 # Source Required Functions
 source('directoryInput.R')
-source('https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/contributed/Nonclinical/R/Functions/Functions.R')
+# source('https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/contributed/Nonclinical/R/Functions/Functions.R')
+source('C:/Users/Kevin.Snyder/Documents/PhUSE/Repo/trunk/contributed/Nonclinical/R/Functions/Functions.R')
 
 # Settings file
 SettingsFile <- file.path(path.expand('~'),"BWappSettings.ini")
@@ -70,6 +73,7 @@ setDefaultStudyFolder <- function(aPath) {
 defaultStudyFolder <- getDefaultStudyFolder() 
 ############################################################################################
 
+
 ################# Define Functional Response to GUI Input ##################################
 
 server <- function(input, output,session) {
@@ -99,16 +103,24 @@ server <- function(input, output,session) {
     path <- readDirectoryInput(session,'directory')
     print(path)
     defaultStudyFolder=path
-    print(file.path(defaultStudyFolder,"bw.xpt"))
+    # print(file.path(defaultStudyFolder,"bw.xpt"))
     validate(
       need(dir.exists(defaultStudyFolder),label="Select a valid directory with a SEND dataset")
     )
-    validate(
-      need(file.exists(file.path(defaultStudyFolder,"bw.xpt")),label="A directory with a dataset containing body weight data (bw.xpt)")
-    )
+#     validate(
+#       need(file.exists(file.path(defaultStudyFolder,"bw.xpt")),label="A directory with a dataset containing body weight data (bw.xpt)")
+#     )
     setwd(path)
-    Dataset <- load.xpt.files()
+    if (length(list.files(pattern='*.xpt'))>0) {
+      Dataset <- load.xpt.files()
+    } else if (length(list.files(pattern='*.csv'))>0) {
+      Dataset <- load.csv.files()
+    } else {
+      stop('No .xpt or .csv files to load!')
+    }
     # merge in other demographic variables then other set variables
+    print(head(Dataset$bw))
+    print(head(Dataset$dm))
     bwdm <<- merge(Dataset$bw,Dataset$dm,by="USUBJID")
     # filter TX for one row per ARMCD parameter
     txSetArm <- Dataset$tx[Dataset$tx$TXPARMCD == "ARMCD", ] 
@@ -139,14 +151,53 @@ server <- function(input, output,session) {
     }
     #
     dm <<- Dataset$dm
+    
+    # Filter by Sex
+    if ('Male' %in% input$sex) {
+      maleIndex <- which(bwdmtx$SEX=='M')
+    } else {
+      maleIndex <- NULL
+    }
+    if ('Female' %in% input$sex) {
+      femaleIndex <- which(bwdmtx$SEX=='F')
+    } else {
+      femaleIndex <- NULL
+    }
+    sexIndex <- union(maleIndex,femaleIndex)
+    bwdmtx <<- bwdmtx[sexIndex,]
+    
+    # Filtery by TK
+    if (input$tk==FALSE) {
+      TKsubjects <- NULL
+      noTKsubjects <- NULL
+      TKcount <- 1
+      noTKcount <- 1
+      for (subject in unique(bwdmtx$USUBJID)) {
+        if (subject %in% Dataset$pc$USUBJID) {
+          TKsubjects[TKcount] <- subject
+          TKcount <- TKcount + 1
+        } else {
+          noTKsubjects[noTKcount] <- subject
+          noTKcount <- noTKcount + 1
+        }
+      }
+      noTKindex <- which(bwdmtx$USUBJID %in% noTKsubjects)
+      bwdmtx <<- bwdmtx[noTKindex,]
+    }
+    
+    bwdmtx$Group <<- factor(bwdmtx$Group)
+    
     validate(
       need(!is.null(bwdmtx), label = "Could not read body weight data from dataset")
     )
+    
     # Add group list choices for selection
     groupList <<- levels(bwdmtx$Group)
     print("Now update set of groups:")
     print(groupList)
-    updateCheckboxGroupInput(session,"Groups", choices = groupList)
+    updateCheckboxGroupInput(session,"Groups", choices = groupList, selected = groupList)
+    
+    print(head(bwdmtx))
   })  
   
   # Plot Body Weights
@@ -162,10 +213,24 @@ server <- function(input, output,session) {
     else {
       bwdmtxFilt <- bwdmtx[bwdmtx$Group  %in% input$Groups, ]  
     }
-    # colour and shape by group
-    p <- ggplot(bwdmtxFilt,aes(x=BWDY,y=BWSTRESN,colour=Group)) +
-      geom_point() + ggtitle('Body Weight Plot')
-    print(p) 
+    print(head(bwdmtxFilt))
+    
+    if (input$printMeans==TRUE) {
+      bwdmtxFiltMeans <- createMeansTable(bwdmtxFilt,'BWSTRESN',c('Group','BWDY'))
+      p <- ggplot(bwdmtxFiltMeans,aes(x=BWDY,y=BWSTRESN_mean,colour=Group)) +
+        geom_point() + ggtitle('Body Weight Plot')
+      if (input$printSE == TRUE) {
+        p <- p + geom_errorbar(aes(ymin=BWSTRESN_mean-BWSTRESN_se,ymax=BWSTRESN_mean+BWSTRESN_se),width=0.8)
+      }
+    } else {
+      # plot with color by group and lines connecting subjects
+      p <- ggplot(bwdmtxFilt,aes(x=BWDY,y=BWSTRESN,group=USUBJID,colour=Group)) +
+        geom_point() + ggtitle('Body Weight Plot')
+    }
+    if (input$printLines==TRUE) {
+      p <- p + geom_line()
+    }
+    print(p)
   })
   
   # Plot Body Weight Gains (using user-defined interval)
@@ -214,10 +279,22 @@ server <- function(input, output,session) {
     
     # Remove NA values from dataset
     bgdmtxFilt <- bgdmtxFilt[which(is.finite(bgdmtxFilt$BGSTRESN)),]
-    
-    # plot with color by group and lines connecting subjects
-    p <- ggplot(bgdmtxFilt,aes(x=BWDY,y=BGSTRESN,group=USUBJID,colour=Group)) +
-      geom_point() + geom_line() + ggtitle('Body Weight Gain Plot')
+
+    if (input$printMeans == TRUE) {
+      bgdmtxFiltMeans <- createMeansTable(bgdmtxFilt,'BGSTRESN',c('Group','BWDY'))
+      p <- ggplot(bgdmtxFiltMeans,aes(x=BWDY,y=BGSTRESN_mean,colour=Group)) +
+        geom_point() + ggtitle('Body Weight Gain Plot')
+      if (input$printSE == TRUE) {
+        p <- p + geom_errorbar(aes(ymin=BGSTRESN_mean-BGSTRESN_se,ymax=BGSTRESN_mean+BGSTRESN_se),width=0.8)
+      }
+    } else {
+      # plot with color by group and lines connecting subjects
+      p <- ggplot(bgdmtxFilt,aes(x=BWDY,y=BGSTRESN,group=USUBJID,colour=Group)) +
+        geom_point() + ggtitle('Body Weight Gain Plot')
+    }
+    if (input$printLines == TRUE) {
+      p <- p + geom_line()
+    }
     print(p) 
   })
   
@@ -237,7 +314,16 @@ ui <- fluidPage(
       h3('Select Study'),
       directoryInput('directory',label = 'Directory:',value=defaultStudyFolder),
       numericInput('n','Interval of at Least n Days:',min=1,max=100,value=1),
-      checkboxGroupInput("Groups", "Groups", choices = groupList)
+      checkboxInput('printLines','Display Lines',value=1),
+      checkboxInput('printMeans','Display Means',value=1),
+      conditionalPanel(
+        condition = "input.printMeans==1",
+        checkboxInput('printSE','Display Error Bars',value=0)
+      ),
+      checkboxGroupInput('sex','Filter by Sex:',choices=c('Male','Female'),selected=c('Male','Female')),
+      strong('Filter by TK:'),
+      checkboxInput('tk','Include TK Groups',value=FALSE),
+      checkboxGroupInput("Groups", "Filter by Group:", choices = groupList)
     ),
     
     mainPanel(

@@ -61,13 +61,13 @@ if (useGitHub == TRUE) {
 
 # Load data and extract relevant fields and rename them
 SENDdata <- load.xpt.files()
-rawData <- SENDdata$pc.xpt
+rawData <- SENDdata$pc
 SENDfields <- c('USUBJID','PCTEST','PCORRES','VISITDY','PCTPTNUM')
 SENDfields_names <- c('Subject','Analyte','Concentration','Day','Hour')
 Data <- subTable(SENDfields,SENDfields_names,rawData)
 
 # Add treatments to the dataset
-demData <- SENDdata$dm.xpt
+demData <- SENDdata$dm
 keyFields <- c('USUBJID','ARM') # Separate on Trial Sets (to be more robust with respect to recovery, etc.)
 keyFields_names <- c('Subject','Treatment')
 key <- subTable(keyFields,keyFields_names,demData)

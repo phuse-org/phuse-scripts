@@ -65,7 +65,7 @@ download.GitHub.folder <- function (
 
 # Function to create a list of R dataframes for each .xpt file
 load.xpt.files <- function(path=getwd()) {
-  # NOTE: this function requries the packages: SASxport and Hmisc
+  # NOTE: this function requries the packages: SASxport and tools
   setwd(path)
   xptFiles <- list.files(pattern="*.xpt")
   dataFrames <- list()
@@ -74,7 +74,22 @@ load.xpt.files <- function(path=getwd()) {
     count <- count + 1
     dataFrames[[count]] <- read.xport(xptFile)
   }
-  names(dataFrames) <- tolower(xptFiles)
+  names(dataFrames) <- tolower(file_path_sans_ext(xptFiles))
+  return(dataFrames)
+}
+
+# Function to create a list of R dataframes for each .csv file
+load.csv.files <- function(path=getwd()) {
+  # NOTE: this function requries the packages: SASxport and tools
+  setwd(path)
+  csvFiles <- list.files(pattern="*.csv")
+  dataFrames <- list()
+  count <- 0
+  for (csvFile in csvFiles) {
+    count <- count + 1
+    dataFrames[[count]] <- read.csv(csvFile)
+  }
+  names(dataFrames) <- tolower(file_path_sans_ext(csvFiles))
   return(dataFrames)
 }
 
@@ -133,6 +148,8 @@ getFieldValue <- function(dataset,queryField,indexFields,indexValues) {
   }
 }
 
+# Create a table with mean and se for a selected numeric field, based on user-defined grouping fields
+# and carry over additional "other fields" that have only one value within groups (e.g., STUDYID)
 createMeansTable <- function(dataset,meanField,groupFields,otherFields=NULL) {
   groups <- list()
   for (group in groupFields) {
@@ -144,11 +161,11 @@ createMeansTable <- function(dataset,meanField,groupFields,otherFields=NULL) {
   seData <- rep(NA,length(groups))
   otherFieldList <- list()
   for (field in otherFields) {
-    otherFieldList[[field]] <- rep(NA,length(groups))
+    otherFieldList[[field]] <- rep(NA,nrow(groupsDF))
   }
-  for (i in seq(dim(groupsDF)[1])) {
-    index <- seq(dim(dataset)[1])
-    for (j in seq(dim(groupsDF)[2])) {
+  for (i in seq(nrow(groupsDF))) {
+    index <- seq(nrow(dataset))
+    for (j in seq(ncol(groupsDF))) {
       indexTmp <- which(dataset[,colnames(groupsDF)[j]]==groupsDF[i,j])
       index <- intersect(index,indexTmp)
     }
@@ -156,49 +173,11 @@ createMeansTable <- function(dataset,meanField,groupFields,otherFields=NULL) {
     seData[i] <- sd(dataset[index,meanField],na.rm=TRUE)/sqrt(length(which(is.finite(dataset[index,meanField]))))
     for (field in otherFields) {
       if (length(unique(dataset[index,field]))==1) {
-        otherFieldList[[field]][i] <- unique(dataset[index,field])
-      } else {
-        stop('otherField has too many values')
-      }
-    }
-  }
-  newDataset <- cbind(groupsDF,meanData,seData)
-  for (field in otherFields) {
-    newField <- otherFieldList[[field]]
-    if (length(levels(newField))>0) {
-      newDataset <- cbind(newDataset,levels(newField)[newField])
-    } else {
-      newDataset <- cbind(newDataset,newField)
-    }
-  }
-  colnames(newDataset) <- c(groupFields,paste(meanField,'mean',sep='_'),paste(meanField,'se',sep='_'),otherFields)
-  return(newDataset)
-}
-
-createMeansTable <- function(dataset,meanField,groupFields,otherFields=NULL) {
-  groups <- list()
-  for (group in groupFields) {
-    groups[[group]] <- unique(dataset[,group])
-  }
-  groupsDF <- expand.grid(groups)
-  
-  meanData <- rep(NA,length(groups))
-  seData <- rep(NA,length(groups))
-  otherFieldList <- list()
-  for (field in otherFields) {
-    otherFieldList[[field]] <- rep(NA,length(groups))
-  }
-  for (i in seq(dim(groupsDF)[1])) {
-    index <- seq(dim(dataset)[1])
-    for (j in seq(dim(groupsDF)[2])) {
-      indexTmp <- which(dataset[,colnames(groupsDF)[j]]==groupsDF[i,j])
-      index <- intersect(index,indexTmp)
-    }
-    meanData[i] <- mean(dataset[index,meanField],na.rm=TRUE)
-    seData[i] <- sd(dataset[index,meanField],na.rm=TRUE)/sqrt(length(which(is.finite(dataset[index,meanField]))))
-    for (field in otherFields) {
-      if (length(unique(dataset[index,field]))==1) {
-        otherFieldList[[field]][i] <- unique(dataset[index,field])
+        if (length(levels(dataset[index,field]))>0) {
+          otherFieldList[[field]][i] <- levels(dataset[,field])[dataset[index[1],field]]
+        } else {
+          otherFieldList[[field]][i] <- unique(dataset[index,field])
+        }
       } else {
         stop('otherField has too many values')
       }
