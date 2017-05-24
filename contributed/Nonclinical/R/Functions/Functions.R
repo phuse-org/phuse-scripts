@@ -132,3 +132,87 @@ getFieldValue <- function(dataset,queryField,indexFields,indexValues) {
     return(fieldValue)
   }
 }
+
+createMeansTable <- function(dataset,meanField,groupFields,otherFields=NULL) {
+  groups <- list()
+  for (group in groupFields) {
+    groups[[group]] <- unique(dataset[,group])
+  }
+  groupsDF <- expand.grid(groups)
+  
+  meanData <- rep(NA,length(groups))
+  seData <- rep(NA,length(groups))
+  otherFieldList <- list()
+  for (field in otherFields) {
+    otherFieldList[[field]] <- rep(NA,length(groups))
+  }
+  for (i in seq(dim(groupsDF)[1])) {
+    index <- seq(dim(dataset)[1])
+    for (j in seq(dim(groupsDF)[2])) {
+      indexTmp <- which(dataset[,colnames(groupsDF)[j]]==groupsDF[i,j])
+      index <- intersect(index,indexTmp)
+    }
+    meanData[i] <- mean(dataset[index,meanField],na.rm=TRUE)
+    seData[i] <- sd(dataset[index,meanField],na.rm=TRUE)/sqrt(length(which(is.finite(dataset[index,meanField]))))
+    for (field in otherFields) {
+      if (length(unique(dataset[index,field]))==1) {
+        otherFieldList[[field]][i] <- unique(dataset[index,field])
+      } else {
+        stop('otherField has too many values')
+      }
+    }
+  }
+  newDataset <- cbind(groupsDF,meanData,seData)
+  for (field in otherFields) {
+    newField <- otherFieldList[[field]]
+    if (length(levels(newField))>0) {
+      newDataset <- cbind(newDataset,levels(newField)[newField])
+    } else {
+      newDataset <- cbind(newDataset,newField)
+    }
+  }
+  colnames(newDataset) <- c(groupFields,paste(meanField,'mean',sep='_'),paste(meanField,'se',sep='_'),otherFields)
+  return(newDataset)
+}
+
+createMeansTable <- function(dataset,meanField,groupFields,otherFields=NULL) {
+  groups <- list()
+  for (group in groupFields) {
+    groups[[group]] <- unique(dataset[,group])
+  }
+  groupsDF <- expand.grid(groups)
+  
+  meanData <- rep(NA,length(groups))
+  seData <- rep(NA,length(groups))
+  otherFieldList <- list()
+  for (field in otherFields) {
+    otherFieldList[[field]] <- rep(NA,length(groups))
+  }
+  for (i in seq(dim(groupsDF)[1])) {
+    index <- seq(dim(dataset)[1])
+    for (j in seq(dim(groupsDF)[2])) {
+      indexTmp <- which(dataset[,colnames(groupsDF)[j]]==groupsDF[i,j])
+      index <- intersect(index,indexTmp)
+    }
+    meanData[i] <- mean(dataset[index,meanField],na.rm=TRUE)
+    seData[i] <- sd(dataset[index,meanField],na.rm=TRUE)/sqrt(length(which(is.finite(dataset[index,meanField]))))
+    for (field in otherFields) {
+      if (length(unique(dataset[index,field]))==1) {
+        otherFieldList[[field]][i] <- unique(dataset[index,field])
+      } else {
+        stop('otherField has too many values')
+      }
+    }
+  }
+  newDataset <- cbind(groupsDF,meanData,seData)
+  for (field in otherFields) {
+    newField <- otherFieldList[[field]]
+    if (length(levels(newField))>0) {
+      newDataset <- cbind(newDataset,levels(newField)[newField])
+    } else {
+      newDataset <- cbind(newDataset,newField)
+    }
+  }
+  colnames(newDataset) <- c(groupFields,paste(meanField,'mean',sep='_'),paste(meanField,'se',sep='_'),otherFields)
+  return(newDataset)
+}
