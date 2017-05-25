@@ -40,8 +40,7 @@ library(tools)
 
 # Source Required Functions
 source('directoryInput.R')
-# source('https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/contributed/Nonclinical/R/Functions/Functions.R')
-source('C:/Users/Kevin.Snyder/Documents/PhUSE/Repo/trunk/contributed/Nonclinical/R/Functions/Functions.R')
+source('https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/contributed/Nonclinical/R/Functions/Functions.R')
 
 # Settings file
 SettingsFile <- file.path(path.expand('~'),"BWappSettings.ini")
