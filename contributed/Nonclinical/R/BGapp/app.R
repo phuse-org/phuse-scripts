@@ -19,8 +19,8 @@
 # 1) Add percent difference from day 1 -- Tony/Bill
 # 2) Check if instem dataset should have control water tk as supplier group 2? -- Bob emailed about this
 # 3) Add button toggle between BWDY and VISITDY -- Bob (create BWDY if missing from BW:BWDTC and DM:RFSTDTC)
-# 5) Filter groups by categories -- Kevin (in progress)
-# 6) Resolve issue of different units
+# 4) Filter groups by categories -- Kevin (in progress)
+# 5) Resolve issue of different units
 #####################################################
 # Hints
 #      If the directory selection dialog does not appear when clicking on the "..." button, then
@@ -36,6 +36,7 @@ library(SASxport)
 library(rChoiceDialogs)
 library(ggplot2)
 library(ini)
+library(tools)
 
 # Source Required Functions
 source('directoryInput.R')
