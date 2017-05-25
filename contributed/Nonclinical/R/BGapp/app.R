@@ -21,6 +21,7 @@
 # 3) Add button toggle between BWDY and VISITDY -- Bob (create BWDY if missing from BW:BWDTC and DM:RFSTDTC)
 # 4) Filter groups by categories -- Kevin (in progress)
 # 5) Resolve issue of different units
+# 6) Calculate days based upon subject epoch (use EPOCH in TA and elements in TE)
 #####################################################
 # Hints
 #      If the directory selection dialog does not appear when clicking on the "..." button, then
