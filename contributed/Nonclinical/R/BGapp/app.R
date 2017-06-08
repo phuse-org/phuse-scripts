@@ -14,14 +14,16 @@
 #  And added group filter
 # 2) Add body weight gain with selected interval -- Kevin
 # 3) Adding means and buttons for connecting dots -- Kevin
+# 4) Add percent difference from day 1 -- Tony/Bill
 #####################################################
 # Tasks
-# 1) Add percent difference from day 1 -- Tony/Bill
 # 2) Check if instem dataset should have control water tk as supplier group 2? -- Bob emailed about this
 # 3) Add button toggle between BWDY and VISITDY -- Bob (create BWDY if missing from BW:BWDTC and DM:RFSTDTC)
 # 4) Filter groups by categories -- Kevin (in progress)
-# 5) Resolve issue of different units
-# 6) Calculate days based upon subject epoch (use EPOCH in TA and elements in TE)
+# 5) Resolve issue of different units (Bill H will look for dataset) -- Hanming
+# 6) Calculate days based upon subject epoch (use EPOCH in TA and elements in TE) -- Bill H.
+# 7) Add a filter to (optionally) remove the Terminal Body Weights. - Bill Varady.
+# 8) Get the percent difference from day 1 to (optionally) not replace the bodyweight graph - Bob
 #####################################################
 # Hints
 #      If the directory selection dialog does not appear when clicking on the "..." button, then
@@ -227,6 +229,59 @@ server <- function(input, output,session) {
       # plot with color by group and lines connecting subjects
       p <- ggplot(bwdmtxFilt,aes(x=BWDY,y=BWSTRESN,group=USUBJID,colour=Group)) +
         geom_point() + ggtitle('Body Weight Plot')
+    }
+    if (input$printLines==TRUE) {
+      p <- p + geom_line()
+    }
+    print(p)
+  })
+  
+  # Plot Body Weights Percent Difference from Day 1
+  output$BWplot <- renderPlot({
+    data()
+    # filter now based on group selection
+    if (is.null(input$Groups) ) { 
+      bwdmtxFilt <- bwdmtx
+    }
+    else if ( length(input$Groups) == 0 ) { 
+      bwdmtxFilt <- bwdmtx
+    } 
+    else {
+      bwdmtxFilt <- bwdmtx[bwdmtx$Group  %in% input$Groups, ]  
+    }
+
+    bwdmtxFilt$BWPDIFF <- NA # create a new column with nothing in it.
+    
+    for (i in 1:nrow(bwdmtxFilt)) 
+    {
+      DayOneWeight <- bwdmtxFilt$BWSTRESN[which((bwdmtxFilt$BWDY==1) & (bwdmtxFilt$USUBJID==bwdmtxFilt$USUBJID[i]))]
+      if (length(DayOneWeight)>1)
+      {
+        DayOneWeight=DayOneWeight[1] #if more than one day one weight is reported, just select the first one.
+      } 
+      else
+      {
+        if (length(DayOneWeight)<1)
+        {
+          DayOneWeight = NA  #ensure that DayOneWeight has an NA for the subsequent calculations if no weights were found for day 1
+        }
+      }
+      bwdmtxFilt$BWPDIFF[i] <- 100*((bwdmtxFilt$BWSTRESN[i]-DayOneWeight) / DayOneWeight)
+    }
+    print(bwdmtxFilt)
+    
+    if (input$printMeans==TRUE) {
+      bwdmtxFiltMeans <- createMeansTable(bwdmtxFilt,'BWPDIFF',c('Group','BWDY'))
+      p <- ggplot(bwdmtxFiltMeans,aes(x=BWDY,y=BWPDIFF_mean,colour=Group)) +
+        geom_point() + ggtitle('Body Weight Percent Difference from day 1 Plot')
+# this comment block has code copied from "Plot Body Weights" and has not (yet) been adjusted for use in this section
+#      if (input$printSE == TRUE) {
+#        p <- p + geom_errorbar(aes(ymin=BWSTRESN_mean-BWSTRESN_se,ymax=BWSTRESN_mean+BWSTRESN_se),width=0.8)
+#      }
+    } else {
+      # plot with color by group and lines connecting subjects
+      p <- ggplot(bwdmtxFilt,aes(x=BWDY,y=BWPDIFF,group=USUBJID,colour=Group)) +
+        geom_point() + ggtitle('Body Weight Percent Difference from day 1 Plot')
     }
     if (input$printLines==TRUE) {
       p <- p + geom_line()
