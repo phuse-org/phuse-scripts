@@ -25,8 +25,12 @@ require(XLConnect)
 require(SASxport)
 # Here is temporary override of write xport function to get desired minimum variable lengths.
 # Use environment for other function in package to allow use of unexported functions in package
-	source("c:/temp/r testing/write.xport2.R")
-	tmpfun <- get("read.xport", envir = asNamespace("SASxport"))
+#	source("C:/Users/bfriedman/Documents/phuse-scripts/contributed\Nonclinical/R/CreatingXPT/write.xport2.R")
+
+# This gives the directory of the file where the statement was placed , to get current .R script directory
+  sourceDir <- getSrcDirectory(function(dummy) {dummy})
+  source(paste(sourceDir, "/write.xport2.R", sep=""))
+  tmpfun <- get("read.xport", envir = asNamespace("SASxport"))
 	environment(write.xport2) <- environment(tmpfun)
 	attributes(write.xport2) <- attributes(tmpfun)
 	assignInNamespace("write.xport", write.xport2, ns="SASxport")
