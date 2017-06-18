@@ -15,6 +15,7 @@
 # 2) Add body weight gain with selected interval -- Kevin
 # 3) Adding means and buttons for connecting dots -- Kevin
 # 4) Add percent difference from day 1 -- Tony/Bill
+# 5) Get the percent difference from day 1 to (optionally) not replace the bodyweight graph - Bob
 #####################################################
 # Tasks
 # 2) Check if instem dataset should have control water tk as supplier group 2? -- Bob emailed about this
@@ -23,7 +24,6 @@
 # 5) Resolve issue of different units (Bill H will look for dataset) -- Hanming
 # 6) Calculate days based upon subject epoch (use EPOCH in TA and elements in TE) -- Bill H.
 # 7) Add a filter to (optionally) remove the Terminal Body Weights. - Bill Varady.
-# 8) Get the percent difference from day 1 to (optionally) not replace the bodyweight graph - Bob
 #####################################################
 # Hints
 #      If the directory selection dialog does not appear when clicking on the "..." button, then
@@ -169,7 +169,7 @@ server <- function(input, output,session) {
     sexIndex <- union(maleIndex,femaleIndex)
     bwdmtx <<- bwdmtx[sexIndex,]
     
-    # Filtery by TK
+    # Filter by TK
     if (input$tk==FALSE) {
       TKsubjects <- NULL
       noTKsubjects <- NULL
@@ -237,7 +237,7 @@ server <- function(input, output,session) {
   })
   
   # Plot Body Weights Percent Difference from Day 1
-  output$BWplot <- renderPlot({
+  output$BWDiffplot <- renderPlot({
     data()
     # filter now based on group selection
     if (is.null(input$Groups) ) { 
@@ -370,6 +370,9 @@ ui <- fluidPage(
       h3('Select Study'),
       directoryInput('directory',label = 'Directory:',value=defaultStudyFolder),
       numericInput('n','Interval of at Least n Days:',min=1,max=100,value=1),
+      checkboxInput('showBWPlot','Show the Body Weight Plot',value=1),
+      checkboxInput('showBWDiffPlot','Show the Body Weight Difference from Day 1 Plot',value=1),
+      checkboxInput('showBGPlot','Show the Body Weight Gain Plot',value=1),
       checkboxInput('printLines','Display Lines',value=1),
       checkboxInput('printMeans','Display Means',value=1),
       conditionalPanel(
@@ -383,9 +386,19 @@ ui <- fluidPage(
     ),
     
     mainPanel(
-      plotOutput("BWplot"),
-      br(),
-      plotOutput("BGplot")
+      # Show each plot if it is selected to be shown
+      conditionalPanel(
+        condition = "input.showBWPlot==1",
+        plotOutput("BWplot")
+      ),
+      conditionalPanel(
+        condition = "input.showBWDiffPlot==1",
+        plotOutput("BWDiffplot")
+      ),
+      conditionalPanel(
+        condition = "input.showBGPlot==1",
+        plotOutput("BGplot")
+      )
     ) 
   )
 )
