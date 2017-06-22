@@ -20,7 +20,7 @@
 # Tasks
 # 2) Check if instem dataset should have control water tk as supplier group 2? -- Bob emailed about this
 # 3) Add button toggle between BWDY and VISITDY -- Bob (create BWDY if missing from BW:BWDTC and DM:RFSTDTC)
-# 4) Filter groups by categories -- Kevin (in progress)
+# 4) Filter groups by categories -- Kevin (in progress: allow merging by sex and tk) !! MAY NEED TO RESTRUCTURE GROUPINGS !!
 # 5) Resolve issue of different units (Bill H will look for dataset) -- Hanming
 # 6) Calculate days based upon subject epoch (use EPOCH in TA and elements in TE) -- Bill H.
 # 7) Add a filter to (optionally) remove the Terminal Body Weights. - Bill Varady.
@@ -156,21 +156,20 @@ server <- function(input, output,session) {
     dm <<- Dataset$dm
     
     # Filter by Sex
-    if ('Male' %in% input$sex) {
-      maleIndex <- which(bwdmtx$SEX=='M')
-    } else {
-      maleIndex <- NULL
+    if (input$sex == 'Male') {
+      sexIndex <- which(bwdmtx$SEX=='M')
+      bwdmtx <<- bwdmtx[sexIndex,]
+    } else if (input$sex == 'Female') {
+      sexIndex <- which(bwdmtx$SEX=='F')
+      bwdmtx <<- bwdmtx[sexIndex,]
     }
-    if ('Female' %in% input$sex) {
-      femaleIndex <- which(bwdmtx$SEX=='F')
-    } else {
-      femaleIndex <- NULL
-    }
-    sexIndex <- union(maleIndex,femaleIndex)
-    bwdmtx <<- bwdmtx[sexIndex,]
+    # Merge by Sex
+    # if ('sex' %in% input$merge) {
+    #    
+    #  }
     
     # Filter by TK
-    if (input$tk==FALSE) {
+    if (input$includeTK==FALSE) {
       TKsubjects <- NULL
       noTKsubjects <- NULL
       TKcount <- 1
@@ -187,6 +186,10 @@ server <- function(input, output,session) {
       noTKindex <- which(bwdmtx$USUBJID %in% noTKsubjects)
       bwdmtx <<- bwdmtx[noTKindex,]
     }
+    # Merge by TK
+    #     if ('tk' %in% input$merge) {
+    #       
+    #     }
     
     bwdmtx$Group <<- factor(bwdmtx$Group)
     
@@ -268,7 +271,7 @@ server <- function(input, output,session) {
       }
       bwdmtxFilt$BWPDIFF[i] <- 100*((bwdmtxFilt$BWSTRESN[i]-DayOneWeight) / DayOneWeight)
     }
-    print(bwdmtxFilt)
+    # print(bwdmtxFilt)
     
     if (input$printMeans==TRUE) {
       bwdmtxFiltMeans <- createMeansTable(bwdmtxFilt,'BWPDIFF',c('Group','BWDY'))
@@ -379,9 +382,10 @@ ui <- fluidPage(
         condition = "input.printMeans==1",
         checkboxInput('printSE','Display Error Bars',value=0)
       ),
-      checkboxGroupInput('sex','Filter by Sex:',choices=c('Male','Female'),selected=c('Male','Female')),
+      radioButtons('sex','Filter by Sex:',choices=c('Male','Female','Both'),selected='Both'),
       strong('Filter by TK:'),
-      checkboxInput('tk','Include TK Groups',value=FALSE),
+      checkboxInput('includeTK','Include TK Groups',value=FALSE),
+      # checkboxGroupInput('merge','Merge by:',choices=c('sex','tk')),
       checkboxGroupInput("Groups", "Filter by Group:", choices = groupList)
     ),
     
