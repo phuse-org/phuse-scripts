@@ -17,11 +17,18 @@
 # 4) Add percent difference from day 1 -- Tony/Bill
 # 5) Get the percent difference from day 1 to (optionally) not replace the bodyweight graph - Bob
 #####################################################
+# Notes
+# 1) Check if instem dataset should have control water tk as supplier group 2? -- Bob emailed instem and was told that this was an old study.
+#####################################################
 # Tasks
-# 2) Check if instem dataset should have control water tk as supplier group 2? -- Bob emailed about this
 # 3) Add button toggle between BWDY and VISITDY -- Bob (create BWDY if missing from BW:BWDTC and DM:RFSTDTC)
-# 4) Filter groups by categories -- Kevin (in progress: allow merging by sex and tk) !! MAY NEED TO RESTRUCTURE GROUPINGS !!
-# 5) Resolve issue of different units (Bill H will look for dataset) -- Hanming
+# 4) To add an option to construct groups by Filtering and Splitting: -- Kevin
+#       a) Dose Level  
+#       b) Test Article   
+#       c) Males/Females   
+#       d) TK/non-TK
+#       e) Recovery/non-recovery
+# 5) Resolve issue of different units (display an error if the units aren't consistent, else the units of the first record) -- Hanming
 # 6) Calculate days based upon subject epoch (use EPOCH in TA and elements in TE) -- Bill H.
 # 7) Add a filter to (optionally) remove the Terminal Body Weights. - Bill Varady.
 #####################################################
