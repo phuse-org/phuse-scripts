@@ -126,8 +126,17 @@ testresults <- subset(testresultsread, PARAMCD == testname & AVISITN %in% select
                       & FLAG == "Y")
 
 } else {
-testresults <- subset(testresultsread, PARAMCD == testname & AVISITN %in% selectedvisits[(initial):(perpage*i)])  
+testresults <- subset(testresultsread, PARAMCD == testname & AVISITN %in% selectedvisits[(initial):(perpage*i)]) 
+
 }
+  if (usepopflag == TRUE){
+    testresults <- subset(testresultsread, PARAMCD == testname & AVISITN %in% selectedvisits[(initial):
+                             (ifelse(perpage*i>length(selectedvisits),length(selectedvisits),perpage*i))] 
+                          & FLAG == "Y")
+    
+  } else {
+    testresults <- subset(testresultsread, PARAMCD == testname & AVISITN %in% selectedvisits[(initial):(perpage*i)])  
+  }
 initial <- initial + perpage
 testresults<- data.table(testresults)
 
