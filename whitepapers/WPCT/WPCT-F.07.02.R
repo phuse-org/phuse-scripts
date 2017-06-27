@@ -11,7 +11,7 @@
 #10-JAN-2016, adapted from WPCT 7.01.R script
 #needs ANCOVA p values in table...
 
-### updated 21-June-2017
+### updated 21-June-2017, Kirsten - converted to an R package
 
 
 #ggplot2, data.table, gridExtra, Hmisc (for xpt import) required, if not installed, program will error.
@@ -20,6 +20,50 @@ library(data.table)
 library(gridExtra)
 library(Hmisc)
 library(tools)
+
+
+#============================================================================================#
+#=================================  Making 7.2 package  =====================================#
+#' @data data frame
+
+#' @param treatmentname Which treatment arm variable? e.g. "TRTA"
+#' @param useshortnames TRUE OR FALSE
+#' @param oldnames Treatment Arms old names e.g. "Xanomeline Low Dose","Xanomeline High Dose"
+#' @param newnames Treatment Arms new names e.g. "X-low", "X-High"
+#' @param usepopflag subset on a population flatg. TRUE or FALSE
+#' @param popflag
+#' @param testname
+#' @param yaxislabel
+#' @param selectedvisits
+#' @param perpage
+#' @param dignum
+#' @param inputdiretory set input file directory
+#' @param outputdiretory set output file directory
+#' @param testfilename accepts CSV or XPT files
+#' @param filetype output file type - TIFF or JPEG or PNG
+#' @param pixelwidth choose output file size: pixel width
+#' @param pixelheight choose output file size: pixel height
+#' @param outputfontsize choose output font size
+#' @param charttitle Title for the chart
+
+#' @return PhUSE Figure 7.2 Box plot - Change in XXX Over Time
+
+#' @import ggplot2
+#' @import data.table
+#' @import gridExtra
+#' @import Hmisc
+#' @import tools
+
+
+#' @export boxplotfunc<-function(data, treatmentname, useshortnames = c(TRUE,FALSE),
+#'  oldnames, newnames,usepopflag = c(TRUE,FALSE), popflag, testname, yaxislabel,
+#'   selectedvisits, perpage, dignum, redoutliers = c(TRUE, FALSE), 
+#'   horizontallines = c(TRUE,FALSE), enterlimits= c(TRUE,FALSE), ANRLO, ANRHI, 
+#'   inputdirectory, outputdirectory, testfilename, filetype = c("PNG","TIFF","JPEG"), 
+#'    pixelwidth, pixelheight, outputfontsize, charttitle){
+
+
+
 
 #Which treatment arm variable?
 treatmentname <- "TRTA" #TRTA, TRTP, etc
@@ -159,4 +203,5 @@ if (filetype == "PNG") {
   grid.arrange(p3, t1, ncol = 1)
   dev.off()
 }
+
 }
