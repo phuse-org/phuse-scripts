@@ -3,13 +3,16 @@
 # White paper: Central Tendency
 # Specs:       https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/specification/
 # Output:      https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/WPCT/outputs_r/
-# Contributors: Jeno Pizarro
+# Contributors: Jeno Pizarro, Kirsten Burdett
 
 
 #TESTING and QUALIFICATION:
 #DEVELOP STAGE
 #10-JAN-2016, adapted from WPCT 7.01.R script
 #needs ANCOVA p values in table...
+
+### updated 21-June-2017
+
 
 #ggplot2, data.table, gridExtra, Hmisc (for xpt import) required, if not installed, program will error.
 library(ggplot2)
@@ -32,17 +35,18 @@ popflag <- "SAFFL"
 
 #test or parameter to be analyzed
 testname <- "DIABP"
-yaxislabel <- "Diastolic Blood Pressure (mmHG)"
+yaxislabel <- "Change in Diastolic Blood Pressure (mmHG)"  #changed from 7.1
 #visit numbers to be analyzed
 selectedvisits <-c(0,2,4,6,8,12,16,20,24)
 #how many visits to display per page?
-perpage <- 5
+perpage <- 6
 #number of digits in table, standard deviation = dignum +1
 dignum <- 1
 
+
 #set input and output file directories
-inputdirectory <- "path"
-outputdirectory <- "path"
+inputdirectory <- "R:/StatOpB/CSV/9_GB_PhUSE/phuse-scripts/data/adam/cdisc"
+outputdirectory <- "U:/github"
 #accepts CSV or XPT files
 testfilename <- "advs.xpt" #"advs.xpt"
 #output file type - TIFF or JPEG. 
@@ -54,6 +58,8 @@ pixelheight <- 1000
 outputfontsize <- 16
 #Title for the chart
 charttitle <- "Box and Whisker Plot Title" #in quotes
+
+
 
 #Read in DATASET
 if (file_ext(testfilename) == "csv") {
