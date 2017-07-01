@@ -16,12 +16,12 @@
 # 3) Adding means and buttons for connecting dots -- Kevin
 # 4) Add percent difference from day 1 -- Tony/Bill
 # 5) Get the percent difference from day 1 to (optionally) not replace the bodyweight graph - Bob
+# 6) Add button toggle between BWDY and VISITDY (call this xaxis) -- Bob (create BWDY if missing from BW:BWDTC and DM:RFSTDTC)
 #####################################################
 # Notes
 # 1) Check if instem dataset should have control water tk as supplier group 2? -- Bob emailed instem and was told that this was an old study.
 #####################################################
 # Tasks
-# 3) Add button toggle between BWDY and VISITDY -- Bob (create BWDY if missing from BW:BWDTC and DM:RFSTDTC)
 # 4) To add an option to construct groups by Filtering and Splitting: -- Kevin
 #       a) Dose Level  
 #       b) Test Article   
@@ -159,6 +159,18 @@ server <- function(input, output,session) {
     } else {
       bwdmtx <<- within(bwdmtx, Group <- SET)
     }
+    # If there is no BWDY, calculate one
+    if("BWDY" %in% colnames(bwdmtx))
+    {
+      print("BWDY is found");
+    } 
+    else
+    {
+      print("BWDY is not found, calculating from BWDTC and DM.RFSTDTC");
+      bwdmtx <<- within(bwdmtx, BWDYDiff <- (as.Date(BWDTC)-as.Date(RFSTDTC)))
+      # if 0 or greater, add a 1 to it so that study days start at 1
+      bwdmtx$BWDY <- ifelse(bwdmtx$BWDYDiff>=0, bwdmtx$BWDYDiff+1, bwdmtx$BWDYDiff)
+    } 
     #
     dm <<- Dataset$dm
     
@@ -212,10 +224,12 @@ server <- function(input, output,session) {
     
     print(head(bwdmtx))
   })  
-  
+
   # Plot Body Weights
   output$BWplot <- renderPlot({
     data()
+    # retrieve xaxis choice
+    xaxis <- input$xaxis
     # filter now based on group selection
     if (is.null(input$Groups) ) { 
       bwdmtxFilt <- bwdmtx
@@ -229,16 +243,16 @@ server <- function(input, output,session) {
     print(head(bwdmtxFilt))
     
     if (input$printMeans==TRUE) {
-      bwdmtxFiltMeans <- createMeansTable(bwdmtxFilt,'BWSTRESN',c('Group','BWDY'))
-      p <- ggplot(bwdmtxFiltMeans,aes(x=BWDY,y=BWSTRESN_mean,colour=Group)) +
-        geom_point() + ggtitle('Body Weight Plot')
+      bwdmtxFiltMeans <- createMeansTable(bwdmtxFilt,'BWSTRESN',c('Group',xaxis))
+      p <- ggplot(bwdmtxFiltMeans,aes(x=bwdmtxFiltMeans[,xaxis],y=BWSTRESN_mean,colour=Group)) +
+        geom_point() + ggtitle('Body Weight Plot') + labs(x=xaxis)
       if (input$printSE == TRUE) {
         p <- p + geom_errorbar(aes(ymin=BWSTRESN_mean-BWSTRESN_se,ymax=BWSTRESN_mean+BWSTRESN_se),width=0.8)
       }
     } else {
       # plot with color by group and lines connecting subjects
-      p <- ggplot(bwdmtxFilt,aes(x=BWDY,y=BWSTRESN,group=USUBJID,colour=Group)) +
-        geom_point() + ggtitle('Body Weight Plot')
+      p <- ggplot(bwdmtxFilt,aes(x=bwdmtxFilt[,xaxis],y=BWSTRESN,group=USUBJID,colour=Group)) +
+        geom_point() + ggtitle('Body Weight Plot') + labs(x=xaxis)
     }
     if (input$printLines==TRUE) {
       p <- p + geom_line()
@@ -249,6 +263,8 @@ server <- function(input, output,session) {
   # Plot Body Weights Percent Difference from Day 1
   output$BWDiffplot <- renderPlot({
     data()
+    # retrieve xaxis choice
+    xaxis <- input$xaxis
     # filter now based on group selection
     if (is.null(input$Groups) ) { 
       bwdmtxFilt <- bwdmtx
@@ -264,7 +280,7 @@ server <- function(input, output,session) {
     
     for (i in 1:nrow(bwdmtxFilt)) 
     {
-      DayOneWeight <- bwdmtxFilt$BWSTRESN[which((bwdmtxFilt$BWDY==1) & (bwdmtxFilt$USUBJID==bwdmtxFilt$USUBJID[i]))]
+      DayOneWeight <- bwdmtxFilt$BWSTRESN[which((bwdmtxFilt[,xaxis]==1) & (bwdmtxFilt$USUBJID==bwdmtxFilt$USUBJID[i]))]
       if (length(DayOneWeight)>1)
       {
         DayOneWeight=DayOneWeight[1] #if more than one day one weight is reported, just select the first one.
@@ -281,17 +297,17 @@ server <- function(input, output,session) {
     # print(bwdmtxFilt)
     
     if (input$printMeans==TRUE) {
-      bwdmtxFiltMeans <- createMeansTable(bwdmtxFilt,'BWPDIFF',c('Group','BWDY'))
-      p <- ggplot(bwdmtxFiltMeans,aes(x=BWDY,y=BWPDIFF_mean,colour=Group)) +
-        geom_point() + ggtitle('Body Weight Percent Difference from day 1 Plot')
+      bwdmtxFiltMeans <- createMeansTable(bwdmtxFilt,'BWPDIFF',c('Group',xaxis))
+      p <- ggplot(bwdmtxFiltMeans,aes(x=bwdmtxFiltMeans[,xaxis],y=BWPDIFF_mean,colour=Group)) +
+        geom_point() + ggtitle('Body Weight Percent Difference from day 1 Plot')+ labs(x=xaxis)
 # this comment block has code copied from "Plot Body Weights" and has not (yet) been adjusted for use in this section
 #      if (input$printSE == TRUE) {
 #        p <- p + geom_errorbar(aes(ymin=BWSTRESN_mean-BWSTRESN_se,ymax=BWSTRESN_mean+BWSTRESN_se),width=0.8)
 #      }
     } else {
       # plot with color by group and lines connecting subjects
-      p <- ggplot(bwdmtxFilt,aes(x=BWDY,y=BWPDIFF,group=USUBJID,colour=Group)) +
-        geom_point() + ggtitle('Body Weight Percent Difference from day 1 Plot')
+      p <- ggplot(bwdmtxFilt,aes(x=bwdmtxFilt[,xaxis],y=BWPDIFF,group=USUBJID,colour=Group)) +
+        geom_point() + ggtitle('Body Weight Percent Difference from day 1 Plot')+ labs(x=xaxis)
     }
     if (input$printLines==TRUE) {
       p <- p + geom_line()
@@ -302,6 +318,8 @@ server <- function(input, output,session) {
   # Plot Body Weight Gains (using user-defined interval)
   output$BGplot <- renderPlot({
     data()
+    # retrieve xaxis choice
+    xaxis <- input$xaxis
     # filter now based on group selection
     if (is.null(input$Groups) ) { 
       bwdmtxFilt <- bwdmtx
@@ -314,7 +332,7 @@ server <- function(input, output,session) {
     }
     
     # Order Dataset by Subject and then by Day
-    bgdmtxFilt <- bwdmtxFilt[order(bwdmtxFilt$USUBJID,bwdmtxFilt$BWDY),]
+    bgdmtxFilt <- bwdmtxFilt[order(bwdmtxFilt$USUBJID,bwdmtxFilt[,xaxis]),]
     
     # Calculate Body Weight Gains and Filter by Interval Length
     bgdmtxFilt$BGSTRESN <- bgdmtxFilt$BWSTRESN
@@ -329,7 +347,7 @@ server <- function(input, output,session) {
         } else {
           # Check if next datapoint is at or past user-defined interval or Day 1
           ## NOTE: maybe we also add a contigency for the last day of dosing or start of recovery period
-          if ((subjectData$BWDY[i]-subjectData$BWDY[i-interval]>=input$n)|(subjectData$BWDY[i]==1)) {
+          if ((subjectData[,xaxis][i]-subjectData[,xaxis][i-interval]>=input$n)|(subjectData[,xaxis][i]==1)) {
             # if it is, then record body weight gain across interval
             bgDataTmp[i] <- subjectData$BWSTRESN[i] - subjectData$BWSTRESN[i-interval]
             interval <- 1
@@ -347,16 +365,16 @@ server <- function(input, output,session) {
     bgdmtxFilt <- bgdmtxFilt[which(is.finite(bgdmtxFilt$BGSTRESN)),]
 
     if (input$printMeans == TRUE) {
-      bgdmtxFiltMeans <- createMeansTable(bgdmtxFilt,'BGSTRESN',c('Group','BWDY'))
-      p <- ggplot(bgdmtxFiltMeans,aes(x=BWDY,y=BGSTRESN_mean,colour=Group)) +
-        geom_point() + ggtitle('Body Weight Gain Plot')
+      bgdmtxFiltMeans <- createMeansTable(bgdmtxFilt,'BGSTRESN',c('Group',xaxis))
+      p <- ggplot(bgdmtxFiltMeans,aes(x=bgdmtxFiltMeans[,xaxis],y=BGSTRESN_mean,colour=Group)) +
+        geom_point() + ggtitle('Body Weight Gain Plot')+ labs(x=xaxis)
       if (input$printSE == TRUE) {
         p <- p + geom_errorbar(aes(ymin=BGSTRESN_mean-BGSTRESN_se,ymax=BGSTRESN_mean+BGSTRESN_se),width=0.8)
       }
     } else {
       # plot with color by group and lines connecting subjects
-      p <- ggplot(bgdmtxFilt,aes(x=BWDY,y=BGSTRESN,group=USUBJID,colour=Group)) +
-        geom_point() + ggtitle('Body Weight Gain Plot')
+      p <- ggplot(bgdmtxFilt,aes(x=bgdmtxFilt[,xaxis],y=BGSTRESN,group=USUBJID,colour=Group)) +
+        geom_point() + ggtitle('Body Weight Gain Plot')+ labs(x=xaxis)
     }
     if (input$printLines == TRUE) {
       p <- p + geom_line()
@@ -380,6 +398,9 @@ ui <- fluidPage(
       h3('Select Study'),
       directoryInput('directory',label = 'Directory:',value=defaultStudyFolder),
       numericInput('n','Interval of at Least n Days:',min=1,max=100,value=1),
+      radioButtons("xaxis", "Use for x-axis:",
+                   c("BW DAY" = "BWDY",
+                     "VISIT DAY" = "VISITDY")),
       checkboxInput('showBWPlot','Show the Body Weight Plot',value=1),
       checkboxInput('showBWDiffPlot','Show the Body Weight Difference from Day 1 Plot',value=1),
       checkboxInput('showBGPlot','Show the Body Weight Gain Plot',value=1),
