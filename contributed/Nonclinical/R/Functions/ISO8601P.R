@@ -3,7 +3,7 @@
 # Other ISO 8601 date times may be handled using https://cran.r-project.org/web/packages/parsedate/parsedate.pdf
 # 
 library(stringr)
-input="P1Y2M3DT4H5M6S"
+input="P1Y"
 s<-"^(\\+|-)?P((((([0-9]+(\\.[0-9]+)?)Y)?(([0-9]+(\\.[0-9]+)?)M)?(([0-9]+(\\.[0-9]+)?)D)?)(T(([0-9]+(\\.[0-9]+)?)H)?(([0-9]+(\\.[0-9]+)?)M)?(([0-9]+(\\.[0-9]+)?)S)?)?)|([0-9]+(\\.[0-9]+)?)W)$"
 result  <- str_match(input,s)
 if(str_detect(input,s))
@@ -24,7 +24,7 @@ if(str_detect(input,s))
   minute<-as.numeric(result[20])
   second<-as.numeric(result[23])
   week<-as.numeric(result[25])
-  time<-sign*(((year*365.25+month*(365.25/12)+7*week+day)*24+hour)*60+minute)*60+second
+  time<-sign*((((year*365.25+month*(365.25/12)+7*week+day)*24+hour)*60+minute)*60+second)
 } else 
 {
    print("This is not an interval this script can handle\n")
