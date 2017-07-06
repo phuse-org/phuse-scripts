@@ -148,6 +148,49 @@ getFieldValue <- function(dataset,queryField,indexFields,indexValues) {
   }
 }
 
+
+# Function to convert a simple ISO 8601 time duration as described in the SEND IG to seconds
+# Returns NA if the fuction cannot convert the string to seconds
+# This assumes that a month has 365.25/12 days and that a year has 365.25 days.
+# Other ISO 8601 date times may be handled using https://cran.r-project.org/web/packages/parsedate/parsedate.pdf
+# 
+# DUR_to_seconds("P4S")  returns NA because the T is missing after the P
+# DUR_to_seconds("-PT4S")  returns -4
+# DUR_to_seconds("PT4S")   returns 4
+# DUR_to_seconds("P1Y")    returns 31557600
+#
+#This function requires the library(stringr)
+library(stringr)
+DUR_to_seconds <- function(input) {
+  s<-"^(\\+|-)?P((((([0-9]+(\\.[0-9]+)?)Y)?(([0-9]+(\\.[0-9]+)?)M)?(([0-9]+(\\.[0-9]+)?)D)?)(T(([0-9]+(\\.[0-9]+)?)H)?(([0-9]+(\\.[0-9]+)?)M)?(([0-9]+(\\.[0-9]+)?)S)?)?)|([0-9]+(\\.[0-9]+)?)W)$"
+  result  <- str_match(input,s)
+  if(str_detect(input,s))
+  {
+    # we have a time interval this script can handle
+    result[is.na(result)] <- 0  # replace NA values with 0
+    if(str_detect(input,"^-P"))
+    {
+      sign <- (-1)
+    } else
+    {
+      sign <- (1)
+    }
+    year<-as.numeric(result[7])
+    month<-as.numeric(result[10])
+    day<-as.numeric(result[13])
+    hour<-as.numeric(result[17])
+    minute<-as.numeric(result[20])
+    second<-as.numeric(result[23])
+    week<-as.numeric(result[25])
+    time<-sign*((((year*365.25+month*(365.25/12)+7*week+day)*24+hour)*60+minute)*60+second)
+    return(time)
+  } else 
+  {
+    return(NA)
+  }
+}
+
+
 # Create a table with mean and se for a selected numeric field, based on user-defined grouping fields
 # and carry over additional "other fields" that have only one value within groups (e.g., STUDYID)
 createMeansTable <- function(dataset,meanField,groupFields,otherFields=NULL) {
