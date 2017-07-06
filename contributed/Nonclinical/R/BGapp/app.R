@@ -434,6 +434,41 @@ ui <- fluidPage(
     ) 
   )
 )
+############################################################################################
+# Script For Plotting the Percent Difference in Body Weight for each animal over the course of a study
+# Requires SASxport Package
+
+library(SASxport)
+library(shiny)
+library(ggplot2)
+
+#Set the location of the Body Weight XPT that you want to read in
+setwd("C:/Users/Anthony Fata/Documents/SENDexpress/R Scripts/Percent BG Gain Script")
+BW <- read.xport("bw.xpt")
+
+#Removes Days less than -1 for the calculation
+BW <- subset(BW, BWDY >= -1)
+
+#Removes everything but Body Weight from Calcuation (Removes TERMBW)
+BW <- subset(BW, BWTESTCD=="BW")
+
+#Creates new Variable 
+PChange= rep(NA,nrow(BW))
+BW <- cbind(BW, PChange)
+
+#Math portion
+#Using "Unlist", info provided here: http://rfunction.com/archives/2238 & https://stackoverflow.com/questions/6511146/calculating-changes-with-the-by
+#Inputs a "NA" for the Baseline BW Calcualtion in the PChange column
+BW$PChange <-  unlist(tapply(BW$BWSTRESN, BW$USUBJID, function(x) c(NA, 100*diff(x)/x[-length(x)]) )  )
+
+# Remove NA values from dataset
+BW <- BW [which(is.finite(BW$PChange)),]
+
+#Graphing Function Below does not currently Work
+BWGraph <- ggplot(BW,aes(x=BW$BWDY,y=BW$PChange,group=BW$USUBJID,colour=Group)) +
+  geom_point() + ggtitle('Body Weight Gain Plot')
+
+print(BWGraph)
 
 ############################################################################################
 
