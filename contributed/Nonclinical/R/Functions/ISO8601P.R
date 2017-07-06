@@ -2,6 +2,8 @@
 # This assumes that a month has 365.25/12 days and that a year has 365.25 days.
 # Other ISO 8601 date times may be handled using https://cran.r-project.org/web/packages/parsedate/parsedate.pdf
 # 
+# This script has now been incorporated into the Functions.R file as function DUR_to_seconds()
+#
 library(stringr)
 input="P1Y"
 s<-"^(\\+|-)?P((((([0-9]+(\\.[0-9]+)?)Y)?(([0-9]+(\\.[0-9]+)?)M)?(([0-9]+(\\.[0-9]+)?)D)?)(T(([0-9]+(\\.[0-9]+)?)H)?(([0-9]+(\\.[0-9]+)?)M)?(([0-9]+(\\.[0-9]+)?)S)?)?)|([0-9]+(\\.[0-9]+)?)W)$"
