@@ -1,5 +1,6 @@
 # R script designed to convert ISO 8601 intervals starting with a P into seconds
 # This assumes that a month has 365.25/12 days and that a year has 365.25 days.
+# Other ISO 8601 date times may be handled using https://cran.r-project.org/web/packages/parsedate/parsedate.pdf
 # 
 library(stringr)
 input="P1Y2M3DT4H5M6S"
@@ -12,8 +13,7 @@ if(str_detect(input,s))
   if(str_detect(input,"^-P"))
   {
     sign <- (-1)
-  }
-  else
+  } else
   {
     sign <- (1)
   }
@@ -25,8 +25,8 @@ if(str_detect(input,s))
   second<-as.numeric(result[23])
   week<-as.numeric(result[25])
   time<-sign*(((year*365.25+month*(365.25/12)+7*week+day)*24+hour)*60+minute)*60+second
-}
-else
+} else 
 {
-  print "This is not an interval this script can handle\n"
+   print("This is not an interval this script can handle\n")
 }
+time
