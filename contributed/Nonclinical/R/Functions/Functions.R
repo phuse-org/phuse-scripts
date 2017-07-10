@@ -151,7 +151,7 @@ getFieldValue <- function(dataset,queryField,indexFields,indexValues) {
 
 # Function to convert a simple ISO 8601 time duration as described in the SEND IG to seconds
 # Returns NA if the fuction cannot convert the string to seconds
-# This assumes that a month has 365.25/12 days and that a year has 365.25 days.
+# This assumes that a month has 365.2425/12 days and that a year has 365.2425 days (see http://www.convertunits.com/from/second/to/year).
 # Other ISO 8601 date times may be handled using https://cran.r-project.org/web/packages/parsedate/parsedate.pdf
 # 
 # DUR_to_seconds("P4S")  returns NA because the T is missing after the P
@@ -182,7 +182,7 @@ DUR_to_seconds <- function(input) {
     minute<-as.numeric(result[20])
     second<-as.numeric(result[23])
     week<-as.numeric(result[25])
-    time<-sign*((((year*365.25+month*(365.25/12)+7*week+day)*24+hour)*60+minute)*60+second)
+    time<-sign*((((year*365.2425+month*(365.2425/12)+7*week+day)*24+hour)*60+minute)*60+second)
     return(time)
   } else 
   {
