@@ -3,7 +3,8 @@
 #' @param r_dir root directory
 #' @param s_dir sub directory
 #' @return directory name
-#' @export
+#' @name create_dir
+#' @export create_dir
 #' @author Hanming Tu
 #
 # Function Name: download.script.files

@@ -5,6 +5,8 @@
 #' @param baseDir base directory in the repository including the repo URL.
 #'   Default to "https://github.com/phuse-org/phuse-scripts/raw/master"
 #' @param scriptDir script directory in the repository
+#' @importFrom utils download.file
+#' @name download_script_files
 #' @export
 #' @author Hanming Tu
 #
