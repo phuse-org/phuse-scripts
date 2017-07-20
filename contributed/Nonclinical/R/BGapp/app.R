@@ -17,16 +17,17 @@
 # 4) Add percent difference from day 1 -- Tony/Bill
 # 5) Get the percent difference from day 1 to (optionally) not replace the bodyweight graph - Bob
 # 6) Add button toggle between BWDY and VISITDY (call this xaxis) -- Bob (create BWDY if missing from BW:BWDTC and DM:RFSTDTC)
+# 7) To add an option to construct groups by Filtering and Splitting: -- Kevin
+#       a) Dose Level  
+#       b) Test Article   
+#       c) Males/Females   
+#       d) TK/non-TK
 #####################################################
 # Notes
 # 1) Check if instem dataset should have control water tk as supplier group 2? -- Bob emailed instem and was told that this was an old study.
 #####################################################
 # Tasks
 # 4) To add an option to construct groups by Filtering and Splitting: -- Kevin
-#       a) Dose Level  
-#       b) Test Article   
-#       c) Males/Females   
-#       d) TK/non-TK
 #       e) Recovery/non-recovery
 # 5) Resolve issue of different units (display an error if the units aren't consistent, else the units of the first record) -- Hanming
 # 6) Calculate days based upon subject epoch (use EPOCH in TA and elements in TE) -- Bill H.
@@ -108,6 +109,21 @@ server <- function(input, output,session) {
     }
   )
   
+  output$selectTestArticle <- renderUI({
+    path <- readDirectoryInput(session,'directory')
+    setwd(path)
+    if (length(list.files(pattern='*.xpt'))>0) {
+      Dataset <- load.xpt.files()
+    } else if (length(list.files(pattern='*.csv'))>0) {
+      Dataset <- load.csv.files()
+    } else {
+      stop('No .xpt or .csv files to load!')
+    }
+    testArticleNames <- unique(Dataset$ex$EXTRT)
+    testArticles <- as.list(testArticleNames)
+    checkboxGroupInput('testArticle',label='Test Article:',choices = testArticles,selected=testArticleNames)
+  })
+  
   data <- reactive({
     # print(" Now checking new directory")
     path <- readDirectoryInput(session,'directory')
@@ -163,10 +179,6 @@ server <- function(input, output,session) {
       bwdmtx <<- within(bwdmtx, Group <- SET)
     }
     
-    if (input$groupMethod == 'attributes') {
-      bwdmtx <- bwdmex
-    }
-    
     # If there is no BWDY, calculate one
     if("BWDY" %in% colnames(bwdmtx))
     {
@@ -182,48 +194,58 @@ server <- function(input, output,session) {
     #
     dm <<- Dataset$dm
     
-    # Filter by Sex
-    if (input$sex == 'Male') {
-      bwdmtx$Group <- paste(bwdmtx$Group,bwdmtx$SEX)
-      sexIndex <- which(bwdmtx$SEX=='M')
-      bwdmtx <- bwdmtx[sexIndex,]
-    } else if (input$sex == 'Female') {
-      bwdmtx$Group <- paste(bwdmtx$Group,bwdmtx$SEX)
-      sexIndex <- which(bwdmtx$SEX=='F')
-      bwdmtx <- bwdmtx[sexIndex,]
-    } else if (input$sex == 'Both (split)') {
-      bwdmtx$Group <- paste(bwdmtx$Group,bwdmtx$SEX)
-    }
-    
-    # Filter by TK
-    TKsubjects <- NULL
-    noTKsubjects <- NULL
-    TKcount <- 1
-    noTKcount <- 1
-    for (subject in unique(bwdmtx$USUBJID)) {
-      if (subject %in% Dataset$pc$USUBJID) {
-        TKsubjects[TKcount] <- subject
-        TKcount <- TKcount + 1
-      } else {
-        noTKsubjects[noTKcount] <- subject
-        noTKcount <- noTKcount + 1
+    if (input$groupMethod == 'attributes') {
+      bwdmtx <- bwdmex
+      
+      # Filter by Sex
+      if (input$sex == 'Male') {
+        bwdmtx$Group <- paste(bwdmtx$Group,bwdmtx$SEX)
+        sexIndex <- which(bwdmtx$SEX=='M')
+        bwdmtx <- bwdmtx[sexIndex,]
+      } else if (input$sex == 'Female') {
+        bwdmtx$Group <- paste(bwdmtx$Group,bwdmtx$SEX)
+        sexIndex <- which(bwdmtx$SEX=='F')
+        bwdmtx <- bwdmtx[sexIndex,]
+      } else if (input$sex == 'Both (split)') {
+        bwdmtx$Group <- paste(bwdmtx$Group,bwdmtx$SEX)
       }
-    }
-    TKindex <- which(bwdmtx$USUBJID %in% TKsubjects)
-    noTKindex <- which(bwdmtx$USUBJID %in% noTKsubjects)
-    bwdmtx$TK <- ''
-    bwdmtx$TK[TKindex] <- 'TK'
-    if (input$includeTK=='No TK') {
-      bwdmtx$Group <- paste(bwdmtx$Group,bwdmtx$TK)
-      bwdmtx <<- bwdmtx[noTKindex,]
-    } else if (input$includeTK=='TK only') {
-      bwdmtx$Group <- paste(bwdmtx$Group,bwdmtx$TK)
-      bwdmtx <<- bwdmtx[TKindex,]
-    }  else if (input$includeTK=='Both (pooled)') {
-      bwdmtx <<- bwdmtx
-    } else if (input$includeTK=='Both (split)') {
-      bwdmtx$Group <- paste(bwdmtx$Group,bwdmtx$TK)
-      bwdmtx <<- bwdmtx
+      
+      # Filter by Test Article
+      testArticleIndex <- NULL
+      for (testArticle in input$testArticle) {
+        tmpIndex <- which(bwdmtx$EXTRT==testArticle)
+        testArticleIndex <- c(testArticleIndex,tmpIndex)
+      }
+      bwdmtx <- bwdmtx[testArticleIndex,]
+      
+      # Filter by TK
+      TKsubjects <- NULL
+      noTKsubjects <- NULL
+      TKcount <- 1
+      noTKcount <- 1
+      for (subject in unique(bwdmtx$USUBJID)) {
+        if (subject %in% Dataset$pc$USUBJID) {
+          TKsubjects[TKcount] <- subject
+          TKcount <- TKcount + 1
+        } else {
+          noTKsubjects[noTKcount] <- subject
+          noTKcount <- noTKcount + 1
+        }
+      }
+      TKindex <- which(bwdmtx$USUBJID %in% TKsubjects)
+      noTKindex <- which(bwdmtx$USUBJID %in% noTKsubjects)
+      bwdmtx$TK <- ''
+      bwdmtx$TK[TKindex] <- 'TK'
+      if (input$includeTK=='No TK') {
+        bwdmtx <<- bwdmtx[noTKindex,]
+      } else if (input$includeTK=='TK only') {
+        bwdmtx <<- bwdmtx[TKindex,]
+      }  else if (input$includeTK=='Both (pooled)') {
+        bwdmtx <<- bwdmtx
+      } else if (input$includeTK=='Both (split)') {
+        bwdmtx$Group <- paste(bwdmtx$Group,bwdmtx$TK)
+        bwdmtx <<- bwdmtx
+      }
     }
     
     bwdmtx$Group <- factor(bwdmtx$Group)
@@ -240,7 +262,7 @@ server <- function(input, output,session) {
     
     # print(head(bwdmtx))
   })  
-
+  
   # Plot Body Weights
   output$BWplot <- renderPlot({
     data()
@@ -413,12 +435,15 @@ ui <- fluidPage(
     sidebarPanel(
       h3('Select Study'),
       directoryInput('directory',label = 'Directory:',value=defaultStudyFolder),
-      numericInput('n','Body Weight Gain Interval (Days):',min=1,max=100,value=1),
-      br(),
-      h3('Graph Options'),
+      h3('Select Plots:'),
       checkboxInput('showBWPlot','Show the Body Weight Plot',value=1),
-      checkboxInput('showBWDiffPlot','Show the Body Weight Difference from Day 1 Plot',value=1),
-      checkboxInput('showBGPlot','Show the Body Weight Gain Plot',value=1),
+      checkboxInput('showBWDiffPlot','Show the Body Weight Difference from Day 1 Plot',value=0),
+      checkboxInput('showBGPlot','Show the Body Weight Gain Plot',value=0),
+      conditionalPanel(
+        condition = 'input.showBGPlot==1',
+        numericInput('n','Body Weight Gain Interval (Days):',min=1,max=100,value=1)
+      ),
+      h3('Graph Options:'),
       checkboxInput('printLines','Display Lines',value=1),
       checkboxInput('printMeans','Display Means',value=1),
       conditionalPanel(
@@ -428,10 +453,10 @@ ui <- fluidPage(
       radioButtons("xaxis", "Use for x-axis:",
                    c("BW DAY" = "BWDY",
                      "VISIT DAY" = "VISITDY")),
-      br(),
       selectInput('groupMethod','Grouping Method:',choices=list('Trial Sets'='sets','Subject Attributes'='attributes')),
       conditionalPanel(
         condition = 'input.groupMethod == "attributes"',
+        uiOutput('selectTestArticle'),
         radioButtons('sex','Filter by Sex:',choices=c('Male','Female','Both (pooled)','Both (split)'),selected='Both (split)'),
         radioButtons('includeTK','Include TK Groups?',choices=c('No TK','TK only','Both (pooled)','Both (split)'),selected='No TK')
       ),
