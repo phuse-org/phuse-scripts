@@ -460,6 +460,10 @@ server <- function(input, output,session) {
           stop('EX Domain Missing!')
         }
         if ('EXSTDY' %in% colnames(EXdataCSV)) {
+          if (! 'EXENDY' %in% colnames(EXdataCSV)) {
+            EXENDY <- rep(NA,nrow(EXdataCSV))
+            EXdataCSV <- cbind(EXdataCSV,EXENDY)
+          }
           EXfields <- c('USUBJID','EXENDY','EXSTDY')
           EXfieldNames <- c('SubjectID','EndDay','StartDay')
           EXdataTmp <- subTable(EXfields,EXfieldNames,EXdataCSV)

@@ -109,9 +109,9 @@ server <- function(input, output,session) {
   )
   
   data <- reactive({
-    print(" Now checking new directory")
+    # print(" Now checking new directory")
     path <- readDirectoryInput(session,'directory')
-    print(path)
+    # print(path)
     defaultStudyFolder=path
     # print(file.path(defaultStudyFolder,"bw.xpt"))
     validate(
@@ -129,29 +129,32 @@ server <- function(input, output,session) {
       stop('No .xpt or .csv files to load!')
     }
     # merge in other demographic variables then other set variables
-    print(head(Dataset$bw))
-    print(head(Dataset$dm))
+#     print(head(Dataset$bw))
+#     print(head(Dataset$dm))
     bwdm <<- merge(Dataset$bw,Dataset$dm,by="USUBJID")
+    exDay1 <- Dataset$ex[Dataset$ex$EXSTDY==1,c('USUBJID','EXTRT','EXDOSE','EXDOSU','EXDOSFRQ')]
+    exDay1$Group <- paste(exDay1$EXDOSE,exDay1$EXDOSU,exDay1$EXTRT,exDay1$EXDOSFRQ)
+    bwdmex <<- merge(bwdm,exDay1,by='USUBJID')
     # filter TX for one row per ARMCD parameter
     txSetArm <- Dataset$tx[Dataset$tx$TXPARMCD == "ARMCD", ] 
-    print("tx: ")
-    print(Dataset$tx)
-    print("txSetArm: ")
-    print(txSetArm)
+#     print("tx: ")
+#     print(Dataset$tx)
+#     print("txSetArm: ")
+#     print(txSetArm)
     # add in column for set name
     bwdmtx <<- merge(bwdm,txSetArm[ , c("SETCD", "SET")],by="SETCD")
     # add in a column for sponsor group code, if available
     # filter TX for one row per ARMCD parameter
     txSPGRPCD <- Dataset$tx[Dataset$tx$TXPARMCD == "SPGRPCD", ] 
-    print("txSPGRPCD: ")
-    print(txSPGRPCD)
-    print(head(bwdmtx))
+#     print("txSPGRPCD: ")
+#     print(txSPGRPCD)
+#     print(head(bwdmtx))
     if (nrow(txSPGRPCD)>0) {
       # add in column for SPGRPCD
       names(txSPGRPCD)[names(txSPGRPCD)=="TXVAL"] <- "SPGRPCD"
       bwdmtx <<- merge(bwdmtx,txSPGRPCD[ , c("SETCD","SPGRPCD")],by="SETCD")
     }
-    print(head(bwdmtx))
+    # print(head(bwdmtx))
     # add a compound group/set for graph labeling
     # if sponsor defined group label exists, combine with set name
     if ("SPGRPCD" %in% colnames(bwdmtx)) {
@@ -159,6 +162,11 @@ server <- function(input, output,session) {
     } else {
       bwdmtx <<- within(bwdmtx, Group <- SET)
     }
+    
+    if (input$groupMethod == 'attributes') {
+      bwdmtx <- bwdmex
+    }
+    
     # If there is no BWDY, calculate one
     if("BWDY" %in% colnames(bwdmtx))
     {
@@ -176,41 +184,49 @@ server <- function(input, output,session) {
     
     # Filter by Sex
     if (input$sex == 'Male') {
+      bwdmtx$Group <- paste(bwdmtx$Group,bwdmtx$SEX)
       sexIndex <- which(bwdmtx$SEX=='M')
-      bwdmtx <<- bwdmtx[sexIndex,]
+      bwdmtx <- bwdmtx[sexIndex,]
     } else if (input$sex == 'Female') {
+      bwdmtx$Group <- paste(bwdmtx$Group,bwdmtx$SEX)
       sexIndex <- which(bwdmtx$SEX=='F')
-      bwdmtx <<- bwdmtx[sexIndex,]
+      bwdmtx <- bwdmtx[sexIndex,]
+    } else if (input$sex == 'Both (split)') {
+      bwdmtx$Group <- paste(bwdmtx$Group,bwdmtx$SEX)
     }
-    # Merge by Sex
-    # if ('sex' %in% input$merge) {
-    #    
-    #  }
     
     # Filter by TK
-    if (input$includeTK==FALSE) {
-      TKsubjects <- NULL
-      noTKsubjects <- NULL
-      TKcount <- 1
-      noTKcount <- 1
-      for (subject in unique(bwdmtx$USUBJID)) {
-        if (subject %in% Dataset$pc$USUBJID) {
-          TKsubjects[TKcount] <- subject
-          TKcount <- TKcount + 1
-        } else {
-          noTKsubjects[noTKcount] <- subject
-          noTKcount <- noTKcount + 1
-        }
+    TKsubjects <- NULL
+    noTKsubjects <- NULL
+    TKcount <- 1
+    noTKcount <- 1
+    for (subject in unique(bwdmtx$USUBJID)) {
+      if (subject %in% Dataset$pc$USUBJID) {
+        TKsubjects[TKcount] <- subject
+        TKcount <- TKcount + 1
+      } else {
+        noTKsubjects[noTKcount] <- subject
+        noTKcount <- noTKcount + 1
       }
-      noTKindex <- which(bwdmtx$USUBJID %in% noTKsubjects)
-      bwdmtx <<- bwdmtx[noTKindex,]
     }
-    # Merge by TK
-    #     if ('tk' %in% input$merge) {
-    #       
-    #     }
+    TKindex <- which(bwdmtx$USUBJID %in% TKsubjects)
+    noTKindex <- which(bwdmtx$USUBJID %in% noTKsubjects)
+    bwdmtx$TK <- ''
+    bwdmtx$TK[TKindex] <- 'TK'
+    if (input$includeTK=='No TK') {
+      bwdmtx$Group <- paste(bwdmtx$Group,bwdmtx$TK)
+      bwdmtx <<- bwdmtx[noTKindex,]
+    } else if (input$includeTK=='TK only') {
+      bwdmtx$Group <- paste(bwdmtx$Group,bwdmtx$TK)
+      bwdmtx <<- bwdmtx[TKindex,]
+    }  else if (input$includeTK=='Both (pooled)') {
+      bwdmtx <<- bwdmtx
+    } else if (input$includeTK=='Both (split)') {
+      bwdmtx$Group <- paste(bwdmtx$Group,bwdmtx$TK)
+      bwdmtx <<- bwdmtx
+    }
     
-    bwdmtx$Group <<- factor(bwdmtx$Group)
+    bwdmtx$Group <- factor(bwdmtx$Group)
     
     validate(
       need(!is.null(bwdmtx), label = "Could not read body weight data from dataset")
@@ -222,7 +238,7 @@ server <- function(input, output,session) {
     print(groupList)
     updateCheckboxGroupInput(session,"Groups", choices = groupList, selected = groupList)
     
-    print(head(bwdmtx))
+    # print(head(bwdmtx))
   })  
 
   # Plot Body Weights
@@ -240,7 +256,7 @@ server <- function(input, output,session) {
     else {
       bwdmtxFilt <- bwdmtx[bwdmtx$Group  %in% input$Groups, ]  
     }
-    print(head(bwdmtxFilt))
+    # print(head(bwdmtxFilt))
     
     if (input$printMeans==TRUE) {
       bwdmtxFiltMeans <- createMeansTable(bwdmtxFilt,'BWSTRESN',c('Group',xaxis))
@@ -397,10 +413,9 @@ ui <- fluidPage(
     sidebarPanel(
       h3('Select Study'),
       directoryInput('directory',label = 'Directory:',value=defaultStudyFolder),
-      numericInput('n','Interval of at Least n Days:',min=1,max=100,value=1),
-      radioButtons("xaxis", "Use for x-axis:",
-                   c("BW DAY" = "BWDY",
-                     "VISIT DAY" = "VISITDY")),
+      numericInput('n','Body Weight Gain Interval (Days):',min=1,max=100,value=1),
+      br(),
+      h3('Graph Options'),
       checkboxInput('showBWPlot','Show the Body Weight Plot',value=1),
       checkboxInput('showBWDiffPlot','Show the Body Weight Difference from Day 1 Plot',value=1),
       checkboxInput('showBGPlot','Show the Body Weight Gain Plot',value=1),
@@ -410,10 +425,16 @@ ui <- fluidPage(
         condition = "input.printMeans==1",
         checkboxInput('printSE','Display Error Bars',value=0)
       ),
-      radioButtons('sex','Filter by Sex:',choices=c('Male','Female','Both'),selected='Both'),
-      strong('Filter by TK:'),
-      checkboxInput('includeTK','Include TK Groups',value=FALSE),
-      # checkboxGroupInput('merge','Merge by:',choices=c('sex','tk')),
+      radioButtons("xaxis", "Use for x-axis:",
+                   c("BW DAY" = "BWDY",
+                     "VISIT DAY" = "VISITDY")),
+      br(),
+      selectInput('groupMethod','Grouping Method:',choices=list('Trial Sets'='sets','Subject Attributes'='attributes')),
+      conditionalPanel(
+        condition = 'input.groupMethod == "attributes"',
+        radioButtons('sex','Filter by Sex:',choices=c('Male','Female','Both (pooled)','Both (split)'),selected='Both (split)'),
+        radioButtons('includeTK','Include TK Groups?',choices=c('No TK','TK only','Both (pooled)','Both (split)'),selected='No TK')
+      ),
       checkboxGroupInput("Groups", "Filter by Group:", choices = groupList)
     ),
     
@@ -434,41 +455,6 @@ ui <- fluidPage(
     ) 
   )
 )
-############################################################################################
-# Script For Plotting the Percent Difference in Body Weight for each animal over the course of a study
-# Requires SASxport Package
-
-library(SASxport)
-library(shiny)
-library(ggplot2)
-
-#Set the location of the Body Weight XPT that you want to read in
-setwd("C:/Users/Anthony Fata/Documents/SENDexpress/R Scripts/Percent BG Gain Script")
-BW <- read.xport("bw.xpt")
-
-#Removes Days less than -1 for the calculation
-BW <- subset(BW, BWDY >= -1)
-
-#Removes everything but Body Weight from Calcuation (Removes TERMBW)
-BW <- subset(BW, BWTESTCD=="BW")
-
-#Creates new Variable 
-PChange= rep(NA,nrow(BW))
-BW <- cbind(BW, PChange)
-
-#Math portion
-#Using "Unlist", info provided here: http://rfunction.com/archives/2238 & https://stackoverflow.com/questions/6511146/calculating-changes-with-the-by
-#Inputs a "NA" for the Baseline BW Calcualtion in the PChange column
-BW$PChange <-  unlist(tapply(BW$BWSTRESN, BW$USUBJID, function(x) c(NA, 100*diff(x)/x[-length(x)]) )  )
-
-# Remove NA values from dataset
-BW <- BW [which(is.finite(BW$PChange)),]
-
-#Graphing Function Below does not currently Work
-BWGraph <- ggplot(BW,aes(x=BW$BWDY,y=BW$PChange,group=BW$USUBJID,colour=Group)) +
-  geom_point() + ggtitle('Body Weight Gain Plot')
-
-print(BWGraph)
 
 ############################################################################################
 
