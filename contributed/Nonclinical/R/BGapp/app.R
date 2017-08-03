@@ -28,10 +28,15 @@
 #####################################################
 # Tasks
 # 4) To add an option to construct groups by Filtering and Splitting: -- Kevin
-#       e) Recovery/non-recovery
+#       e) Recovery/non-recovery (use EPOCH in TA)
 # 5) Resolve issue of different units (display an error if the units aren't consistent, else the units of the first record) -- Hanming
 # 6) Calculate days based upon subject epoch (use EPOCH in TA and elements in TE) -- Bill H.
 # 7) Add a filter to (optionally) remove the Terminal Body Weights. - Bill Varady.
+# 8) Implement alternative Day 1 normalization method - Tony
+# 9) Output BG.xpt file
+#10) Display box/whisker plots
+#11) Statistical Analysis (Dunnet's test; repeated-measures ANOVA)
+#12) Add tests of dataset assumptions
 #####################################################
 # Hints
 #      If the directory selection dialog does not appear when clicking on the "..." button, then
