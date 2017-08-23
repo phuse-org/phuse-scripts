@@ -42,7 +42,7 @@ Each Central Tendency data display will have a same-name script in SAS and R in 
   
   * Standard SAS scripts require our library of macros, which we [publish here in github](http://github.com/phuse-org/phuse-scripts/tree/master/whitepapers/utilities)
   
-  * Standard R scripts require some common functions (?)
+  * Standard R scripts require some common functions the R functions will be created in 2017.
   
   * Scripts require that users set some parameters based on their particular computing environment and data
     * Scripts are organized to clearly isolate user settings and any pre-processing instructions (e.g., to subset data before performing analyses)
