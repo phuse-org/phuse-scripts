@@ -4,6 +4,7 @@
 #' @export
 #' @importFrom utils install.packages
 #' @importFrom utils installed.packages
+#' @importFrom utils str
 #' @importFrom yaml yaml.load_file
 #
 # You can learn more about package authoring with RStudio at:
@@ -18,7 +19,7 @@
 #   03/02/2017 (htu) - initial creation
 #
 # 1. load the source code
-
+# library('yaml')
 test_init <- function() {
   rm(list=ls())
   p <- c('yaml')

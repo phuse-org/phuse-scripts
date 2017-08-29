@@ -5,6 +5,7 @@
 #' @return a list containing the merged configuration
 #' @name init_cfg
 #' @export
+#' @importFrom yaml yaml.load_file
 #' @author Hanming Tu
 # Function Name: init_cfg
 # ---------------------------------------------------------------------------
@@ -12,6 +13,7 @@
 #  03/10/2017 (htu) - initial creation
 #  04/25/2017 (htu) - added required packages
 #
+# library('yaml')
 init_cfg <- function(cfg) {
   curWorkDir <- getwd()
   yml_file <- cfg$files$yml_file;

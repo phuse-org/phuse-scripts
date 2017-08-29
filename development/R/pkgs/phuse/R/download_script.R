@@ -28,7 +28,7 @@ download_script <- function(
   # create the local target workdir
   ymd_dir <- format(Sys.time(), "%Y/%m/%d/%H%M%S")
   tgtDir <- paste(curWorkDir,wkDir, ymd_dir, sep = '/')
-  create.dir(tgtDir)
+  dir.create(tgtDir)
   # download files for running the script
   cat(paste("Downloading files to ", tgtDir, "..."))
   if ("files" %in% names(cfg) && "dirs" %in% names(cfg) ) {
