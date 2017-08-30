@@ -55,8 +55,8 @@ library('yaml')
 server <- function(input, output) {
 
   dir <- system.file("examples","01_merge", package = "phuse")
-  f1 <- file.path(dir, "test_load_df2ora_rep.yml")
-  f2 <- file.path(dir, "test_load_df2ora_loc.yml")
+  f1 <- file.path(dir, "metadata_example_rep.yml")
+  f2 <- file.path(dir, "metadata_example_loc.yml")
 
   # c1 <- yaml.load_file('https://github.com/phuse-org/phuse-scripts/raw/master/development/R/scripts/test_load_df2ora_rep.yml')
   # c2 <- yaml.load_file('/Users/htu/Repos/github/phuse-scripts/trunk/development/R/scripts/test_load_df2ora_loc.yml')
