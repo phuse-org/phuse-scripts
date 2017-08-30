@@ -7,12 +7,12 @@
 #' @importFrom stats setNames
 #' @export
 #' @author Hanming Tu
-# Function Name: list2df
+# Function Name: cvt_list2df
 # ---------------------------------------------------------------------------
 # HISTORY   MM/DD/YYYY (developer) - explanation
 #  08/29/2017 (htu) - initial creation
 #
-list2df <- function(a) {
+cvt_list2df <- function(a) {
   # r <- setNames(data.frame(matrix(ncol = 4), nrow=0), c("varname", "level", "type","value"))
   var <- list(); lvl <- list(); typ <- list(); val <- list()
   i <- 0

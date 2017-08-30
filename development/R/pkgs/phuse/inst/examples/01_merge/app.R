@@ -60,9 +60,9 @@ server <- function(input, output) {
 
   # c1 <- yaml.load_file('https://github.com/phuse-org/phuse-scripts/raw/master/development/R/scripts/test_load_df2ora_rep.yml')
   # c2 <- yaml.load_file('/Users/htu/Repos/github/phuse-scripts/trunk/development/R/scripts/test_load_df2ora_loc.yml')
-  c1 <- yaml.load_file(f1); d1 <- list2df(c1)
-  c2 <- yaml.load_file(f2); d2 <- list2df(c2)
-  c3 <- merge_lists(c1,c2); d3 <- list2df(c3)
+  c1 <- yaml.load_file(f1); d1 <- cvt_list2df(c1)
+  c2 <- yaml.load_file(f2); d2 <- cvt_list2df(c2)
+  c3 <- merge_lists(c1,c2); d3 <- cvt_list2df(c3)
 
   # Return the requested dataset ----
   # By declaring datasetInput as a reactive expression we ensure
