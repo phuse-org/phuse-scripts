@@ -20,7 +20,8 @@ run_example <- function (example = NA, port = NULL,
 )
 {
   examplesDir <- system.file("examples", package = "phuse")
-  dir <- shiny:::resolve(examplesDir, example)
+  # dir <- shiny:::resolve(examplesDir, example)
+  dir <- resolve(examplesDir, example)
   if (is.null(dir)) {
     if (is.na(example)) {
       errFun <- message

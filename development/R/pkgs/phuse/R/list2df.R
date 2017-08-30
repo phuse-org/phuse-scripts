@@ -4,6 +4,7 @@
 #' @param a the 1st list
 #' @return data frame
 #' @name list2df
+#' @importFrom stats setNames
 #' @export
 #' @author Hanming Tu
 # Function Name: list2df
