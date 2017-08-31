@@ -1,0 +1,76 @@
+Keywords: Test, Metadata, Dual Box
+Script:
+  name   : metadata_example_rep.yml
+  title  : Metadata example on local drive
+  desc   : >
+         This script demonstrates how to use YML to store the metadata about
+         your program and define your input parameters and their values.
+  version: 0.1.1
+Language:
+  name   : YML
+  version: x.x.x
+Environment:
+  system: Linux or Window 2010
+  os_version: OEL 5.8, Window 2010
+  desc: Description of the computing environment such as OS, version of the OS the language is for.
+  debug:
+    msg_lvl: 3
+    log_lvl: 1
+    write2log: FALSE
+Inputs:
+  datasets: dm.xpt,ae.xpt,testfile.xlsx
+  p1: String - dataset name
+  p2: Number - depart id
+  p3: String - subject id
+Outputs:
+  datasets: out1, out2, out3
+  v1: Date - scription execution date and time
+  v2: User - user who executes the script
+Repo:
+  base_dir: https://github.com/phuse-org/phuse-scripts/raw/master
+  prog_dir: development/R
+  repo_dir: phuse-org/phuse-scripts
+  repo_url: https://api.github.com/repos
+  data_dir: data
+  lib_dir: libs
+  log_dir: logs
+  out_dir: outputs
+  script_dir: scripts
+  lib_files: Func_comm.R
+  work_dir: C:/Users/hanming.h.tu/documents/R
+Authors:
+  - name   : Jon Doo
+    email  : jon.doo@phuse.com
+    company: PhUSE
+  - name   : Jim Boo
+    email  : jim.boo@phuse.com
+    company: PhUSE
+Qualification:
+  last_date: MM/DD/YYYY
+  last_by: FirstName LastName
+  stage: T
+  doc_url: a link to latest documentation
+  note: C - Contributed; D - Development; T - Testing; Q - Qualified
+Stages:
+  - date: mm/dd/yyyy
+    name: Jon1 Doo
+    stage: C
+    docs: a link to qualification documents
+  - date: mm/dd/yyyy
+    name: Jon2 Doo
+    stage: D
+    docs: a link to qualification documents
+Ratings:
+  - user: htu
+    date: 08/25/2017
+    asso: Accenture
+    stars: 5
+  - user: htu
+    date: 02/05/2016
+    asso: Accenture
+    stars: 4
+  - user: htu
+    date: 01/25/2016
+    asso: Accenture
+    Stars: 3
+# end of file
