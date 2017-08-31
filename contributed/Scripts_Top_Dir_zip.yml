@@ -1,0 +1,70 @@
+Keywords: SAS, Analysis, Panels 
+Script:
+  name   : Scripts_Top_Dir.zip     
+  title  : Reviewed scripts from FDA  
+  desc   : >
+         This packages contains a set of scripts to conduct basic analysis 
+         on AE, DM, DS, EX, MedDRA, etc.
+  version: 0.1.1
+Language:
+  name   : SAS
+  version: 9.2.0
+Environment:
+  system: Linux or Window 2010
+  os_version: OEL 5.8, Window 2010
+  desc: >
+        The scripts have been tested mainly with SAS installed in Windows 
+        and in Linux.
+Inputs:
+  datasets: CDISC pillot dataset 
+  p1: N/A
+  p2: N/A 
+  p3: N/A 
+Outputs:
+  datasets: N/A 
+  v1: N/A 
+  v2: UN/A 
+Repo:
+  base_dir: https://github.com/phuse-org/phuse-scripts/raw/master
+  prog_dir: contributed  
+  repo_dir: phuse-org/phuse-scripts
+  repo_url: https://api.github.com/repos
+  data_dir: data
+  lib_dir: libs
+  log_dir: logs
+  out_dir: outputs
+  script_dir: scripts
+Authors:
+  - name   : Jon Doo
+    email  : jon.doo@phuse.com
+    company: PhUSE  
+  - name   : Jim Boo
+    email  : jim.boo@phuse.com
+    company: PhUSE
+Qualification:
+  last_date: MM/DD/YYYY
+  last_by: FirstName LastName
+  stage: T
+  doc_url: a link to latest documentation
+  note: C - Contributed; D - Development; T - Testing; Q - Qualified
+Stages:
+  - date: mm/dd/yyyy
+    name: Jon1 Doo
+    stage: C
+    docs: a link to qualification documents
+  - date: mm/dd/yyyy
+    name: Jon2 Doo
+    stage: D
+    docs: a link to qualification documents
+Ratings:
+  - user: htu
+    date: 08/25/2017
+    asso: Accenture
+    stars: 5
+  - user: htu
+    date: 01/25/2015
+    asso: Accenture
+    Stars: 3
+# end of file
+
+
