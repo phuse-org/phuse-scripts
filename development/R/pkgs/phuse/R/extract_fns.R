@@ -1,0 +1,52 @@
+#' Extract File Names from Script Metadata
+#' @description extract folders and file names from a list containing script metadata.
+#' @param lst a list containing script metadata
+#' @return a data frame (subdir, filename) containing parsed file names
+#' @name extract_fns
+#' @export
+#' @author Hanming Tu
+# Function Name: extract_fns
+# ---------------------------------------------------------------------------
+# HISTORY   MM/DD/YYYY (developer) - explanation
+#  08/31/2017 (htu) - initial creation
+#
+extract_fns <- function(lst) {
+  d <- list(); f <- list(); u <- list(); i <- 0
+  # get repo info
+  p_url <- ifelse(is.null(lst$Repo$base_dir), '', lst$Repo$base_dir);
+  p_url <- ifelse(is.null(lst$Repo$prog_dir), p_url, paste(p_url,lst$Repo$prog_dir,sep='/'))
+  # get directories
+  data_dir   <- ifelse(is.null(lst$Repo$data_dir),  'data',   lst$Repo$data_dir);
+  lib_dir    <- ifelse(is.null(lst$Repo$lib_dir),   'libs',   lst$Repo$lib_dir);
+  script_dir <- ifelse(is.null(lst$Repo$script_dir),'scripts',lst$Repo$script_dir);
+  # get script name
+  if (!is.null(lst$Script$name)) {
+    i <- i + 1; d[i] <- script_dir; f[i] <- lst$Script$name;
+    u[i] <- paste(p_url,script_dir,lst$Script$name,sep='/')
+    yml_fn <- paste0(gsub('[.](\\w+)$','_\\1', f[i], perl=TRUE), '.yml')
+    i <- i + 1; d[i] <- script_dir; f[i] <- yml_fn;
+    u[i] <- paste(p_url,script_dir,yml_fn,sep='/')
+  }
+  # get dataset names
+  if (!is.null(lst$Inputs$datasets)) {
+    ds <- lst$Inputs$datasets;
+    cc <- strsplit(ds, ',');
+    for (x in cc[[1]]) {
+      i <- i + 1; d[i] <- data_dir; f[i] <- trimws(x);
+      u[i] <- paste(p_url,data_dir,f[i],sep='/')
+    }
+  }
+  # get lib files
+  if (!is.null(lst$Repo$lib_files)) {
+    ds <- lst$Repo$lib_files;
+    for (x in strsplit(ds, ',')[[1]]) {
+      i <- i + 1; d[i] <- lib_dir; f[i] <- trimws(x);
+      u[i] <- paste(p_url,lib_dir,f[i],sep='/')
+    }
+  }
+  r <- setNames(data.frame(matrix(ncol=3, nrow=i)), c("subdir", "filename","url"))
+  for (j in 1:i) {
+    r$subdir[j] <- d[j]; r$filename[j] <- f[j]; r$url[j] <- u[j]
+  }
+  return(r)
+}

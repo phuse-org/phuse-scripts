@@ -8,39 +8,45 @@ server <- function(input, output) {
   # defined below then use the value computed from this expression
   d <- reactive({
     dist <- switch(input$dist,
-                   norm = rnorm,
-                   unif = runif,
-                   lnorm = rlnorm,
-                   exp = rexp,
-                   rnorm)
-
-    dist(input$n)
+    sapr1 = 'https://github.com/phuse-org/phuse-scripts/raw/master/contributed/SAS%20Analysis%20Panels_zip.yml',
+    sapr2 = 'https://github.com/phuse-org/phuse-scripts/raw/master/contributed/Scripts_Top_Dir_zip.yml',
+    aesr1 = 'https://github.com/phuse-org/phuse-scripts/raw/master/contributed/AE/AE%20Scripts_zip.yml',
+    f0701r = 'https://github.com/phuse-org/phuse-scripts/raw/master/whitepapers/WPCT/WPCT-F.07.01_R.yml',
+    f0701s = 'https://github.com/phuse-org/phuse-scripts/raw/master/whitepapers/WPCT/WPCT-F.07.01_sas.yml'
+    # index = 'https://github.com/phuse-org/phuse-scripts/wiki/Simple-Index'
+    )
+  })
+  formulaText <- reactive({
+    if (input$act == 'dld') {
+      paste("Downloading ", d())
+    } else if (input$act == 'exe') {
+      paste("Executing ", d())
+    } else {
+      paste("Displaying", d())
+    }
   })
 
-  # Generate a plot of the data ----
-  # Also uses the inputs to build the plot label. Note that the
-  # dependencies on the inputs and the data reactive expression are
-  # both tracked, and all expressions are called in the sequence
-  # implied by the dependency graph.
-  output$plot <- renderPlot({
-    dist <- input$dist
-    n <- input$n
-
-    hist(d(),
-         main = paste("r", dist, "(", n, ")", sep = ""),
-         col = "#75AADB", border = "white")
+  output$mdlink <- renderText({
+    paste("A=", input$act, " Go to ", a(href=d(), title=d(), toupper(input$dist)))
   })
 
-  # Generate a summary of the data ----
-  output$summary <- renderPrint({
-    summary(d())
+  output$caption <- renderText({
+    formulaText()
   })
 
-  # Generate an HTML table view of the head of the data ----
-  output$table <- renderTable({
-    head(data.frame(x = d()))
-  })
-
+  output$smetadata <- renderText({
+    # formulaText()
+    # getURI(d())
+    # getURLContent(d())
+    if (input$act == 'dld') {
+      paste("Downloading", d())
+    } else if (input$act == 'exe') {
+      paste("Executing", d())
+    } else {
+     # paste("See it in ", a(href=d(), title=d(), 'GitHub'))
+     readChar(d(),nchars=1e6)
+    }
+    })
 }
 
 # Create Shiny app ----

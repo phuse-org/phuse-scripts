@@ -8,10 +8,16 @@
 
 <body>
 
-  <h1>Phuse Script Web Application Frameword</h1>
+  <h1>Phuse Script Web Application Framework</h1>
+  [ <a href="http://www.phuse.eu/">PhUSE</a>
+  | <a href="http://www.phusewiki.org/wiki/index.php?title=PhUSE_Wiki">Wiki</a>
+  | <a href="https://github.com/phuse-org/phuse-scripts">Scripts Repo</a>
+  | <a href="https://github.com/phuse-org/phuse-scripts/wiki/Simple-Index">Standard Scripts Index</a>
+  | <a href="https://github.com/phuse-org/phuse-scripts/wiki/Reviewed-Scripts">Reviewed Scripts</a>
+  ]
 
   <p>
-    <label>Script List</label><br />
+    <label>Script List and Action</label><br />
     <select name="dist">
       <option value="sapr1">SAS Analysis Pannel R1</option>
       <option value="sapr2">SAS Analysis Pannel R2</option>
@@ -19,36 +25,21 @@
       <option value="f0701r">WPCT_F.07.01 (R)</option>
       <option value="f0701s">WPCT_F.07.01 (SAS)</option>
     </select>
+    <select name="act">
+      <option value="no">__Select an Action__</option>
+      <option value="dld">Download</option>
+      <option value="exe">Execute</option>
+    </select>
   </p>
 
-  <p>
-
-    <label>Number of observations:</label><br />
-    <input type="number" name="n" value="500" min="1" max="1000" />
-
-  </p>
-
+  <h3>Metadata Link</h3>
+  <pre id="mdlink" class="shiny-html-output"></pre>
 <!--begin.rcode
-summary(cars)
+h3(textOutput("caption"))
 end.rcode-->
+  <h3>Script Metadata</h3>
+  <pre id="smetadata" class="shiny-html-output"></pre>
 
-<p>You can also embed plots, for example:</p>
-
-<!--begin.rcode fig.width=7, fig.height=6
-plot(cars)
-end.rcode-->
-
-
-
-  <h3>Summary of data:</h3>
-  <pre id="summary" class="shiny-text-output"></pre>
-
-  <h3>Plot of data:</h3>
-  <div id="plot" class="shiny-plot-output"
-       style="width: 100%; height: 300px"></div>
-
-  <h3>Head of data:</h3>
-  <div id="table" class="shiny-html-output"></div>
 
 </body>
 </html>

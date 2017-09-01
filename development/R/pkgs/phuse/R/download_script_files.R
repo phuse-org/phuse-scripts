@@ -10,7 +10,7 @@
 #' @export
 #' @author Hanming Tu
 #
-# Function Name: download.script.files
+# Function Name: download_script_files
 # ---------------------------------------------------------------------------
 # HISTORY   MM/DD/YYYY (developer) - explanation
 # 03/02/2017 (htu) - initial creation
