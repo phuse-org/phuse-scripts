@@ -54,7 +54,7 @@ ui <- fluidPage(
 library('yaml')
 server <- function(input, output) {
 
-  dir <- system.file("examples","01_merge", package = "phuse")
+  dir <- system.file("examples","02_display", package = "phuse")
   f1 <- file.path(dir, "metadata_example_rep.yml")
   f2 <- file.path(dir, "metadata_example_loc.yml")
 

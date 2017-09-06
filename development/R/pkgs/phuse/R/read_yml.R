@@ -6,6 +6,7 @@
 #' @export
 #' @importFrom yaml yaml.load
 #' @importFrom yaml yaml.load_file
+#' @importFrom RCurl url.exists
 #' @author Hanming Tu
 # Function Name: read_yml
 # ---------------------------------------------------------------------------

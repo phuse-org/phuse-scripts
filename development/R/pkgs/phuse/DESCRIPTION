@@ -16,4 +16,4 @@ Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.0.1
 Suggests: testthat
-Imports: yaml, shiny
+Imports: yaml, shiny, RCurl

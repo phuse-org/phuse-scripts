@@ -44,9 +44,11 @@ extract_fns <- function(lst) {
       u[i] <- paste(p_url,lib_dir,f[i],sep='/')
     }
   }
-  r <- setNames(data.frame(matrix(ncol=3, nrow=i)), c("subdir", "filename","url"))
+  r <- setNames(data.frame(matrix(ncol=3, nrow=i)), c("subdir", "filename","urlpath"))
   for (j in 1:i) {
-    r$subdir[j] <- d[j]; r$filename[j] <- f[j]; r$url[j] <- u[j]
+    r$subdir[j]   <- gsub('\r','',d[j], perl=TRUE);
+    r$filename[j] <- gsub('\r','',f[j], perl=TRUE);
+    r$urlpath[j]  <- gsub('\r','',u[j], perl=TRUE);
   }
   return(r)
 }
