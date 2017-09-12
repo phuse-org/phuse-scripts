@@ -29,9 +29,9 @@ datasets:
 O1:
 O2:
 Authors:
-- name : Kevin Snyder
-email : kevin.snyder@fda.hhs.gov
-company: 
+  - name : Kevin Snyder
+   email : kevin.snyder@fda.hhs.gov
+    company: 
   - name : FDA
     email :
     company:
