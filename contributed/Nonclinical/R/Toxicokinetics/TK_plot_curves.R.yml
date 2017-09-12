@@ -1,33 +1,33 @@
 KeyWords: PK, TK, Pharmacokinetics, Toxicokinetics, Nonclinical, Plots, Graphs
 Script: 
-Desc : Plots out dose-response curves using toxicokinetic data
-Name : TK_plot_curves.R
-GCR : r135
-SRV :
-Source : Contributed
-Target : https://github.com/phuse-org/phuse-scripts/tree/master/contributed/Nonclinical/R/Toxicokinetics
-Title : TK Curve Plotting
-Topic : Toxicokinetics
-Type : figure
-Subtype: TK
+  Desc : Plots out dose-response curves using toxicokinetic data
+  Name : TK_plot_curves.R
+  GCR : r135
+  SRV :
+  Source : Contributed
+  Target : https://github.com/phuse-org/phuse-scripts/tree/master/contributed/Nonclinical/R/Toxicokinetics
+  Title : TK Curve Plotting
+  Topic : Toxicokinetics
+  Type : figure
+  Subtype: TK
 Package:
-name :
-title:
+  name :
+  title:
 Language:
-name : R
-version: 3.2.2
+  name : R
+  version: 3.2.2
 Comments: >
   Please edit this file.
   To provide useful information.
 Inputs:
-datasets:
-P1:
-P2:
-P3:
+  datasets:
+  P1:
+  P2:
+  P3:
 Outputs:
-datasets:
-O1:
-O2:
+  datasets:
+  O1:
+  O2:
 Authors:
   - name : Kevin Snyder
    email : kevin.snyder@fda.hhs.gov
@@ -36,16 +36,16 @@ Authors:
     email :
     company:
 Qualification:
-LastQualDate:
-LastQualBy:
-Stage:
-Document:
-Note: C - Contributed; D - Development; T - Testing; Q - Qualified
+  LastQualDate:
+  LastQualBy:
+  Stage:
+  Document:
+  Note: C - Contributed; D - Development; T - Testing; Q - Qualified
 Stages:
   - Date: 06/08/2016
     Name: Kevin Snyder
     Stage: C
-Docs:
+    Docs:
   - Date:
     Name:
     Stage:
