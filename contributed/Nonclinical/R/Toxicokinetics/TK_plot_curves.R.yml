@@ -31,10 +31,10 @@ O2:
 Authors:
 - name : Kevin Snyder
 email : kevin.snyder@fda.hhs.gov
-company: FDA
-- name :
-email :
-company:
+company: 
+  - name : FDA
+    email :
+    company:
 Qualification:
 LastQualDate:
 LastQualBy:
@@ -42,20 +42,20 @@ Stage:
 Document:
 Note: C - Contributed; D - Development; T - Testing; Q - Qualified
 Stages:
-- Date: 06/08/2016
-Name: Kevin Snyder
-Stage: C
+  - Date: 06/08/2016
+    Name: Kevin Snyder
+    Stage: C
 Docs:
-- Date:
-Name:
-Stage:
-Docs:
+  - Date:
+    Name:
+    Stage:
+    Docs:
 Rating:
-- User:
-Date:
-Association:
+  - User:
+    Date:
+    Association:
 Stars:
-- User:
-Date:
-Association:
-Stars:
+  - User:
+    Date:
+    Association:
+    Stars:
