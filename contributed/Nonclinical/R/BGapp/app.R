@@ -22,6 +22,7 @@
 #       b) Test Article   
 #       c) Males/Females   
 #       d) TK/non-TK
+# 8) Display box/whisker plots -- Kevin
 #####################################################
 # Notes
 # 1) Check if instem dataset should have control water tk as supplier group 2? -- Bob emailed instem and was told that this was an old study.
@@ -34,9 +35,8 @@
 # 7) Add a filter to (optionally) remove the Terminal Body Weights. - Bill Varady.
 # 8) Implement alternative Day 1 normalization method - Tony
 # 9) Output BG.xpt file
-#10) Display box/whisker plots
-#11) Statistical Analysis (Dunnet's test; repeated-measures ANOVA) -- Kevin
-#12) Add tests of dataset assumptions
+#10) Statistical Analysis (Dunnet's test; repeated-measures ANOVA) -- Kevin
+#11) Add tests of dataset assumptions
 #####################################################
 # Hints
 #      If the directory selection dialog does not appear when clicking on the "..." button, then
@@ -285,22 +285,50 @@ server <- function(input, output,session) {
     }
     # print(head(bwdmtxFilt))
     
-    if (input$printMeans==TRUE) {
+#     if (input$printMeans==TRUE) {
+#       bwdmtxFiltMeans <- createMeansTable(bwdmtxFilt,'BWSTRESN',c('Group',xaxis))
+#       p <- ggplot(bwdmtxFiltMeans,aes(x=bwdmtxFiltMeans[,xaxis],y=BWSTRESN_mean,colour=Group)) +
+#         geom_point() + ggtitle('Body Weight Plot') + labs(x=xaxis)
+#       if (input$printSE == TRUE) {
+#         p <- p + geom_errorbar(aes(ymin=BWSTRESN_mean-BWSTRESN_se,ymax=BWSTRESN_mean+BWSTRESN_se),width=0.8)
+#       }
+#     } else {
+#       # plot with color by group and lines connecting subjects
+#       p <- ggplot(bwdmtxFilt,aes(x=bwdmtxFilt[,xaxis],y=BWSTRESN,group=USUBJID,colour=Group)) +
+#         geom_point() + ggtitle('Body Weight Plot') + labs(x=xaxis)
+#     }
+#     if (input$printLines==TRUE) {
+#       p <- p + geom_line()
+#     }
+#     print(p)
+    
+    if (input$plotType == 'Mean Data Points') {
       bwdmtxFiltMeans <- createMeansTable(bwdmtxFilt,'BWSTRESN',c('Group',xaxis))
       p <- ggplot(bwdmtxFiltMeans,aes(x=bwdmtxFiltMeans[,xaxis],y=BWSTRESN_mean,colour=Group)) +
-        geom_point() + ggtitle('Body Weight Plot') + labs(x=xaxis)
+        geom_point()
       if (input$printSE == TRUE) {
         p <- p + geom_errorbar(aes(ymin=BWSTRESN_mean-BWSTRESN_se,ymax=BWSTRESN_mean+BWSTRESN_se),width=0.8)
       }
+      if (input$printLines == TRUE) {
+        # plot with lines connecting subjects
+        p <- p + geom_line()
+      }
+    } else if (input$plotType == 'Boxplots') {
+      xaxis_levels <- as.character(sort(as.numeric(unique(bwdmtxFilt[,xaxis]))))
+      bwdmtxFilt[,xaxis] <- factor(bwdmtxFilt[,xaxis],levels=xaxis_levels)
+      p <- ggplot(bwdmtxFilt,aes(x=bwdmtxFilt[,xaxis],y=BWSTRESN,fill=Group))+
+        geom_boxplot()
     } else {
-      # plot with color by group and lines connecting subjects
+      # plot with color by group
       p <- ggplot(bwdmtxFilt,aes(x=bwdmtxFilt[,xaxis],y=BWSTRESN,group=USUBJID,colour=Group)) +
-        geom_point() + ggtitle('Body Weight Plot') + labs(x=xaxis)
+        geom_point() + ggtitle('Body Weight Plot')+ labs(x=xaxis)
+      if (input$printLines == TRUE) {
+        # plot with lines connecting subjects
+        p <- p + geom_line()
+      }
     }
-    if (input$printLines==TRUE) {
-      p <- p + geom_line()
-    }
-    print(p)
+    p <- p + ggtitle('Body Weight Gain Plot')+ labs(x=xaxis)
+    print(p) 
   })
   
   # Plot Body Weights Percent Difference from Day 1
@@ -339,23 +367,51 @@ server <- function(input, output,session) {
     }
     # print(bwdmtxFilt)
     
-    if (input$printMeans==TRUE) {
+#     if (input$printMeans==TRUE) {
+#       bwdmtxFiltMeans <- createMeansTable(bwdmtxFilt,'BWPDIFF',c('Group',xaxis))
+#       p <- ggplot(bwdmtxFiltMeans,aes(x=bwdmtxFiltMeans[,xaxis],y=BWPDIFF_mean,colour=Group)) +
+#         geom_point() + ggtitle('Body Weight Percent Difference from day 1 Plot')+ labs(x=xaxis)
+# # this comment block has code copied from "Plot Body Weights" and has not (yet) been adjusted for use in this section
+# #      if (input$printSE == TRUE) {
+# #        p <- p + geom_errorbar(aes(ymin=BWSTRESN_mean-BWSTRESN_se,ymax=BWSTRESN_mean+BWSTRESN_se),width=0.8)
+# #      }
+#     } else {
+#       # plot with color by group and lines connecting subjects
+#       p <- ggplot(bwdmtxFilt,aes(x=bwdmtxFilt[,xaxis],y=BWPDIFF,group=USUBJID,colour=Group)) +
+#         geom_point() + ggtitle('Body Weight Percent Difference from day 1 Plot')+ labs(x=xaxis)
+#     }
+#     if (input$printLines==TRUE) {
+#       p <- p + geom_line()
+#     }
+#     print(p)
+    
+    if (input$plotType == 'Mean Data Points') {
       bwdmtxFiltMeans <- createMeansTable(bwdmtxFilt,'BWPDIFF',c('Group',xaxis))
       p <- ggplot(bwdmtxFiltMeans,aes(x=bwdmtxFiltMeans[,xaxis],y=BWPDIFF_mean,colour=Group)) +
-        geom_point() + ggtitle('Body Weight Percent Difference from day 1 Plot')+ labs(x=xaxis)
-# this comment block has code copied from "Plot Body Weights" and has not (yet) been adjusted for use in this section
-#      if (input$printSE == TRUE) {
-#        p <- p + geom_errorbar(aes(ymin=BWSTRESN_mean-BWSTRESN_se,ymax=BWSTRESN_mean+BWSTRESN_se),width=0.8)
-#      }
+        geom_point()
+      if (input$printSE == TRUE) {
+        p <- p + geom_errorbar(aes(ymin=BWPDIFF_mean-BWPDIFF_se,ymax=BWPDIFF_mean+BWPDIFF_se),width=0.8)
+      }
+      if (input$printLines == TRUE) {
+        # plot with lines connecting subjects
+        p <- p + geom_line()
+      }
+    } else if (input$plotType == 'Boxplots') {
+      xaxis_levels <- as.character(sort(as.numeric(unique(bwdmtxFilt[,xaxis]))))
+      bwdmtxFilt[,xaxis] <- factor(bwdmtxFilt[,xaxis],levels=xaxis_levels)
+      p <- ggplot(bwdmtxFilt,aes(x=bwdmtxFilt[,xaxis],y=BWPDIFF,fill=Group))+
+        geom_boxplot()
     } else {
-      # plot with color by group and lines connecting subjects
+      # plot with color by group
       p <- ggplot(bwdmtxFilt,aes(x=bwdmtxFilt[,xaxis],y=BWPDIFF,group=USUBJID,colour=Group)) +
-        geom_point() + ggtitle('Body Weight Percent Difference from day 1 Plot')+ labs(x=xaxis)
+        geom_point() + ggtitle('Body Weight Percent Difference from Day 1 Plot')+ labs(x=xaxis)
+      if (input$printLines == TRUE) {
+        # plot with lines connecting subjects
+        p <- p + geom_line()
+      }
     }
-    if (input$printLines==TRUE) {
-      p <- p + geom_line()
-    }
-    print(p)
+    p <- p + ggtitle('Body Weight Gain Plot')+ labs(x=xaxis)
+    print(p) 
   })
   
   # Plot Body Weight Gains (using user-defined interval)
@@ -407,21 +463,32 @@ server <- function(input, output,session) {
     # Remove NA values from dataset
     bgdmtxFilt <- bgdmtxFilt[which(is.finite(bgdmtxFilt$BGSTRESN)),]
 
-    if (input$printMeans == TRUE) {
+    if (input$plotType == 'Mean Data Points') {
       bgdmtxFiltMeans <- createMeansTable(bgdmtxFilt,'BGSTRESN',c('Group',xaxis))
       p <- ggplot(bgdmtxFiltMeans,aes(x=bgdmtxFiltMeans[,xaxis],y=BGSTRESN_mean,colour=Group)) +
-        geom_point() + ggtitle('Body Weight Gain Plot')+ labs(x=xaxis)
+        geom_point()
       if (input$printSE == TRUE) {
         p <- p + geom_errorbar(aes(ymin=BGSTRESN_mean-BGSTRESN_se,ymax=BGSTRESN_mean+BGSTRESN_se),width=0.8)
       }
+      if (input$printLines == TRUE) {
+        # plot with lines connecting subjects
+        p <- p + geom_line()
+      }
+    } else if (input$plotType == 'Boxplots') {
+      xaxis_levels <- as.character(sort(as.numeric(unique(bgdmtxFilt[,xaxis]))))
+      bgdmtxFilt[,xaxis] <- factor(bgdmtxFilt[,xaxis],levels=xaxis_levels)
+      p <- ggplot(bgdmtxFilt,aes(x=bgdmtxFilt[,xaxis],y=BGSTRESN,fill=Group))+ 
+        geom_boxplot()
     } else {
-      # plot with color by group and lines connecting subjects
+      # plot with color by group
       p <- ggplot(bgdmtxFilt,aes(x=bgdmtxFilt[,xaxis],y=BGSTRESN,group=USUBJID,colour=Group)) +
         geom_point() + ggtitle('Body Weight Gain Plot')+ labs(x=xaxis)
+      if (input$printLines == TRUE) {
+        # plot with lines connecting subjects
+        p <- p + geom_line()
+      }
     }
-    if (input$printLines == TRUE) {
-      p <- p + geom_line()
-    }
+    p <- p + ggtitle('Body Weight Gain Plot')+ labs(x=xaxis)
     print(p) 
   })
   
@@ -446,19 +513,23 @@ ui <- fluidPage(
       checkboxInput('showBGPlot','Show the Body Weight Gain Plot',value=0),
       conditionalPanel(
         condition = 'input.showBGPlot==1',
-        numericInput('n','Body Weight Gain Interval (Days):',min=1,max=100,value=1)
+        numericInput('n','Body Weight Gain Interval (Days):',min=1,max=100,value=4)
       ),
       h3('Graph Options:'),
-      checkboxInput('printLines','Display Lines',value=1),
-      checkboxInput('printMeans','Display Means',value=1),
+      radioButtons('plotType',"Type of Plot:",
+                   c("Individual Data Points","Mean Data Points","Boxplots"),selected="Mean Data Points"),
       conditionalPanel(
-        condition = "input.printMeans==1",
+        condition = "input.plotType=='Individual Data Points' || input.plotType=='Mean Data Points'",
+        checkboxInput('printLines','Display Lines',value=1)
+      ),
+      conditionalPanel(
+        condition = "input.plotType=='Mean Data Points'",
         checkboxInput('printSE','Display Error Bars',value=0)
       ),
       radioButtons("xaxis", "Use for x-axis:",
                    c("BW DAY" = "BWDY",
                      "VISIT DAY" = "VISITDY")),
-      selectInput('groupMethod','Grouping Method:',choices=list('Trial Sets'='sets','Subject Attributes'='attributes')),
+      selectInput('groupMethod','Grouping Method:',choices=list('Subject Attributes'='attributes','Trial Sets'='sets')),
       conditionalPanel(
         condition = 'input.groupMethod == "attributes"',
         uiOutput('selectTestArticle'),
