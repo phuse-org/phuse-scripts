@@ -14,6 +14,7 @@
 # ---------------------------------------------------------------------------
 # HISTORY   MM/DD/YYYY (developer) - explanation
 #  09/01/2017 (htu) - initial creation
+#  09/12/2017 (htu) - used crt_workdir()
 #
 download_fns <- function(
   df, tgtDir = NULL
@@ -21,30 +22,36 @@ download_fns <- function(
 ) {
   # get target dir
   if (is.null(tgtDir)) {
-    curWorkDir <- getwd()
+    workdir <- crt_workdir()
     ymd_dir <- format(Sys.time(), "%Y/%m/%d/%H%M%S")
-    tgt_dir <- paste(curWorkDir,'workdir', ymd_dir, sep = '/')
+    tgt_dir <- paste(workdir, ymd_dir, sep = '/')
   } else {
     tgt_dir <- tgtDir
   }
   if (!dir.exists(tgt_dir)) { dir.create(tgt_dir, recursive = TRUE) }
 
+  msg <- list()
   for(i in 1:nrow(df)) {
-    sdr <- gsub('\r','', df[i,1], perl=TRUE);
-    fn  <- gsub('\r','', df[i,2], perl=TRUE);
-    up  <- gsub('\r','', df[i,3], perl=TRUE)
+    sdr <- gsub('\r','', df[i,"subdir"],   perl=TRUE);
+    fn  <- gsub('\r','', df[i,"filename"], perl=TRUE);
+    up  <- gsub('\r','', df[i,"urlpath"],  perl=TRUE)
     ifn <- ifelse(is.null(up), paste(baseDir,sdr, sep='/'), up)
     out_dir <- paste(tgt_dir,sdr, sep = '/')
     if (!dir.exists(out_dir)) { dir.create(out_dir, recursive = TRUE) }
     ofn <- paste(out_dir, fn, sep = '/')
     if (url.exists(ifn)) {
-      # print(paste0("Downloading ", ifn, " to ", ofn))
+      msg[i] <- paste0("Downloading ", ifn, " to ", ofn)
       download.file(ifn,ofn,mode = 'wb')
       # download.file(ifn,ofn, method="libcurl")
       # url.show(ifn, destfile = ofn)
     } else {
-      print(paste0("Invalid URL ", ifn))
+      msg[i] <- paste0("Invalid URL ", ifn)
     }
   }
+  r <- setNames(data.frame(matrix(ncol=1, nrow=i)), c("message"))
+  if (i>0) {
+    for (j in 1:i) { r$message[j] <- msg[j]; }
+  }
+  return(r)
 }
 

@@ -1,0 +1,6 @@
+   [ <a href="http://www.phuse.eu/">PhUSE</a>
+        | <a href="http://www.phusewiki.org/wiki/index.php?title=PhUSE_Wiki">Wiki</a>
+        | <a href="https://github.com/phuse-org/phuse-scripts">Scripts Repo</a>
+        | <a href="https://github.com/phuse-org/phuse-scripts/wiki/Simple-Index">Standard Scripts Index</a>
+        | <a href="https://github.com/phuse-org/phuse-scripts/wiki/Reviewed-Scripts">Reviewed Scripts</a>
+        ]

@@ -1,5 +1,9 @@
-This example demonstrates a core feature of Shiny: **reactivity**. In the `server` function, a reactive called `datasetInput` is declared. 
+This example demonstrates the `tabsetPanel` and `tabPanel` widgets.
 
-Notice that the reactive expression depends on the input expression `input$dataset`, and that it's used by two output expressions: `output$summary` and `output$view`. Try changing the dataset (using *Choose a dataset*) while looking at the reactive and then at the outputs; you will see first the reactive and then its dependencies flash. 
+Notice that outputs that are not visible are not re-evaluated until they become visible. Try this: 
 
-Notice also that the reactive expression doesn't just update whenever anything changes--only the inputs it depends on will trigger an update. Change the "Caption" field and notice how only the `output$caption` expression is re-evaluated; the reactive and its dependents are left alone.
+1. Scroll to the bottom of the `server` function. You might need to use the *show with app* option so you can easily view the code and interact with the app at the same time.
+2. Change the number of observations, and observe that only `output$plot` is evaluated.
+3. Click the Summary tab, and observe that `output$summary` is evaluated.
+4. Change the number of observations again, and observe that now only `output$summary` is evaluated.
+

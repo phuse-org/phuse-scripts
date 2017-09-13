@@ -44,11 +44,15 @@ extract_fns <- function(lst) {
       u[i] <- paste(p_url,lib_dir,f[i],sep='/')
     }
   }
-  r <- setNames(data.frame(matrix(ncol=3, nrow=i)), c("subdir", "filename","urlpath"))
-  for (j in 1:i) {
-    r$subdir[j]   <- gsub('\r','',d[j], perl=TRUE);
-    r$filename[j] <- gsub('\r','',f[j], perl=TRUE);
-    r$urlpath[j]  <- gsub('\r','',u[j], perl=TRUE);
+  r <- setNames(data.frame(matrix(ncol=4, nrow=i)), c("subdir", "filename","status", "urlpath"))
+  if (i>0) {
+    for (j in 1:i) {
+      u1            <- gsub('\r','',u[j], perl=TRUE);
+      r$subdir[j]   <- gsub('\r','',d[j], perl=TRUE);
+      r$filename[j] <- gsub('\r','',f[j], perl=TRUE);
+      r$status[j]   <- ifelse(url.exists(u1),'OK','Invalid URL');
+      r$urlpath[j]  <- u1;
+    }
   }
   return(r)
 }

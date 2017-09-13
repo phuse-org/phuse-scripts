@@ -1,14 +1,11 @@
-#' Test init file
-#' @description Test the merge list
-#' @name app_test_merge
-
 library(shiny)
 
-# Define UI for dataset viewer app ----
+# Define UI for random distribution app ----
 ui <- fluidPage(
 
   # App title ----
-  titlePanel("Script Metadata"),
+  titlePanel("Phuse Script Web Application Framework"),
+  includeHTML("www/links.txt"),
 
   # Sidebar layout with input and output definitions ----
   sidebarLayout(
@@ -16,98 +13,140 @@ ui <- fluidPage(
     # Sidebar panel for inputs ----
     sidebarPanel(
 
-      # Input: Text for providing a caption ----
-      # Note: Changes made to the caption in the textInput control
-      # are updated in the output area immediately as you type
-      textInput(inputId = "caption",
-                label = "Caption:",
-                value = "Script Metadata"),
-
-      # Input: Selector for choosing dataset ----
-      selectInput(inputId = "dataset",
-                  label = "Choose a dataset:",
-                  choices = c("Online", "Local", "Merged")),
-
-      # Input: Numeric entry for number of obs to view ----
-      numericInput(inputId = "obs",
-                   label = "Number of observations to view:",
-                   value = 10)
-
+      htmlOutput("selectUI"),
+      radioButtons("src", "File Source:",
+                 c("Local" = "loc", "Repository" = "rep")),
+      textOutput("result"),
+      br(),
+      div(id="script_inputs",class="shiny-html-output")
     ),
 
     # Main panel for displaying outputs ----
     mainPanel(
 
-      # Output: Formatted text for caption ----
-      h3(textOutput("caption", container = span)),
+      # Output: Tabset w/ plot, summary, and table ----
+      tabsetPanel(type = "tabs",
+                  tabPanel("Script", pre(id="script",class="shiny-html-output")),
+                  tabPanel("YML", pre(id="yml",class="shiny-html-output")),
+                  tabPanel("Info", tableOutput("finfo")),
+                  tabPanel("Metadata", tableOutput("mtable")),
+                  tabPanel("Verify", tableOutput("verify")),
+                  tabPanel("Download", tableOutput("dnload")),
+                  tabPanel("Merge", verbatimTextOutput("summary")),
+                  tabPanel("Execute", plotOutput("plot"))
 
-      # Output: HTML table with requested number of observations ----
-      tableOutput("view"),
-
-      # Output: Verbatim text for data summary ----
-      verbatimTextOutput("summary")
+      )
     )
   )
 )
 
-# Define server logic to summarize and view selected dataset ----
-library('yaml')
+fns <- build_script_df();
+# txt <- readChar("www/links.txt",nchars=1e6)
+sel <- fns[,1]; names(sel) <- fns[,2]
+h_a <- "<a href='%s' title='%s'>%s</a>"
+
+# Define server logic for random distribution app ----
 server <- function(input, output) {
-
-  dir <- system.file("examples","02_display", package = "phuse")
-  f1 <- file.path(dir, "metadata_example_rep.yml")
-  f2 <- file.path(dir, "metadata_example_loc.yml")
-
-  # c1 <- yaml.load_file('https://github.com/phuse-org/phuse-scripts/raw/master/development/R/scripts/test_load_df2ora_rep.yml')
-  # c2 <- yaml.load_file('/Users/htu/Repos/github/phuse-scripts/trunk/development/R/scripts/test_load_df2ora_loc.yml')
-  c1 <- yaml.load_file(f1); d1 <- cvt_list2df(c1)
-  c2 <- yaml.load_file(f2); d2 <- cvt_list2df(c2)
-  c3 <- merge_lists(c1,c2); d3 <- cvt_list2df(c3)
-
-  # Return the requested dataset ----
-  # By declaring datasetInput as a reactive expression we ensure
-  # that:
-  #
-  # 1. It is only called when the inputs it depends on changes
-  # 2. The computation and result are shared by all the callers,
-  #    i.e. it only executes a single time
-  datasetInput <- reactive({
-    switch(input$dataset,
-           "Online" = d1,
-           "Local" = d2,
-           "Merged" = d3)
+  output$selectUI <- renderUI({
+    selectInput("file", "Select Script:", sel)
   })
 
-  # Create caption ----
-  # The output$caption is computed based on a reactive expression
-  # that returns input$caption. When the user changes the
-  # "caption" field:
-  #
-  # 1. This function is automatically called to recompute the output
-  # 2. New caption is pushed back to the browser for re-display
-  #
-  # Note that because the data-oriented reactive expressions
-  # below don't depend on input$caption, those expressions are
-  # NOT called when input$caption changes
-  output$caption <- renderText({
-    input$caption
+  output$result <- renderText({
+    paste("Script File ID: ", input$file)
   })
 
-  # Generate a summary of the dataset ----
-  # The output$summary depends on the datasetInput reactive
-  # expression, so will be re-executed whenever datasetInput is
-  # invalidated, i.e. whenever the input$dataset changes
+  # output$fns <- build_script_df();
+  # sel <- fns[,3]; names(sel) <- fns[,1];
+
+  output$links <- renderText({ txt })
+
+  m1 <- reactive({ fns })
+  # u1 <- reactive({ URLencode(as.character(f1()[input$file,"file_url"])) })
+  m2 <- reactive({ # URLencode(m1()[input$file,4])
+    u1 <- URLencode(as.character(fns[input$file,"file_url"]))
+    u2 <- NULL
+    # gsub("[^[:alnum:]///' ]", "",
+    # gsub("[\n]","\r\n",
+    try(u2 <- cvt_list2df(read_yml(u1)), silent = TRUE)
+    if (is.null(u2)) { paste0("Error parsing ", u1) } else { u2 }
+    # )
+    })
+
+  fn <- reactive({
+    f1 <- ifelse(input$src=="loc","file_path", "file_url")
+    f2 <- gsub('\r','', fns[input$file,f1], perl = TRUE)
+    f3 <- ifelse(input$src=="loc",f2, URLencode(as.character(f2)))
+    f3
+  })
+  output$script <- renderText({
+    # formulaText()
+    # getURI(d())
+    # getURLContent(d())
+    # convert /x/y/a_b_sas.yml to /x/y/a_b.sas
+    f1 <- gsub('_([[:alnum:]]+).([[:alnum:]]+)$','.\\1',fn())
+    paste(paste0("File: ", f1),readChar(f1,nchars=1e6), sep = "\n")
+  })
+
+  output$yml <- renderText({
+    f1 <- fn()
+    paste(paste0("File: ", f1),readChar(f1,nchars=1e6), sep = "\n")
+  })
+
+  output$mtable <- renderTable({
+    # yaml.load_file(URLencode(f1()[input$file,4]))
+    m2()
+  })
+
+  output$finfo <- renderTable({
+    t1 <- t(fns[input$file,])
+    # t1["file_url",] <- sprintf(h_a, t1["file_url",], t1["file_url",], t1["file",])
+    t1
+  }, rownames = TRUE )
+
+  output$verify <- renderTable({ extract(read_yml(fn())) }, rownames = TRUE )
+
+  output$dnload <- renderTable({
+    y1 <- extract(read_yml(fn()))
+    y2 <- download_fns(y1)
+    y2
+  }, rownames = TRUE )
+
+  output$script_inputs <- renderText({  build_inputs(fn())  })
+
+  # Reactive expression to generate the requested distribution ----
+  # This is called whenever the inputs change. The output functions
+  # defined below then use the value computed from this expression
+  d <- reactive({
+    dist <- switch(input$dist,
+                   norm = rnorm,
+                   unif = runif,
+                   lnorm = rlnorm,
+                   exp = rexp,
+                   rnorm)
+    dist(input$n)
+  })
+
+  # Generate a plot of the data ----
+  # Also uses the inputs to build the plot label. Note that the
+  # dependencies on the inputs and the data reactive expression are
+  # both tracked, and all expressions are called in the sequence
+  # implied by the dependency graph.
+  output$plot <- renderPlot({
+    dist <- input$dist
+    n <- input$n
+    hist(d(),
+         main = paste("r", dist, "(", n, ")", sep = ""),
+         col = "#75AADB", border = "white")
+  })
+
+  # Generate a summary of the data ----
   output$summary <- renderPrint({
-    dataset <- datasetInput()
-    summary(dataset)
+    summary(d())
   })
 
-  # Show the first "n" observations ----
-  # The output$view depends on both the databaseInput reactive
-  # expression and input$obs, so it will be re-executed whenever
-  # input$dataset or input$obs is changed
-  output$view <- renderTable({
-    head(datasetInput(), n = input$obs)
+  # Generate an HTML table view of the data ----
+  output$table <- renderTable({
+    d()
   })
 
 }

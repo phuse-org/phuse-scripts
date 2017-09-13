@@ -7,7 +7,7 @@
 cvt_list2df(a)
 }
 \arguments{
-\item{a}{the 1st list}
+\item{a}{a list returned by read_yml or any list}
 }
 \value{
 data frame
