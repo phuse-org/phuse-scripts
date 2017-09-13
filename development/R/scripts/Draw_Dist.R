@@ -14,7 +14,11 @@
 library(phuse)
 # 1. get the script name and YML name
 script_name <- sys.frame(1)$ofile
+str(sys.frame(1)$ofile)
 yml_name    <- gsub('.([[:alnum:]]+)$','_\\1.yml', script_name)
+str(script_name)
+str(yml_name)
+
 # 2. read the YML content to cfg list
 cfg         <- read_yml(yml_name)
 
