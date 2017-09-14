@@ -16,8 +16,17 @@ library(phuse)
 script_name <- sys.frame(1)$ofile
 str(sys.frame(1)$ofile)
 yml_name    <- gsub('.([[:alnum:]]+)$','_\\1.yml', script_name)
-str(script_name)
-str(yml_name)
+if (length(yml_name) < 1) {
+  if (exists("input") && !is.null(input$yml_name)) {
+    yml_name <- input$yml_name
+  } else {
+    yml_name <- commandArgs()[2]
+  }
+}
+if (length(yml_name) < 1) {
+  cat("ERROR: could not find YML file name")
+  return()
+}
 
 # 2. read the YML content to cfg list
 cfg         <- read_yml(yml_name)
