@@ -25,7 +25,7 @@ build_inputs <- function(fn = NULL) {
     k <- names(ps[i])
     if (substr(k,1,1) != "p") { next; }
     v <- gsub('\\w+\\s+-','', ps[i])
-    r <- ifelse(r=='', v, paste0(r, "\n", v))
+    r <- ifelse(r=='', v, paste0(r, ",\n", v))
   }
   # r <- gsub("[\\]",'',r)
   return(r)

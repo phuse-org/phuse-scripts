@@ -30,7 +30,7 @@ download_fns <- function(
   }
   if (!dir.exists(tgt_dir)) { dir.create(tgt_dir, recursive = TRUE) }
 
-  msg <- list()
+  msg <- list(); f1 <- list(); f2 <- list()
   for(i in 1:nrow(df)) {
     sdr <- gsub('\r','', df[i,"subdir"],   perl=TRUE);
     fn  <- gsub('\r','', df[i,"filename"], perl=TRUE);
@@ -39,18 +39,25 @@ download_fns <- function(
     out_dir <- paste(tgt_dir,sdr, sep = '/')
     if (!dir.exists(out_dir)) { dir.create(out_dir, recursive = TRUE) }
     ofn <- paste(out_dir, fn, sep = '/')
+    f1[i] <- ifn; f2[i] <- ofn
     if (url.exists(ifn)) {
-      msg[i] <- paste0("Downloading ", ifn, " to ", ofn)
+      msg[i] <- "Downloading"
       download.file(ifn,ofn,mode = 'wb')
       # download.file(ifn,ofn, method="libcurl")
       # url.show(ifn, destfile = ofn)
     } else {
-      msg[i] <- paste0("Invalid URL ", ifn)
+      msg[i] <- "Invalid URL"
     }
   }
-  r <- setNames(data.frame(matrix(ncol=1, nrow=i)), c("message"))
+
+  r <- setNames(data.frame(matrix(ncol=4, nrow=i)), c("tag", "filename","file_url", "file_path"))
   if (i>0) {
-    for (j in 1:i) { r$message[j] <- msg[j]; }
+    for (j in 1:i) {
+      r$tag[j]       <- df[j, "tag"];
+      r$filename[j]  <- df[j,"filename"];
+      r$file_url[j]  <- f1[j]
+      r$file_path[j] <- f2[j]
+    }
   }
   return(r)
 }

@@ -16,6 +16,7 @@
 # library('yaml')
 read_yml <- function(fn) {
   r <- list()
+  if(is.null(fn) || length(fn) == 0) { return(r) }
   if (url.exists(fn)) {
     r <- yaml.load(readChar(fn,nchars=1e6))
   } else if (file.exists(fn)) {
