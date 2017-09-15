@@ -51,6 +51,7 @@ sel <- fns[,1]; names(sel) <- fns[,2]
 
 # Define server logic for random distribution app ----
 server <- function(input, output, session) {
+
   output$selectUI <- renderUI({
     selectInput("file", "Select Script:", sel)
   })
@@ -91,8 +92,10 @@ server <- function(input, output, session) {
     # getURLContent(d())
     # convert /x/y/a_b_sas.yml to /x/y/a_b.sas
     f1 <- gsub('_([[:alnum:]]+).([[:alnum:]]+)$','.\\1',fn())
+    if (!exists("f1")) { return('') }
+    if (is.na(f1) || length(f1) < 1 ) { return('') }
     ft <- gsub('.+\\.(\\w+)$','\\1', f1)
-    if (length(ft) > 0 & ft == "zip" ) {
+    if (length(ft) > 0 && grepl('^(zip|exe|bin)', ft, ignore.case = TRUE) ) {
       paste(paste0("File: ", f1),"     Could not be displayed.", sep = "\n")
     } else {
       paste(paste0("File: ", f1),readChar(f1,nchars=1e6), sep = "\n")

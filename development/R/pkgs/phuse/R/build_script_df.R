@@ -8,6 +8,7 @@
 #' @param days_to_update number of days before the output_fn is updated; default to 7 days.
 #'        Set it to a negative number make it to update immediately.
 #' @param fn_only return file name only; default to FALSE
+#' @param upd_opt update option: File|Repo|Both
 #' @return a data frame containing a list of script metadata
 #' @name build_script_df
 #' @export
@@ -28,6 +29,7 @@
 #  09/09/2017 (htu) - added work_dir, days_to_update, output_fn and
 #                     output to a CSV file
 #  09/12/2017 (htu) - used crt_workdir for work_dir and repo_dir
+#  09/14/2017 (htu) - added upd_opt variable when fn_only is FALSE
 #
 build_script_df <- function(
   repo_url = 'https://github.com/phuse-org/phuse-scripts.git',
@@ -36,7 +38,8 @@ build_script_df <- function(
   work_dir = NULL,
   output_fn = NULL,
   days_to_update = 7,
-  fn_only = FALSE
+  fn_only = FALSE,
+  upd_opt = NULL
 ) {
   # rm(list=ls())
   if (is.null(repo_url))     { sprintf("%s","repo is null"); return(); }
@@ -50,7 +53,21 @@ build_script_df <- function(
   work_dir <- crt_workdir()
   if (is.null(output_fn))    { output_fn <- paste0(rp_name, '_yml.csv'); }
   wk_fn <- paste(work_dir, output_fn, sep = '/');
-  if (fn_only && file.exists(wk_fn)) { return(wk_fn); }
+  # Only return the workdir
+  if (is.null(upd_opt) && fn_only && file.exists(wk_fn)) { return(wk_fn); }
+
+  if ( !is.null(upd_opt) && grepl("^(File|Both)", upd_opt, ignore.case = TRUE) ) {
+    if (file.exists(wk_fn)) {file.remove(wk_fn)}
+  }
+  if (is.null(repo_dir)) { repo_dir <- paste(work_dir, rp_name, sep = '/'); }
+  if (!is.null(upd_opt) && grepl("^(Repo|Both)", upd_opt, ignore.case = TRUE)) {
+    if (dir.exists(repo_dir)) {
+      if (chk_workdir(repo_dir)) {
+        # only remove the dir if it is in the default workdir
+        unlink(repo_dir, recursive = TRUE)
+      }
+    }
+  }
   if (file.exists(wk_fn)) {
     f_inf <- file.info(wk_fn)
     to_update <- ifelse(f_inf[,5]>(Sys.time()-days_to_update*24*60*60),FALSE,TRUE);
@@ -66,7 +83,6 @@ build_script_df <- function(
   }
   # we need to get it from the repository
   # if (is.null(repo_dir)) { repo_dir <- paste(tmp_dir, 'repo', rp_name, sep = '/'); }
-  if (is.null(repo_dir)) { repo_dir <- paste(work_dir, rp_name, sep = '/'); }
   if (!dir.exists(repo_dir)) {
       dir.create(repo_dir, recursive = TRUE);
       str(paste("Clone to ", repo_dir))

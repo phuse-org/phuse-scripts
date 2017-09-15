@@ -14,7 +14,7 @@
 library(phuse)
 # 1. get the script name and YML name
 script_name <- sys.frame(1)$ofile
-str(sys.frame(1)$ofile)
+str(script_name)
 yml_name    <- gsub('.([[:alnum:]]+)$','_\\1.yml', script_name)
 if (length(yml_name) < 1) {
   if (exists("input") && !is.null(input$yml_name)) {
@@ -23,7 +23,8 @@ if (length(yml_name) < 1) {
     yml_name <- commandArgs()[2]
   }
 }
-if (length(yml_name) < 1) {
+str(yml_name)
+if (is.na(yml_name) || is.null(yml_name) || length(yml_name) < 1) {
   cat("ERROR: could not find YML file name")
   return()
 }

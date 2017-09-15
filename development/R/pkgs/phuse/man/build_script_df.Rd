@@ -7,7 +7,7 @@
 build_script_df(repo_url = "https://github.com/phuse-org/phuse-scripts.git",
   repo_base = "https://github.com/phuse-org/phuse-scripts/raw/master",
   repo_dir = NULL, work_dir = NULL, output_fn = NULL,
-  days_to_update = 7, fn_only = FALSE)
+  days_to_update = 7, fn_only = FALSE, upd_opt = NULL)
 }
 \arguments{
 \item{repo_url}{a URL for a remote repository and default to 'https://github.com/phuse-org/phuse-scripts.git'}
@@ -22,6 +22,8 @@ build_script_df(repo_url = "https://github.com/phuse-org/phuse-scripts.git",
 Set it to a negative number make it to update immediately.}
 
 \item{fn_only}{return file name only; default to FALSE}
+
+\item{upd_opt}{update option: File|Repo|Both}
 }
 \value{
 a data frame containing a list of script metadata

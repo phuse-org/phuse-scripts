@@ -4,6 +4,7 @@
 #' @return a data frame (subdir, filename) containing parsed file names
 #' @name extract_fns
 #' @export
+#' @importFrom RCurl url.exists
 #' @author Hanming Tu
 # Function Name: extract_fns
 # ---------------------------------------------------------------------------

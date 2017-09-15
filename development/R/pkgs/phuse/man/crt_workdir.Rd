@@ -12,7 +12,8 @@ or getwd for other OS}
 
 \item{sub_dir}{a sub directory}
 
-\item{to_crt_dir}{whether to create the dir; default to TRUE}
+\item{to_crt_dir}{whether to create the dir; default to TRUE.
+If FALSE, just return the dir name}
 }
 \value{
 the created directory
