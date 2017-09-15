@@ -1615,7 +1615,7 @@ DATA MyData; /*Remove the row that identifies the datatype, and keep only SEND d
 		VSTESTCD
 		VSTEST
 /*		VSCAT  removed to avoid error from ppsDefine's validation*/
-		VSSCAT
+/*		VSSCAT  removed to avoid warning from Pinnacle21 when VSSCAT is included without VSCAT*/
 		VSPOS
 		VSORRES
 		VSORRESU
@@ -1675,7 +1675,7 @@ DATA sasxpt.vs (label='VITAL SIGNS');
 		VISITDY	= 'Planned Study Day of Collection'
 		VSDTC	= 'Date/Time of Measurement'
 		VSENDTC	= 'End Date/Time of Measurement'
-		VSDY	= 'Study Day of Vital Signs'
+		VSDY	= 'Study Day of Vital Signs Measurement'
 		VSENDY	= 'Study Day of End of Measurement'
 		VSTPT	= 'Planned Time Point Name'
 		VSTPTNUM	= 'Planned Time Point Number'
