@@ -20,9 +20,11 @@ if (length(yml_name) < 1) {
   if (exists("input") && !is.null(input$yml_name)) {
     yml_name <- input$yml_name
   } else {
-    yml_name <- commandArgs()[2]
+    script_name <- commandArgs()[2]
+    yml_name    <- gsub('.([[:alnum:]]+)$','_\\1.yml', script_name)
   }
 }
+str(script_name)
 str(yml_name)
 if (is.na(yml_name) || is.null(yml_name) || length(yml_name) < 1) {
   cat("ERROR: could not find YML file name")
