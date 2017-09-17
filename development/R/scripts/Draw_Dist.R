@@ -2,10 +2,10 @@
 #' @description extract folders and file names from a list containing script metadata.
 #' @param lst a list containing script metadata
 #' @return a data frame (subdir, filename) containing parsed file names
-#' @name extract_fns
+#' @name draw_dist
 #' @export
 #' @author Hanming Tu
-# Function Name: extract_fns
+# Function Name: draw_dist
 # ---------------------------------------------------------------------------
 # HISTORY   MM/DD/YYYY (developer) - explanation
 #  09/13/2017 (htu) - initial creation
@@ -14,7 +14,7 @@
 library(phuse)
 # 1. get the script name and YML name
 script_name <- sys.frame(1)$ofile
-str(script_name)
+# str(script_name)
 yml_name    <- gsub('.([[:alnum:]]+)$','_\\1.yml', script_name)
 if (length(yml_name) < 1) {
   if (exists("input") && !is.null(input$yml_name)) {
@@ -24,8 +24,8 @@ if (length(yml_name) < 1) {
     yml_name    <- gsub('.([[:alnum:]]+)$','_\\1.yml', script_name)
   }
 }
-str(script_name)
-str(yml_name)
+# str(script_name)
+# str(yml_name)
 if (is.na(yml_name) || is.null(yml_name) || length(yml_name) < 1) {
   cat("ERROR: could not find YML file name")
   return()
@@ -49,4 +49,5 @@ if (exists("input")) {
 }
 # str(commandArgs())
 d <- eval(call(dn, nn))
-hist(d, main = paste(dn, "(", n, ")", sep = ""),col="#75AADB", border = "white")
+t <- paste(dn, "(", nn, ")", sep = "")
+hist(d, main = t,col="#75AADB", border = "white")
