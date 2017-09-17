@@ -23,7 +23,10 @@ ui <- fluidPage(
       br(),
       # div(id="script_inputs",class="shiny-html-output")
       # includeHTML("www/s01.R"),
-      uiOutput("script_inputs")
+      conditionalPanel(
+        condition = "input.file == '13'",
+        uiOutput("script_inputs")
+      )
     ),
 
     # Main panel for displaying outputs ----
@@ -93,7 +96,12 @@ server <- function(input, output, session) {
     # convert /x/y/a_b_sas.yml to /x/y/a_b.sas
     f1 <- gsub('_([[:alnum:]]+).([[:alnum:]]+)$','.\\1',fn())
     if (!exists("f1")) { return('') }
-    if (is.na(f1) || length(f1) < 1 ) { return('') }
+    if (is.na(f1) || is.null(f1) || length(f1) < 1 ) {
+      return('ERROR: Missing file name.')
+    }
+    if (!file.exists(f1)) {
+      return(paste0('ERROR: file ', f1, ' does not exist.'))
+    }
     ft <- gsub('.+\\.(\\w+)$','\\1', f1)
     if (length(ft) > 0 && grepl('^(zip|exe|bin)', ft, ignore.case = TRUE) ) {
       paste(paste0("File: ", f1),"     Could not be displayed.", sep = "\n")
@@ -104,6 +112,9 @@ server <- function(input, output, session) {
 
   output$yml <- renderText({
     f1 <- fn()
+    if (!file.exists(f1)) {
+      return(paste0('ERROR: file ', f1, ' does not exist.'))
+    }
     paste(paste0("File: ", f1),readChar(f1,nchars=1e6), sep = "\n")
   })
 
@@ -144,17 +155,6 @@ server <- function(input, output, session) {
     }
     }, rownames = TRUE )
 
-  output$script_inputs <- renderUI({
-    # y1 <- build_inputs(fn())
-    tagList(
-    sliderInput("nn","Number of observations:",value = 500,min = 1,max = 1000),
-    radioButtons("dn","Distribution type:",
-                 c("Normal"="rnorm","Uniform"="runif","Log-normal"="rlnorm","Exponential"="rexp"))
-    )
-    # eval(call(y1))
-    # includeScript("www/s01.R")
-  })
-
   output$execute <- renderPlot({
     # if (!is.null(input$yml_name)) {
     #  y2 <- input$yml_name
@@ -166,8 +166,19 @@ server <- function(input, output, session) {
     #   y2 <- session$clientdata$ofn
     # }
     y2 <- gsub('_([[:alnum:]]+).([[:alnum:]]+)$','.\\1',fn())
-    commandArgs <- function() c("phuse", y2, input$dn, input$nn)
+    commandArgs <- function() list("phuse", script_name=y2, input$dn, input$nn)
     source(y2, local = TRUE)
+  })
+
+  output$script_inputs <- renderUI({
+    # y1 <- build_inputs(fn())
+    tagList(
+      sliderInput("nn","Number of observations:",value = 500,min = 1,max = 1000),
+      radioButtons("dn","Distribution type:",
+                   c("Normal"="rnorm","Uniform"="runif","Log-normal"="rlnorm","Exponential"="rexp"))
+    )
+    # eval(call(y1))
+    # includeScript("www/s01.R")
   })
 }
 

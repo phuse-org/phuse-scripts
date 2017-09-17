@@ -15,29 +15,40 @@
 #  06/08/2017 (htu) - initial creation
 #
 merge_lists <- function(a, b) {
-  for (k1 in names(a)) {
+  for (k1 in 1:length(a)) {
+    v1<- names(a[k1])
+    if (is.null(v1)) { next() }
+    if (!(v1 %in% names(b))) { next() }
     if (!is.list(a[[k1]])) {
-      if (k1 %in% names(b) && !(is.null(b[[k1]]) || b[[k1]] == '') ) {a[[k1]] <- b[[k1]]}
+      if (v1 %in% names(b) && length(b[[k1]])>0 ) {a[[k1]] <- b[[k1]]}
       next();
     }
-    for (k2 in names(a[[k1]])) {
+    for (k2 in 1:length(a[[k1]])) {
+      v2 <- names(a[[k1]][k2])
+      if (is.null(v2)) { next() }
+      if (!(v2 %in% names(b[k1]))) { next() }
       if (!is.list(a[[k1]][[k2]])) {
-        if ((k2 %in% names(b[[k1]])) && !(is.null(b[[k1]][[k2]]) || b[[k1]][[k2]] == '') ) {
+        if ((v2 %in% names(b[[k1]])) && length(b[[k1]][[k2]])>0 ) {
           a[[k1]][[k2]] <- b[[k1]][[k2]]
         }
         next();
       }
-      for (k3 in names(a[[k1]][[k2]])) {
+      for (k3 in 1:length(a[[k1]][[k2]])) {
+        v3 <- names(a[[k1]][[k2]][k3])
+        if (is.null(v3)) { next() }
+        if (!(v3 %in% names(b[[k1]][k2]))) { next() }
         if (!is.list(a[[k1]][[k2]][[k3]])) {
-          if ((k3 %in% names(b[[k1]][[k2]])) && !(is.null(b[[k1]][[k2]][[k3]]) ||
-              b[[k1]][[k2]][[k3]] == '') ){
+          if ((v3 %in% names(b[[k1]][[k2]])) && length(b[[k1]][[k2]][[k3]])>0 ){
             a[[k1]][[k2]][[k3]] <- b[[k1]][[k2]][[k3]]
           }
           next();
         }
         for (k4 in names(a[[k1]][[k2]][[k3]])) {
-          if ((k4 %in% names(b[[k1]][[k2]][[k3]])) && !(
-            is.null(b[[k1]][[k2]][[k3]][[k4]]) || b[[k1]][[k2]][[k3]][[k4]] == '') ) {
+          v4 <- names(a[[k1]][[k2]][[k3]][k4])
+          if (is.null(v4)) { next() }
+          if (!(v4 %in% names(b[[k1]][k2][k3]))) { next() }
+          if ((v4 %in% names(b[[k1]][[k2]][[k3]])) &&
+              length(b[[k1]][[k2]][[k3]][[k4]])>0 ) {
             a[[k1]][[k2]][[k3]][[k4]] <- b[[k1]][[k2]][[k3]][[k4]]
           }
         }
@@ -47,19 +58,23 @@ merge_lists <- function(a, b) {
   # merge the two lists
   c <- a
   # c <- mapply(c, a, b, SIMPLIFY = FALSE)
-  for (k1 in names(b)) {
-    if (!k1 %in% names(c)) { c[[k1]] <- b[[k1]]; next() }
+  for (k1 in 1:length(b)) {
+    v1 <- names(b[k1])
+    if (!v1 %in% names(c)) { c[[k1]] <- b[[k1]]; next() }
     # If it is just variable existing in both, we already processed it then go to next
     if (!is.list(b[[k1]])) { next() }
     # Since it is a list, we need to check further
     for (k2 in names(b[[k1]])) {
-      if (!k2 %in% names(c[[k1]])) {c[[k1]][[k2]] <- b[[k1]][[k2]]; next() }
+      v2 <- names(b[[k1]][k2])
+      if (!v2 %in% names(c[[k1]])) {c[[k1]][[k2]] <- b[[k1]][[k2]]; next() }
       if (!is.list(a[[k1]][[k2]])) { next() }
       for (k3 in names(b[[k1]][[k2]])) {
-        if (!k3 %in% names(c[[k1]][[k2]])) { c[[k1]][[k2]][[k3]] <- b[[k1]][[k2]][[k3]]; next() }
+        v3 <- names(b[[k1]][[k2]][k3])
+        if (!v3 %in% names(c[[k1]][[k2]])) { c[[k1]][[k2]][[k3]] <- b[[k1]][[k2]][[k3]]; next() }
         if (!is.list(b[[k1]][[k2]][[k3]])) { next() }
         for (k4 in names(b[[k1]][[k2]][[k3]])) {
-          if (!k4 %in% names(c[[k1]][[k2]][[k3]])) {
+          v4 <- names(b[[k1]][[k2]][[k3]][k4])
+          if (!v4 %in% names(c[[k1]][[k2]][[k3]])) {
             c[[k1]][[k2]][[k3]][[k4]] <- b[[k1]][[k2]][[k3]][[k4]]; next()
           }
         }

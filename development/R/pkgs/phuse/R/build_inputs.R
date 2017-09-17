@@ -1,6 +1,6 @@
 #' Build Inputs from Script Metadata for Phuse Web Framework
 #' @description Build R shiny code for Phuse Web Apps
-#' @param fn a filen name or URL pointing to script metadata file
+#' @param fn a file name or URL pointing to script metadata file
 #' @return R shiny code for providing inputs to the script
 #' @name build_inputs
 #' @export

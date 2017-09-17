@@ -12,6 +12,8 @@
 #  08/31/2017 (htu) - initial creation
 #  09/13/2017 (htu) - added v list to capture tag name
 #
+# library(RCurl)
+
 extract_fns <- function(lst) {
   d <- list(); f <- list(); u <- list(); v <- list(); i <- 0
   # get repo info
