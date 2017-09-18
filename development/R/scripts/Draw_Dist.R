@@ -44,8 +44,8 @@ dn <- gsub('\\s+-.+','', p1)
 nn <- as.numeric(gsub('\\s+-.+','', p2))
 # 4. check if you have inputs from interactive session
 if (exists("input")) {
-  dn <- ifelse(is.null(input$dn), dn, input$dn)
-  nn <- ifelse(is.null(input$nn), nn, input$nn)
+  dn <- ifelse(is.null(input$p1), dn, input$p1)
+  nn <- ifelse(is.null(input$p2), nn, input$p2)
 }
 # str(commandArgs())
 d <- eval(call(dn, nn))

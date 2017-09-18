@@ -7,7 +7,7 @@
 build_inputs(fn = NULL)
 }
 \arguments{
-\item{fn}{a filen name or URL pointing to script metadata file}
+\item{fn}{a file name or URL pointing to script metadata file}
 }
 \value{
 R shiny code for providing inputs to the script

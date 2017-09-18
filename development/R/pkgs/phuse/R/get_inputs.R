@@ -19,6 +19,7 @@ get_inputs <- function(fn = NULL) {
   # 2. get inputs from interactive session first
   k <- 0
   if (exists("input")) {
+    str("Getting inputs from shiny app...")
     for (i in 1:20) {
       v <- paste0("p", i)
       if (v %in% names("input")) { k <- k + 1; r[k] <- input[[v]] }
@@ -32,13 +33,17 @@ get_inputs <- function(fn = NULL) {
   if ("script_name" %in% names(cmd)) {
     yml_name    <- gsub('.([[:alnum:]]+)$','_\\1.yml', cmd[["script_name"]])
     r <- get_yml_inputs(yml_name)
-    return()
+    return(r)
   }
-  if (grepl('phuse', cmd[[1]],  ignore.case = TRUE)) {
-    return(cmd[-1])
+  str("Getting inputs from command line...")
+  if (grepl('phuse', cmd[1],  ignore.case = TRUE)) {
+    r <- cmd[-1]
+    if ("script_name" %in% names(r)) { r$script_name <- NULL }
+    return(r)
   }
 
   # 4. get inputs from script metadata
+  str("Getting inputs from YML file...")
   sfo <- sys.frame(1)$ofile
   if (is.null(sfo)) {
     cat("ERROR: no script name is provided."); return(r)

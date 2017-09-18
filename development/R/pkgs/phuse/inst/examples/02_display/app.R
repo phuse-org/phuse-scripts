@@ -24,7 +24,7 @@ ui <- fluidPage(
       # div(id="script_inputs",class="shiny-html-output")
       # includeHTML("www/s01.R"),
       conditionalPanel(
-        condition = "input.file == '13'",
+        condition = "input.file == '13'||input.file == '14'",
         uiOutput("script_inputs")
       )
     ),
@@ -166,15 +166,16 @@ server <- function(input, output, session) {
     #   y2 <- session$clientdata$ofn
     # }
     y2 <- gsub('_([[:alnum:]]+).([[:alnum:]]+)$','.\\1',fn())
-    commandArgs <- function() list("phuse", script_name=y2, input$dn, input$nn)
+    str(y2)
+    commandArgs <- function() list("phuse", input$p1, input$p2, script_name=y2)
     source(y2, local = TRUE)
   })
 
   output$script_inputs <- renderUI({
     # y1 <- build_inputs(fn())
     tagList(
-      sliderInput("nn","Number of observations:",value = 500,min = 1,max = 1000),
-      radioButtons("dn","Distribution type:",
+      sliderInput("p2","Number of observations:",value = 500,min = 1,max = 1000),
+      radioButtons("p1","Distribution type:",
                    c("Normal"="rnorm","Uniform"="runif","Log-normal"="rlnorm","Exponential"="rexp"))
     )
     # eval(call(y1))

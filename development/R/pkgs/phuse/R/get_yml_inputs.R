@@ -16,7 +16,7 @@ get_yml_inputs <- function(fn = NULL) {
   sfo <- sys.frame(1)$ofile
   if (is.null(fn) && is.null(sfo)) { cat("ERROR: no script name is provided."); return(r) }
   script_name <- ifelse(is.null(fn), sfo, fn)
-  # str(script_name)
+  str(script_name)
   if (is.null(script_name) || is.na(script_name)) {
     cat("ERROR: no script name is provided.")
     return(r)
