@@ -21,6 +21,11 @@ Default to "https://github.com/phuse-org/phuse-scripts/raw/master"}
 \description{
 download files defined in the input list from a repository.
 }
+\examples{
+  fns <- c("dm.xpt","ex.xpt")
+  dir <- "/Users/htu/myRepo/data"
+  a <- download_script_files(fns, dir)
+}
 \author{
 Hanming Tu
 }

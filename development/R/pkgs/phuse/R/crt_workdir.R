@@ -6,10 +6,12 @@
 #' @param to_crt_dir whether to create the dir; default to TRUE.
 #'   If FALSE, just return the dir name
 #' @return the created directory
-#' @name crt_workdir
 #' @export
+#' @examples
+#'   f1 <- "/Users/htu"
+#'   r1 <- crt_workdir(f1)
 #' @author Hanming Tu
-# Function Name: crt_workdir
+#' @name crt_workdir
 # ---------------------------------------------------------------------------
 # HISTORY   MM/DD/YYYY (developer) - explanation
 #  09/12/2017 (htu) - initial creation

@@ -18,6 +18,15 @@ Default to "https://github.com/phuse-org/phuse-scripts/raw/master"}
 \description{
 download files defined in the input data frame.
 }
+\examples{
+  a <- "https://github.com/phuse-org/phuse-scripts/raw/master"
+  b <- "development/R/scripts"
+  c <- "Draw_Dist2_R.yml"
+  f1 <- paste(a,b,c, sep = '/')
+  f2 <- read_yml(f1)
+  f3 <- extract_fns(f2)
+  f4 <- download_fns(f3)
+}
 \author{
 Hanming Tu
 }

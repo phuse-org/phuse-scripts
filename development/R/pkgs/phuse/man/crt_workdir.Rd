@@ -21,6 +21,10 @@ the created directory
 \description{
 define and create a work directory.
 }
+\examples{
+  f1 <- "/Users/htu"
+  r1 <- crt_workdir(f1)
+}
 \author{
 Hanming Tu
 }

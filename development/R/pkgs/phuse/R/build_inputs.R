@@ -2,10 +2,15 @@
 #' @description Build R shiny code for Phuse Web Apps
 #' @param fn a file name or URL pointing to script metadata file
 #' @return R shiny code for providing inputs to the script
-#' @name build_inputs
 #' @export
+#' @examples
+#'   a <- "https://github.com/phuse-org/phuse-scripts/raw/master"
+#'   b <- "development/R/scripts"
+#'   c <- "Draw_Dist2_R.yml"
+#'   f1 <- paste(a,b,c, sep = '/')
+#'   r1 <- build_inputs(f1)
 #' @author Hanming Tu
-# Function Name: buiuld_inputs
+#' @name buiuld_inputs
 # ---------------------------------------------------------------------------
 # HISTORY   MM/DD/YYYY (developer) - explanation
 #  09/13/2017 (htu) - initial creation

@@ -17,6 +17,12 @@ directory name
 \description{
 create a directory
 }
+\examples{
+  s1 <- "/Users/htu"
+  s2 <- "myRepo"
+  # create dir /Users/htu/myRepo if it does not exist
+  d1 <- create_dir(s1, s2)
+}
 \author{
 Hanming Tu
 }

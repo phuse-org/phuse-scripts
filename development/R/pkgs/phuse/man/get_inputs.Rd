@@ -4,16 +4,28 @@
 \alias{get_inputs}
 \title{Get Inputs from Input Sources}
 \usage{
-get_inputs(fn = NULL)
+get_inputs(fn = NULL, input = NULL, cmd = NULL)
 }
 \arguments{
 \item{fn}{a file name or URL pointing to script metadata file}
+
+\item{input}{the input parameter from shiny webpage}
+
+\item{cmd}{the cmmandArgs}
 }
 \value{
 a list of input values provided for the script
 }
 \description{
-Get inputs from interactive session (shiny webpage), command line or script metadata.
+Get inputs from interactive session (shiny webpage),
+  command line or script metadata.
+}
+\examples{
+  a <- "https://github.com/phuse-org/phuse-scripts/raw/master"
+  b <- "development/R/scripts"
+  c <- "Draw_Dist2_R.yml"
+  f1 <- paste(a,b,c, sep = '/')
+  r1 <- get_inputs(f1)
 }
 \author{
 Hanming Tu

@@ -2,10 +2,12 @@
 #' @description Resolve absolute directory
 #' @param dir directory
 #' @param relpath relative path
-#' @name resolve
 #' @export
+#' @examples
+#'   resolve("/Users/htu/myRepo", "scripts")
+#'   # get "/Users/htu/myRepo/scripts"
 #' @author Hanming Tu
-# Function Name: resolve
+#' @name resolve
 # ---------------------------------------------------------------------------
 resolve <- function (dir, relpath)
 {

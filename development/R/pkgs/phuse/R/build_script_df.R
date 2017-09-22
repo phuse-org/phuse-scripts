@@ -1,19 +1,28 @@
 #' Build Script Index Dataset
-#' @description Grep all the YML files, parse the metadata and build a data frame
-#'   containing key metadata tags.
-#' @param repo_url a URL for a remote repository and default to 'https://github.com/phuse-org/phuse-scripts.git'
-#' @param repo_dir a local directory to host the repository; default to current work directory if not specified
-#' @param work_dir a local directory to host the files containing a list of YML files; default to {getwd}/myRepo
-#' @param output_fn a CSV file name for outputing a list of YML files; default to "{repo_name}_yml.csv
-#' @param days_to_update number of days before the output_fn is updated; default to 7 days.
-#'        Set it to a negative number make it to update immediately.
+#' @description Grep all the YML files, parse the metadata and build
+#'   a data frame containing key metadata tags.
+#' @param repo_url a URL for a remote repository and default to
+#'   'https://github.com/phuse-org/phuse-scripts.git'
+#' @param repo_base a URL for repository base folder; default to
+#'   "https://github.com/phuse-org/phuse-scripts/raw/master"
+#' @param repo_dir a local directory to host the repository;
+#'   default to current work directory if not specified
+#' @param work_dir a local directory to host the files containing
+#'   a list of YML files; default to {getwd}/myRepo
+#' @param output_fn a CSV file name for outputing a list of YML files;
+#'   default to "{repo_name}_yml.csv
+#' @param days_to_update number of days before the output_fn is updated;
+#'   default to 7 days.
+#'   Set it to a negative number make it to update immediately.
 #' @param fn_only return file name only; default to FALSE
 #' @param upd_opt update option: File|Repo|Both
 #' @return a data frame containing a list of script metadata
-#' @name build_script_df
 #' @export
 #' @importFrom utils download.file
 #' @importFrom utils url.show
+#' @importFrom utils read.csv
+#' @importFrom utils write.csv
+#' @importFrom utils str
 #' @importFrom yaml yaml.load
 #' @importFrom yaml yaml.load_file
 #' @importFrom RCurl url.exists
@@ -21,8 +30,13 @@
 #' @importFrom git2r init
 #' @importFrom git2r is_empty
 #' @importFrom stats setNames
+#' @examples
+#'   r1 <- build_script_df()
+#'   r2 <- build_script_df(upd_opt = "file")
+#'   r3 <- build_script_df(upd_opt = "repo")
+#'   r4 <- build_script_df(upd_opt = "both")
 #' @author Hanming Tu
-# Function Name: build_script_df
+#' @name build_script_df
 # ---------------------------------------------------------------------------
 # HISTORY   MM/DD/YYYY (developer) - explanation
 #  09/08/2017 (htu) - initial creation
@@ -30,6 +44,7 @@
 #                     output to a CSV file
 #  09/12/2017 (htu) - used crt_workdir for work_dir and repo_dir
 #  09/14/2017 (htu) - added upd_opt variable when fn_only is FALSE
+#  09/19/2017 (htu) - added read.csv and write.csv to import form
 #
 build_script_df <- function(
   repo_url = 'https://github.com/phuse-org/phuse-scripts.git',

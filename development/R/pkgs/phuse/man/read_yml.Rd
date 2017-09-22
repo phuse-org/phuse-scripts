@@ -15,6 +15,13 @@ a list containing the parsed metadata tags
 \description{
 read script metadata file in the repository or in a local folder.
 }
+\examples{
+  a <- "https://github.com/phuse-org/phuse-scripts/raw/master"
+  b <- "development/R/scripts"
+  c <- "Draw_Dist2_R.yml"
+  f1 <- paste(a,b,c, sep = '/')
+  r1 <- get_inputs(f1)
+}
 \author{
 Hanming Tu
 }

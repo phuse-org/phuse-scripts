@@ -6,14 +6,16 @@
 #'   Default to "https://github.com/phuse-org/phuse-scripts/raw/master"
 #' @param scriptDir script directory in the repository
 #' @importFrom utils download.file
-#' @name download_script_files
 #' @export
+#' @examples
+#'   fns <- c("dm.xpt","ex.xpt")
+#'   dir <- "/Users/htu/myRepo/data"
+#'   a <- download_script_files(fns, dir)
 #' @author Hanming Tu
-#
-# Function Name: download_script_files
+#' @name download_script_files
 # ---------------------------------------------------------------------------
 # HISTORY   MM/DD/YYYY (developer) - explanation
-# 03/02/2017 (htu) - initial creation
+#  03/02/2017 (htu) - initial creation
 #  04/25/2017 (htu) - renamed from download.script.files to download_script_files
 #
 download_script_files <- function(

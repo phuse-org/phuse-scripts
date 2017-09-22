@@ -14,6 +14,10 @@ resolve(dir, relpath)
 \description{
 Resolve absolute directory
 }
+\examples{
+  resolve("/Users/htu/myRepo", "scripts")
+  # get "/Users/htu/myRepo/scripts"
+}
 \author{
 Hanming Tu
 }

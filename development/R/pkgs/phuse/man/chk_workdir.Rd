@@ -20,6 +20,10 @@ TRUE or FALSE
 \description{
 Verify if the dir is the work directory
 }
+\examples{
+  f1 <- "/Users/htu/myRepo"
+  r1 <- chk_workdir(f1)
+}
 \author{
 Hanming Tu
 }

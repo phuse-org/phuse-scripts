@@ -4,13 +4,15 @@
 \alias{run_example}
 \title{Run example}
 \usage{
-run_example(example = NA, port = NULL,
+run_example(example = NA, pkg = "phuse", port = NULL,
   launch.browser = getOption("shiny.launch.browser", interactive()),
   host = getOption("shiny.host", "127.0.0.1"), display.mode = c("auto",
   "normal", "showcase"))
 }
 \arguments{
 \item{example}{Example name}
+
+\item{pkg}{package name}
 
 \item{port}{Port number}
 
@@ -22,6 +24,11 @@ run_example(example = NA, port = NULL,
 }
 \description{
 run examples stored in the example folder.
+}
+\examples{
+  library(phuse)
+  # I have to comment it out so it can pass "R CMD check --as-cran"
+  # run_example("02_display")
 }
 \author{
 Hanming Tu

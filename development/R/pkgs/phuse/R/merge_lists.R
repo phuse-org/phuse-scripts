@@ -6,10 +6,18 @@
 #' @param a the 1st list
 #' @param b the 2nd list
 #' @return a list containing the merged configuration
-#' @name merge_lists
 #' @export
+#' @examples
+#'   a <- "https://github.com/phuse-org/phuse-scripts/raw/master"
+#'   b <- "development/R/scripts"
+#'   c <- "Draw_Dist_R.yml"
+#'   f1 <- paste(a,b,c, sep = '/')
+#'   f2 <- "/Users/htu/myRepo/scripts/Draw_Dist_R.yml"
+#'   r1 <- read_yml(f1)
+#'   r2 <- read_yml(f2)
+#'   r3 <- merge_lists(r1, r2)
 #' @author Hanming Tu
-# Function Name: merge_lists
+#' @name merge_lists
 # ---------------------------------------------------------------------------
 # HISTORY   MM/DD/YYYY (developer) - explanation
 #  06/08/2017 (htu) - initial creation
@@ -17,16 +25,16 @@
 merge_lists <- function(a, b) {
   for (k1 in 1:length(a)) {
     v1<- names(a[k1])
-    if (is.null(v1)) { next() }
-    if (!(v1 %in% names(b))) { next() }
+    if (is.null(v1) && !is.list(a[k1])) { next() }
+    if (!is.null(v1) && !(v1 %in% names(b))) { next() }
     if (!is.list(a[[k1]])) {
       if (v1 %in% names(b) && length(b[[k1]])>0 ) {a[[k1]] <- b[[k1]]}
       next();
     }
     for (k2 in 1:length(a[[k1]])) {
       v2 <- names(a[[k1]][k2])
-      if (is.null(v2)) { next() }
-      if (!(v2 %in% names(b[k1]))) { next() }
+      if (is.null(v2) && !is.list(a[[k1]][k2])) { next() }
+      if (!is.null(v2) && !(v2 %in% names(b[k1]))) { next() }
       if (!is.list(a[[k1]][[k2]])) {
         if ((v2 %in% names(b[[k1]])) && length(b[[k1]][[k2]])>0 ) {
           a[[k1]][[k2]] <- b[[k1]][[k2]]
@@ -35,8 +43,8 @@ merge_lists <- function(a, b) {
       }
       for (k3 in 1:length(a[[k1]][[k2]])) {
         v3 <- names(a[[k1]][[k2]][k3])
-        if (is.null(v3)) { next() }
-        if (!(v3 %in% names(b[[k1]][k2]))) { next() }
+        if (is.null(v3) && !is.list(a[[k1]][[k2]][k3])) { next() }
+        if (!is.null(v3) && !(v3 %in% names(b[[k1]][k2]))) { next() }
         if (!is.list(a[[k1]][[k2]][[k3]])) {
           if ((v3 %in% names(b[[k1]][[k2]])) && length(b[[k1]][[k2]][[k3]])>0 ){
             a[[k1]][[k2]][[k3]] <- b[[k1]][[k2]][[k3]]
@@ -45,8 +53,8 @@ merge_lists <- function(a, b) {
         }
         for (k4 in names(a[[k1]][[k2]][[k3]])) {
           v4 <- names(a[[k1]][[k2]][[k3]][k4])
-          if (is.null(v4)) { next() }
-          if (!(v4 %in% names(b[[k1]][k2][k3]))) { next() }
+          if (is.null(v4) && !is.list(a[[k1]][[k2]][[k3]][k4])) { next() }
+          if (!is.null(v4) && !(v4 %in% names(b[[k1]][k2][k3]))) { next() }
           if ((v4 %in% names(b[[k1]][[k2]][[k3]])) &&
               length(b[[k1]][[k2]][[k3]][[k4]])>0 ) {
             a[[k1]][[k2]][[k3]][[k4]] <- b[[k1]][[k2]][[k3]][[k4]]

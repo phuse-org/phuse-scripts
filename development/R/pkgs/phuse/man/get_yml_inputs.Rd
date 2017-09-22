@@ -15,6 +15,13 @@ a list of input values provided for the script
 \description{
 Get inputs from script metadata.
 }
+\examples{
+  a <- "https://github.com/phuse-org/phuse-scripts/raw/master"
+  b <- "development/R/scripts"
+  c <- "Draw_Dist2_R.yml"
+  f1 <- paste(a,b,c, sep = '/')
+  r1 <- get_inputs(f1)
+}
 \author{
 Hanming Tu
 }

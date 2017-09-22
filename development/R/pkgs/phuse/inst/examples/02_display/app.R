@@ -1,4 +1,5 @@
 library(shiny)
+library(RCurl)
 
 # Define UI for random distribution app ----
 ui <- fluidPage(
@@ -16,15 +17,15 @@ ui <- fluidPage(
       htmlOutput("selectUI"),
       radioButtons("src", "File Source:",
                  c("Local" = "loc", "Repository" = "rep")),
-      textOutput("result"),
-      # textOutput("yml_name"),
+      # textOutput("result"),
       div(id="yml_name",class="shiny-text-output",style="display: none;"),
+      div(id="sel_fn",class="shiny-text-output",style="display: none;"),
       # textInput("yn", "YML File Name: ", verbatimTextOutput("yml_name")),
       br(),
       # div(id="script_inputs",class="shiny-html-output")
       # includeHTML("www/s01.R"),
       conditionalPanel(
-        condition = "input.file == '13'||input.file == '14'",
+        condition = "output.show_script_ui",
         uiOutput("script_inputs")
       )
     ),
@@ -55,19 +56,6 @@ sel <- fns[,1]; names(sel) <- fns[,2]
 # Define server logic for random distribution app ----
 server <- function(input, output, session) {
 
-  output$selectUI <- renderUI({
-    selectInput("file", "Select Script:", sel)
-  })
-
-  output$result <- renderText({
-    paste("Script File ID: ", input$file)
-  })
-
-  # output$fns <- build_script_df();
-  # sel <- fns[,3]; names(sel) <- fns[,1];
-
-  # output$links <- renderText({ txt })
-
   m1 <- reactive({ fns })
   # u1 <- reactive({ URLencode(as.character(f1()[input$file,"file_url"])) })
   m2 <- reactive({ # URLencode(m1()[input$file,4])
@@ -79,7 +67,6 @@ server <- function(input, output, session) {
     if (is.null(u2)) { paste0("Error parsing ", u1) } else { u2 }
     # )
     })
-
   fn <- reactive({
     f1 <- ifelse(input$src=="loc","file_path", "file_url")
     f2 <- gsub('\r','', fns[input$file,f1], perl = TRUE)
@@ -87,7 +74,16 @@ server <- function(input, output, session) {
     f3
   })
 
+  output$selectUI <- renderUI({ selectInput("file", "Select Script:", sel) })
+
+  output$result <- renderText({ paste("Script File ID: ", input$file) })
+  output$sel_fn <- renderText({ paste(fns[input$file,"file"]) })
   output$yml_name <- renderText({ as.character(fn()) })
+  output$show_script_ui <- reactive({
+    f1 <- paste(fns[input$file,"file"])
+    grepl('^Draw_Dist', f1, ignore.case = TRUE)
+  })
+  outputOptions(output, 'show_script_ui', suspendWhenHidden = FALSE)
 
   output$script <- renderText({
     # formulaText()
@@ -166,9 +162,14 @@ server <- function(input, output, session) {
     #   y2 <- session$clientdata$ofn
     # }
     y2 <- gsub('_([[:alnum:]]+).([[:alnum:]]+)$','.\\1',fn())
-    str(y2)
+    # str(y2)
     commandArgs <- function() list("phuse", input$p1, input$p2, script_name=y2)
-    source(y2, local = TRUE)
+    # if (file.exists(y2) || url.exists(y2)) {
+      source(y2, local = TRUE)
+    # } else {
+    #   msg <- paste0("ERROR: ", y2, " does not exist")
+    #   cat(msg)
+    # }
   })
 
   output$script_inputs <- renderUI({

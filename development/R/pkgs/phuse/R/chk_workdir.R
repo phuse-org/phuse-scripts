@@ -6,10 +6,12 @@
 #'   or getwd for other OS
 #' @param sub_dir a sub directory
 #' @return TRUE or FALSE
-#' @name chk_workdir
 #' @export
+#' @examples
+#'   f1 <- "/Users/htu/myRepo"
+#'   r1 <- chk_workdir(f1)
 #' @author Hanming Tu
-# Function Name: chk_workdir
+#' @name chk_workdir
 # ---------------------------------------------------------------------------
 # HISTORY   MM/DD/YYYY (developer) - explanation
 #  09/14/2017 (htu) - initial creation

@@ -10,15 +10,23 @@ build_script_df(repo_url = "https://github.com/phuse-org/phuse-scripts.git",
   days_to_update = 7, fn_only = FALSE, upd_opt = NULL)
 }
 \arguments{
-\item{repo_url}{a URL for a remote repository and default to 'https://github.com/phuse-org/phuse-scripts.git'}
+\item{repo_url}{a URL for a remote repository and default to
+'https://github.com/phuse-org/phuse-scripts.git'}
 
-\item{repo_dir}{a local directory to host the repository; default to current work directory if not specified}
+\item{repo_base}{a URL for repository base folder; default to
+"https://github.com/phuse-org/phuse-scripts/raw/master"}
 
-\item{work_dir}{a local directory to host the files containing a list of YML files; default to {getwd}/myRepo}
+\item{repo_dir}{a local directory to host the repository;
+default to current work directory if not specified}
 
-\item{output_fn}{a CSV file name for outputing a list of YML files; default to "{repo_name}_yml.csv}
+\item{work_dir}{a local directory to host the files containing
+a list of YML files; default to {getwd}/myRepo}
 
-\item{days_to_update}{number of days before the output_fn is updated; default to 7 days.
+\item{output_fn}{a CSV file name for outputing a list of YML files;
+default to "{repo_name}_yml.csv}
+
+\item{days_to_update}{number of days before the output_fn is updated;
+default to 7 days.
 Set it to a negative number make it to update immediately.}
 
 \item{fn_only}{return file name only; default to FALSE}
@@ -29,8 +37,14 @@ Set it to a negative number make it to update immediately.}
 a data frame containing a list of script metadata
 }
 \description{
-Grep all the YML files, parse the metadata and build a data frame
-  containing key metadata tags.
+Grep all the YML files, parse the metadata and build
+  a data frame containing key metadata tags.
+}
+\examples{
+  r1 <- build_script_df()
+  r2 <- build_script_df(upd_opt = "file")
+  r3 <- build_script_df(upd_opt = "repo")
+  r4 <- build_script_df(upd_opt = "both")
 }
 \author{
 Hanming Tu

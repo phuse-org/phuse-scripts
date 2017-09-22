@@ -3,15 +3,19 @@
 #' @param r_dir root directory
 #' @param s_dir sub directory
 #' @return directory name
-#' @name create_dir
-#' @export create_dir
+#' @export
+#' @examples
+#'   s1 <- "/Users/htu"
+#'   s2 <- "myRepo"
+#'   # create dir /Users/htu/myRepo if it does not exist
+#'   d1 <- create_dir(s1, s2)
 #' @author Hanming Tu
-#
-# Function Name: download.script.files
+#' @name create_dir
 # ---------------------------------------------------------------------------
 # HISTORY   MM/DD/YYYY (developer) - explanation
 #  03/06/2017 (htu) - initial creation
 #  04/25/2017 (htu) - renamed from create.dir to create_dir
+#
 create_dir <- function(r_dir, s_dir = NULL) {
   if (is.null(s_dir)) {
       f_dir <- r_dir

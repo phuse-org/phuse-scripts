@@ -20,6 +20,16 @@ compare two lists using the first list as a base;
   different values; add varibles to the first if they doe not
   exist in the first list.
 }
+\examples{
+  a <- "https://github.com/phuse-org/phuse-scripts/raw/master"
+  b <- "development/R/scripts"
+  c <- "Draw_Dist_R.yml"
+  f1 <- paste(a,b,c, sep = '/')
+  f2 <- "/Users/htu/myRepo/scripts/Draw_Dist_R.yml"
+  r1 <- read_yml(f1)
+  r2 <- read_yml(f2)
+  r3 <- merge_lists(r1, r2)
+}
 \author{
 Hanming Tu
 }

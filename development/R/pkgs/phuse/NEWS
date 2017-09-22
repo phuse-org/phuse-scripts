@@ -1,0 +1,26 @@
+
+phuse_0.1.3 (Release Date: 9/20/2017)
+# ---------------------------------------------------------------------------
+* Added get_yml_inputs and get_inputs
+* Test the interactive web inputs
+* Added the Script, YML, Info, Metadata, Verify, Merge, Download and Execute
+  tabs in 02_display example
+* Removed test_init
+
+phuse_0.1.2 (Release Date: 9/17/2017)
+# ---------------------------------------------------------------------------
+* Added build_script_df
+* Test the repository clone
+* Build script index file
+
+phuse_0.1.1 (Release Date: 9/15/2017)
+# ---------------------------------------------------------------------------
+* Added examples: 04_merge, 01_html and 02_display
+* Added cvt_list2df, merge_list, extract_fns and download_fns
+* Added crt_workdir, chk_workdir, build_inputs
+
+phuse_0.1.0 (Release Date: 8/28/2017)
+# ---------------------------------------------------------------------------
+* Added create_dir, download_script, init_cfg and test_init
+* Added read_yml, resolve and download_script_files
+* 1st time to build the package

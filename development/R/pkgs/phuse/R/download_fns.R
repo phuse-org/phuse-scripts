@@ -6,11 +6,17 @@
 #'   Default to "https://github.com/phuse-org/phuse-scripts/raw/master"
 #' @importFrom utils download.file
 #' @importFrom utils url.show
-#' @name download_fns
 #' @export
+#' @examples
+#'   a <- "https://github.com/phuse-org/phuse-scripts/raw/master"
+#'   b <- "development/R/scripts"
+#'   c <- "Draw_Dist2_R.yml"
+#'   f1 <- paste(a,b,c, sep = '/')
+#'   f2 <- read_yml(f1)
+#'   f3 <- extract_fns(f2)
+#'   f4 <- download_fns(f3)
 #' @author Hanming Tu
-#
-# Function Name: download_fns
+#' @name download_fns
 # ---------------------------------------------------------------------------
 # HISTORY   MM/DD/YYYY (developer) - explanation
 #  09/01/2017 (htu) - initial creation
