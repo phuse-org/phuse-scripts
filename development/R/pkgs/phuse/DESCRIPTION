@@ -1,15 +1,16 @@
 Package: phuse
 Type: Package
-Title: Web Application Framework for Phuse Scripts
+Title: Web Application Framework for 'PhUSE' Scripts
 Version: 0.1.4
 Author: Hanming Tu [aut, cre]
 Authors@R: c(
   person("Hanming", "Tu", email = "hanming.tu@gmail.com",role = c("aut", "cre"))
   )
 Maintainer: Hanming Tu <hanming.tu@gmail.com>
-Description: Make it easy to review, download and execute scripts stored in Github 
+Description: Make it easy to review, download and execute scripts stored in GitHub
   'phuse-scripts' repository <https://github.com/phuse-org/phuse-scripts>. Some examples
-  included show the web applicatoin framework using the script metadata.  
+  included show the web application framework using the script metadata. The 'PhUSE'
+  is Pharmaceutical Users Software Exchange <http://www.phuse.eu>.
 Depends: R (>= 3.0.1)
 License: MIT + file LICENSE
 Encoding: UTF-8
