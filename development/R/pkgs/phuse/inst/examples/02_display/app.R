@@ -1,5 +1,18 @@
 library(shiny)
 library(RCurl)
+library(phuse)
+
+#if (grepl('^(127|local)',session$clientData$url_hostname)) {
+#  dr <- resolve(system.file("examples", package = "phuse"), "02_display")
+#  f1 <- paste(dr, "www", "phuse-scripts_yml.csv", sep = '/')
+#  fns <- read.csv(file=f1, header=TRUE, sep=",")
+#} else {
+ fns <- build_script_df();
+#}
+# txt <- readChar("www/links.txt",nchars=1e6)
+sel <- fns[,1]; names(sel) <- fns[,2]
+# h_a <- "<a href='%s' title='%s'>%s</a>"
+
 
 # Define UI for random distribution app ----
 ui <- fluidPage(
@@ -23,7 +36,7 @@ ui <- fluidPage(
       # textInput("yn", "YML File Name: ", verbatimTextOutput("yml_name")),
       br(),
       # div(id="script_inputs",class="shiny-html-output")
-      # includeHTML("www/s01.R"),
+      # includeHTML("www/s01.txt"),
       conditionalPanel(
         condition = "output.show_script_ui",
         uiOutput("script_inputs")
@@ -48,24 +61,17 @@ ui <- fluidPage(
   )
 )
 
-fns <- build_script_df();
-# txt <- readChar("www/links.txt",nchars=1e6)
-sel <- fns[,1]; names(sel) <- fns[,2]
-# h_a <- "<a href='%s' title='%s'>%s</a>"
-
 # Define server logic for random distribution app ----
 server <- function(input, output, session) {
 
   m1 <- reactive({ fns })
   # u1 <- reactive({ URLencode(as.character(f1()[input$file,"file_url"])) })
   m2 <- reactive({ # URLencode(m1()[input$file,4])
-    u1 <- URLencode(as.character(fns[input$file,"file_url"]))
-    u2 <- NULL
-    # gsub("[^[:alnum:]///' ]", "",
-    # gsub("[\n]","\r\n",
-    try(u2 <- cvt_list2df(read_yml(u1)), silent = TRUE)
-    if (is.null(u2)) { paste0("Error parsing ", u1) } else { u2 }
-    # )
+    f1 <- ifelse(input$src=="loc","file_path", "file_url")
+    f2 <- gsub('\r','', fns[input$file,f1], perl = TRUE)
+    f3 <- ifelse(input$src=="loc",f2, URLencode(as.character(f2)))
+    try(r <- cvt_list2df(read_yml(f3)), silent = TRUE)
+    if (is.null(r)) { paste0("Error parsing ", f3) } else { r }
     })
   fn <- reactive({
     f1 <- ifelse(input$src=="loc","file_path", "file_url")
@@ -95,7 +101,7 @@ server <- function(input, output, session) {
     if (is.na(f1) || is.null(f1) || length(f1) < 1 ) {
       return('ERROR: Missing file name.')
     }
-    if (!file.exists(f1)) {
+    if (!file.exists(f1) && !url.exists(f1)) {
       return(paste0('ERROR: file ', f1, ' does not exist.'))
     }
     ft <- gsub('.+\\.(\\w+)$','\\1', f1)
@@ -108,7 +114,7 @@ server <- function(input, output, session) {
 
   output$yml <- renderText({
     f1 <- fn()
-    if (!file.exists(f1)) {
+    if (!file.exists(f1) && !url.exists(f1)) {
       return(paste0('ERROR: file ', f1, ' does not exist.'))
     }
     paste(paste0("File: ", f1),readChar(f1,nchars=1e6), sep = "\n")

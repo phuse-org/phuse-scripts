@@ -1,3 +1,8 @@
+phuse_0.1.4 (Release Date: 9/25/2017)
+# ---------------------------------------------------------------------------
+* Added start_phuse, cvt_class2df
+* Added examples 03_showenv
+* Updated examples 02_display
 
 phuse_0.1.3 (Release Date: 9/20/2017)
 # ---------------------------------------------------------------------------
