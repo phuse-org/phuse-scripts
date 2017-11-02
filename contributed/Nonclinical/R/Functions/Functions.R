@@ -66,10 +66,9 @@ download.GitHub.folder <- function (
 # Function to create a list of R dataframes for each .xpt file
 load.xpt.files <- function(path=getwd(),domainsOfInterest=NULL) {
   # NOTE: this function requries the packages: SASxport and tools
-  setwd(path)
-  xptFiles <- list.files(pattern="*.xpt")
+  xptFiles <- Sys.glob(paste(path,"*.xpt",sep='/'))
   if (!is.null(domainsOfInterest)) {
-    domainsOfInterest <- paste(domainsOfInterest,'xpt',sep='.')
+    domainsOfInterest <- paste(paste(path,'/',domainsOfInterest,'.xpt',sep=''))
     xptFiles <- xptFiles[which(tolower(xptFiles) %in% tolower(domainsOfInterest))]
   }
   dataFrames <- list()
@@ -85,10 +84,9 @@ load.xpt.files <- function(path=getwd(),domainsOfInterest=NULL) {
 # Function to create a list of R dataframes for each .csv file
 load.csv.files <- function(path=getwd(),domainsOfInterest=NULL) {
   # NOTE: this function requries the packages: SASxport and tools
-  setwd(path)
-  csvFiles <- list.files(pattern="*.csv")
+  csvFiles <- Sys.glob(paste(path,"*.csv",sep='/'))
   if (!is.null(domainsOfInterest)) {
-    domainsOfInterest <- paste(domainsOfInterest,'csv',sep='.')
+    domainsOfInterest <- paste(path,'/',domainsOfInterest,'.csv',sep='')
     csvFiles <- csvFiles[which(tolower(csvFiles) %in% tolower(domainsOfInterest))]
   }
   dataFrames <- list()
