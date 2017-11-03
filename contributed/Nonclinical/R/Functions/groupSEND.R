@@ -179,6 +179,7 @@ groupSEND <- function(dataset,targetDomain,dmFields=c('SEX','ARMCD','SETCD','USU
 
     # Create concatenated dose with units
     groupedData$Dose <- paste(groupedData$DoseN,groupedData$DoseUnit)
+    groupedData$TreatmentDose <- paste(groupedData$Treatment,groupedData$Dose)
     
     # Define TK
     if ('TKDESC' %in% colnames(groupedData)) {
@@ -193,7 +194,7 @@ groupSEND <- function(dataset,targetDomain,dmFields=c('SEX','ARMCD','SETCD','USU
     groupedData <- groupedData[,dropIndex]
     
     # reorder columns
-    columns2move <- c('SET','Treatment','Dose','Sex','RecoveryStatus','TKstatus')
+    columns2move <- c('SET','Treatment','TreatmentDose','Dose','Sex','RecoveryStatus','TKstatus')
     columnsNOmove <- which(! colnames(groupedData) %in% columns2move)
     groupedData <- cbind(groupedData[,columns2move],groupedData[,columnsNOmove])
   }
