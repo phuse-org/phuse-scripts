@@ -77,7 +77,7 @@ load.xpt.files <- function(path=getwd(),domainsOfInterest=NULL) {
     count <- count + 1
     dataFrames[[count]] <- read.xport(xptFile)
   }
-  names(dataFrames) <- tolower(file_path_sans_ext(xptFiles))
+  names(dataFrames) <- tolower(file_path_sans_ext(basename(xptFiles)))
   return(dataFrames)
 }
 
@@ -95,7 +95,7 @@ load.csv.files <- function(path=getwd(),domainsOfInterest=NULL) {
     count <- count + 1
     dataFrames[[count]] <- read.csv(csvFile)
   }
-  names(dataFrames) <- tolower(file_path_sans_ext(csvFiles))
+  names(dataFrames) <- tolower(file_path_sans_ext(basename(csvFiles)))
   return(dataFrames)
 }
 
