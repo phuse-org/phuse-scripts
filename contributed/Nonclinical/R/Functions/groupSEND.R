@@ -1,15 +1,17 @@
+# Function to merge in demographic and treatment data for each of the SEND experimental results domains
+
 groupSEND <- function(dataset,targetDomain,dmFields=c('SEX','ARMCD','SETCD','USUBJID'),
                       exFields=c('EXTRT','EXDOSE','EXDOSU'),
-                      txParams=c('TRTDOS','TRTDOSU','TKDESC','GRPLBL','SPGRPCD'),
-                      rename=T) {
+                      txParams=c('TRTDOS','TRTDOSU','TKDESC','GRPLBL','SPGRPCD')) {
   
+  # Get dataframe of domain of interest and identify subjects
   groupedData <- dataset[[targetDomain]]
   subjects <- levels(groupedData$USUBJID)
   
-  # DM fields to merge with target domain on USUBJID: SEX, ARMCD, SETCD 
+  # Merge relevant fields from dm domain by subject (defaults: sex, trial arm, and trial set)
   groupedData <- merge(groupedData,dataset$dm[,dmFields],by='USUBJID')
   
-  # EX fields to merge with target_dm on USUBJID: unique(EXTRT), unique(EXDOSE), unique(EXDOSU)
+  # Merge relevant fields from the ex domain by subject (defaults: treatment, dose, and dose unit)
   for (field in exFields) {
     assign(field,NA)
   }
@@ -39,8 +41,8 @@ groupSEND <- function(dataset,targetDomain,dmFields=c('SEX','ARMCD','SETCD','USU
   colnames(exData) <- c('USUBJID',exFields)
   groupedData <- merge(groupedData,exData,by='USUBJID')
   
-  # TX$TXPARMCD values to merge with target_dm_ex on SETCD: SET, TRTDOS, TRTDOSU, 
-  #                                                         TKDESC(if present), GRPLBL (if present), SPGRPCD (if present), TCNTRL(if present) 
+  # Merge relevant information from tx domain by set code (default: dose, dose unit, toxicokinetics description, group label, and sponsor-defined group label)
+  #                                                       (control treatment currently hard coded)
   SETCD <- levels(dataset$tx$SETCD)
   for (param in c('SET',txParams,'TCNTRL')) {
     assign(param,NA)
@@ -98,9 +100,7 @@ groupSEND <- function(dataset,targetDomain,dmFields=c('SEX','ARMCD','SETCD','USU
   }
   groupedData <- merge(groupedData,TKcheck,by='USUBJID')
   
-  
-  # Grep for "recovery" in TA$EPOCH of each ARMCD --> Recovery STATUS (if TA exists)
-  # Grep for "recovery" in SE$ELEMENT for each USUBJID 
+  # Merge recovery status from ta domain (EPOCH) by arm code or se domain (ELEMENT) by subject
   if (!is.null(dataset$ta)) {
     ARMCD <- levels(dataset$ta$ARMCD)
     taData <- rep(NA,length(ARMCD)*2)
@@ -138,66 +138,66 @@ groupSEND <- function(dataset,targetDomain,dmFields=c('SEX','ARMCD','SETCD','USU
     groupedData <- merge(groupedData,seData,by='USUBJID')
   }
   
-  if (rename==TRUE) {
-    # Rename SEX
-    groupedData$Sex <- groupedData$SEX
-    
-    # Define Treatment
-    if ('TCNTRL' %in% colnames(groupedData)) {
-      levels(groupedData$EXTRT) <- c(levels(groupedData$EXTRT),levels(groupedData$TCNTRL))
-      tcntrlIndex <- which(!is.na(groupedData$TCNTRL))
-      groupedData$EXTRT[tcntrlIndex] <- groupedData$TCNTRL[tcntrlIndex]
-    }
-    groupedData$Treatment <- groupedData$EXTRT
-    dropColumns <- 'TCNTRL'
-    
-    # Check for dose discrepancy
-    if (is.factor(groupedData$EXDOSE)) {
-      if (! FALSE %in% is.finite(as.numeric(levels(groupedData$EXDOSE)[groupedData$EXDOSE]))) {
-        groupedData$EXDOSE <- as.numeric(levels(groupedData$EXDOSE)[groupedData$EXDOSE])
-      } else {
-        groupedData$EXDOSE <- as.character(levels(groupedData$EXDOSE)[groupedData$EXDOSE])
-      }
-    }
-    if (is.factor(groupedData$TRTDOS)) {
-      if (! FALSE %in% is.finite(as.numeric(levels(groupedData$TRTDOS)[groupedData$TRTDOS]))) {
-        groupedData$TRTDOS <- as.numeric(levels(groupedData$TRTDOS)[groupedData$TRTDOS])
-      } else {
-        groupedData$TRTDOS <- as.character(levels(groupedData$TRTDOS)[groupedData$TRTDOS])
-      }
-    }
-    if (! FALSE %in% (groupedData$EXDOSE==groupedData$TRTDOS)) {
-      dropColumns <- c(dropColumns,'TRTDOS')
-    }
-    groupedData$DoseN <- groupedData$EXDOSE
-
-    # Check for dose unit discrepancy
-    if (! FALSE %in% (groupedData$EXDOSU==groupedData$TRTDOSU)) {
-      dropColumns <- c(dropColumns,'TRTDOSU')
-    }
-    groupedData$DoseUnit <- groupedData$EXDOSU
-
-    # Create concatenated dose with units
-    groupedData$Dose <- paste(groupedData$DoseN,groupedData$DoseUnit)
-    groupedData$TreatmentDose <- paste(groupedData$Treatment,groupedData$Dose)
-    
-    # Define TK
-    if ('TKDESC' %in% colnames(groupedData)) {
-      noTKindex <- grep('no',groupedData$TKDESC,ignore.case=T)
-      groupedData$TKstatus[noTKindex] <- FALSE
-      groupedData$TKstatus[-noTKindex] <- TRUE
-      dropColumns <- c(dropColumns,'TKDESC')
-    }
-    
-    # drop useless columns
-    dropIndex <- which(! colnames(groupedData) %in% dropColumns)
-    groupedData <- groupedData[,dropIndex]
-    
-    # reorder columns
-    columns2move <- c('SET','Treatment','TreatmentDose','Dose','Sex','RecoveryStatus','TKstatus')
-    columnsNOmove <- which(! colnames(groupedData) %in% columns2move)
-    groupedData <- cbind(groupedData[,columns2move],groupedData[,columnsNOmove])
+  # Clean up the dataframe
+  
+  # Rename SEX
+  groupedData$Sex <- groupedData$SEX
+  
+  # Define Treatment
+  if ('TCNTRL' %in% colnames(groupedData)) {
+    levels(groupedData$EXTRT) <- c(levels(groupedData$EXTRT),levels(groupedData$TCNTRL))
+    tcntrlIndex <- which(!is.na(groupedData$TCNTRL))
+    groupedData$EXTRT[tcntrlIndex] <- groupedData$TCNTRL[tcntrlIndex]
   }
+  groupedData$Treatment <- groupedData$EXTRT
+  dropColumns <- 'TCNTRL'
+  
+  # Check for dose discrepancy
+  if (is.factor(groupedData$EXDOSE)) {
+    if (! FALSE %in% is.finite(as.numeric(levels(groupedData$EXDOSE)[groupedData$EXDOSE]))) {
+      groupedData$EXDOSE <- as.numeric(levels(groupedData$EXDOSE)[groupedData$EXDOSE])
+    } else {
+      groupedData$EXDOSE <- as.character(levels(groupedData$EXDOSE)[groupedData$EXDOSE])
+    }
+  }
+  if (is.factor(groupedData$TRTDOS)) {
+    if (! FALSE %in% is.finite(as.numeric(levels(groupedData$TRTDOS)[groupedData$TRTDOS]))) {
+      groupedData$TRTDOS <- as.numeric(levels(groupedData$TRTDOS)[groupedData$TRTDOS])
+    } else {
+      groupedData$TRTDOS <- as.character(levels(groupedData$TRTDOS)[groupedData$TRTDOS])
+    }
+  }
+  if (! FALSE %in% (groupedData$EXDOSE==groupedData$TRTDOS)) {
+    dropColumns <- c(dropColumns,'TRTDOS')
+  }
+  groupedData$DoseN <- groupedData$EXDOSE
+  
+  # Check for dose unit discrepancy
+  if (! FALSE %in% (groupedData$EXDOSU==groupedData$TRTDOSU)) {
+    dropColumns <- c(dropColumns,'TRTDOSU')
+  }
+  groupedData$DoseUnit <- groupedData$EXDOSU
+  
+  # Create concatenated dose with units
+  groupedData$Dose <- paste(groupedData$DoseN,groupedData$DoseUnit)
+  groupedData$TreatmentDose <- paste(groupedData$Treatment,groupedData$Dose)
+  
+  # Define TK
+  if ('TKDESC' %in% colnames(groupedData)) {
+    noTKindex <- grep('no',groupedData$TKDESC,ignore.case=T)
+    groupedData$TKstatus[noTKindex] <- FALSE
+    groupedData$TKstatus[-noTKindex] <- TRUE
+    dropColumns <- c(dropColumns,'TKDESC')
+  }
+  
+  # drop useless columns
+  dropIndex <- which(! colnames(groupedData) %in% dropColumns)
+  groupedData <- groupedData[,dropIndex]
+  
+  # reorder columns
+  columns2move <- c('SET','Treatment','TreatmentDose','Dose','Sex','RecoveryStatus','TKstatus')
+  columnsNOmove <- which(! colnames(groupedData) %in% columns2move)
+  groupedData <- cbind(groupedData[,columns2move],groupedData[,columnsNOmove])
   
   return(groupedData)
 }
