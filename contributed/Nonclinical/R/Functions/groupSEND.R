@@ -181,6 +181,7 @@ groupSEND <- function(dataset,targetDomain,dmFields=c('SEX','ARMCD','SETCD','USU
   # Create concatenated dose with units
   groupedData$Dose <- paste(groupedData$DoseN,groupedData$DoseUnit)
   groupedData$TreatmentDose <- paste(groupedData$Treatment,groupedData$Dose)
+  dropColumns <- c(dropColumns,'DoseN','DoseUnit')
   
   # Define TK
   if ('TKDESC' %in% colnames(groupedData)) {
