@@ -207,6 +207,7 @@ createMeansTable <- function(dataset,meanField,groupFields,otherFields=NULL) {
   groupsDF <- expand.grid(groups)
   
   meanData <- rep(NA,length(groups))
+  sdData <- rep(NA,length(groups))
   seData <- rep(NA,length(groups))
   otherFieldList <- list()
   for (field in otherFields) {
