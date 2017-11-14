@@ -219,6 +219,7 @@ createMeansTable <- function(dataset,meanField,groupFields,otherFields=NULL) {
       index <- intersect(index,indexTmp)
     }
     meanData[i] <- mean(dataset[index,meanField],na.rm=TRUE)
+    sdData[i] <- sd(dataset[index,meanField],na.rm=TRUE)
     seData[i] <- sd(dataset[index,meanField],na.rm=TRUE)/sqrt(length(which(is.finite(dataset[index,meanField]))))
     for (field in otherFields) {
       if (length(unique(dataset[index,field]))==1) {
@@ -232,7 +233,7 @@ createMeansTable <- function(dataset,meanField,groupFields,otherFields=NULL) {
       }
     }
   }
-  newDataset <- cbind(groupsDF,meanData,seData)
+  newDataset <- cbind(groupsDF,meanData,sdData,seData)
   for (field in otherFields) {
     newField <- otherFieldList[[field]]
     if (length(levels(newField))>0) {
@@ -241,6 +242,6 @@ createMeansTable <- function(dataset,meanField,groupFields,otherFields=NULL) {
       newDataset <- cbind(newDataset,newField)
     }
   }
-  colnames(newDataset) <- c(groupFields,paste(meanField,'mean',sep='_'),paste(meanField,'se',sep='_'),otherFields)
+  colnames(newDataset) <- c(groupFields,paste(meanField,'mean',sep='_'),paste(meanField,'sd',sep='_'),paste(meanField,'se',sep='_'),otherFields)
   return(newDataset)
 }
