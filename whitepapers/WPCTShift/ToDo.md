@@ -9,7 +9,7 @@ http://www.phusewiki.org/wiki/images/9/95/CS_WhitePaper_OutliersShifts_v1.0.pdf
 
 [Output 11.1 Specification Completed](https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/WPCTShift/Specifications/WPOS_Fig_11.1_RequirementsSpecification%2020170821.docx)
 
-Programming Team to start
+Programming Team started with:
 Very rough Draft of outline for program created.
 Decided to only display one UNIT per test and not both SI and CN pending future discussion.
 
