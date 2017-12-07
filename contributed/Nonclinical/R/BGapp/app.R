@@ -44,19 +44,18 @@
 # Test with this R command:   system("java -version");
 #####################################################
 # Check for Required Packages, Install if Necessary, and Load
-list.of.packages <- c("shiny","SASxport","rChoiceDialogs","ggplot2","ini",'tools')
+list.of.packages <- c("shiny","SASxport","ggplot2","ini",'tools')
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages,repos='http://cran.us.r-project.org')
 library(shiny)
 library(SASxport)
-library(rChoiceDialogs)
 library(ggplot2)
 library(ini)
 library(tools)
 
 # Source Required Functions
-source('directoryInput.R')
 source('https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/contributed/Nonclinical/R/Functions/Functions.R')
+source('https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/contributed/Nonclinical/R/Functions/groupSEND.R')
 
 # Settings file
 SettingsFile <- file.path(path.expand('~'),"BWappSettings.ini")
@@ -86,7 +85,11 @@ setDefaultStudyFolder <- function(aPath) {
 }  
 
 # set default study folder
-defaultStudyFolder <- getDefaultStudyFolder() 
+defaultStudyFolder <- getDefaultStudyFolder()
+setwd(defaultStudyFolder)
+
+values <- reactiveValues()
+values$path <- defaultStudyFolder
 ############################################################################################
 
 
@@ -94,28 +97,40 @@ defaultStudyFolder <- getDefaultStudyFolder()
 
 server <- function(input, output,session) {
   
+  # Handle Study Selection
   observeEvent(
     ignoreNULL = TRUE,
     eventExpr = {
-      input$directory
+      input$chooseBWfile
     },
     handlerExpr = {
-      if (input$directory >= 1) {
-        path <- rchoose.dir(default = defaultStudyFolder)
-        updateDirectoryInput(session, 'directory', value = path)
-        # Show selection in console
-        print(path)
-        # and save for next run if good one selected
-        if (dir.exists(path)) {
-          print("Valid directory selected")
-          setDefaultStudyFolder(path) 
+      if (input$chooseBWfile >= 1) {
+        File <- choose.files(default=values$path,caption = "Select a BW Domain",multi=F,filters=cbind('.xpt or .csv files','*.xpt;*.csv'))
+        
+        # If file was chosen, update 
+        if (length(File>0)) {
+          path <- dirname(File)
+
+          # save for next run if good one selected
+          if (dir.exists(path)) {
+            setDefaultStudyFolder(path) 
+            values$path <- path
+          }
         }
       }
     }
   )
   
+  # Print Current Study Folder Location
+  output$bwFilePath <- renderText({
+    if (!is.null(values$path)) {
+      values$path
+    }
+  })
+  
+  # Create Checkboxes if Multiple Test Articles Present
   output$selectTestArticle <- renderUI({
-    path <- readDirectoryInput(session,'directory')
+    path <- values$path
     setwd(path)
     if (length(list.files(pattern='*.xpt'))>0) {
       Dataset <- load.xpt.files()
@@ -124,23 +139,19 @@ server <- function(input, output,session) {
     } else {
       stop('No .xpt or .csv files to load!')
     }
-    testArticleNames <- unique(Dataset$ex$EXTRT)
+    groupedData <- groupSEND(Dataset,'bw')
+    testArticleNames <- unique(groupedData$Treatment)
     testArticles <- as.list(testArticleNames)
     checkboxGroupInput('testArticle',label='Test Article:',choices = testArticles,selected=testArticleNames)
   })
   
+  # Load and Process Dataset
   data <- reactive({
-    # print(" Now checking new directory")
-    path <- readDirectoryInput(session,'directory')
-    # print(path)
-    defaultStudyFolder=path
-    # print(file.path(defaultStudyFolder,"bw.xpt"))
+    path <- values$path
+    defaultStudyFolder <- path
     validate(
       need(dir.exists(defaultStudyFolder),label="Select a valid directory with a SEND dataset")
     )
-#     validate(
-#       need(file.exists(file.path(defaultStudyFolder,"bw.xpt")),label="A directory with a dataset containing body weight data (bw.xpt)")
-#     )
     setwd(path)
     if (length(list.files(pattern='*.xpt'))>0) {
       Dataset <- load.xpt.files()
@@ -149,58 +160,23 @@ server <- function(input, output,session) {
     } else {
       stop('No .xpt or .csv files to load!')
     }
-    # merge in other demographic variables then other set variables
-#     print(head(Dataset$bw))
-#     print(head(Dataset$dm))
-    bwdm <<- merge(Dataset$bw,Dataset$dm,by="USUBJID")
-    exDay1 <- Dataset$ex[Dataset$ex$EXSTDY==1,c('USUBJID','EXTRT','EXDOSE','EXDOSU','EXDOSFRQ')]
-    exDay1$Group <- paste(exDay1$EXDOSE,exDay1$EXDOSU,exDay1$EXTRT,exDay1$EXDOSFRQ)
-    bwdmex <<- merge(bwdm,exDay1,by='USUBJID')
-    # filter TX for one row per ARMCD parameter
-    txSetArm <- Dataset$tx[Dataset$tx$TXPARMCD == "ARMCD", ] 
-#     print("tx: ")
-#     print(Dataset$tx)
-#     print("txSetArm: ")
-#     print(txSetArm)
-    # add in column for set name
-    bwdmtx <<- merge(bwdm,txSetArm[ , c("SETCD", "SET")],by="SETCD")
-    # add in a column for sponsor group code, if available
-    # filter TX for one row per ARMCD parameter
-    txSPGRPCD <- Dataset$tx[Dataset$tx$TXPARMCD == "SPGRPCD", ] 
-#     print("txSPGRPCD: ")
-#     print(txSPGRPCD)
-#     print(head(bwdmtx))
-    if (nrow(txSPGRPCD)>0) {
-      # add in column for SPGRPCD
-      names(txSPGRPCD)[names(txSPGRPCD)=="TXVAL"] <- "SPGRPCD"
-      bwdmtx <<- merge(bwdmtx,txSPGRPCD[ , c("SETCD","SPGRPCD")],by="SETCD")
-    }
-    # print(head(bwdmtx))
-    # add a compound group/set for graph labeling
-    # if sponsor defined group label exists, combine with set name
-    if ("SPGRPCD" %in% colnames(bwdmtx)) {
-      bwdmtx <<- within(bwdmtx, Group <- as.factor(paste(SPGRPCD,SET,sep=":")))
-    } else {
-      bwdmtx <<- within(bwdmtx, Group <- SET)
-    }
     
-    # If there is no BWDY, calculate one
-    if("BWDY" %in% colnames(bwdmtx))
-    {
-      print("BWDY is found");
-    } 
-    else
-    {
-      print("BWDY is not found, calculating from BWDTC and DM.RFSTDTC");
-      bwdmtx <<- within(bwdmtx, BWDYDiff <- (as.Date(BWDTC)-as.Date(RFSTDTC)))
-      # if 0 or greater, add a 1 to it so that study days start at 1
-      bwdmtx$BWDY <- ifelse(bwdmtx$BWDYDiff>=0, bwdmtx$BWDYDiff+1, bwdmtx$BWDYDiff)
-    } 
-    #
-    dm <<- Dataset$dm
+    groupedData <- groupSEND(Dataset,'bw')
+    
+    bwdmtx <- groupedData
     
     if (input$groupMethod == 'attributes') {
-      bwdmtx <- bwdmex
+      
+      # Get Dose Levels
+      bwdmtx$Group <- groupedData$Dose
+      
+      # Filter by Test Article
+      testArticleIndex <- NULL
+      for (testArticle in input$testArticle) {
+        tmpIndex <- which(bwdmtx$EXTRT==testArticle)
+        testArticleIndex <- c(testArticleIndex,tmpIndex)
+      }
+      bwdmtx <- bwdmtx[testArticleIndex,]
       
       # Filter by Sex
       if (input$sex == 'Male') {
@@ -215,31 +191,22 @@ server <- function(input, output,session) {
         bwdmtx$Group <- paste(bwdmtx$Group,bwdmtx$SEX)
       }
       
-      # Filter by Test Article
-      testArticleIndex <- NULL
-      for (testArticle in input$testArticle) {
-        tmpIndex <- which(bwdmtx$EXTRT==testArticle)
-        testArticleIndex <- c(testArticleIndex,tmpIndex)
+      # Filter by Time of Sacrifice
+      noRecoveryIndex <- which(bwdmtx$RecoveryStatus==FALSE)
+      recoveryIndex <- which(bwdmtx$RecoveryStatus==TRUE)
+      if (input$recovery == 'Main Study Group') {
+        bwdmtx <- bwdmtx[noRecoveryIndex,]
+      } else if (input$recovery == 'Recovery Group') {
+        bwdmtx <- bwdmtx[recoveryIndex,]
+      } else if (input$recovery == 'Both (split)') {
+        bwdmtx$Group[recoveryIndex] <- paste(bwdmtx$Group[recoveryIndex],'Recovery')
       }
-      bwdmtx <- bwdmtx[testArticleIndex,]
       
       # Filter by TK
-      TKsubjects <- NULL
-      noTKsubjects <- NULL
-      TKcount <- 1
-      noTKcount <- 1
-      for (subject in unique(bwdmtx$USUBJID)) {
-        if (subject %in% Dataset$pc$USUBJID) {
-          TKsubjects[TKcount] <- subject
-          TKcount <- TKcount + 1
-        } else {
-          noTKsubjects[noTKcount] <- subject
-          noTKcount <- noTKcount + 1
-        }
-      }
-      TKindex <- which(bwdmtx$USUBJID %in% TKsubjects)
-      noTKindex <- which(bwdmtx$USUBJID %in% noTKsubjects)
+      noTKindex <- which(bwdmtx$TKstatus==F)
+      TKindex <- which(bwdmtx$TKstatus==T)
       bwdmtx$TK <- ''
+      bwdmtx$TK[noTKindex] <- 'No TK'
       bwdmtx$TK[TKindex] <- 'TK'
       if (input$includeTK=='No TK') {
         bwdmtx <<- bwdmtx[noTKindex,]
@@ -251,9 +218,15 @@ server <- function(input, output,session) {
         bwdmtx$Group <- paste(bwdmtx$Group,bwdmtx$TK)
         bwdmtx <<- bwdmtx
       }
+      bwdmtx$Group <- factor(bwdmtx$Group)
+      # bwdmtx$Group <- factor(bwdmtx$Group,levels=sort(levels(bwdmtx$Group)))
+    } else if (input$groupMethod=='sets') {
+      if ("SPGRPCD" %in% colnames(bwdmtx)) {
+        bwdmtx$Group <- as.factor(paste(bwdmtx$SPGRPCD,bwdmtx$SET,sep=":"))
+      } else {
+        bwdmtx$Group <- bwdmtx$SET
+      }
     }
-    
-    bwdmtx$Group <- factor(bwdmtx$Group)
     
     validate(
       need(!is.null(bwdmtx), label = "Could not read body weight data from dataset")
@@ -261,11 +234,10 @@ server <- function(input, output,session) {
     
     # Add group list choices for selection
     groupList <<- levels(bwdmtx$Group)
-    print("Now update set of groups:")
     print(groupList)
     updateCheckboxGroupInput(session,"Groups", choices = groupList, selected = groupList)
     
-    # print(head(bwdmtx))
+    return(bwdmtx)
   })  
   
   # Plot Body Weights
@@ -283,27 +255,10 @@ server <- function(input, output,session) {
     else {
       bwdmtxFilt <- bwdmtx[bwdmtx$Group  %in% input$Groups, ]  
     }
-    # print(head(bwdmtxFilt))
-    
-#     if (input$printMeans==TRUE) {
-#       bwdmtxFiltMeans <- createMeansTable(bwdmtxFilt,'BWSTRESN',c('Group',xaxis))
-#       p <- ggplot(bwdmtxFiltMeans,aes(x=bwdmtxFiltMeans[,xaxis],y=BWSTRESN_mean,colour=Group)) +
-#         geom_point() + ggtitle('Body Weight Plot') + labs(x=xaxis)
-#       if (input$printSE == TRUE) {
-#         p <- p + geom_errorbar(aes(ymin=BWSTRESN_mean-BWSTRESN_se,ymax=BWSTRESN_mean+BWSTRESN_se),width=0.8)
-#       }
-#     } else {
-#       # plot with color by group and lines connecting subjects
-#       p <- ggplot(bwdmtxFilt,aes(x=bwdmtxFilt[,xaxis],y=BWSTRESN,group=USUBJID,colour=Group)) +
-#         geom_point() + ggtitle('Body Weight Plot') + labs(x=xaxis)
-#     }
-#     if (input$printLines==TRUE) {
-#       p <- p + geom_line()
-#     }
-#     print(p)
     
     if (input$plotType == 'Mean Data Points') {
       bwdmtxFiltMeans <- createMeansTable(bwdmtxFilt,'BWSTRESN',c('Group',xaxis))
+      bwdmtxFiltMeans$Group <- factor(bwdmtxFiltMeans$Group,levels=sort(levels(bwdmtxFiltMeans$Group)))
       p <- ggplot(bwdmtxFiltMeans,aes(x=bwdmtxFiltMeans[,xaxis],y=BWSTRESN_mean,colour=Group)) +
         geom_point()
       if (input$printSE == TRUE) {
@@ -327,7 +282,7 @@ server <- function(input, output,session) {
         p <- p + geom_line()
       }
     }
-    p <- p + ggtitle('Body Weight Gain Plot')+ labs(x=xaxis)
+    p <- p + ggtitle('Body Weight Plot')+ labs(x=xaxis)
     print(p) 
   })
   
@@ -365,28 +320,10 @@ server <- function(input, output,session) {
       }
       bwdmtxFilt$BWPDIFF[i] <- 100*((bwdmtxFilt$BWSTRESN[i]-DayOneWeight) / DayOneWeight)
     }
-    # print(bwdmtxFilt)
-    
-#     if (input$printMeans==TRUE) {
-#       bwdmtxFiltMeans <- createMeansTable(bwdmtxFilt,'BWPDIFF',c('Group',xaxis))
-#       p <- ggplot(bwdmtxFiltMeans,aes(x=bwdmtxFiltMeans[,xaxis],y=BWPDIFF_mean,colour=Group)) +
-#         geom_point() + ggtitle('Body Weight Percent Difference from day 1 Plot')+ labs(x=xaxis)
-# # this comment block has code copied from "Plot Body Weights" and has not (yet) been adjusted for use in this section
-# #      if (input$printSE == TRUE) {
-# #        p <- p + geom_errorbar(aes(ymin=BWSTRESN_mean-BWSTRESN_se,ymax=BWSTRESN_mean+BWSTRESN_se),width=0.8)
-# #      }
-#     } else {
-#       # plot with color by group and lines connecting subjects
-#       p <- ggplot(bwdmtxFilt,aes(x=bwdmtxFilt[,xaxis],y=BWPDIFF,group=USUBJID,colour=Group)) +
-#         geom_point() + ggtitle('Body Weight Percent Difference from day 1 Plot')+ labs(x=xaxis)
-#     }
-#     if (input$printLines==TRUE) {
-#       p <- p + geom_line()
-#     }
-#     print(p)
     
     if (input$plotType == 'Mean Data Points') {
       bwdmtxFiltMeans <- createMeansTable(bwdmtxFilt,'BWPDIFF',c('Group',xaxis))
+      bwdmtxFiltMeans$Group <- factor(bwdmtxFiltMeans$Group,levels=sort(levels(bwdmtxFiltMeans$Group)))
       p <- ggplot(bwdmtxFiltMeans,aes(x=bwdmtxFiltMeans[,xaxis],y=BWPDIFF_mean,colour=Group)) +
         geom_point()
       if (input$printSE == TRUE) {
@@ -410,7 +347,7 @@ server <- function(input, output,session) {
         p <- p + geom_line()
       }
     }
-    p <- p + ggtitle('Body Weight Gain Plot')+ labs(x=xaxis)
+    p <- p + ggtitle('Body Weight Percent Difference from day 1 Plot')+ labs(x=xaxis)
     print(p) 
   })
   
@@ -465,6 +402,7 @@ server <- function(input, output,session) {
 
     if (input$plotType == 'Mean Data Points') {
       bgdmtxFiltMeans <- createMeansTable(bgdmtxFilt,'BGSTRESN',c('Group',xaxis))
+      bgdmtxFiltMeans$Group <- factor(bgdmtxFiltMeans$Group,levels=sort(levels(bgdmtxFiltMeans$Group)))
       p <- ggplot(bgdmtxFiltMeans,aes(x=bgdmtxFiltMeans[,xaxis],y=BGSTRESN_mean,colour=Group)) +
         geom_point()
       if (input$printSE == TRUE) {
@@ -505,8 +443,13 @@ ui <- fluidPage(
   sidebarLayout(
     
     sidebarPanel(
-      h3('Select Study'),
-      directoryInput('directory',label = 'Directory:',value=defaultStudyFolder),
+      h3('Study Selection'),
+      actionButton('chooseBWfile','Choose a BW Domain File'),br(),
+      h5('Study Folder Location:'),
+      verbatimTextOutput('bwFilePath'),
+      # shinyDirButton('bwDir','Change Directory','Select a Directory'),
+      # verbatimTextOutput('directoryPath'),
+      # directoryInput('directory',label = 'Directory:',value=defaultStudyFolder),
       h3('Select Plots:'),
       checkboxInput('showBWPlot','Show the Body Weight Plot',value=1),
       checkboxInput('showBWDiffPlot','Show the Body Weight Difference from Day 1 Plot',value=0),
@@ -534,6 +477,7 @@ ui <- fluidPage(
         condition = 'input.groupMethod == "attributes"',
         uiOutput('selectTestArticle'),
         radioButtons('sex','Filter by Sex:',choices=c('Male','Female','Both (pooled)','Both (split)'),selected='Both (split)'),
+        radioButtons('recovery','Filter by Timing of Sacrifice:',choices=c('Main Study Group','Recovery Group','Both (pooled)','Both (split)'),selected='Both (pooled)'),
         radioButtons('includeTK','Include TK Groups?',choices=c('No TK','TK only','Both (pooled)','Both (split)'),selected='No TK')
       ),
       checkboxGroupInput("Groups", "Filter by Group:", choices = groupList)
