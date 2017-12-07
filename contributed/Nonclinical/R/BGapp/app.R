@@ -22,21 +22,20 @@
 #       b) Test Article   
 #       c) Males/Females   
 #       d) TK/non-TK
+#       e) Recovery/non-recovery
 # 8) Display box/whisker plots -- Kevin
 #####################################################
 # Notes
 # 1) Check if instem dataset should have control water tk as supplier group 2? -- Bob emailed instem and was told that this was an old study.
 #####################################################
-# Tasks
-# 4) To add an option to construct groups by Filtering and Splitting: -- Kevin
-#       e) Recovery/non-recovery (use EPOCH in TA)
-# 5) Resolve issue of different units (display an error if the units aren't consistent, else the units of the first record) -- Hanming
-# 6) Calculate days based upon subject epoch (use EPOCH in TA and elements in TE) 
-# 7) Add a filter to (optionally) remove the Terminal Body Weights. - Bill Varady.
-# 8) Implement alternative Day 1 normalization method - Tony
-# 9) Output BG.xpt file
-#10) Statistical Analysis (Dunnet's test; repeated-measures ANOVA) -- Kevin
-#11) Add tests of dataset assumptions
+# Tasks Remaining
+# 1) Resolve issue of different units (display an error if the units aren't consistent, else the units of the first record) -- Hanming
+# 2) Calculate days based upon subject epoch (use EPOCH in TA and elements in TE) 
+# 3) Add a filter to (optionally) remove the Terminal Body Weights. - Bill Varady.
+# 4) Implement alternative Day 1 normalization method - Tony
+# 5) Output BG.xpt file
+# 6) Statistical Analysis (Dunnet's test; repeated-measures ANOVA) -- Kevin
+# 7) Add tests of dataset assumptions
 #####################################################
 # Hints
 #      If the directory selection dialog does not appear when clicking on the "..." button, then
@@ -60,7 +59,7 @@ source('https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/contrib
 # Settings file
 SettingsFile <- file.path(path.expand('~'),"BWappSettings.ini")
 # Initial group list is empty
-groupList <<- ""
+groupList <- ""
 
 # Function to get setting from file
 getDefaultStudyFolder <- function() {
@@ -146,7 +145,7 @@ server <- function(input, output,session) {
   })
   
   # Load and Process Dataset
-  data <- reactive({
+  loadData <- reactive({
     path <- values$path
     defaultStudyFolder <- path
     validate(
@@ -162,219 +161,157 @@ server <- function(input, output,session) {
     }
     
     groupedData <- groupSEND(Dataset,'bw')
-    
-    bwdmtx <- groupedData
-    
-    if (input$groupMethod == 'attributes') {
-      
-      # Get Dose Levels
-      bwdmtx$Group <- groupedData$Dose
-      
-      # Filter by Test Article
-      testArticleIndex <- NULL
-      for (testArticle in input$testArticle) {
-        tmpIndex <- which(bwdmtx$EXTRT==testArticle)
-        testArticleIndex <- c(testArticleIndex,tmpIndex)
-      }
-      bwdmtx <- bwdmtx[testArticleIndex,]
-      
-      # Filter by Sex
-      if (input$sex == 'Male') {
-        bwdmtx$Group <- paste(bwdmtx$Group,bwdmtx$SEX)
-        sexIndex <- which(bwdmtx$SEX=='M')
-        bwdmtx <- bwdmtx[sexIndex,]
-      } else if (input$sex == 'Female') {
-        bwdmtx$Group <- paste(bwdmtx$Group,bwdmtx$SEX)
-        sexIndex <- which(bwdmtx$SEX=='F')
-        bwdmtx <- bwdmtx[sexIndex,]
-      } else if (input$sex == 'Both (split)') {
-        bwdmtx$Group <- paste(bwdmtx$Group,bwdmtx$SEX)
-      }
-      
-      # Filter by Time of Sacrifice
-      noRecoveryIndex <- which(bwdmtx$RecoveryStatus==FALSE)
-      recoveryIndex <- which(bwdmtx$RecoveryStatus==TRUE)
-      if (input$recovery == 'Main Study Group') {
-        bwdmtx <- bwdmtx[noRecoveryIndex,]
-      } else if (input$recovery == 'Recovery Group') {
-        bwdmtx <- bwdmtx[recoveryIndex,]
-      } else if (input$recovery == 'Both (split)') {
-        bwdmtx$Group[recoveryIndex] <- paste(bwdmtx$Group[recoveryIndex],'Recovery')
-      }
-      
-      # Filter by TK
-      noTKindex <- which(bwdmtx$TKstatus==F)
-      TKindex <- which(bwdmtx$TKstatus==T)
-      bwdmtx$TK <- ''
-      bwdmtx$TK[noTKindex] <- 'No TK'
-      bwdmtx$TK[TKindex] <- 'TK'
-      if (input$includeTK=='No TK') {
-        bwdmtx <<- bwdmtx[noTKindex,]
-      } else if (input$includeTK=='TK only') {
-        bwdmtx <<- bwdmtx[TKindex,]
-      }  else if (input$includeTK=='Both (pooled)') {
-        bwdmtx <<- bwdmtx
-      } else if (input$includeTK=='Both (split)') {
-        bwdmtx$Group <- paste(bwdmtx$Group,bwdmtx$TK)
-        bwdmtx <<- bwdmtx
-      }
-      bwdmtx$Group <- factor(bwdmtx$Group)
-      # bwdmtx$Group <- factor(bwdmtx$Group,levels=sort(levels(bwdmtx$Group)))
-    } else if (input$groupMethod=='sets') {
-      if ("SPGRPCD" %in% colnames(bwdmtx)) {
-        bwdmtx$Group <- as.factor(paste(bwdmtx$SPGRPCD,bwdmtx$SET,sep=":"))
-      } else {
-        bwdmtx$Group <- bwdmtx$SET
-      }
-    }
-    
-    validate(
-      need(!is.null(bwdmtx), label = "Could not read body weight data from dataset")
-    )
-    
-    # Add group list choices for selection
-    groupList <<- levels(bwdmtx$Group)
-    print(groupList)
-    updateCheckboxGroupInput(session,"Groups", choices = groupList, selected = groupList)
-    
-    return(bwdmtx)
-  })  
-  
-  # Plot Body Weights
-  output$BWplot <- renderPlot({
-    data()
-    # retrieve xaxis choice
-    xaxis <- input$xaxis
-    # filter now based on group selection
-    if (is.null(input$Groups) ) { 
-      bwdmtxFilt <- bwdmtx
-    }
-    else if ( length(input$Groups) == 0 ) { 
-      bwdmtxFilt <- bwdmtx
-    } 
-    else {
-      bwdmtxFilt <- bwdmtx[bwdmtx$Group  %in% input$Groups, ]  
-    }
-    
-    if (input$plotType == 'Mean Data Points') {
-      bwdmtxFiltMeans <- createMeansTable(bwdmtxFilt,'BWSTRESN',c('Group',xaxis))
-      bwdmtxFiltMeans$Group <- factor(bwdmtxFiltMeans$Group,levels=sort(levels(bwdmtxFiltMeans$Group)))
-      p <- ggplot(bwdmtxFiltMeans,aes(x=bwdmtxFiltMeans[,xaxis],y=BWSTRESN_mean,colour=Group)) +
-        geom_point()
-      if (input$printSE == TRUE) {
-        p <- p + geom_errorbar(aes(ymin=BWSTRESN_mean-BWSTRESN_se,ymax=BWSTRESN_mean+BWSTRESN_se),width=0.8)
-      }
-      if (input$printLines == TRUE) {
-        # plot with lines connecting subjects
-        p <- p + geom_line()
-      }
-    } else if (input$plotType == 'Boxplots') {
-      xaxis_levels <- as.character(sort(as.numeric(unique(bwdmtxFilt[,xaxis]))))
-      bwdmtxFilt[,xaxis] <- factor(bwdmtxFilt[,xaxis],levels=xaxis_levels)
-      p <- ggplot(bwdmtxFilt,aes(x=bwdmtxFilt[,xaxis],y=BWSTRESN,fill=Group))+
-        geom_boxplot()
-    } else {
-      # plot with color by group
-      p <- ggplot(bwdmtxFilt,aes(x=bwdmtxFilt[,xaxis],y=BWSTRESN,group=USUBJID,colour=Group)) +
-        geom_point() + ggtitle('Body Weight Plot')+ labs(x=xaxis)
-      if (input$printLines == TRUE) {
-        # plot with lines connecting subjects
-        p <- p + geom_line()
-      }
-    }
-    p <- p + ggtitle('Body Weight Plot')+ labs(x=xaxis)
-    print(p) 
-  })
-  
-  # Plot Body Weights Percent Difference from Day 1
-  output$BWDiffplot <- renderPlot({
-    data()
-    # retrieve xaxis choice
-    xaxis <- input$xaxis
-    # filter now based on group selection
-    if (is.null(input$Groups) ) { 
-      bwdmtxFilt <- bwdmtx
-    }
-    else if ( length(input$Groups) == 0 ) { 
-      bwdmtxFilt <- bwdmtx
-    } 
-    else {
-      bwdmtxFilt <- bwdmtx[bwdmtx$Group  %in% input$Groups, ]  
-    }
 
-    bwdmtxFilt$BWPDIFF <- NA # create a new column with nothing in it.
-    
-    for (i in 1:nrow(bwdmtxFilt)) 
-    {
-      DayOneWeight <- bwdmtxFilt$BWSTRESN[which((bwdmtxFilt[,xaxis]==1) & (bwdmtxFilt$USUBJID==bwdmtxFilt$USUBJID[i]))]
-      if (length(DayOneWeight)>1)
-      {
-        DayOneWeight=DayOneWeight[1] #if more than one day one weight is reported, just select the first one.
-      } 
-      else
-      {
-        if (length(DayOneWeight)<1)
-        {
-          DayOneWeight = NA  #ensure that DayOneWeight has an NA for the subsequent calculations if no weights were found for day 1
+      if (input$groupMethod == 'attributes') {
+        
+        # Get Dose Levels
+        groupedData$Group <- groupedData$Dose
+        
+        # Filter by Test Article
+        testArticleIndex <- NULL
+        for (testArticle in input$testArticle) {
+          tmpIndex <- which(groupedData$EXTRT==testArticle)
+          testArticleIndex <- c(testArticleIndex,tmpIndex)
+        }
+        groupedData <- groupedData[testArticleIndex,]
+        
+        # Filter by Sex
+        if (input$sex == 'Male') {
+          groupedData$Group <- paste(groupedData$Group,groupedData$SEX)
+          sexIndex <- which(groupedData$SEX=='M')
+          groupedData <- groupedData[sexIndex,]
+        } else if (input$sex == 'Female') {
+          groupedData$Group <- paste(groupedData$Group,groupedData$SEX)
+          sexIndex <- which(groupedData$SEX=='F')
+          groupedData <- groupedData[sexIndex,]
+        } else if (input$sex == 'Both (split)') {
+          groupedData$Group <- paste(groupedData$Group,groupedData$SEX)
+        }
+        
+        # Filter by Time of Sacrifice
+        noRecoveryIndex <- which(groupedData$RecoveryStatus==FALSE)
+        recoveryIndex <- which(groupedData$RecoveryStatus==TRUE)
+        if (input$recovery == 'Main Study Group') {
+          groupedData <- groupedData[noRecoveryIndex,]
+        } else if (input$recovery == 'Recovery Group') {
+          groupedData <- groupedData[recoveryIndex,]
+        } else if (input$recovery == 'Both (split)') {
+          groupedData$Group[recoveryIndex] <- paste(groupedData$Group[recoveryIndex],'Recovery')
+        }
+        
+      if (nrow(groupedData)>0) {
+          
+        # Filter by TK
+        noTKindex <- which(groupedData$TKstatus==F)
+        TKindex <- which(groupedData$TKstatus==T)
+        groupedData$TK <- ''
+        groupedData$TK[noTKindex] <- 'No TK'
+        groupedData$TK[TKindex] <- 'TK'
+        if (input$includeTK=='No TK') {
+          groupedData <- groupedData[noTKindex,]
+        } else if (input$includeTK=='TK only') {
+          groupedData <- groupedData[TKindex,]
+        }  else if (input$includeTK=='Both (pooled)') {
+          groupedData <- groupedData
+        } else if (input$includeTK=='Both (split)') {
+          groupedData$Group <- paste(groupedData$Group,groupedData$TK)
+          groupedData <- groupedData
+        }
+        groupedData$Group <- factor(groupedData$Group)
+      } else if (input$groupMethod=='sets') {
+        if ("SPGRPCD" %in% colnames(groupedData)) {
+          groupedData$Group <- as.factor(paste(groupedData$SPGRPCD,groupedData$SET,sep=":"))
+        } else {
+          groupedData$Group <- groupedData$SET
         }
       }
-      bwdmtxFilt$BWPDIFF[i] <- 100*((bwdmtxFilt$BWSTRESN[i]-DayOneWeight) / DayOneWeight)
+      
+      validate(
+        need(!is.null(groupedData), label = "Could not read body weight data from dataset")
+      )
+      
+      # Add group list choices for selection
+      groupList <- levels(groupedData$Group)
+      updateCheckboxGroupInput(session,"Groups", choices = groupList, selected = groupList)
     }
-    
-    if (input$plotType == 'Mean Data Points') {
-      bwdmtxFiltMeans <- createMeansTable(bwdmtxFilt,'BWPDIFF',c('Group',xaxis))
-      bwdmtxFiltMeans$Group <- factor(bwdmtxFiltMeans$Group,levels=sort(levels(bwdmtxFiltMeans$Group)))
-      p <- ggplot(bwdmtxFiltMeans,aes(x=bwdmtxFiltMeans[,xaxis],y=BWPDIFF_mean,colour=Group)) +
-        geom_point()
-      if (input$printSE == TRUE) {
-        p <- p + geom_errorbar(aes(ymin=BWPDIFF_mean-BWPDIFF_se,ymax=BWPDIFF_mean+BWPDIFF_se),width=0.8)
-      }
-      if (input$printLines == TRUE) {
-        # plot with lines connecting subjects
-        p <- p + geom_line()
-      }
-    } else if (input$plotType == 'Boxplots') {
-      xaxis_levels <- as.character(sort(as.numeric(unique(bwdmtxFilt[,xaxis]))))
-      bwdmtxFilt[,xaxis] <- factor(bwdmtxFilt[,xaxis],levels=xaxis_levels)
-      p <- ggplot(bwdmtxFilt,aes(x=bwdmtxFilt[,xaxis],y=BWPDIFF,fill=Group))+
-        geom_boxplot()
-    } else {
-      # plot with color by group
-      p <- ggplot(bwdmtxFilt,aes(x=bwdmtxFilt[,xaxis],y=BWPDIFF,group=USUBJID,colour=Group)) +
-        geom_point() + ggtitle('Body Weight Percent Difference from Day 1 Plot')+ labs(x=xaxis)
-      if (input$printLines == TRUE) {
-        # plot with lines connecting subjects
-        p <- p + geom_line()
-      }
-    }
-    p <- p + ggtitle('Body Weight Percent Difference from day 1 Plot')+ labs(x=xaxis)
-    print(p) 
+    return(groupedData)
   })
   
-  # Plot Body Weight Gains (using user-defined interval)
-  output$BGplot <- renderPlot({
-    data()
+  prepBWplot <- reactive({
+    groupedData <- loadData()
+    if (is.null(input$Groups) ) { 
+      dataFilt <- groupedData
+    }
+    else if ( length(input$Groups) == 0 ) { 
+      dataFilt <- groupedData
+    } 
+    else {
+      dataFilt <- groupedData[groupedData$Group  %in% input$Groups, ]  
+    }
+    return(dataFilt)
+  })
+  
+  prepBWdiffPlot <- reactive({
+    groupedData <- loadData()
+    if (nrow(groupedData)>0) {
+      # retrieve xaxis choice
+      xaxis <- input$xaxis
+      # filter now based on group selection
+      if (is.null(input$Groups) ) { 
+        dataFilt <- groupedData
+      }
+      else if ( length(input$Groups) == 0 ) { 
+        dataFilt <- groupedData
+      } 
+      else {
+        dataFilt <- groupedData[groupedData$Group  %in% input$Groups, ]  
+      }
+      
+      dataFilt$BWPDIFF <- NA # create a new column with nothing in it.
+      
+      for (i in 1:nrow(dataFilt)) 
+      {
+        DayOneWeight <- dataFilt$BWSTRESN[which((dataFilt[,xaxis]==1) & (dataFilt$USUBJID==dataFilt$USUBJID[i]))]
+        if (length(DayOneWeight)>1)
+        {
+          DayOneWeight=DayOneWeight[1] #if more than one day one weight is reported, just select the first one.
+        } 
+        else
+        {
+          if (length(DayOneWeight)<1)
+          {
+            DayOneWeight = NA  #ensure that DayOneWeight has an NA for the subsequent calculations if no weights were found for day 1
+          }
+        }
+        dataFilt$BWPDIFF[i] <- 100*((dataFilt$BWSTRESN[i]-DayOneWeight) / DayOneWeight)
+      }
+      return(dataFilt)
+    }
+  })
+  
+  prepBGplot <- reactive({
+    groupedData <- loadData()
     # retrieve xaxis choice
     xaxis <- input$xaxis
     # filter now based on group selection
     if (is.null(input$Groups) ) { 
-      bwdmtxFilt <- bwdmtx
+      dataFilt <- groupedData
     }
     else if ( length(input$Groups) == 0 ) { 
-      bwdmtxFilt <- bwdmtx
+      dataFilt <- groupedData
     } 
     else {
-      bwdmtxFilt <- bwdmtx[bwdmtx$Group  %in% input$Groups, ]  
+      dataFilt <- groupedData[groupedData$Group  %in% input$Groups, ]  
     }
     
     # Order Dataset by Subject and then by Day
-    bgdmtxFilt <- bwdmtxFilt[order(bwdmtxFilt$USUBJID,bwdmtxFilt[,xaxis]),]
+    dataFilt <- dataFilt[order(dataFilt$USUBJID,dataFilt[,xaxis]),]
     
     # Calculate Body Weight Gains and Filter by Interval Length
-    bgdmtxFilt$BGSTRESN <- bgdmtxFilt$BWSTRESN
-    for (subject in unique(bgdmtxFilt$USUBJID)) {
-      index <- which(bgdmtxFilt$USUBJID==subject)
-      subjectData <- bgdmtxFilt[index,]
+    dataFilt$BGSTRESN <- dataFilt$BWSTRESN
+    for (subject in unique(dataFilt$USUBJID)) {
+      index <- which(dataFilt$USUBJID==subject)
+      subjectData <- dataFilt[index,]
       for (i in seq(length(index))) {
         if (i == 1) {
           # Set initial datapoint at zero
@@ -394,40 +331,101 @@ server <- function(input, output,session) {
           }
         }
       }
-      bgdmtxFilt$BGSTRESN[index] <- bgDataTmp
+      dataFilt$BGSTRESN[index] <- bgDataTmp
     }
     
     # Remove NA values from dataset
-    bgdmtxFilt <- bgdmtxFilt[which(is.finite(bgdmtxFilt$BGSTRESN)),]
-
+    dataFilt <- dataFilt[which(is.finite(dataFilt$BGSTRESN)),]
+    return(dataFilt)
+  })
+  
+  createPlot <- function(df,response) {
+    response_mean <- paste(response,'mean',sep='_')
+    response_se <- paste(response,'se',sep='_')
+    # retrieve xaxis choice
+    xaxis <- input$xaxis
     if (input$plotType == 'Mean Data Points') {
-      bgdmtxFiltMeans <- createMeansTable(bgdmtxFilt,'BGSTRESN',c('Group',xaxis))
-      bgdmtxFiltMeans$Group <- factor(bgdmtxFiltMeans$Group,levels=sort(levels(bgdmtxFiltMeans$Group)))
-      p <- ggplot(bgdmtxFiltMeans,aes(x=bgdmtxFiltMeans[,xaxis],y=BGSTRESN_mean,colour=Group)) +
+      dfMeans <- createMeansTable(df,response,c('Group',xaxis))
+      dfMeans$Group <- factor(dfMeans$Group,levels=sort(levels(dfMeans$Group)))
+      p <- ggplot(dfMeans,aes(x=dfMeans[,xaxis],y=get(response_mean),colour=Group)) +
         geom_point()
       if (input$printSE == TRUE) {
-        p <- p + geom_errorbar(aes(ymin=BGSTRESN_mean-BGSTRESN_se,ymax=BGSTRESN_mean+BGSTRESN_se),width=0.8)
+        p <- p + geom_errorbar(aes(ymin=(get(response_mean)-get(response_se)),ymax=(get(response_mean)+get(response_se))),width=0.8)
       }
       if (input$printLines == TRUE) {
         # plot with lines connecting subjects
         p <- p + geom_line()
       }
     } else if (input$plotType == 'Boxplots') {
-      xaxis_levels <- as.character(sort(as.numeric(unique(bgdmtxFilt[,xaxis]))))
-      bgdmtxFilt[,xaxis] <- factor(bgdmtxFilt[,xaxis],levels=xaxis_levels)
-      p <- ggplot(bgdmtxFilt,aes(x=bgdmtxFilt[,xaxis],y=BGSTRESN,fill=Group))+ 
+      xaxis_levels <- as.character(sort(as.numeric(unique(df[,xaxis]))))
+      df[,xaxis] <- factor(df[,xaxis],levels=xaxis_levels)
+      p <- ggplot(df,aes(x=df[,xaxis],y=get(response),fill=Group))+
         geom_boxplot()
     } else {
       # plot with color by group
-      p <- ggplot(bgdmtxFilt,aes(x=bgdmtxFilt[,xaxis],y=BGSTRESN,group=USUBJID,colour=Group)) +
-        geom_point() + ggtitle('Body Weight Gain Plot')+ labs(x=xaxis)
+      p <- ggplot(df,aes(x=df[,xaxis],y=get(response),group=USUBJID,colour=Group)) +
+        geom_point()
       if (input$printLines == TRUE) {
         # plot with lines connecting subjects
         p <- p + geom_line()
       }
     }
-    p <- p + ggtitle('Body Weight Gain Plot')+ labs(x=xaxis)
-    print(p) 
+    p <- p + labs(x=xaxis)
+    return(p)
+  }
+  
+  # Plot Body Weights
+  output$BWplot <- renderPlot({
+    dataFilt <- prepBWplot()
+    if (! is.null(input$Groups)) {
+      p <- createPlot(dataFilt,'BWSTRESN')
+      if (length(unique(dataFilt$BWSTRESU))==1) {
+        Unit <- unique(dataFilt$BWSTRESU)
+      } else {
+        maxLength <- 0
+        for (candidate in unique(dataFilt$BWSTRESU)) {
+          candidateLength <- length(which(dataFilt$BWSTRESU==candidate))
+          if (candidateLength>maxLength) {
+            maxLength <- candidateLength
+            Unit <- candidate
+          }
+        }
+      }
+      p <- p + ggtitle('Body Weight Plot') + labs(y=paste('Body Weight (',Unit,')',sep=''))
+      print(p)
+    }
+  })
+  
+  # Plot Body Weights Percent Difference from Day 1
+  output$BWDiffplot <- renderPlot({
+    dataFilt <- prepBWdiffPlot()
+    if (! is.null(input$Groups)) {
+      p <- createPlot(dataFilt,'BWSTRESN')
+      p <- p + ggtitle('Body Weight Percent Difference from day 1 Plot') + labs(y='Percent Baseline Body Weight (%)')
+      print(p)
+    }
+  })
+  
+  # Plot Body Weight Gains (using user-defined interval)
+  output$BGplot <- renderPlot({
+    dataFilt <- prepBGplot()
+    if (! is.null(input$Groups)) {
+      p <- createPlot(dataFilt,'BGSTRESN')
+      if (length(unique(dataFilt$BWSTRESU))==1) {
+        Unit <- unique(dataFilt$BWSTRESU)
+      } else {
+        maxLength <- 0
+        for (candidate in unique(dataFilt$BWSTRESU)) {
+          candidateLength <- length(which(dataFilt$BWSTRESU==candidate))
+          if (candidateLength>maxLength) {
+            maxLength <- candidateLength
+            Unit <- candidate
+          }
+        }
+      }
+      p <- p + ggtitle('Body Weight Gain Plot') + labs(y=paste('Change in Body Weight (',Unit,')',sep=''))
+      print(p) 
+    }
   })
   
 }
