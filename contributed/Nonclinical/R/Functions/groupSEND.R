@@ -6,6 +6,9 @@ groupSEND <- function(dataset,targetDomain,dmFields=c('SEX','ARMCD','SETCD','USU
   
   # Get dataframe of domain of interest and identify subjects
   groupedData <- dataset[[targetDomain]]
+  if (! is.factor(groupedData$USUBJID)) {
+    groupedData$USUBJID <- factor(groupedData$USUBJID)
+  }
   subjects <- levels(groupedData$USUBJID)
   
   # Merge relevant fields from dm domain by subject (defaults: sex, trial arm, and trial set)
@@ -43,6 +46,9 @@ groupSEND <- function(dataset,targetDomain,dmFields=c('SEX','ARMCD','SETCD','USU
   
   # Merge relevant information from tx domain by set code (default: dose, dose unit, toxicokinetics description, group label, and sponsor-defined group label)
   #                                                       (control treatment currently hard coded)
+  if (! is.factor(dataset$tx$SETCD)) {
+    dataset$tx$SETCD <- factor(dataset$tx$SETCD)
+  }
   SETCD <- levels(dataset$tx$SETCD)
   for (param in c('SET',txParams,'TCNTRL')) {
     assign(param,NA)
@@ -53,7 +59,10 @@ groupSEND <- function(dataset,targetDomain,dmFields=c('SEX','ARMCD','SETCD','USU
   for (set in SETCD) {
     count <- count + 1
     setIndex <- which(dataset$tx$SETCD==set)
-    SET[count] <- levels(dataset$tx$SET)[unique(dataset$tx$SET[setIndex])]
+    SET[count] <- levels(dataset$tx$SET)[unique(dataset$tx$SET[setIndex])][1]
+    if (length(levels(dataset$tx$SET)[unique(dataset$tx$SET[setIndex])])>1) {
+      warning('SET names do not match SETCD in TX Domain!')
+    }
     for (param in txParams) {
       if (param %in% dataset$tx$TXPARMCD) {
         if (count==1) {
@@ -172,9 +181,21 @@ groupSEND <- function(dataset,targetDomain,dmFields=c('SEX','ARMCD','SETCD','USU
   }
   groupedData$DoseN <- groupedData$EXDOSE
   
+#   print(sort(levels(groupedData$EXDOSU))==sort(levels(groupedData$TRTDOSU)))
+#   if (! FALSE %in% c(sort(levels(groupedData$EXDOSU))==sort(levels(groupedData$TRTDOSU)))) {print('YAY')}
   # Check for dose unit discrepancy
-  if (! FALSE %in% (groupedData$EXDOSU==groupedData$TRTDOSU)) {
-    dropColumns <- c(dropColumns,'TRTDOSU')
+  if (length(levels(groupedData$EXDOSU)==length(levels(groupedData$TRTDOSU)))) {
+    if (length(levels(groupedData$EXDOSU))==1) {
+      if (levels(groupedData$EXDOSU)==levels(groupedData$TRTDOSU)) {
+        dropColumns <- c(dropColumns,'TRTDOSU')
+      }
+    } else {
+      if (! FALSE %in% sort(levels(groupedData$EXDOSU))==sort(levels(groupedData$TRTDOSU))) {
+        if (! FALSE %in% (groupedData$EXDOSU==groupedData$TRTDOSU)) {
+          dropColumns <- c(dropColumns,'TRTDOSU')
+        }
+      }
+    }
   }
   groupedData$DoseUnit <- groupedData$EXDOSU
   
