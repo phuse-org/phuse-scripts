@@ -29,7 +29,9 @@ groupSEND <- function(dataset,targetDomain,dmFields=c('SEX','ARMCD','SETCD','USU
         uniqueFieldValues <- levels(dataset$ex[[field]])[uniqueFieldValues]
       }
       if (length(uniqueFieldValues)>1) {
+        # NOTE: Fix this to handle multiple compounds administered to the same animal at different levels
         tmp[count] <- paste(uniqueFieldValues,collapse="; ")
+        warning(paste('Multiple values recorded for',field))
       } else {
         tmp[count] <- uniqueFieldValues
       }
@@ -69,7 +71,12 @@ groupSEND <- function(dataset,targetDomain,dmFields=c('SEX','ARMCD','SETCD','USU
           txParamsFlag[param] <- TRUE
         }
         tmp <- get(param)
-        tmp[count] <- getFieldValue(dataset$tx,'TXVAL',c('SETCD','TXPARMCD'),c(set,param))
+        txVal <- getFieldValue(dataset$tx,'TXVAL',c('SETCD','TXPARMCD'),c(set,param))
+        if (length(txVal)==1) {
+          tmp[count] <- txVal
+        } else {
+          tmp[count] <- NA
+        }
         assign(param,tmp)
       }
     }
@@ -109,12 +116,12 @@ groupSEND <- function(dataset,targetDomain,dmFields=c('SEX','ARMCD','SETCD','USU
   }
   groupedData <- merge(groupedData,TKcheck,by='USUBJID')
   
-  # Merge recovery status from ta domain (EPOCH) by arm code or se domain (ELEMENT) by subject
+  # Merge recovery status and interim status from ta domain (EPOCH) by arm code or se domain (ELEMENT) by subject
   if (!is.null(dataset$ta)) {
     ARMCD <- levels(dataset$ta$ARMCD)
-    taData <- rep(NA,length(ARMCD)*2)
-    dim(taData) <- c(length(ARMCD),2)
-    colnames(taData) <- c('ARMCD','RecoveryStatus')
+    taData <- rep(NA,length(ARMCD)*3)
+    dim(taData) <- c(length(ARMCD),3)
+    colnames(taData) <- c('ARMCD','RecoveryStatus','InterimStatus')
     taData <- as.data.frame(taData)
     taData$ARMCD <- ARMCD
     count <- 0
@@ -123,15 +130,21 @@ groupSEND <- function(dataset,targetDomain,dmFields=c('SEX','ARMCD','SETCD','USU
       armIndex <- which(dataset$ta$ARMCD==arm)
       if (length(grep('recovery',dataset$ta$EPOCH[armIndex],ignore.case=TRUE))>0) {
         taData$RecoveryStatus[count] <- TRUE
+        taData$InterimStatus[count] <- FALSE
+      } else if (length(grep('interim',dataset$ta$EPOCH[armIndex],ignore.case=TRUE))>0) {
+        taData$RecoveryStatus[count] <- FALSE
+        taData$InterimStatus[count] <- TRUE
       } else {
         taData$RecoveryStatus[count] <- FALSE
+        taData$InterimStatus[count] <- FALSE
       }
+      
     }
     groupedData <- merge(groupedData,taData,by='ARMCD')
   } else if (!is.null(dataset$se)) {
-    seData <- rep(NA,length(subjects)*2)
-    dim(seData) <- c(length(subjects),2)
-    colnames(seData) <- c('USUBJID','RecoveryStatus')
+    seData <- rep(NA,length(subjects)*3)
+    dim(seData) <- c(length(subjects),3)
+    colnames(seData) <- c('USUBJID','RecoveryStatus','InterimStatus')
     seData <- as.data.frame(seData)
     seData$USUBJID <- subjects
     count <- 0
@@ -143,10 +156,29 @@ groupSEND <- function(dataset,targetDomain,dmFields=c('SEX','ARMCD','SETCD','USU
       } else {
         seData$RecoveryStatus[count] <- FALSE
       }
+      
+      if (length(grep('recovery',dataset$se$ELEMENT[subjectIndex],ignore.case=TRUE))>0) {
+        seData$RecoveryStatus[count] <- TRUE
+        seData$InterimStatus[count] <- FALSE
+      } else if (length(grep('interim',dataset$se$ELEMENT[subjectIndex],ignore.case=TRUE))>0) {
+        seData$RecoveryStatus[count] <- FALSE
+        seData$InterimStatus[count] <- TRUE
+      } else {
+        seData$RecoveryStatus[count] <- FALSE
+        seData$InterimStatus[count] <- FALSE
+      }
     }
     groupedData <- merge(groupedData,seData,by='USUBJID')
   }
   
+  # Merge disposition description
+  dsIndex <- which(dataset$ds$USUBJID %in% subjects)
+  DSDECOD <- levels(dataset$ds$DSDECOD)[dataset$ds$DSDECOD]
+  DSDECOD <- DSDECOD[dsIndex]
+  dsData <- cbind(subjects,DSDECOD,DSDECOD)
+  colnames(dsData) <- c('USUBJID','DSDECOD','Disposition')
+  groupedData <- merge(groupedData,dsData,by='USUBJID')
+
   # Clean up the dataframe
   
   # Rename SEX
@@ -217,7 +249,7 @@ groupSEND <- function(dataset,targetDomain,dmFields=c('SEX','ARMCD','SETCD','USU
   groupedData <- groupedData[,dropIndex]
   
   # reorder columns
-  columns2move <- c('SET','Treatment','TreatmentDose','Dose','Sex','RecoveryStatus','TKstatus')
+  columns2move <- c('SET','Treatment','TreatmentDose','Dose','Sex','RecoveryStatus','InterimStatus','Disposition','TKstatus')
   columnsNOmove <- which(! colnames(groupedData) %in% columns2move)
   groupedData <- cbind(groupedData[,columns2move],groupedData[,columnsNOmove])
   
