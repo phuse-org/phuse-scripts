@@ -19,11 +19,10 @@ library(tools)
 
 # Source Required Functions
 source('https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/contributed/Nonclinical/R/Functions/Functions.R')
-source('~/PhUSE/Repo/trunk/contributed/Nonclinical/R/Functions/groupSEND.R')
+source('https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/contributed/Nonclinical/R/Functions/groupSEND.R')
 
 # Default Study Folder
 defaultStudyFolder <- path.expand('~')
-defaultStudyFolder <- path.expand('~/HistoGraphic/Public Data/1_month_rat_PDS-FAKEDRUG-111')
 values <- reactiveValues()
 values$path1 <- defaultStudyFolder
 values$path2 <- defaultStudyFolder
@@ -898,7 +897,7 @@ ui <- fluidPage(
            checkboxInput("filterControls",label='Filter Out Findings with Equal or Greater Incidence and/or Severity in Controls',value=FALSE),
            checkboxInput("separate",label='Separate Unscheduled Sacrifices',value=FALSE),
            conditionalPanel(
-             condition = "input.separate == true",
+             condition = "input.separate == true && input.track==incidence",
              checkboxInput('recoveryIncidence',label='Calculate Incidence Based on Scheduled Sacrifice Groups',value=F)
            ),
            
