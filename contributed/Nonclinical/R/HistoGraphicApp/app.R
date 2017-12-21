@@ -146,9 +146,7 @@ server <- function(input, output,session) {
     },
     handlerExpr = {
       if (input$directory1 >= 1) {
-        # File <- choose.files(default=paste(values$path1,'*',sep='/'),caption = "Select an MI Domain",multi=F,filters=cbind('.xpt or .csv files','*.xpt;*.csv'))
         File <- choose.files(default=paste(values$path1,'*',sep='/'),caption = "Select an MI Domain",multi=F,filters=Filters[c('All'),])
-        print(File)
         if (length(File>0)) {
           path <- dirname(File)
           values$path1 <- path
