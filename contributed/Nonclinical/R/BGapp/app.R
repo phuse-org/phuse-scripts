@@ -43,7 +43,9 @@
 # Test with this R command:   system("java -version");
 #####################################################
 # Check for Required Packages, Install if Necessary, and Load
-list.of.packages <- c("shiny","SASxport","ggplot2","ini",'tools')
+devtools::install_github('hadley/ggplot2',quiet=TRUE)
+devtools::install_github("ropensci/plotly",quiet=TRUE)
+list.of.packages <- c("shiny","SASxport","ini",'tools')
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages,repos='http://cran.us.r-project.org')
 library(shiny)
@@ -51,9 +53,11 @@ library(SASxport)
 library(ggplot2)
 library(ini)
 library(tools)
+library(plotly)
 
 # Source Required Functions
-source('https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/contributed/Nonclinical/R/Functions/Functions.R')
+# source('https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/contributed/Nonclinical/R/Functions/Functions.R')
+source('~/PhUSE/Repo/trunk/contributed/Nonclinical/R/Functions/Functions.R')
 source('https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/contributed/Nonclinical/R/Functions/groupSEND.R')
 
 # Settings file
@@ -146,6 +150,7 @@ server <- function(input, output,session) {
   
   # Load and Process Dataset
   loadData <- reactive({
+    req(input$testArticle)
     path <- values$path
     defaultStudyFolder <- path
     validate(
@@ -345,10 +350,21 @@ server <- function(input, output,session) {
     # retrieve xaxis choice
     xaxis <- input$xaxis
     if (input$plotType == 'Mean Data Points') {
-      dfMeans <- createMeansTable(df,response,c('Group',xaxis))
+      if (input$sex != 'Both (pooled)') {
+        dfMeans <- createMeansTable(df,response,c('Group',xaxis),'Sex')
+      } else {
+        dfMeans <- createMeansTable(df,response,c('Group',xaxis))
+        dfMeans <- dfMeans[!is.na(dfMeans$Group),]
+        dfMeans$Sex <- 'M/F Pooled'
+      }
+      dfMeans <- dfMeans[!is.na(dfMeans[[response_mean]]),]
+      dfMeans$Sex <- factor(dfMeans$Sex)
       dfMeans$Group <- factor(dfMeans$Group,levels=sort(levels(dfMeans$Group)))
-      p <- ggplot(dfMeans,aes(x=dfMeans[,xaxis],y=get(response_mean),colour=Group)) +
-        geom_point()
+      if (input$plotly==FALSE) {
+      p <- ggplot(dfMeans,aes(x=dfMeans[,xaxis],y=get(response_mean),colour=Group,label=Group,shape=Sex)) + geom_point(size=2)
+      } else {
+        p <- ggplot(dfMeans,aes(x=dfMeans[,xaxis],y=get(response_mean),colour=Group,label=Group)) + geom_point(size=2)
+      }
       if (input$printSE == TRUE) {
         p <- p + geom_errorbar(aes(ymin=(get(response_mean)-get(response_se)),ymax=(get(response_mean)+get(response_se))),width=0.8)
       }
@@ -359,25 +375,28 @@ server <- function(input, output,session) {
     } else if (input$plotType == 'Boxplots') {
       xaxis_levels <- as.character(sort(as.numeric(unique(df[,xaxis]))))
       df[,xaxis] <- factor(df[,xaxis],levels=xaxis_levels)
-      p <- ggplot(df,aes(x=df[,xaxis],y=get(response),fill=Group))+
+      p <- ggplot(df,aes(x=df[,xaxis],y=get(response),fill=Group,label=Group))+
         geom_boxplot()
     } else {
       # plot with color by group
-      p <- ggplot(df,aes(x=df[,xaxis],y=get(response),group=USUBJID,colour=Group)) +
-        geom_point()
+      df$`Group | Subject ID` <- paste(df$Group,df$USUBJID,sep=' | ')
+      if (input$plotly==FALSE) {
+        p <- ggplot(df,aes(x=df[,xaxis],y=get(response),group=USUBJID,colour=Group,label=`Group | Subject ID`,shape=Sex)) + geom_point(size=2)
+      } else {
+        p <- ggplot(df,aes(x=df[,xaxis],y=get(response),group=USUBJID,colour=Group,label=`Group | Subject ID`)) + geom_point(size=2)
+      }
       if (input$printLines == TRUE) {
         # plot with lines connecting subjects
         p <- p + geom_line()
       }
     }
-    p <- p + labs(x=xaxis)
+    p <- p + labs(x=xaxis) + theme_minimal() + theme(text = element_text(size=16))
     return(p)
   }
   
   # Plot Body Weights
   output$BWplot <- renderPlot({
     dataFilt <- prepBWplot()
-    if (! is.null(input$Groups)) {
       p <- createPlot(dataFilt,'BWSTRESN')
       if (length(unique(dataFilt$BWSTRESU))==1) {
         Unit <- unique(dataFilt$BWSTRESU)
@@ -393,23 +412,59 @@ server <- function(input, output,session) {
       }
       p <- p + ggtitle('Body Weight Plot') + labs(y=paste('Body Weight (',Unit,')',sep=''))
       print(p)
+  })
+  
+  # Plotly Body Weights
+  output$BWplotly <- renderPlotly({
+    dataFilt <- prepBWplot()
+    p <- createPlot(dataFilt,'BWSTRESN')
+    if (length(unique(dataFilt$BWSTRESU))==1) {
+      Unit <- unique(dataFilt$BWSTRESU)
+    } else {
+      maxLength <- 0
+      for (candidate in unique(dataFilt$BWSTRESU)) {
+        candidateLength <- length(which(dataFilt$BWSTRESU==candidate))
+        if (candidateLength>maxLength) {
+          maxLength <- candidateLength
+          Unit <- candidate
+        }
+      }
     }
+    p <- p + ggtitle('Body Weight Plot') + labs(y=paste('Body Weight (',Unit,')',sep=''))
+    if (input$plotType=='Boxplots') {
+      p <- ggplotly(p)%>%layout(boxmode='group')
+    } else {
+      p <- ggplotly(p,tooltip=c('label'))
+    }
+    p$elementId <- NULL
+    p
   })
   
   # Plot Body Weights Percent Difference from Day 1
   output$BWDiffplot <- renderPlot({
     dataFilt <- prepBWdiffPlot()
-    if (! is.null(input$Groups)) {
-      p <- createPlot(dataFilt,'BWSTRESN')
-      p <- p + ggtitle('Body Weight Percent Difference from day 1 Plot') + labs(y='Percent Baseline Body Weight (%)')
-      print(p)
+    p <- createPlot(dataFilt,'BWSTRESN')
+    p <- p + ggtitle('Body Weight Percent Difference from Day 1 Plot') + labs(y='Percent Baseline Body Weight (%)')
+    print(p)
+  })
+  
+  # Plotly Body Weights Percent Difference from Day 1
+  output$BWDiffplotly <- renderPlotly({
+    dataFilt <- prepBWdiffPlot()
+    p <- createPlot(dataFilt,'BWSTRESN')
+    p <- p + ggtitle('Body Weight Percent Difference from Day 1 Plot') + labs(y='Percent Baseline Body Weight (%)')
+    if (input$plotType=='Boxplots') {
+      p <- ggplotly(p)%>%layout(boxmode='group')
+    } else {
+      p <- ggplotly(p,tooltip=c('label'))
     }
+    p$elementId <- NULL
+    p
   })
   
   # Plot Body Weight Gains (using user-defined interval)
   output$BGplot <- renderPlot({
     dataFilt <- prepBGplot()
-    if (! is.null(input$Groups)) {
       p <- createPlot(dataFilt,'BGSTRESN')
       if (length(unique(dataFilt$BWSTRESU))==1) {
         Unit <- unique(dataFilt$BWSTRESU)
@@ -425,7 +480,32 @@ server <- function(input, output,session) {
       }
       p <- p + ggtitle('Body Weight Gain Plot') + labs(y=paste('Change in Body Weight (',Unit,')',sep=''))
       print(p) 
+  })
+  
+  # Plotly Body Weight Gains (using user-defined interval)
+  output$BGplotly <- renderPlotly({
+    dataFilt <- prepBGplot()
+    p <- createPlot(dataFilt,'BGSTRESN')
+    if (length(unique(dataFilt$BWSTRESU))==1) {
+      Unit <- unique(dataFilt$BWSTRESU)
+    } else {
+      maxLength <- 0
+      for (candidate in unique(dataFilt$BWSTRESU)) {
+        candidateLength <- length(which(dataFilt$BWSTRESU==candidate))
+        if (candidateLength>maxLength) {
+          maxLength <- candidateLength
+          Unit <- candidate
+        }
+      }
     }
+    p <- p + ggtitle('Body Weight Gain Plot') + labs(y=paste('Change in Body Weight (',Unit,')',sep=''))
+    if (input$plotType=='Boxplots') {
+      p <- ggplotly(p)%>%layout(boxmode='group')
+    } else {
+      p <- ggplotly(p,tooltip=c('label'))
+    }
+    p$elementId <- NULL
+    p 
   })
   
 }
@@ -441,6 +521,7 @@ ui <- fluidPage(
   sidebarLayout(
     
     sidebarPanel(
+      checkboxInput('plotly',label='Use Plotly',value=F),
       h3('Study Selection'),
       actionButton('chooseBWfile','Choose a BW Domain File'),br(),
       h5('Study Folder Location:'),
@@ -484,16 +565,28 @@ ui <- fluidPage(
     mainPanel(
       # Show each plot if it is selected to be shown
       conditionalPanel(
-        condition = "input.showBWPlot==1",
-        plotOutput("BWplot")
+        condition = "input.showBWPlot==true && input.plotly==false",
+        plotOutput("BWplot",height='600px')
       ),
       conditionalPanel(
-        condition = "input.showBWDiffPlot==1",
-        plotOutput("BWDiffplot")
+        condition = "input.showBWPlot==true && input.plotly==true",
+        plotlyOutput("BWplotly",height='600px')
       ),
       conditionalPanel(
-        condition = "input.showBGPlot==1",
-        plotOutput("BGplot")
+        condition = "input.showBWDiffPlot==true && input.plotly==false",
+        plotOutput("BWDiffplot",height='600px')
+      ),
+      conditionalPanel(
+        condition = "input.showBWDiffPlot==true && input.plotly==true",
+        plotlyOutput("BWDiffplotly",height='600px')
+      ),
+      conditionalPanel(
+        condition = "input.showBGPlot==true && input.plotly==false",
+        plotOutput("BGplot",height='600px')
+      ),
+      conditionalPanel(
+        condition = "input.showBGPlot==true && input.plotly==true",
+        plotlyOutput("BGplotly",height='600px')
       )
     ) 
   )

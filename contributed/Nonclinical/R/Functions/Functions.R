@@ -223,14 +223,14 @@ createMeansTable <- function(dataset,meanField,groupFields,otherFields=NULL) {
     sdData[i] <- sd(dataset[index,meanField],na.rm=TRUE)
     seData[i] <- sd(dataset[index,meanField],na.rm=TRUE)/sqrt(length(which(is.finite(dataset[index,meanField]))))
     for (field in otherFields) {
-      if (length(unique(dataset[index,field]))==1) {
+      if (length(unique(dataset[index,field]))>1) {
+        stop('otherField has too many values')
+      } else if (length(unique(dataset[index,field]))==1) {
         if (length(levels(dataset[index,field]))>0) {
           otherFieldList[[field]][i] <- levels(dataset[,field])[dataset[index[1],field]]
         } else {
           otherFieldList[[field]][i] <- unique(dataset[index,field])
         }
-      } else {
-        stop('otherField has too many values')
       }
     }
   }
