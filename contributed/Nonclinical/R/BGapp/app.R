@@ -56,8 +56,7 @@ library(tools)
 library(plotly)
 
 # Source Required Functions
-# source('https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/contributed/Nonclinical/R/Functions/Functions.R')
-source('~/PhUSE/Repo/trunk/contributed/Nonclinical/R/Functions/Functions.R')
+source('https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/contributed/Nonclinical/R/Functions/Functions.R')
 source('https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/contributed/Nonclinical/R/Functions/groupSEND.R')
 
 # Settings file
@@ -109,7 +108,7 @@ server <- function(input, output,session) {
     handlerExpr = {
       if (input$chooseBWfile >= 1) {
         File <- choose.files(default=values$path,caption = "Select a BW Domain",multi=F,filters=cbind('.xpt or .csv files','*.xpt;*.csv'))
-        
+
         # If file was chosen, update 
         if (length(File>0)) {
           path <- dirname(File)
@@ -521,7 +520,6 @@ ui <- fluidPage(
   sidebarLayout(
     
     sidebarPanel(
-      checkboxInput('plotly',label='Use Plotly',value=F),
       h3('Study Selection'),
       actionButton('chooseBWfile','Choose a BW Domain File'),br(),
       h5('Study Folder Location:'),
@@ -538,6 +536,7 @@ ui <- fluidPage(
         numericInput('n','Body Weight Gain Interval (Days):',min=1,max=100,value=4)
       ),
       h3('Graph Options:'),
+      checkboxInput('plotly',label='Interactive Plot',value=F),
       radioButtons('plotType',"Type of Plot:",
                    c("Individual Data Points","Mean Data Points","Boxplots"),selected="Mean Data Points"),
       conditionalPanel(
