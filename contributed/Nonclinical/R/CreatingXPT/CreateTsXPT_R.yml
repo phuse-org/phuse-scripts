@@ -1,0 +1,36 @@
+KeyWords: SEND, Nonclinical, Trial Summary, xpt
+Script: 
+  name : CreateTsXPT.R
+  title : Create ts.xpt
+  desc : Creates ts.xpt trial summary domain files from excel file
+  version : 1.0.0
+Language:
+  name : R
+  version: 3.2.2
+Comments: 
+  comment : For legacy study submissions, FDA requires small trial summary xpt file especially for study start date. Although the FDA requires for legacy studies only the STSTDTC parameters, they have requested this set of parameters SSPONSOR, TRT, SPECIES, SSTYP, DOSDUR, TRTCAS, STSTDTC
+Inputs:
+  datasets:
+  P1:
+  P2:
+  P3:
+Outputs:
+  datasets:
+  O1:
+  O2:
+Repo:
+  base_dir: https://github.com/phuse-org/phuse-scripts/raw/master
+  prog_dir: contributed/Nonclinical/R
+  repo_dir: phuse-org/phuse-scripts
+  repo_url: https://api.github.com/repos
+  data_dir: data
+  lib_dir: libs
+  log_dir: logs
+  out_dir: outputs
+  script_dir: CreatingXPT
+  lib_files:
+Authors:
+  - name   : Bob Friedman
+    email  : bfriedman@xybion.com
+    company: Xybion
+# end of file
