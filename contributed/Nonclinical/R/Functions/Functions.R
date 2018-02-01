@@ -63,9 +63,45 @@ download.GitHub.folder <- function (
   }
 }
 
+# Function to list all files from a GitHub folder
+# NOTE: this function requires the packages: "httr", "Hmisc" and "tools"
+load.GitHub.xpt.files <- function (
+  GitHubRepo="phuse-org/phuse-scripts"
+  , baseDirGitHub="https://github.com/phuse-org/phuse-scripts/raw/master"
+  , studyDir="data/send/PDS/Xpt"
+  , domainsOfInterest=NULL
+  , authenticate=FALSE,User=NULL,Password=NULL) {
+  if (authenticate==TRUE) {
+    req <- GET(paste('https://api.github.com/repos',GitHubRepo,'contents',studyDir,sep='/'),
+               authenticate(User,Password))
+  } else {
+    req <- GET(paste('https://api.github.com/repos',GitHubRepo,'contents',studyDir,sep='/'))
+  }
+  contents <- content(req,as='parsed')
+  files <- NULL
+  for (i in seq(length(contents))) {
+    files[i] <- paste(baseDirGitHub,contents[[i]]$path,sep='/')
+  }
+  xptFiles <- files[grep('.xpt',files)]
+  if (!is.null(domainsOfInterest)) {
+    domainsOfInterest <- paste(paste(dirname(xptFiles[1]),'/',domainsOfInterest,'.xpt',sep=''))
+    xptFiles <- xptFiles[which(tolower(xptFiles) %in% tolower(domainsOfInterest))]
+  }
+  dataFrames <- list()
+  count <- 0
+  for (xptFile in xptFiles) {
+    count <- count + 1
+    xptData <- sasxport.get(xptFile)
+    colnames(xptData) <- toupper(colnames(xptData))
+    dataFrames[[count]] <- xptData
+  }
+  names(dataFrames) <- tolower(file_path_sans_ext(basename(xptFiles)))
+  return(dataFrames)
+}
+
 # Function to create a list of R dataframes for each .xpt file
 load.xpt.files <- function(path=getwd(),domainsOfInterest=NULL) {
-  # NOTE: this function requries the packages: SASxport and tools
+  # NOTE: this function requries the packages: "Hmisc" and "tools"
   xptFiles <- Sys.glob(paste(path,"*.xpt",sep='/'))
   if (!is.null(domainsOfInterest)) {
     domainsOfInterest <- paste(paste(path,'/',domainsOfInterest,'.xpt',sep=''))
@@ -75,7 +111,9 @@ load.xpt.files <- function(path=getwd(),domainsOfInterest=NULL) {
   count <- 0
   for (xptFile in xptFiles) {
     count <- count + 1
-    dataFrames[[count]] <- read.xport(xptFile)
+    xptData <- sasxport.get(xptFile)
+    colnames(xptData) <- toupper(colnames(xptData))
+    dataFrames[[count]] <- xptData
   }
   names(dataFrames) <- tolower(file_path_sans_ext(basename(xptFiles)))
   return(dataFrames)
@@ -83,7 +121,7 @@ load.xpt.files <- function(path=getwd(),domainsOfInterest=NULL) {
 
 # Function to create a list of R dataframes for each .csv file
 load.csv.files <- function(path=getwd(),domainsOfInterest=NULL) {
-  # NOTE: this function requries the packages: SASxport and tools
+  # NOTE: this function requries the packages: "tools"
   csvFiles <- Sys.glob(paste(path,"*.csv",sep='/'))
   if (!is.null(domainsOfInterest)) {
     domainsOfInterest <- paste(path,'/',domainsOfInterest,'.csv',sep='')
@@ -119,7 +157,7 @@ subTable <- function(fields,names,rawData) {
 }
 
 # Function to read a file from github
-# NOTE: this function requries the packages: SASxport and Hmisc
+# NOTE: this function requries the package: "Hmisc"
 read.github.xpt.file <- function (
     fName
   , bURL="https://raw.githubusercontent.com/phuse-org/phuse-scripts/master"
@@ -132,7 +170,7 @@ read.github.xpt.file <- function (
   # tDir  = target/local dir
   tFN <- paste(tDir,fName,sep='/')
   download.file(paste(bURL,fPath,fName,sep='/'),tFN,mode='wb')
-  r <- read.xport(tFN)
+  r <- sasxport.get(tFN)
   return(r)
 }
 

@@ -43,61 +43,51 @@
 # Test with this R command:   system("java -version");
 #####################################################
 # Check for Required Packages, Install if Necessary, and Load
-devtools::install_github('hadley/ggplot2',quiet=TRUE)
-devtools::install_github("ropensci/plotly",quiet=TRUE)
-list.of.packages <- c("shiny","SASxport","ini",'tools')
+# devtools::install_github('hadley/ggplot2',quiet=TRUE)
+# devtools::install_github("ropensci/plotly",quiet=TRUE)
+list.of.packages <- c("shiny","SASxport","httr","haven","ini",'tools')
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages,repos='http://cran.us.r-project.org')
 library(shiny)
-library(SASxport)
+library(Hmisc)
+library(httr)
 library(ggplot2)
-library(ini)
 library(tools)
 library(plotly)
 
 # Source Required Functions
-source('https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/contributed/Nonclinical/R/Functions/Functions.R')
-source('https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/contributed/Nonclinical/R/Functions/groupSEND.R')
+# source('https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/contributed/Nonclinical/R/Functions/Functions.R')
+source('~/PhUSE/Repo/trunk/contributed/Nonclinical/R/Functions/Functions.R')
+# source('https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/contributed/Nonclinical/R/Functions/groupSEND.R')
+source('~/PhUSE/Repo/trunk/contributed/Nonclinical/R/Functions/groupSEND.R')
+source('~/passwordGitHub.R')
 
-# Settings file
-SettingsFile <- file.path(path.expand('~'),"BWappSettings.ini")
 # Initial group list is empty
 groupList <- ""
 
-# Function to get setting from file
-getDefaultStudyFolder <- function() {
-  # Create a file name for saving last used directory
-  if(file.exists(SettingsFile)){
-    checkIni = read.ini(SettingsFile)
-    aPath <- checkIni$'Directories'$Path
-  } else {
-    # if no file found, set to home location
-    aPath <- path.expand('~')
-  }  
-  aPath
-}  
-# Function to set study in folder 
-setDefaultStudyFolder <- function(aPath) {
-  # only if a valid path
-  if (dir.exists(aPath)) {
-    newini <- list() 
-    newini[[ "Directories" ]] <- list(Path = aPath)
-    write.ini(newini,SettingsFile)
-  }
-}  
-
 # set default study folder
-defaultStudyFolder <- getDefaultStudyFolder()
-setwd(defaultStudyFolder)
+# defaultStudyFolder <- 'https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/data/send/PDS/Xpt'
 
 values <- reactiveValues()
-values$path <- defaultStudyFolder
+values$path <- NULL
 ############################################################################################
 
 
 ################# Define Functional Response to GUI Input ##################################
 
 server <- function(input, output,session) {
+  
+  # Create Drop Down to Select Studies from PhUSE GitHub Repo
+  output$selectGitHubStudy <- renderUI({
+    Req <- GET(paste('https://api.github.com/repos/phuse-org/phuse-scripts/contents/data/send'),
+               authenticate(userGitHub,passwordGitHub))
+    contents <- content(Req,as='parsed')
+    GitHubStudies <- NULL
+    for (i in seq(length(contents))) {
+      GitHubStudies[i] <- strsplit(contents[[i]]$path,'/send/')[[1]][2]
+    }
+    selectInput('selectGitHubStudy',label='Select Study from PhUSE GitHub:',choices = GitHubStudies,selected='PDS')
+  })
   
   # Handle Study Selection
   observeEvent(
@@ -107,15 +97,16 @@ server <- function(input, output,session) {
     },
     handlerExpr = {
       if (input$chooseBWfile >= 1) {
-        File <- choose.files(default=values$path,caption = "Select a BW Domain",multi=F,filters=cbind('.xpt or .csv files','*.xpt;*.csv'))
-
+        # FIX FILE PATH PROBLEM, Check OS, and remove ini, point to PDS github as default
+        # File <- choose.files(default=values$path,caption = "Select a BW Domain",multi=F,filters=cbind('.xpt or .csv files','*.xpt;*.csv'))
+        File <- file.choose()
+        
         # If file was chosen, update 
         if (length(File>0)) {
           path <- dirname(File)
 
           # save for next run if good one selected
           if (dir.exists(path)) {
-            setDefaultStudyFolder(path) 
             values$path <- path
           }
         }
@@ -125,86 +116,93 @@ server <- function(input, output,session) {
   
   # Print Current Study Folder Location
   output$bwFilePath <- renderText({
-    if (!is.null(values$path)) {
-      values$path
+    req(values$path)
+    values$path
+    # if (!is.null(values$path)) {
+    #   values$path
+    # } else {
+    #   defaultStudyFolder
+    # }
+  })
+  
+  # Load Dataset
+  loadData <- reactive({
+    req(input$selectGitHubStudy)
+    if (input$dataSource=='GitHub') {
+      values$path <- paste0('https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/data/send/',input$selectGitHubStudy)
     }
+    path <- values$path
+    if (input$dataSource=='local') {
+      setwd(path)
+      if (length(list.files(pattern='*.xpt'))>0) {
+        Dataset <- load.xpt.files()
+      } else if (length(list.files(pattern='*.csv'))>0) {
+        Dataset <- load.csv.files()
+      } else {
+        stop('No .xpt or .csv files to load!')
+      }
+    } else if (input$dataSource=='GitHub') {
+      StudyDir <- paste0('data/send/',input$selectGitHubStudy)
+      Dataset <- load.GitHub.xpt.files(studyDir=StudyDir,
+                                       authenticate=TRUE,User=userGitHub,Password=passwordGitHub)
+    }
+    groupedData <- groupSEND(Dataset,'bw')
+    return(groupedData)
   })
   
   # Create Checkboxes if Multiple Test Articles Present
   output$selectTestArticle <- renderUI({
-    path <- values$path
-    setwd(path)
-    if (length(list.files(pattern='*.xpt'))>0) {
-      Dataset <- load.xpt.files()
-    } else if (length(list.files(pattern='*.csv'))>0) {
-      Dataset <- load.csv.files()
-    } else {
-      stop('No .xpt or .csv files to load!')
-    }
-    groupedData <- groupSEND(Dataset,'bw')
+    req(input$selectGitHubStudy)
+    groupedData <- loadData()
     testArticleNames <- unique(groupedData$Treatment)
     testArticles <- as.list(testArticleNames)
     checkboxGroupInput('testArticle',label='Test Article:',choices = testArticles,selected=testArticleNames)
   })
   
-  # Load and Process Dataset
-  loadData <- reactive({
+  # Process Dataset
+  processData <- reactive({
     req(input$testArticle)
-    path <- values$path
-    defaultStudyFolder <- path
-    validate(
-      need(dir.exists(defaultStudyFolder),label="Select a valid directory with a SEND dataset")
-    )
-    setwd(path)
-    if (length(list.files(pattern='*.xpt'))>0) {
-      Dataset <- load.xpt.files()
-    } else if (length(list.files(pattern='*.csv'))>0) {
-      Dataset <- load.csv.files()
-    } else {
-      stop('No .xpt or .csv files to load!')
-    }
+    groupedData <- loadData()
     
-    groupedData <- groupSEND(Dataset,'bw')
-
-      if (input$groupMethod == 'attributes') {
-        
-        # Get Dose Levels
-        groupedData$Group <- groupedData$Dose
-        
-        # Filter by Test Article
-        testArticleIndex <- NULL
-        for (testArticle in input$testArticle) {
-          tmpIndex <- which(groupedData$EXTRT==testArticle)
-          testArticleIndex <- c(testArticleIndex,tmpIndex)
-        }
-        groupedData <- groupedData[testArticleIndex,]
-        
-        # Filter by Sex
-        if (input$sex == 'Male') {
-          groupedData$Group <- paste(groupedData$Group,groupedData$SEX)
-          sexIndex <- which(groupedData$SEX=='M')
-          groupedData <- groupedData[sexIndex,]
-        } else if (input$sex == 'Female') {
-          groupedData$Group <- paste(groupedData$Group,groupedData$SEX)
-          sexIndex <- which(groupedData$SEX=='F')
-          groupedData <- groupedData[sexIndex,]
-        } else if (input$sex == 'Both (split)') {
-          groupedData$Group <- paste(groupedData$Group,groupedData$SEX)
-        }
-        
-        # Filter by Time of Sacrifice
-        noRecoveryIndex <- which(groupedData$RecoveryStatus==FALSE)
-        recoveryIndex <- which(groupedData$RecoveryStatus==TRUE)
-        if (input$recovery == 'Main Study Group') {
-          groupedData <- groupedData[noRecoveryIndex,]
-        } else if (input$recovery == 'Recovery Group') {
-          groupedData <- groupedData[recoveryIndex,]
-        } else if (input$recovery == 'Both (split)') {
-          groupedData$Group[recoveryIndex] <- paste(groupedData$Group[recoveryIndex],'Recovery')
-        }
-        
+    if (input$groupMethod == 'attributes') {
+      
+      # Get Dose Levels
+      groupedData$Group <- groupedData$Dose
+      
+      # Filter by Test Article
+      testArticleIndex <- NULL
+      for (testArticle in input$testArticle) {
+        tmpIndex <- which(groupedData$EXTRT==testArticle)
+        testArticleIndex <- c(testArticleIndex,tmpIndex)
+      }
+      groupedData <- groupedData[testArticleIndex,]
+      
+      # Filter by Sex
+      if (input$sex == 'Male') {
+        groupedData$Group <- paste(groupedData$Group,groupedData$SEX)
+        sexIndex <- which(groupedData$SEX=='M')
+        groupedData <- groupedData[sexIndex,]
+      } else if (input$sex == 'Female') {
+        groupedData$Group <- paste(groupedData$Group,groupedData$SEX)
+        sexIndex <- which(groupedData$SEX=='F')
+        groupedData <- groupedData[sexIndex,]
+      } else if (input$sex == 'Both (split)') {
+        groupedData$Group <- paste(groupedData$Group,groupedData$SEX)
+      }
+      
+      # Filter by Time of Sacrifice
+      noRecoveryIndex <- which(groupedData$RecoveryStatus==FALSE)
+      recoveryIndex <- which(groupedData$RecoveryStatus==TRUE)
+      if (input$recovery == 'Main Study Group') {
+        groupedData <- groupedData[noRecoveryIndex,]
+      } else if (input$recovery == 'Recovery Group') {
+        groupedData <- groupedData[recoveryIndex,]
+      } else if (input$recovery == 'Both (split)') {
+        groupedData$Group[recoveryIndex] <- paste(groupedData$Group[recoveryIndex],'Recovery')
+      }
+      
       if (nrow(groupedData)>0) {
-          
+        
         # Filter by TK
         noTKindex <- which(groupedData$TKstatus==F)
         TKindex <- which(groupedData$TKstatus==T)
@@ -238,11 +236,12 @@ server <- function(input, output,session) {
       groupList <- levels(groupedData$Group)
       updateCheckboxGroupInput(session,"Groups", choices = groupList, selected = groupList)
     }
+    
     return(groupedData)
   })
   
   prepBWplot <- reactive({
-    groupedData <- loadData()
+    groupedData <- processData()
     if (is.null(input$Groups) ) { 
       dataFilt <- groupedData
     }
@@ -256,7 +255,7 @@ server <- function(input, output,session) {
   })
   
   prepBWdiffPlot <- reactive({
-    groupedData <- loadData()
+    groupedData <- processData()
     if (nrow(groupedData)>0) {
       # retrieve xaxis choice
       xaxis <- input$xaxis
@@ -294,7 +293,7 @@ server <- function(input, output,session) {
   })
   
   prepBGplot <- reactive({
-    groupedData <- loadData()
+    groupedData <- processData()
     # retrieve xaxis choice
     xaxis <- input$xaxis
     # filter now based on group selection
@@ -360,9 +359,9 @@ server <- function(input, output,session) {
       dfMeans$Sex <- factor(dfMeans$Sex)
       dfMeans$Group <- factor(dfMeans$Group,levels=sort(levels(dfMeans$Group)))
       if (input$plotly==FALSE) {
-      p <- ggplot(dfMeans,aes(x=dfMeans[,xaxis],y=get(response_mean),colour=Group,label=Group,shape=Sex)) + geom_point(size=2)
+      p <- ggplot(dfMeans,aes(x=dfMeans[,xaxis],y=get(response_mean),colour=Group,label=Group,shape=Sex)) + geom_point(size=3)
       } else {
-        p <- ggplot(dfMeans,aes(x=dfMeans[,xaxis],y=get(response_mean),colour=Group,label=Group)) + geom_point(size=2)
+        p <- ggplot(dfMeans,aes(x=dfMeans[,xaxis],y=get(response_mean),colour=Group,label=Group)) + geom_point(size=3)
       }
       if (input$printSE == TRUE) {
         p <- p + geom_errorbar(aes(ymin=(get(response_mean)-get(response_se)),ymax=(get(response_mean)+get(response_se))),width=0.8)
@@ -380,9 +379,9 @@ server <- function(input, output,session) {
       # plot with color by group
       df$`Group | Subject ID` <- paste(df$Group,df$USUBJID,sep=' | ')
       if (input$plotly==FALSE) {
-        p <- ggplot(df,aes(x=df[,xaxis],y=get(response),group=USUBJID,colour=Group,label=`Group | Subject ID`,shape=Sex)) + geom_point(size=2)
+        p <- ggplot(df,aes(x=df[,xaxis],y=get(response),group=USUBJID,colour=Group,label=`Group | Subject ID`,shape=Sex)) + geom_point(size=3)
       } else {
-        p <- ggplot(df,aes(x=df[,xaxis],y=get(response),group=USUBJID,colour=Group,label=`Group | Subject ID`)) + geom_point(size=2)
+        p <- ggplot(df,aes(x=df[,xaxis],y=get(response),group=USUBJID,colour=Group,label=`Group | Subject ID`)) + geom_point(size=3)
       }
       if (input$printLines == TRUE) {
         # plot with lines connecting subjects
@@ -396,21 +395,21 @@ server <- function(input, output,session) {
   # Plot Body Weights
   output$BWplot <- renderPlot({
     dataFilt <- prepBWplot()
-      p <- createPlot(dataFilt,'BWSTRESN')
-      if (length(unique(dataFilt$BWSTRESU))==1) {
-        Unit <- unique(dataFilt$BWSTRESU)
-      } else {
-        maxLength <- 0
-        for (candidate in unique(dataFilt$BWSTRESU)) {
-          candidateLength <- length(which(dataFilt$BWSTRESU==candidate))
-          if (candidateLength>maxLength) {
-            maxLength <- candidateLength
-            Unit <- candidate
-          }
+    p <- createPlot(dataFilt,'BWSTRESN')
+    if (length(unique(dataFilt$BWSTRESU))==1) {
+      Unit <- unique(dataFilt$BWSTRESU)
+    } else {
+      maxLength <- 0
+      for (candidate in unique(dataFilt$BWSTRESU)) {
+        candidateLength <- length(which(dataFilt$BWSTRESU==candidate))
+        if (candidateLength>maxLength) {
+          maxLength <- candidateLength
+          Unit <- candidate
         }
       }
-      p <- p + ggtitle('Body Weight Plot') + labs(y=paste('Body Weight (',Unit,')',sep=''))
-      print(p)
+    }
+    p <- p + ggtitle('Body Weight Plot') + labs(y=paste('Body Weight (',Unit,')',sep=''))
+    print(p)
   })
   
   # Plotly Body Weights
@@ -442,7 +441,7 @@ server <- function(input, output,session) {
   # Plot Body Weights Percent Difference from Day 1
   output$BWDiffplot <- renderPlot({
     dataFilt <- prepBWdiffPlot()
-    p <- createPlot(dataFilt,'BWSTRESN')
+    p <- createPlot(dataFilt,'BWPDIFF')
     p <- p + ggtitle('Body Weight Percent Difference from Day 1 Plot') + labs(y='Percent Baseline Body Weight (%)')
     print(p)
   })
@@ -450,7 +449,7 @@ server <- function(input, output,session) {
   # Plotly Body Weights Percent Difference from Day 1
   output$BWDiffplotly <- renderPlotly({
     dataFilt <- prepBWdiffPlot()
-    p <- createPlot(dataFilt,'BWSTRESN')
+    p <- createPlot(dataFilt,'BWPDIFF')
     p <- p + ggtitle('Body Weight Percent Difference from Day 1 Plot') + labs(y='Percent Baseline Body Weight (%)')
     if (input$plotType=='Boxplots') {
       p <- ggplotly(p)%>%layout(boxmode='group')
@@ -521,7 +520,15 @@ ui <- fluidPage(
     
     sidebarPanel(
       h3('Study Selection'),
-      actionButton('chooseBWfile','Choose a BW Domain File'),br(),
+      selectInput('dataSource','Select Data Source:',c('GitHub','local')),
+      conditionalPanel(
+        condition = 'input.dataSource=="GitHub"',
+        uiOutput('selectGitHubStudy')
+      ),
+      conditionalPanel(
+        condition = 'input.dataSource=="local"',
+        actionButton('chooseBWfile','Choose a BW Domain File')
+      ),br(),
       h5('Study Folder Location:'),
       verbatimTextOutput('bwFilePath'),
       # shinyDirButton('bwDir','Change Directory','Select a Directory'),

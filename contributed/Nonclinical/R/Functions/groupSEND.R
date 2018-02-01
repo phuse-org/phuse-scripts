@@ -51,6 +51,9 @@ groupSEND <- function(dataset,targetDomain,dmFields=c('SEX','ARMCD','SETCD','USU
   if (! is.factor(dataset$tx$SETCD)) {
     dataset$tx$SETCD <- factor(dataset$tx$SETCD)
   }
+  if (! is.factor(dataset$tx$SET)) {
+    dataset$tx$SET <- factor(dataset$tx$SET)
+  }
   SETCD <- levels(dataset$tx$SETCD)
   for (param in c('SET',txParams,'TCNTRL')) {
     assign(param,NA)
@@ -118,6 +121,9 @@ groupSEND <- function(dataset,targetDomain,dmFields=c('SEX','ARMCD','SETCD','USU
   
   # Merge recovery status and interim status from ta domain (EPOCH) by arm code or se domain (ELEMENT) by subject
   if (!is.null(dataset$ta)) {
+    if (! is.factor(dataset$ta$ARMCD)) {
+      dataset$ta$ARMCD <- factor(dataset$ta$ARMCD)
+    }
     ARMCD <- levels(dataset$ta$ARMCD)
     taData <- rep(NA,length(ARMCD)*3)
     dim(taData) <- c(length(ARMCD),3)
@@ -173,6 +179,9 @@ groupSEND <- function(dataset,targetDomain,dmFields=c('SEX','ARMCD','SETCD','USU
   
   # Merge disposition description
   dsIndex <- which(dataset$ds$USUBJID %in% subjects)
+  if (! is.factor(dataset$ds$DSDECOD)) {
+    dataset$ds$DSDECOD <- factor(dataset$ds$DSDECOD)
+  }
   DSDECOD <- levels(dataset$ds$DSDECOD)[dataset$ds$DSDECOD]
   DSDECOD <- DSDECOD[dsIndex]
   dsData <- cbind(subjects,DSDECOD,DSDECOD)
@@ -213,8 +222,6 @@ groupSEND <- function(dataset,targetDomain,dmFields=c('SEX','ARMCD','SETCD','USU
   }
   groupedData$DoseN <- groupedData$EXDOSE
   
-#   print(sort(levels(groupedData$EXDOSU))==sort(levels(groupedData$TRTDOSU)))
-#   if (! FALSE %in% c(sort(levels(groupedData$EXDOSU))==sort(levels(groupedData$TRTDOSU)))) {print('YAY')}
   # Check for dose unit discrepancy
   if (length(levels(groupedData$EXDOSU)==length(levels(groupedData$TRTDOSU)))) {
     if (length(levels(groupedData$EXDOSU))==1) {
