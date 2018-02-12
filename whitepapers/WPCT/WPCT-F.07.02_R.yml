@@ -1,28 +1,87 @@
-KeyWords: Central Tendencies, Boxplot, labs, vital signs, ECGs
-Script: 
-  Desc   : Box plot - Change from Baseline by Analysis Timepoint, Visit and Planned Treatment
-  Name   : WPCT_F.07.02_R
+Keywords: Central Tendencies, Boxplot, labs, vital signs, ECGs
+Script:
+  name   : WPCT_F.07.02_R
+  title  : Boxplot of analysis timepoint observations by visit and treatment
+  desc   : > 
+         Box plot - Change from Baseline by Analysis Timepoint, 
+         Visit and Planned Treatment
+  version: 1.1.0
+# do we need the following tags? 
+  source : White paper
+  topic  : Measures of Central Tendency Figure 7.2
+  type   : figure
+  subtype: boxplot
+  target : http://www.phusewiki.org/wiki/images/4/48/CSS_WhitePaper_CentralTendency_v1.0.pdf
   GCR    : r137
-  SRV    : v1.10
-  Source : White paper
-  Topic  : Measures of Central Tendency Figure 7.1
-  Title  : Boxplot of analysis timepoint observations by visit and treatment
-  Type   : figure
-  Subtype  : boxplot
-  Target : http://www.phusewiki.org/wiki/images/4/48/CSS_WhitePaper_CentralTendency_v1.0.pdf
-Language: 
+  SRV    : v1.10   
+Language:
   name   : R
   version: 3.1.3
-Comments : >
-Qualification: 
-  LastQualDate:
-  LastQualBy: 
-  Stage: Develop
-Rating: 
-  - User: htu
-    Date: 02/05/2016
-    Association: Accenture
-    Stars: 4
-
-
+# do we need the comment here? 
+  comments : >
+Environment:
+  system: Linux or Window 2010
+  os_version: OEL 5.8, Window 2010
+  desc: Description of the computing environment such as OS, version of the OS the language is for.
+  debug:
+    msg_lvl: 3
+    log_lvl: 1
+    write2log: FALSE
+Inputs:
+  datasets: dm.xpt,ae.xpt,testfile.xlsx
+  p1: String - dataset name
+  p2: Number - depart id
+  p3: String - subject id
+Outputs:
+  datasets: out1, out2, out3
+  v1: Date - scription execution date and time
+  v2: User - user who executes the script
+Repo:
+  base_dir: https://github.com/phuse-org/phuse-scripts/raw/master
+  prog_dir: development/R
+  repo_dir: phuse-org/phuse-scripts
+  repo_url: https://api.github.com/repos
+  data_dir: data
+  lib_dir: libs
+  log_dir: logs
+  out_dir: outputs
+  script_dir: scripts
+  lib_files: Func_comm.R
+  work_dir: C:/Users/hanming.h.tu/documents/R
+Authors:
+  - name   : Jon Doo
+    email  : jon.doo@phuse.com
+    company: PhUSE
+  - name   : Jim Boo
+    email  : jim.boo@phuse.com
+    company: PhUSE
+Qualification:
+  last_date: MM/DD/YYYY
+  last_by: FirstName LastName
+  stage: T
+  doc_url: a link to latest documentation
+  note: C - Contributed; D - Development; T - Testing; Q - Qualified
+Stages:
+  - date: mm/dd/yyyy
+    name: Jon1 Doo
+    stage: C
+    docs: a link to qualification documents
+  - date: mm/dd/yyyy
+    name: Jon2 Doo
+    stage: D
+    docs: a link to qualification documents
+Ratings:
+  - user: htu
+    date: 08/25/2017
+    asso: Accenture
+    stars: 5
+  - user: htu
+    date: 02/05/2016
+    asso: Accenture
+    stars: 4
+  - user: htu
+    date: 01/25/2016
+    asso: Accenture
+    Stars: 3
+# end of file
 
