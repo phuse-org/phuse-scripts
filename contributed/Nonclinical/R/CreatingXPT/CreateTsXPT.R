@@ -1,21 +1,12 @@
-
-####################################################################################
+###############################################################################
 # Functions to Create from ts.xpt files from excel spreadsheet
 # See example spreadsheet - it can be expanded with other parameters and any number of studies
-# Expects to place output in c:/temp/r testing/xpt output - can be changed with mainDir variable
-####################################################################################
-# Setup instructions
-# You need Java on windows path to run, for example
-#   : C:\Program Files\Java\jdk1.8.0_111\jre\bin\server\
-#   If running R-64bit, ensure you are also running Java 64-bit
+# Expects to place output in subdirectories of the location of the XLS file selected
 ####################################################################################
 # XLConnect documentation here:
 # https://cran.r-project.org/web/packages/XLConnect/vignettes/XLConnect.pdf
 # SASxport documentation here:
 # https://cran.r-project.org/web/packages/SASxport/SASxport.pdf
-####################################################################################
-# Improvements to make
-#    Could use file chooser result directory to use for output location
 ####################################################################################
 # You may need next two lines first time
 # install.packages("XLConnect")
@@ -23,22 +14,22 @@
 ####################################################################################
 require(XLConnect)
 require(SASxport)
-# Here is temporary override of write xport function to get desired minimum variable lengths.
-# Use environment for other function in package to allow use of unexported functions in package
-#	source("C:/Users/bfriedman/Documents/phuse-scripts/contributed\Nonclinical/R/CreatingXPT/write.xport2.R")
-
+require(utils)
+if(packageVersion("SASxport") < "1.5.7") {
+  stop("You need version 1.5.7 or later of SASxport")
+}
+# This section is to replace functions in 1.5.7 or SASxport to allow column lengths of less than 8 bytes
 # This gives the directory of the file where the statement was placed , to get current .R script directory
-  sourceDir <- getSrcDirectory(function(dummy) {dummy})
-  source(paste(sourceDir, "/write.xport2.R", sep=""))
-  tmpfun <- get("read.xport", envir = asNamespace("SASxport"))
-	environment(write.xport2) <- environment(tmpfun)
-	attributes(write.xport2) <- attributes(tmpfun)
-	assignInNamespace("write.xport", write.xport2, ns="SASxport")
-# Select file to read
-mainDir <- "c:/temp/r testing/xpt output"
+ sourceDir <- getSrcDirectory(function(dummy) {dummy})
+ source(paste(sourceDir, "/write.xport2.R", sep=""))
+ tmpfun <- get("read.xport", envir = asNamespace("SASxport"))
+ environment(write.xport2) <- environment(tmpfun)
+ attributes(write.xport2) <- attributes(tmpfun)
+ assignInNamespace("write.xport", write.xport2, ns="SASxport")
+# Select file to read, will place output in subdirectories of that
 # Set output files
-setwd(mainDir)
-myFile <- file.choose()
+myFile <- choose.files(caption = "Select XLS file",multi=F,filters=cbind('.xls or xlsx files','*.xls;*.xlsx'))
+mainDir <- dirname(myFile)
 # Read in XLSX file
 df <- readWorksheetFromFile(myFile,
                             sheet=1,
@@ -79,7 +70,7 @@ for(aStudy in studyList){
 		file = "ts.xpt",
 		verbose=FALSE,
 		sasVer="7.00",
-		osType="R 3.0.1",	
+		osType="R 3.4.2",	
 		cDate=Sys.time(),
 		formats=NULL,
 		autogen.formats=TRUE
@@ -88,4 +79,3 @@ for(aStudy in studyList){
 	print(aLine)
 }  # end of study loop
 setwd(mainDir)
-
