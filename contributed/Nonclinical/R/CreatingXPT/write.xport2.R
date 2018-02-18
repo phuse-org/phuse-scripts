@@ -1,6 +1,5 @@
 #' @importFrom Hmisc label
 #' @export
-# From github master, then changed to allow minimum variable length to be 1 
 write.xport2 <- function(...,
                         list=base::list(),
                         file = stop("'file' must be specified"),
@@ -140,10 +139,7 @@ write.xport2 <- function(...,
       {
 
         df <- dfList[[i]]
-	# get any attributes as well from original dataframe, copy will not work
-        dfLabel <- label(list, default="", self=TRUE )
-        dfType <- SAStype(list, default="")
-	#
+
         if(is.null(colnames(df)))
            colnames(df) <- rep("", length=ncol(df))
 
@@ -163,6 +159,8 @@ write.xport2 <- function(...,
                                   "offset"=rep(NA, length(varNames)) )
         rownames(offsetTable) <- offsetTable[,"name"]
 
+        dfLabel <- label(df, default="", self=TRUE )
+        dfType <- SAStype(df, default="")
 
         scat("Write data frame header ...")
         out( xport.member.header(dfName=i, cDate=cDate, sasVer=sasVer, osType=osType,
@@ -191,16 +189,17 @@ write.xport2 <- function(...,
             df[[i]] <- var <- toSAS(var, format.info=formats)
 
             # compute variable length
+            # update below to minimum of 1 - BJF 2/17/2018
             if(is.character(var)) {
-                varLen <- max(c(1,nchar(var)) )
-		# if length is NA, means empty, use 1
-                if (is.na(nchar(var) )[1] ) {
-		  varLen <- 1	
-		}
+              varLen <- max(c(1,nchar(var,"bytes")) )
+              # if length is NA, means empty, use 1
+              if (is.na(nchar(var) )[1] ) {
+                varLen <- 1	
+              }
             } else {
               varLen <- 8
             }
-
+            
             # fill in variable offset and length information
             offsetTable[i, "len"]    <- varLen
             offsetTable[i, "offset"] <- lenIndex
