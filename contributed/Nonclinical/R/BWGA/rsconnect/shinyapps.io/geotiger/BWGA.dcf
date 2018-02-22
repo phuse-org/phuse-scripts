@@ -1,0 +1,12 @@
+name: BWGA
+title: BWGA
+username:
+account: geotiger
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 285200
+bundleId: 1230414
+url: https://geotiger.shinyapps.io/BWGA/
+when: 1519069664.44106
+asMultiple: FALSE
+asStatic: FALSE

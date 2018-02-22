@@ -1,0 +1,99 @@
+Keywords: Body Weight, Gain Analysis, BW domain
+Script:
+  name   : bwga_app.R
+  title  : Body Weight Gain Analysis Based on the BW Domain
+  desc   : > 
+           The FDA has recently required that nonclinical toxicology study 
+           data from new studies be submitted electronically in CDISC-SEND 
+           format.  One of the current limitations of the CDISC-SEND data 
+           standard is that the BG domain, which encodes changes in animal 
+           body weight gains, only allows analysis of changes in body weight 
+           over a fixed time interval.  Through the PhUSE consortium, an open 
+           source software solution to this problem has been collaboratively 
+           developed by the pharmaceutical industry, software vendors, and 
+           government regulators.  The R package, Shiny, facilitates the 
+           development of user-friendly, web-based “Apps”, providing a platform 
+           for the analysis and visualization of SEND datasets.  An R Shiny App 
+           has been developed to allow end users with little-to-no programming 
+           experience to evaluate changes in body weight gains from any SEND-encoded 
+           toxicology study across a user-defined time interval.
+  version: 1.0.0
+Language:
+  name   : R
+  version: 3.4.3
+Environment:
+  system: Linux or Window 2010
+  os_version: OEL 5.8, Window 2010
+  desc: This app can be run in R version > 3.4.x in any OS. 
+  debug:
+    msg_lvl: 3
+    log_lvl: 1
+    write2log: FALSE
+Inputs:
+  datasets: dm.xpt,ae.xpt,testfile.xlsx
+  p1: String - dataset name
+  p2: Number - depart id
+  p3: String - subject id
+Outputs:
+  datasets: out1, out2, out3
+  v1: Date - scription execution date and time
+  v2: User - user who executes the script
+# alternative way of grouping parameters
+Parameters:
+  inputs:
+    p1: String - dataset name
+    p2: Number - depart id
+    p3: String - subject id
+  outputs: 
+    v1: Date - scription execution date and time
+    v2: User - user who executes the script
+Repo:
+ base_dir: https://github.com/phuse-org/phuse-scripts/raw/master
+ prog_dir: development/R
+ repo_dir: phuse-org/phuse-scripts
+ repo_url: https://api.github.com/repos
+ data_dir: data
+ lib_dir: libs
+ log_dir: logs
+ out_dir: outputs
+ script_dir: scripts
+ lib_files: Func_comm.R
+ work_dir: C:/Users/hanming.h.tu/documents/R
+Authors:
+ - name   : Jon Doo
+   email  : jon.doo@phuse.com
+   company: PhUSE
+ - name   : Jim Boo
+   email  : jim.boo@phuse.com
+   company: PhUSE
+Qualification:
+  last_date: MM/DD/YYYY
+  last_by  : FirstName LastName
+  stage    : Q
+  doc_url  : a link to latest documentation
+  note     : C - Contributed; D - Development; T - Testing; Q - Qualified
+Stages:
+  - date: mm/dd/yyyy
+    name: Jon1 Doo
+    stage: C
+    docs: a link to qualification documents
+  - date: mm/dd/yyyy
+    name: Jon2 Doo
+    stage: D
+    docs: a link to qualification documents
+Ratings:
+  - user: GB
+    date: 10/03/2017
+    asso: Quintiles
+    stars: 4
+  - user: htu
+    date: 02/05/2016
+    asso: Accenture
+    stars: 4
+  - user: htu
+    date: 01/25/2016
+    asso: Accenture
+    stars: 3
+# end of file
+
+

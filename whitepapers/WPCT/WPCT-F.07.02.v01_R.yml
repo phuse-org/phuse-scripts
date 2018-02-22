@@ -5,6 +5,7 @@ Script:
   desc   : > 
          Box plot - Change from Baseline by Analysis Timepoint, 
          Visit and Planned Treatment
+         Figure 7.2 Box plot - Change from Baseline by Analysis Timepoint, Visit and Treatment
   version: 1.1.0
 # do we need the following tags? 
   source : White paper
@@ -28,10 +29,23 @@ Environment:
     log_lvl: 1
     write2log: FALSE
 Inputs:
-  datasets: dm.xpt,ae.xpt,testfile.xlsx
-  p1: String - dataset name
-  p2: Number - depart id
-  p3: String - subject id
+  datasets: advs.xpt
+  treatmentname: "TRTA" 
+  useshortnames: TRUE
+  oldnames: c("Xanomeline Low Dose","Xanomeline High Dose")
+  newnames: c("X-low", "X-High")
+  usepopflag: TRUE
+  popflag: "SAFFL"
+  testname: "DIABP"
+  yaxislabel: "Change in Diastolic Blood Pressure (mmHG)"
+  selectedvisits: c(0,2,4,6,8,12,16,20,24)
+  perpage: 6
+  dignum: 1
+  filetype: "PNG"
+  pixelwidth: 1200
+  pixelheight: 1000
+  outputfontsize: 16
+  charttitle: "Box and Whisker Plot Title"
 Outputs:
   datasets: out1, out2, out3
   v1: Date - scription execution date and time
@@ -41,7 +55,7 @@ Repo:
   prog_dir: development/R
   repo_dir: phuse-org/phuse-scripts
   repo_url: https://api.github.com/repos
-  data_dir: data
+  data_dir: data/cdisc
   lib_dir: libs
   log_dir: logs
   out_dir: outputs
