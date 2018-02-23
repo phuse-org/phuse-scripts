@@ -29,7 +29,20 @@ Environment:
     log_lvl: 1
     write2log: FALSE
 Inputs:
-  datasets: advs.xpt
+  datasets: 
+    - name: advs.xpt
+      type: xpt
+      class: ADaM
+      req_params: 
+      version:       
+      desc: CDISC ADaM dataset
+    - name: 
+      type: 
+      class: 
+      req_params:
+      version: 
+      desc:      
+Parameters:
   treatmentname: "TRTA" 
   useshortnames: TRUE
   oldnames: c("Xanomeline Low Dose","Xanomeline High Dose")
@@ -47,9 +60,16 @@ Inputs:
   outputfontsize: 16
   charttitle: "Box and Whisker Plot Title"
 Outputs:
-  datasets: out1, out2, out3
-  v1: Date - scription execution date and time
-  v2: User - user who executes the script
+  datasets: 
+    - name: advs.xpt
+      type: xpt
+      class: ADaM
+      req_params: 
+      version:       
+      desc: CDISC ADaM dataset
+  parameters:
+    - v1: Date - scription execution date and time
+    - v2: User - user who executes the script
 Repo:
   base_dir: https://github.com/phuse-org/phuse-scripts/raw/master
   prog_dir: development/R
