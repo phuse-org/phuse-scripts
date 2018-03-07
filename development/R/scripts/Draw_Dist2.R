@@ -15,8 +15,11 @@ library(phuse)
 # 1. get the script name and YML name
 script_name <- sys.frame(1)$ofile
 str(paste0("D2: ", script_name))
-commandArgs()
+cm <- commandArgs()
+str("From commandArgs: ")
+str(pm)
 pm <- get_inputs(script_name)
+str("From get_inputs: ")
 str(pm)
 
 # we need to remove any R Shiny specification here
