@@ -1,5 +1,20 @@
 # Function to merge in demographic and treatment data for each of the SEND experimental results domains
 
+### IDEAS/COLUMNS/FUNCTIONS TO ADD ###
+#1) Ordinal Dose Column
+#2) Sort columns by logical order (maybe a separate function)
+#3) Summary Statistics Output (definitely a separate function)
+#   - aimed at consistency checking
+#     (ex. is there a record in lb for each live animal at collection times)
+#     (are RELREC linked to real records)
+#4) Can we reassemble SUPXX for too long records, etc.?
+#5) Handle dose escalation study designs (maybe a separate function)
+#   - Test to see if selected study is appropriate for this function
+#6) Pull in comments
+#7) Deal with POOLID's
+#8) Create Structured Comments in this script to explain what it's doing
+
+
 groupSEND <- function(dataset,targetDomain,dmFields=c('SEX','ARMCD','SETCD','USUBJID'),
                       exFields=c('EXTRT','EXDOSE','EXDOSU'),
                       txParams=c('TRTDOS','TRTDOSU','TKDESC','GRPLBL','SPGRPCD')) {
@@ -10,6 +25,7 @@ groupSEND <- function(dataset,targetDomain,dmFields=c('SEX','ARMCD','SETCD','USU
     groupedData$USUBJID <- factor(groupedData$USUBJID)
   }
   subjects <- levels(groupedData$USUBJID)
+  subjects <- subjects[which(subjects!='')]#### Why is this needed for CL domain in PDS dataset?
   
   # Merge relevant fields from dm domain by subject (defaults: sex, trial arm, and trial set)
   groupedData <- merge(groupedData,dataset$dm[,dmFields],by='USUBJID')

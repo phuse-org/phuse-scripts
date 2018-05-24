@@ -1,3 +1,4 @@
+rm(list=ls())
 ####### Issues to Resolve/Feature to Add ##################################################
 #
 # 1) Handle unscheduled deaths as intended recovery or non-recovery group
@@ -9,12 +10,12 @@
 ################ Setup Application ########################################################
 
 # Check for Required Packages, Install if Necessary, and Load
-list.of.packages <- c("shiny","XLConnect","SASxport","tools")
+list.of.packages <- c("shiny","XLConnect","Hmisc","tools")
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages,repos='http://cran.us.r-project.org')
 library(shiny)
 library(XLConnect)
-library(SASxport)
+library(Hmisc)
 library(tools)
 
 # Source Required Functions
@@ -399,397 +400,403 @@ server <- function(input, output,session) {
         } else {
           Data <- rbind(Data,DataTmp)
         }
-      
-      ########################################################################################
-      
-    }
-    
-    setProgress(message='Processing data...',value=0.33)
-    ##########################################################################################
-    
-    
-    ############### Organize Data for Plotting #############################################
-    
-    # Index Clinical Pathology Test Data and Normalize Severity Scores
-    if (input$colorBy=='clinPath') {
-      clinPathIndexParam <- which(levels(labData$ShortName)[labData$ShortName]==input$param)
-      if (input$includeSeverity==TRUE) {
-        NORMALseverity <- min(labData$Value[clinPathIndexParam],na.rm=TRUE)
-        SEVEREseverity <- max(labData$Value[clinPathIndexParam],na.rm=TRUE)
-        MINIMALseverity <- NORMALseverity+.2*(SEVEREseverity-NORMALseverity)
-        MILDseverity <- NORMALseverity+.4*(SEVEREseverity-NORMALseverity)
-        MODERATEseverity <- NORMALseverity+.6*(SEVEREseverity-NORMALseverity)
-        MARKEDseverity <- NORMALseverity+.8*(SEVEREseverity-NORMALseverity)
+        
+        ########################################################################################
+        
       }
-    }
-    
-    # Convert Severity to Numeric Score
-    SeverityNumber <- rep(NA,nrow(Data))
-    if (input$includeSeverity == TRUE) {
-      realSeverityNumber <- SeverityNumber
-    }
-    for (i in seq(nrow(Data))) {
-      if (input$colorBy=='severity') {
-        if (is.finite(Data$Severity[i])==FALSE) {
-          SeverityNumber[i] <- 0
-        } else if (Data$Severity[i]=="MINIMAL") {
-          SeverityNumber[i] <- 1
-        } else if (Data$Severity[i]=="MILD") {
-          SeverityNumber[i] <- 2
-        } else if (Data$Severity[i]=="MODERATE") {
-          SeverityNumber[i] <- 3
-        } else if (Data$Severity[i]=="MARKED") {
-          SeverityNumber[i] <- 4
-        } else if (Data$Severity[i]=="SEVERE") {
-          SeverityNumber[i] <- 5
-        } else {
-          SeverityNumber[i] <- 0
-        }
-      } 
+      
+      setProgress(message='Processing data...',value=0.33)
+      ##########################################################################################
+      
+      
+      ############### Organize Data for Plotting #############################################
+      
+      # Index Clinical Pathology Test Data and Normalize Severity Scores
       if (input$colorBy=='clinPath') {
-        subjectIndex <- which(levels(labData$Subject)[labData$Subject]==levels(Data$Subject)[Data$Subject[i]])
-        clinPathIndex <- intersect(subjectIndex,clinPathIndexParam)
-        if (length(clinPathIndex) > 0) {
-          clinPathIndexMax <- which(labData$Day[clinPathIndex]==max(labData$Day[clinPathIndex]))
-          SeverityNumber[i] <- labData$Value[clinPathIndex][clinPathIndexMax]
-        } else {
-          SeverityNumber[i] <- NA
+        clinPathIndexParam <- which(levels(labData$ShortName)[labData$ShortName]==input$param)
+        if (input$includeSeverity==TRUE) {
+          NORMALseverity <- min(labData$Value[clinPathIndexParam],na.rm=TRUE)
+          SEVEREseverity <- max(labData$Value[clinPathIndexParam],na.rm=TRUE)
+          MINIMALseverity <- NORMALseverity+.2*(SEVEREseverity-NORMALseverity)
+          MILDseverity <- NORMALseverity+.4*(SEVEREseverity-NORMALseverity)
+          MODERATEseverity <- NORMALseverity+.6*(SEVEREseverity-NORMALseverity)
+          MARKEDseverity <- NORMALseverity+.8*(SEVEREseverity-NORMALseverity)
         }
-        if (is.finite(SeverityNumber[i])==0) {
-          SeverityNumber[i] <- NA
-        }
-        if (input$includeSeverity == TRUE) {
+      }
+      
+      # Convert Severity to Numeric Score
+      SeverityNumber <- rep(NA,nrow(Data))
+      if (input$includeSeverity == TRUE) {
+        realSeverityNumber <- SeverityNumber
+      }
+      for (i in seq(nrow(Data))) {
+        if (input$colorBy=='severity') {
           if (is.finite(Data$Severity[i])==FALSE) {
-            realSeverityNumber[i] <- NORMALseverity
+            SeverityNumber[i] <- 0
           } else if (Data$Severity[i]=="MINIMAL") {
-            realSeverityNumber[i] <- MINIMALseverity
+            SeverityNumber[i] <- 1
           } else if (Data$Severity[i]=="MILD") {
-            realSeverityNumber[i] <- MILDseverity
+            SeverityNumber[i] <- 2
           } else if (Data$Severity[i]=="MODERATE") {
-            realSeverityNumber[i] <- MODERATEseverity
+            SeverityNumber[i] <- 3
           } else if (Data$Severity[i]=="MARKED") {
-            realSeverityNumber[i] <- MARKEDseverity
+            SeverityNumber[i] <- 4
           } else if (Data$Severity[i]=="SEVERE") {
-            realSeverityNumber[i] <- SEVEREseverity
+            SeverityNumber[i] <- 5
           } else {
-            realSeverityNumber[i] <- NORMALseverity
+            SeverityNumber[i] <- 0
           }
         } 
-      }
-    }
-    
-    # Add Severity Data to Dataset
-    if (input$includeSeverity == TRUE) {
-      Data <- cbind(Data,SeverityNumber,realSeverityNumber)
-    } else {
-      Data <- cbind(Data,SeverityNumber)
-    }
-    
-    # Filter Out Organs Based on Input Parameters
-    severityFlag <- FALSE
-    if ((includeNormal == TRUE)|(severityFilter < 0)) {
-      for (organ in unique(Data$Organ)) {
-        index <- which(Data$Organ==organ)
-        notIndex <- which(Data$Organ!=organ)
-        if (length(notIndex)==0) {
-          severityFlag <- TRUE
-          break
+        if (input$colorBy=='clinPath') {
+          subjectIndex <- which(levels(labData$Subject)[labData$Subject]==levels(Data$Subject)[Data$Subject[i]])
+          clinPathIndex <- intersect(subjectIndex,clinPathIndexParam)
+          if (length(clinPathIndex) > 0) {
+            clinPathIndexMax <- which(labData$Day[clinPathIndex]==max(labData$Day[clinPathIndex]))
+            SeverityNumber[i] <- labData$Value[clinPathIndex][clinPathIndexMax]
+          } else {
+            SeverityNumber[i] <- NA
+          }
+          if (is.finite(SeverityNumber[i])==0) {
+            SeverityNumber[i] <- NA
+          }
+          if (input$includeSeverity == TRUE) {
+            if (is.finite(Data$Severity[i])==FALSE) {
+              realSeverityNumber[i] <- NORMALseverity
+            } else if (Data$Severity[i]=="MINIMAL") {
+              realSeverityNumber[i] <- MINIMALseverity
+            } else if (Data$Severity[i]=="MILD") {
+              realSeverityNumber[i] <- MILDseverity
+            } else if (Data$Severity[i]=="MODERATE") {
+              realSeverityNumber[i] <- MODERATEseverity
+            } else if (Data$Severity[i]=="MARKED") {
+              realSeverityNumber[i] <- MARKEDseverity
+            } else if (Data$Severity[i]=="SEVERE") {
+              realSeverityNumber[i] <- SEVEREseverity
+            } else {
+              realSeverityNumber[i] <- NORMALseverity
+            }
+          } 
         }
-        if (includeNormal == TRUE) {
-          if ((length(unique(Data$Finding[index]))==1)&(unique(Data$Finding[index])[1]=="NORMAL")) {
-            Data <- Data[notIndex,]
+      }
+      
+      # Add Severity Data to Dataset
+      if (input$includeSeverity == TRUE) {
+        Data <- cbind(Data,SeverityNumber,realSeverityNumber)
+      } else {
+        Data <- cbind(Data,SeverityNumber)
+      }
+      
+      # Filter Out Organs Based on Input Parameters
+      severityFlag <- FALSE
+      if ((includeNormal == TRUE)|(severityFilter < 0)) {
+        for (organ in unique(Data$Organ)) {
+          index <- which(Data$Organ==organ)
+          notIndex <- which(Data$Organ!=organ)
+          if (length(notIndex)==0) {
+            severityFlag <- TRUE
+            break
+          }
+          if (includeNormal == TRUE) {
+            if ((length(unique(Data$Finding[index]))==1)&(unique(Data$Finding[index])[1]=="NORMAL")) {
+              Data <- Data[notIndex,]
+            } else if ((max(Data$SeverityNumber[index]) < severityFilter)&(input$colorBy=='severity')) {
+              Data <- Data[notIndex,]
+            }
           } else if ((max(Data$SeverityNumber[index]) < severityFilter)&(input$colorBy=='severity')) {
             Data <- Data[notIndex,]
           }
-        } else if ((max(Data$SeverityNumber[index]) < severityFilter)&(input$colorBy=='severity')) {
-          Data <- Data[notIndex,]
         }
       }
-    }
-    
-    # Remove Normal Findings
-    if (removeNormal == TRUE) {
-      Data <- Data[which(Data$Finding!="NORMAL"),]
-    }
-    
-    # Order Data Logically
-    Data <- Data[order(Data$StudyID,Data$Organ,Data$Finding,Data$Treatment),]
-    
-    # Calculate Incidence Rates and Fold-Change
-    Data$Incidence <- NA
-    if (input$foldChange==TRUE) {
-      # Identify Controls
-      controlIndex <- NA
-      count <- 1
-      for (i in seq(length(Data$Treatment))) {
-        if (length(grep('[1-9]',Data$Treatment[i]))==0) {
-          controlIndex[count] <- i
-          count <- count + 1
-        }
+      
+      # Remove Normal Findings
+      if (removeNormal == TRUE) {
+        Data <- Data[which(Data$Finding!="NORMAL"),]
       }
-    }
-    for (i in seq(length(Data$Incidence))) {
-      if ((trackIncidence==TRUE)|(filterControls==TRUE)) {
-        #### NOTE: This can/should be made more efficient as it is currently a computational bottleneck ####
-        studyIndex <- which(Data$StudyID==Data$StudyID[i])
-        treatmentIndex <- which(Data$Treatment==Data$Treatment[i])
-        index <- intersect(studyIndex,treatmentIndex)
-        sexIndex <- which(Data$Sex==Data$Sex[i])
-        index <- intersect(index,sexIndex)
-        recoveryIndex <- which(Data$RecoveryIncidence==Data$RecoveryIncidence[i])
-        index <- intersect(index,recoveryIndex)
-        organIndex <- which(Data$Organ==Data$Organ[i])
-        index <- intersect(index,organIndex)
-        incidence <- 1/length(unique(Data$Subject[index]))
-        Data$Incidence[i] <- incidence
-      }
-      if (input$colorBy == 'clinPath') {
-        studyIndex <- which(Data$StudyID==Data$StudyID[i])
-        sexIndex <- which(Data$Sex==Data$Sex[i])
-        index <- intersect(studyIndex,sexIndex)
-        if (input$foldChange==TRUE) {
-          recoveryIndex <- which(Data$Recovery==Data$Recovery[i])
-          index <- intersect(recoveryIndex,index)
-          index <- intersect(controlIndex,index)
-        }
-        group <- unique(Data$Subject[index])
-        labIndexS <- which(labData$Subject %in% group)
-        labIndexT <- which(labData$ShortName==input$param)
-        labIndex <- intersect(labIndexS,labIndexT)
-        if (length(labIndex)>0) {
-          trueLabIndex <- NA
-          for (j in seq(length(unique(labData$Subject[labIndex])))) {
-            labSubjectIndex <- which(labData$Subject[labIndex]==unique(labData$Subject[labIndex])[j])
-            trueLabIndex[j] <- labIndex[labSubjectIndex[which(labData$Day[labIndex][labSubjectIndex]==max(labData$Day[labIndex][labSubjectIndex]))]]
+      
+      # Order Data Logically
+      Data <- Data[order(Data$StudyID,Data$Organ,Data$Finding,Data$Treatment),]
+      
+      # Calculate Incidence Rates and Fold-Change
+      Data$Incidence <- NA
+      if (input$foldChange==TRUE) {
+        # Identify Controls
+        controlIndex <- NA
+        count <- 1
+        for (i in seq(length(Data$Treatment))) {
+          if (length(grep('[1-9]',Data$Treatment[i]))==0) {
+            controlIndex[count] <- i
+            count <- count + 1
           }
-          labIndex <- trueLabIndex
         }
-        groupMean <- mean(labData$Value[labIndex],na.rm=TRUE)
-        if ((is.finite(Data$SeverityNumber[i]))&(is.finite(groupMean))) {
+      }
+      for (i in seq(length(Data$Incidence))) {
+        if ((trackIncidence==TRUE)|(filterControls==TRUE)) {
+          #### NOTE: This can/should be made more efficient as it is currently a computational bottleneck ####
+          studyIndex <- which(Data$StudyID==Data$StudyID[i])
+          treatmentIndex <- which(Data$Treatment==Data$Treatment[i])
+          index <- intersect(studyIndex,treatmentIndex)
+          sexIndex <- which(Data$Sex==Data$Sex[i])
+          index <- intersect(index,sexIndex)
+          recoveryIndex <- which(Data$RecoveryIncidence==Data$RecoveryIncidence[i])
+          index <- intersect(index,recoveryIndex)
+          organIndex <- which(Data$Organ==Data$Organ[i])
+          index <- intersect(index,organIndex)
+          incidence <- 1/length(unique(Data$Subject[index]))
+          Data$Incidence[i] <- incidence
+        }
+        if (input$colorBy == 'clinPath') {
+          studyIndex <- which(Data$StudyID==Data$StudyID[i])
+          sexIndex <- which(Data$Sex==Data$Sex[i])
+          index <- intersect(studyIndex,sexIndex)
           if (input$foldChange==TRUE) {
-            foldChange <- Data$SeverityNumber[i]/groupMean
-            Data$SeverityNumber[i] <- foldChange
+            recoveryIndex <- which(Data$Recovery==Data$Recovery[i])
+            index <- intersect(recoveryIndex,index)
+            index <- intersect(controlIndex,index)
           }
-        } else {
-          if (input$foldChange==TRUE) {
-            Data$SeverityNumber[i] <- 1
-          } else {
-            Data$SeverityNumber[i] <- groupMean
-          }
-        }
-      }
-    }
-    if ((input$includeSeverity==TRUE)&(input$foldChange==TRUE)) {
-      newNORMALseverity <- min(Data$SeverityNumber)
-      newSEVEREseverity <- max(Data$SeverityNumber)
-      newMINIMALseverity <- newNORMALseverity+.2*(newSEVEREseverity-newNORMALseverity)
-      newMILDseverity <- newNORMALseverity+.4*(newSEVEREseverity-newNORMALseverity)
-      newMODERATEseverity <- newNORMALseverity+.6*(newSEVEREseverity-newNORMALseverity)
-      newMARKEDseverity <- newNORMALseverity+.8*(newSEVEREseverity-newNORMALseverity)
-      for (severity in c('NORMAL','MINIMAL','MILD','MODERATE','MARKED','SEVERE')) {
-        severityLevel <- get(paste(severity,'severity',sep=''))
-        newSeverityLevel <- get(paste('new',severity,'severity',sep=''))
-        for (i in seq(length(Data$realSeverityNumber))) {
-          if (Data$realSeverityNumber[i]==severityLevel) {
-            Data$realSeverityNumber[i] <- newSeverityLevel
-          }
-        }
-      }
-    }
-    if (trackIncidence==FALSE) {
-      Data$Incidence <- 1
-    }
-    
-    # Filter Out Organs with No Findings of Greater Incidence or Severity than Controls
-    if (filterControls==TRUE) {
-      for (organ in unique(Data$Organ)) {
-        organIndex <- which(Data$Organ==organ)
-        organNotIndex <- which(Data$Organ!=organ)
-        for (finding in unique(Data$Finding[organIndex])) {
-          indexO <- which(Data$Finding[organIndex]==finding)
-          index <- organIndex[indexO]
-          notIndexO <- which(Data$Finding[organIndex]!=finding)
-          notIndex <- sort(c(organNotIndex,organIndex[notIndexO]))
-          if (finding=='NORMAL') { 
-            Data <- Data[notIndex,]
-          } else {
-            controlIncidence <- 0
-            treatmentIncidence <- 0
-            controlSeverity <- 0
-            treatmentSeverity <- 0
-            for (treatment in unique(Data$Treatment[index])) {
-              treatmentIndex <- which(Data$Treatment[index]==treatment)
-              if (length(grep('[1-9]',treatment))==0) {
-                controlIncidenceTmp <- sum(Data$Incidence[index][treatmentIndex])
-                controlIncidence <- max(controlIncidenceTmp,controlIncidence)
-                controlSeverityTmp <- min(Data$SeverityNumber[index][treatmentIndex])
-                controlSeverity <- min(controlSeverityTmp,controlSeverity)
-              } else {
-                treatmentIncidenceTmp <- sum(Data$Incidence[index][treatmentIndex])
-                treatmentIncidence <- max(treatmentIncidenceTmp,treatmentIncidence)
-                treatmentSeverityTmp <- min(Data$SeverityNumber[index][treatmentIndex])
-                treatmentSeverity <- min(treatmentSeverityTmp,treatmentSeverity)
-              }
+          group <- unique(Data$Subject[index])
+          labIndexS <- which(labData$Subject %in% group)
+          labIndexT <- which(labData$ShortName==input$param)
+          labIndex <- intersect(labIndexS,labIndexT)
+          if (length(labIndex)>0) {
+            trueLabIndex <- NA
+            for (j in seq(length(unique(labData$Subject[labIndex])))) {
+              labSubjectIndex <- which(labData$Subject[labIndex]==unique(labData$Subject[labIndex])[j])
+              trueLabIndex[j] <- labIndex[labSubjectIndex[which(labData$Day[labIndex][labSubjectIndex]==max(labData$Day[labIndex][labSubjectIndex]))]]
             }
-            if (input$colorBy=='severity') {
-              if ((controlIncidence > treatmentIncidence)&(controlSeverity > treatmentSeverity)) {
+            labIndex <- trueLabIndex
+          }
+          groupMean <- mean(labData$Value[labIndex],na.rm=TRUE)
+          if ((is.finite(Data$SeverityNumber[i]))&(is.finite(groupMean))) {
+            if (input$foldChange==TRUE) {
+              foldChange <- Data$SeverityNumber[i]/groupMean
+              Data$SeverityNumber[i] <- foldChange
+            }
+          } else {
+            if (input$foldChange==TRUE) {
+              Data$SeverityNumber[i] <- 1
+            } else {
+              Data$SeverityNumber[i] <- groupMean
+            }
+          }
+        }
+      }
+      if ((input$includeSeverity==TRUE)&(input$foldChange==TRUE)) {
+        newNORMALseverity <- min(Data$SeverityNumber)
+        newSEVEREseverity <- max(Data$SeverityNumber)
+        newMINIMALseverity <- newNORMALseverity+.2*(newSEVEREseverity-newNORMALseverity)
+        newMILDseverity <- newNORMALseverity+.4*(newSEVEREseverity-newNORMALseverity)
+        newMODERATEseverity <- newNORMALseverity+.6*(newSEVEREseverity-newNORMALseverity)
+        newMARKEDseverity <- newNORMALseverity+.8*(newSEVEREseverity-newNORMALseverity)
+        for (severity in c('NORMAL','MINIMAL','MILD','MODERATE','MARKED','SEVERE')) {
+          severityLevel <- get(paste(severity,'severity',sep=''))
+          newSeverityLevel <- get(paste('new',severity,'severity',sep=''))
+          for (i in seq(length(Data$realSeverityNumber))) {
+            if (Data$realSeverityNumber[i]==severityLevel) {
+              Data$realSeverityNumber[i] <- newSeverityLevel
+            }
+          }
+        }
+      }
+      if (trackIncidence==FALSE) {
+        Data$Incidence <- 1
+      }
+      
+      # Filter Out Organs with No Findings of Greater Incidence or Severity than Controls
+      if (filterControls==TRUE) {
+        for (organ in unique(Data$Organ)) {
+          organIndex <- which(Data$Organ==organ)
+          organNotIndex <- which(Data$Organ!=organ)
+          for (finding in unique(Data$Finding[organIndex])) {
+            indexO <- which(Data$Finding[organIndex]==finding)
+            index <- organIndex[indexO]
+            notIndexO <- which(Data$Finding[organIndex]!=finding)
+            notIndex <- sort(c(organNotIndex,organIndex[notIndexO]))
+            if (finding=='NORMAL') { 
+              Data <- Data[notIndex,]
+            } else {
+              controlIncidence <- 0
+              treatmentIncidence <- 0
+              controlSeverity <- 0
+              treatmentSeverity <- 0
+              for (treatment in unique(Data$Treatment[index])) {
+                treatmentIndex <- which(Data$Treatment[index]==treatment)
+                if (length(grep('[1-9]',treatment))==0) {
+                  controlIncidenceTmp <- sum(Data$Incidence[index][treatmentIndex])
+                  controlIncidence <- max(controlIncidenceTmp,controlIncidence)
+                  controlSeverityTmp <- min(Data$SeverityNumber[index][treatmentIndex])
+                  controlSeverity <- min(controlSeverityTmp,controlSeverity)
+                } else {
+                  treatmentIncidenceTmp <- sum(Data$Incidence[index][treatmentIndex])
+                  treatmentIncidence <- max(treatmentIncidenceTmp,treatmentIncidence)
+                  treatmentSeverityTmp <- min(Data$SeverityNumber[index][treatmentIndex])
+                  treatmentSeverity <- min(treatmentSeverityTmp,treatmentSeverity)
+                }
+              }
+              if (input$colorBy=='severity') {
+                if ((controlIncidence > treatmentIncidence)&(controlSeverity > treatmentSeverity)) {
+                  Data <- Data[notIndex,]
+                }
+              } else if (controlIncidence > treatmentIncidence) {
                 Data <- Data[notIndex,]
               }
-            } else if (controlIncidence > treatmentIncidence) {
-              Data <- Data[notIndex,]
             }
           }
         }
       }
-    }
-    
-    # Separate Incidence Rates from Study 1 and Study 2
-    if (((addStudyCategory == FALSE)&(length(studyIDs) == 2))|input$includeSeverity==TRUE) {
-      if ((input$foldChange==TRUE)|(input$colorBy=='severity')) {
-        meanSeverity <- 0
-      } else {
-        meanSeverity <- mean(Data$SeverityNumber,na.rm=TRUE)
-      }
-      Incidence2 <- Data$Incidence
-      if (input$includeSeverity==TRUE) {
-        SeverityNumber2 <- Data$realSeverityNumber
-      } else {
-        SeverityNumber2 <- Data$SeverityNumber
-      }
-      Data <- cbind(Data,Incidence2,SeverityNumber2)
-      if (input$includeSeverity==TRUE) {
-        paramDataName <- rep(input$colorBy,dim(Data)[1])
-        Data1 <- cbind(Data,paramDataName)
-        paramDataName <- rep('severity',dim(Data)[1])
-        Data2 <- cbind(Data,paramDataName)
-        Data <- rbind(Data1,Data2)
-        for (j in seq(length(unique(Data$paramDataName)))) {
-          for (i in seq(length(Data$Incidence))) {
-            if (Data$paramDataName[i] == input$colorBy) {
-              Data$Incidence2[i] <- 10^-10
-              Data$SeverityNumber2[i] <- meanSeverity
-            } else {
-              Data$Incidence[i] <- 10^-10
-              Data$SeverityNumber[i] <- meanSeverity
-            }
-          }
-        }
-      } else {
-        for (j in seq(length(unique(Data$StudyID)))) {
-          for (i in seq(length(Data$Incidence))) {
-            if (Data$StudyID[i] == Study1Name) {
-              Data$Incidence2[i] <- 10^-10
-              Data$SeverityNumber2[i] <- meanSeverity
-            } else {
-              Data$Incidence[i] <- 10^-10
-              Data$SeverityNumber[i] <- meanSeverity
-            }
-          }
-        }
-      }
-      reorderNames <- c(reorderNames[1:2],'Incidence2','SeverityNumber2',reorderNames[3:length(reorderNames)])
-      if (trackIncidence==FALSE) {
-        incidenceIndex2 <- which(colnames(Data)=="Incidence2")
-        colnames(Data)[incidenceIndex2] <- "Counts2"
-        reorderNames[3] <- "Counts2"
-      }
-    }
-    
-    # Rename Column for Counts
-    if (trackIncidence==FALSE) {
-      incidenceIndex <- which(colnames(Data)=="Incidence")
-      colnames(Data)[incidenceIndex] <- "Counts"
-      reorderNames[1] <- "Counts"
-    }
-    
-    # Order Categories
-    reorderIndex <- rep(NA,length(reorderNames))
-    for (j in seq(reorderNames)) {
-      reorderIndex[j] <- which(colnames(Data)==reorderNames[j])
-    }
-    newData <- Data[,reorderIndex]
-    
-    # remove studyID from newData
-    if (addStudyCategory == FALSE) {
-      newData <- newData[,1:(dim(newData)[2]-1)]
-    } else if (input$includeSeverity == TRUE) {
-      newData <- newData[,1:(dim(newData)[2]-3)]
-    }
-    
-    setProgress(message='Plotting...',value=0.66)
-    ########################################################################################
-    
-    toolName <- 'HistoGraphic'
-    
-    ############## Write Data to HistoGraphic Excel Template and Display Plot ##############
-    
-    # NOTE: May need to chunk the writing of data to the Excel template to reduce RAM usage
-    
-    # Write Data into Excel Template
-    if (severityFlag == TRUE) {
-      output$text <- renderText({'No findings present with such severity!'})
-      setwd(basePath)
-    } else {
-      if (trackIncidence == TRUE) {
-        if (input$colorBy=='severity') {
-          quantifiers <- as.data.frame(cbind('Incidence','Severity'))
+      
+      # Separate Incidence Rates from Study 1 and Study 2
+      if (((addStudyCategory == FALSE)&(length(studyIDs) == 2))|input$includeSeverity==TRUE) {
+        if ((input$foldChange==TRUE)|(input$colorBy=='severity')) {
+          meanSeverity <- 0
         } else {
-          quantifiers <- as.data.frame(cbind('Incidence',input$param))
+          meanSeverity <- mean(Data$SeverityNumber,na.rm=TRUE)
         }
-      } else {
-        if (input$colorBy=='severity') {
-          quantifiers <- as.data.frame(cbind('Counts','Severity'))
-        } else {
-          quantifiers <- as.data.frame(cbind('Counts',input$param))  
-        }
-      }
-      writeWorksheetToFile(outputFilePath,quantifiers,toolName,startRow=5,startCol=1,header=FALSE)
-      xlcFreeMemory()
-      if (((length(studyIDs) == 2)&(addStudyCategory == FALSE))|(input$includeSeverity==TRUE)) {
+        Incidence2 <- Data$Incidence
         if (input$includeSeverity==TRUE) {
-          study1Name <- as.data.frame(input$param)
-          study2Name <- as.data.frame('Severity')
+          SeverityNumber2 <- Data$realSeverityNumber
         } else {
-          study1Name <- as.data.frame(input$study1Name)
-          study2Name <- as.data.frame(input$study2Name)
+          SeverityNumber2 <- Data$SeverityNumber
         }
-        writeWorksheetToFile(outputFilePath,study1Name,toolName,startRow=4,startCol=1,header=FALSE)
-        writeWorksheetToFile(outputFilePath,study2Name,toolName,startRow=4,startCol=3,header=FALSE)
-      } else {
-        numberData <- newData[,1:2]
-        categoryData <- newData[,3:dim(newData)[2]]
-        blankData <- cbind(rep('',dim(newData)[1]),rep('',dim(newData)[1]))
-        newData <- cbind(numberData,blankData,categoryData)
+        Data <- cbind(Data,Incidence2,SeverityNumber2)
+        if (input$includeSeverity==TRUE) {
+          paramDataName <- rep(input$colorBy,dim(Data)[1])
+          Data1 <- cbind(Data,paramDataName)
+          paramDataName <- rep('severity',dim(Data)[1])
+          Data2 <- cbind(Data,paramDataName)
+          Data <- rbind(Data1,Data2)
+          for (j in seq(length(unique(Data$paramDataName)))) {
+            for (i in seq(length(Data$Incidence))) {
+              if (Data$paramDataName[i] == input$colorBy) {
+                Data$Incidence2[i] <- 10^-10
+                Data$SeverityNumber2[i] <- meanSeverity
+              } else {
+                Data$Incidence[i] <- 10^-10
+                Data$SeverityNumber[i] <- meanSeverity
+              }
+            }
+          }
+        } else {
+          for (j in seq(length(unique(Data$StudyID)))) {
+            for (i in seq(length(Data$Incidence))) {
+              if (Data$StudyID[i] == Study1Name) {
+                Data$Incidence2[i] <- 10^-10
+                Data$SeverityNumber2[i] <- meanSeverity
+              } else {
+                Data$Incidence[i] <- 10^-10
+                Data$SeverityNumber[i] <- meanSeverity
+              }
+            }
+          }
+        }
+        reorderNames <- c(reorderNames[1:2],'Incidence2','SeverityNumber2',reorderNames[3:length(reorderNames)])
+        if (trackIncidence==FALSE) {
+          incidenceIndex2 <- which(colnames(Data)=="Incidence2")
+          colnames(Data)[incidenceIndex2] <- "Counts2"
+          reorderNames[3] <- "Counts2"
+        }
       }
-      write.table(newData,outputCSVPath,col.names=FALSE,row.names=FALSE,sep=',')
       
-      # Run Visual Basic Script to Generate Plot via Excel Macro
-      shell(shQuote(paste(HistoGraphicPath,'/runHistoGraphic.vbs ',input$webBrowser,sep='')))
+      # Rename Column for Counts
+      if (trackIncidence==FALSE) {
+        incidenceIndex <- which(colnames(Data)=="Incidence")
+        colnames(Data)[incidenceIndex] <- "Counts"
+        reorderNames[1] <- "Counts"
+      }
       
-      setProgress(message='Plotting complete!',value=1)
-      # Return to Application Directory
-      setwd(basePath)
-    }
-    ########################################################################################
+      # Order Categories
+      reorderIndex <- rep(NA,length(reorderNames))
+      for (j in seq(reorderNames)) {
+        reorderIndex[j] <- which(colnames(Data)==reorderNames[j])
+      }
+      newData <- Data[,reorderIndex]
+      
+      # remove studyID from newData
+      if (addStudyCategory == FALSE) {
+        newData <- newData[,1:(dim(newData)[2]-1)]
+      } else if (input$includeSeverity == TRUE) {
+        newData <- newData[,1:(dim(newData)[2]-3)]
+      }
+      
+      setProgress(message='Plotting...',value=0.66)
+      ########################################################################################
+      
+      toolName <- 'HistoGraphic'
+      
+      ############## Write Data to HistoGraphic Excel Template and Display Plot ##############
+      
+      # NOTE: May need to chunk the writing of data to the Excel template to reduce RAM usage
+      
+      # Write Data into Excel Template
+      if (severityFlag == TRUE) {
+        output$text <- renderText({'No findings present with such severity!'})
+        setwd(basePath)
+      } else {
+        if (trackIncidence == TRUE) {
+          if (input$colorBy=='severity') {
+            quantifiers <- as.data.frame(cbind('Incidence','Severity'))
+          } else {
+            quantifiers <- as.data.frame(cbind('Incidence',input$param))
+          }
+        } else {
+          if (input$colorBy=='severity') {
+            quantifiers <- as.data.frame(cbind('Counts','Severity'))
+          } else {
+            quantifiers <- as.data.frame(cbind('Counts',input$param))  
+          }
+        }
+        writeWorksheetToFile(outputFilePath,quantifiers,toolName,startRow=5,startCol=1,header=FALSE)
+        xlcFreeMemory()
+        if (((length(studyIDs) == 2)&(addStudyCategory == FALSE))|(input$includeSeverity==TRUE)) {
+          if (input$includeSeverity==TRUE) {
+            study1Name <- as.data.frame(input$param)
+            study2Name <- as.data.frame('Severity')
+          } else {
+            study1Name <- as.data.frame(input$study1Name)
+            study2Name <- as.data.frame(input$study2Name)
+          }
+          writeWorksheetToFile(outputFilePath,study1Name,toolName,startRow=4,startCol=1,header=FALSE)
+          writeWorksheetToFile(outputFilePath,study2Name,toolName,startRow=4,startCol=3,header=FALSE)
+        } else {
+          numberData <- newData[,1:2]
+          categoryData <- newData[,3:dim(newData)[2]]
+          blankData <- cbind(rep('',dim(newData)[1]),rep('',dim(newData)[1]))
+          newData <- cbind(numberData,blankData,categoryData)
+        }
+        write.table(newData,outputCSVPath,col.names=FALSE,row.names=FALSE,sep=',')
+        
+        # Run Visual Basic Script to Generate Plot via Excel Macro
+        shell(shQuote(paste(HistoGraphicPath,'/runHistoGraphic.vbs ',input$webBrowser,sep='')))
+        
+        setProgress(message='Plotting complete!',value=1)
+        # Return to Application Directory
+        setwd(basePath)
+      }
+      ########################################################################################
+      
+      # Output Text Upon Completion
+      for (i in seq(length(studyIDs))) {
+        studyNameTmp <- get(paste('Study',i,'Name',sep=''))
+        textMessageTmp <- paste('Finished Plotting',studyNameTmp)
+        if (i == 1) {
+          textMessage <- textMessageTmp
+        } else {
+          textMessage <- paste(textMessage,textMessageTmp,sep='\n')
+        }
+      }
+      output$text <- renderText(textMessage)
+    })
     
-    # Output Text Upon Completion
-    for (i in seq(length(studyIDs))) {
-      studyNameTmp <- get(paste('Study',i,'Name',sep=''))
-      textMessageTmp <- paste('Finished Plotting',studyNameTmp)
-      if (i == 1) {
-        textMessage <- textMessageTmp
-      } else {
-        textMessage <- paste(textMessage,textMessageTmp,sep='\n')
-      }
-    }
-    output$text <- renderText(textMessage)
+    
   })
-})
   
   ##########################################################################################
   
-  
-  }
+  output$histoPlot <- renderUI({
+    histoPlot <- tags$iframe(seamless='seamless',src='Example Plot (PDS2014).html', height='800', width='100%')
+    print(histoPlot)
+    histoPlot
+  })
+}
 
 ############################################################################################
 
@@ -798,174 +805,183 @@ server <- function(input, output,session) {
 
 ui <- fluidPage(
   
-  # Application title
-  titlePanel("Create HistoGraphic"),
-  
-  # Create GUI Parameter Options
-  fluidRow(
-    column(4,
-           # Set number of studies
-           numericInput('numStudies',label = h3("How many studies would you like to plot? (up to 5)"),value=1),
-           
-           # Display Error Message if Less than 1 Study Chosen
-           conditionalPanel(
-             condition = "input.numStudies < 1",
-             h3("")
-           ),
-           
-           # Define Study 1 Directory
-           conditionalPanel(
-             condition = "input.numStudies >= 1 && input.numStudies <= 5",
-             h3('Study 1'),
-             actionButton('directory1','Choose an MI Domain File'),br(),
-             h5('Study Folder Location:'),
-             verbatimTextOutput('directory1Path'),
-             textInput('study1Name',label='Study 1 Label:',value='Study 1')
-           ),
-           
-           # Define Study 2 Directory
-           conditionalPanel(
-             condition = "input.numStudies >= 2 && input.numStudies <= 5",
-             h3('Study 2'),
-             actionButton('directory2','Choose an MI Domain File'),br(),
-             h5('Study Folder Location:'),
-             verbatimTextOutput('directory2Path'),
-             textInput('study2Name',label='Label:',value='Study 2')
-           ),
-           conditionalPanel(
-             condition = "input.numStudies == 2",
-             checkboxInput("addStudyCategory","Add Study as a Category?",value=FALSE)
-           ),
-           
-           # Define Study 3 Directory
-           conditionalPanel(
-             condition = "input.numStudies >= 3 && input.numStudies <= 5",
-             h3('Study 3'),
-             actionButton('directory3','Choose an MI Domain File'),br(),
-             h5('Study Folder Location:'),
-             verbatimTextOutput('directory3Path'),
-             textInput('study3Name',label='Label:',value='Study 3')
-           ),
-           
-           # Define Study 4 Directory
-           conditionalPanel(
-             condition = "input.numStudies >= 4 && input.numStudies <= 5",
-             h3('Study 4'),
-             actionButton('directory4','Choose an MI Domain File'),br(),
-             h5('Study Folder Location:'),
-             verbatimTextOutput('directory4Path'),
-             textInput('study4Name',label='Label:',value='Study 4')
-           ),
-           
-           # Define Study 5 Directory
-           conditionalPanel(
-             condition = "input.numStudies ==5",
-             h3('Study 5'),
-             actionButton('directory5','Choose an MI Domain File'),br(),
-             h5('Study Folder Location:'),
-             verbatimTextOutput('directory5Path'),
-             textInput('study5Name',label='Label:',value='Study 5')
-           ),
-           
-           # Display Error Message if Greater than 5 Studies Chose
-           conditionalPanel(
-             condition = "input.numStudies > 5",
-             h3("Cannot choose more than 5 studies!")
-           ),
-           
-           br(),
-           
-           # Define Web Browser Selection
-           selectInput('webBrowser',label='Choose Your Web Browser:',
-                       choices = list("Google Chrome" = 'Chrome',"Firefox" = 'Firefox',"Internet Explorer" = 'IE')),
-           
-           # Define Submit Button
-           actionButton("submit","Submit"),br(),br(),
-           
-           # Define Output Text Box
-           verbatimTextOutput("text")
+  tabsetPanel(
+    tabPanel('Create Plot',
+             
+             # Application title
+             titlePanel("Create HistoGraphic Plot"),
+             
+             # Create GUI Parameter Options
+             fluidRow(
+               column(4,
+                      # Set number of studies
+                      numericInput('numStudies',label = h3("How many studies would you like to plot? (up to 5)"),value=1),
+                      
+                      # Display Error Message if Less than 1 Study Chosen
+                      conditionalPanel(
+                        condition = "input.numStudies < 1",
+                        h3("")
+                      ),
+                      
+                      # Define Study 1 Directory
+                      conditionalPanel(
+                        condition = "input.numStudies >= 1 && input.numStudies <= 5",
+                        h3('Study 1'),
+                        actionButton('directory1','Choose an MI Domain File'),br(),
+                        h5('Study Folder Location:'),
+                        verbatimTextOutput('directory1Path'),
+                        textInput('study1Name',label='Study 1 Label:',value='Study 1')
+                      ),
+                      
+                      # Define Study 2 Directory
+                      conditionalPanel(
+                        condition = "input.numStudies >= 2 && input.numStudies <= 5",
+                        h3('Study 2'),
+                        actionButton('directory2','Choose an MI Domain File'),br(),
+                        h5('Study Folder Location:'),
+                        verbatimTextOutput('directory2Path'),
+                        textInput('study2Name',label='Label:',value='Study 2')
+                      ),
+                      conditionalPanel(
+                        condition = "input.numStudies == 2",
+                        checkboxInput("addStudyCategory","Add Study as a Category?",value=FALSE)
+                      ),
+                      
+                      # Define Study 3 Directory
+                      conditionalPanel(
+                        condition = "input.numStudies >= 3 && input.numStudies <= 5",
+                        h3('Study 3'),
+                        actionButton('directory3','Choose an MI Domain File'),br(),
+                        h5('Study Folder Location:'),
+                        verbatimTextOutput('directory3Path'),
+                        textInput('study3Name',label='Label:',value='Study 3')
+                      ),
+                      
+                      # Define Study 4 Directory
+                      conditionalPanel(
+                        condition = "input.numStudies >= 4 && input.numStudies <= 5",
+                        h3('Study 4'),
+                        actionButton('directory4','Choose an MI Domain File'),br(),
+                        h5('Study Folder Location:'),
+                        verbatimTextOutput('directory4Path'),
+                        textInput('study4Name',label='Label:',value='Study 4')
+                      ),
+                      
+                      # Define Study 5 Directory
+                      conditionalPanel(
+                        condition = "input.numStudies ==5",
+                        h3('Study 5'),
+                        actionButton('directory5','Choose an MI Domain File'),br(),
+                        h5('Study Folder Location:'),
+                        verbatimTextOutput('directory5Path'),
+                        textInput('study5Name',label='Label:',value='Study 5')
+                      ),
+                      
+                      # Display Error Message if Greater than 5 Studies Chose
+                      conditionalPanel(
+                        condition = "input.numStudies > 5",
+                        h3("Cannot choose more than 5 studies!")
+                      ),
+                      
+                      br(),
+                      
+                      # Define Web Browser Selection
+                      selectInput('webBrowser',label='Choose Your Web Browser:',
+                                  choices = list("Google Chrome" = 'Chrome',"Firefox" = 'Firefox',"Internet Explorer" = 'IE')),
+                      
+                      # Define Submit Button
+                      actionButton("submit","Submit"),br(),br(),
+                      
+                      # Define Output Text Box
+                      verbatimTextOutput("text")
+               ),
+               column(4,
+                      # Define Filters
+                      h3('Filters'),
+                      checkboxInput("includeNormal",label="Filter Out Organs without Abnormal Findings",value=TRUE),
+                      checkboxInput("removeNormal",label="Remove Normal Findings",value=FALSE),
+                      selectInput('severityFilter',label='Filter Out Organs with Findings of Severity Less than:',
+                                  choices = list(" "=0,"Minimal"=1,"Mild"=2,"Moderate"=3,"Marked"=4,"Severe"=5)),
+                      checkboxInput("filterControls",label='Filter Out Findings with Equal or Greater Incidence and/or Severity in Controls',value=FALSE),
+                      checkboxInput("separate",label='Separate Unscheduled Sacrifices',value=FALSE),
+                      conditionalPanel(
+                        condition = "input.separate == true && input.track==incidence",
+                        checkboxInput('recoveryIncidence',label='Calculate Incidence Based on Scheduled Sacrifice Groups',value=F)
+                      ),
+                      
+                      br(),
+                      
+                      h3('Graphical Parameters'),
+                      # Define Drop Downs for Preset Category Organization
+                      selectInput("track",label="Report Counts or Incidence Rate?",
+                                  choices = list("Counts"='counts',"Incidence Rate"='incidence'),selected='incidence'),
+                      
+                      selectInput('colorBy',label="Color by:",choices=list("Severity"='severity',"Clinical Pathology"='clinPath')),
+                      
+                      conditionalPanel(
+                        condition = "input.colorBy == 'clinPath'",
+                        selectInput('clinPathType',label="Clinical Pathology Subtype:",choices=list("Clinical Chemistry"='CHEMISTRY',
+                                                                                                    "Hematology"='HEMATOLOGY',
+                                                                                                    "Urinalysis"='URINALYSIS',
+                                                                                                    "Coagulation"='COAGULATION'))
+                      ),
+                      
+                      conditionalPanel(
+                        condition = "input.colorBy == 'clinPath'",
+                        uiOutput('clinPath'),
+                        checkboxInput('foldChange','Fold-Change from Control by Sex within each Study',value=FALSE)
+                      ),
+                      
+                      conditionalPanel(
+                        condition = "input.colorBy != 'severity' && (input.numStudies != 2 || input.addStudyCategory != false)",
+                        checkboxInput('includeSeverity','Include Severity?',value=FALSE)
+                      )
+               ),
+               column(4,
+                      h3('Preset Category Organization'),
+                      selectInput("organizeBy",label="Organize By:",
+                                  choices = list("Organ"='Organ',"Subject"='Subject',"Custom"='Custom')),
+                      
+                      # Define Drop Downs for Custom Category Organization
+                      h3('Custom Category Organization'),
+                      conditionalPanel(
+                        condition = "input.numStudies == 1 || (input.numStudies == 2 && input.addStudyCategory == false)",
+                        selectInput("layer1",label="Category 1",
+                                    choices = list(" "='blank',"Organ"='Organ',"Finding"='Finding',"Treatment"='Treatment',"Sex"='Sex',"Recovery"='Recovery',"Animal ID"='SubjectID')),
+                        selectInput("layer2",label="Category 2",
+                                    choices = list(" "='blank',"Organ"='Organ',"Finding"='Finding',"Treatment"='Treatment',"Sex"='Sex',"Recovery"='Recovery',"Animal ID"='SubjectID')),
+                        selectInput("layer3",label="Category 3",
+                                    choices = list(" "='blank',"Organ"='Organ',"Finding"='Finding',"Treatment"='Treatment',"Sex"='Sex',"Recovery"='Recovery',"Animal ID"='SubjectID')),
+                        selectInput("layer4",label="Category 4",
+                                    choices = list(" "='blank',"Organ"='Organ',"Finding"='Finding',"Treatment"='Treatment',"Sex"='Sex',"Recovery"='Recovery',"Animal ID"='SubjectID')),
+                        selectInput("layer5",label="Category 5",
+                                    choices = list(" "='blank',"Organ"='Organ',"Finding"='Finding',"Treatment"='Treatment',"Sex"='Sex',"Recovery"='Recovery',"Animal ID"='SubjectID')),
+                        selectInput("layer6",label="Category 6",
+                                    choices = list(" "='blank',"Organ"='Organ',"Finding"='Finding',"Treatment"='Treatment',"Sex"='Sex',"Recovery"='Recovery',"Animal ID"='SubjectID'))
+                      ),
+                      conditionalPanel(
+                        condition = "input.addStudyCategory == true || input.numStudies > 2",
+                        selectInput("layer1s",label="Category 1",
+                                    choices = list(" "='blank',"Organ"='Organ',"Finding"='Finding',"Treatment"='Treatment',"Sex"='Sex',"Recovery"='Recovery',"Study ID"='StudyID',"Animal ID"='SubjectID')),
+                        selectInput("layer2s",label="Category 2",
+                                    choices = list(" "='blank',"Organ"='Organ',"Finding"='Finding',"Treatment"='Treatment',"Sex"='Sex',"Recovery"='Recovery',"Study ID"='StudyID',"Animal ID"='SubjectID')),
+                        selectInput("layer3s",label="Category 3",
+                                    choices = list(" "='blank',"Organ"='Organ',"Finding"='Finding',"Treatment"='Treatment',"Sex"='Sex',"Recovery"='Recovery',"Study ID"='StudyID',"Animal ID"='SubjectID')),
+                        selectInput("layer4s",label="Category 4",
+                                    choices = list(" "='blank',"Organ"='Organ',"Finding"='Finding',"Treatment"='Treatment',"Sex"='Sex',"Recovery"='Recovery',"Study ID"='StudyID',"Animal ID"='SubjectID')),
+                        selectInput("layer5s",label="Category 5",
+                                    choices = list(" "='blank',"Organ"='Organ',"Finding"='Finding',"Treatment"='Treatment',"Sex"='Sex',"Recovery"='Recovery',"Study ID"='StudyID',"Animal ID"='SubjectID')),
+                        selectInput("layer6s",label="Category 6",
+                                    choices = list(" "='blank',"Organ"='Organ',"Finding"='Finding',"Treatment"='Treatment',"Sex"='Sex',"Recovery"='Recovery',"Study ID"='StudyID',"Animal ID"='SubjectID')),
+                        selectInput("layer7s",label="Category 7",
+                                    choices = list(" "='blank',"Organ"='Organ',"Finding"='Finding',"Treatment"='Treatment',"Sex"='Sex',"Recovery"='Recovery',"Study ID"='StudyID',"Animal ID"='SubjectID'))
+                      )
+               )
+             )
     ),
-    column(4,
-           # Define Filters
-           h3('Filters'),
-           checkboxInput("includeNormal",label="Filter Out Organs without Abnormal Findings",value=TRUE),
-           checkboxInput("removeNormal",label="Remove Normal Findings",value=FALSE),
-           selectInput('severityFilter',label='Filter Out Organs with Findings of Severity Less than:',
-                       choices = list(" "=0,"Minimal"=1,"Mild"=2,"Moderate"=3,"Marked"=4,"Severe"=5)),
-           checkboxInput("filterControls",label='Filter Out Findings with Equal or Greater Incidence and/or Severity in Controls',value=FALSE),
-           checkboxInput("separate",label='Separate Unscheduled Sacrifices',value=FALSE),
-           conditionalPanel(
-             condition = "input.separate == true && input.track==incidence",
-             checkboxInput('recoveryIncidence',label='Calculate Incidence Based on Scheduled Sacrifice Groups',value=F)
-           ),
-           
-           br(),
-           
-           h3('Graphical Parameters'),
-           # Define Drop Downs for Preset Category Organization
-           selectInput("track",label="Report Counts or Incidence Rate?",
-                       choices = list("Counts"='counts',"Incidence Rate"='incidence'),selected='incidence'),
-           
-           selectInput('colorBy',label="Color by:",choices=list("Severity"='severity',"Clinical Pathology"='clinPath')),
-           
-           conditionalPanel(
-             condition = "input.colorBy == 'clinPath'",
-             selectInput('clinPathType',label="Clinical Pathology Subtype:",choices=list("Clinical Chemistry"='CHEMISTRY',
-                                                                                         "Hematology"='HEMATOLOGY',
-                                                                                         "Urinalysis"='URINALYSIS',
-                                                                                         "Coagulation"='COAGULATION'))
-           ),
-           
-           conditionalPanel(
-             condition = "input.colorBy == 'clinPath'",
-             uiOutput('clinPath'),
-             checkboxInput('foldChange','Fold-Change from Control by Sex within each Study',value=FALSE)
-           ),
-           
-           conditionalPanel(
-             condition = "input.colorBy != 'severity' && (input.numStudies != 2 || input.addStudyCategory != false)",
-             checkboxInput('includeSeverity','Include Severity?',value=FALSE)
-           )
-    ),
-    column(4,
-           h3('Preset Category Organization'),
-           selectInput("organizeBy",label="Organize By:",
-                       choices = list("Organ"='Organ',"Subject"='Subject',"Custom"='Custom')),
-           
-           # Define Drop Downs for Custom Category Organization
-           h3('Custom Category Organization'),
-           conditionalPanel(
-             condition = "input.numStudies == 1 || (input.numStudies == 2 && input.addStudyCategory == false)",
-             selectInput("layer1",label="Category 1",
-                         choices = list(" "='blank',"Organ"='Organ',"Finding"='Finding',"Treatment"='Treatment',"Sex"='Sex',"Recovery"='Recovery',"Animal ID"='SubjectID')),
-             selectInput("layer2",label="Category 2",
-                         choices = list(" "='blank',"Organ"='Organ',"Finding"='Finding',"Treatment"='Treatment',"Sex"='Sex',"Recovery"='Recovery',"Animal ID"='SubjectID')),
-             selectInput("layer3",label="Category 3",
-                         choices = list(" "='blank',"Organ"='Organ',"Finding"='Finding',"Treatment"='Treatment',"Sex"='Sex',"Recovery"='Recovery',"Animal ID"='SubjectID')),
-             selectInput("layer4",label="Category 4",
-                         choices = list(" "='blank',"Organ"='Organ',"Finding"='Finding',"Treatment"='Treatment',"Sex"='Sex',"Recovery"='Recovery',"Animal ID"='SubjectID')),
-             selectInput("layer5",label="Category 5",
-                         choices = list(" "='blank',"Organ"='Organ',"Finding"='Finding',"Treatment"='Treatment',"Sex"='Sex',"Recovery"='Recovery',"Animal ID"='SubjectID')),
-             selectInput("layer6",label="Category 6",
-                         choices = list(" "='blank',"Organ"='Organ',"Finding"='Finding',"Treatment"='Treatment',"Sex"='Sex',"Recovery"='Recovery',"Animal ID"='SubjectID'))
-           ),
-           conditionalPanel(
-             condition = "input.addStudyCategory == true || input.numStudies > 2",
-             selectInput("layer1s",label="Category 1",
-                         choices = list(" "='blank',"Organ"='Organ',"Finding"='Finding',"Treatment"='Treatment',"Sex"='Sex',"Recovery"='Recovery',"Study ID"='StudyID',"Animal ID"='SubjectID')),
-             selectInput("layer2s",label="Category 2",
-                         choices = list(" "='blank',"Organ"='Organ',"Finding"='Finding',"Treatment"='Treatment',"Sex"='Sex',"Recovery"='Recovery',"Study ID"='StudyID',"Animal ID"='SubjectID')),
-             selectInput("layer3s",label="Category 3",
-                         choices = list(" "='blank',"Organ"='Organ',"Finding"='Finding',"Treatment"='Treatment',"Sex"='Sex',"Recovery"='Recovery',"Study ID"='StudyID',"Animal ID"='SubjectID')),
-             selectInput("layer4s",label="Category 4",
-                         choices = list(" "='blank',"Organ"='Organ',"Finding"='Finding',"Treatment"='Treatment',"Sex"='Sex',"Recovery"='Recovery',"Study ID"='StudyID',"Animal ID"='SubjectID')),
-             selectInput("layer5s",label="Category 5",
-                         choices = list(" "='blank',"Organ"='Organ',"Finding"='Finding',"Treatment"='Treatment',"Sex"='Sex',"Recovery"='Recovery',"Study ID"='StudyID',"Animal ID"='SubjectID')),
-             selectInput("layer6s",label="Category 6",
-                         choices = list(" "='blank',"Organ"='Organ',"Finding"='Finding',"Treatment"='Treatment',"Sex"='Sex',"Recovery"='Recovery',"Study ID"='StudyID',"Animal ID"='SubjectID')),
-             selectInput("layer7s",label="Category 7",
-                         choices = list(" "='blank',"Organ"='Organ',"Finding"='Finding',"Treatment"='Treatment',"Sex"='Sex',"Recovery"='Recovery',"Study ID"='StudyID',"Animal ID"='SubjectID'))
-           )
+    tabPanel('Plot',
+             h3('Example Plot:'),
+             htmlOutput('histoPlot')
     )
   )
 )

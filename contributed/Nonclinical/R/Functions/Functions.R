@@ -100,8 +100,8 @@ load.GitHub.xpt.files <- function (
 }
 
 # Function to create a list of R dataframes for each .xpt file
+# NOTE: this function requries the packages: "Hmisc" and "tools"
 load.xpt.files <- function(path=getwd(),domainsOfInterest=NULL) {
-  # NOTE: this function requries the packages: "Hmisc" and "tools"
   xptFiles <- Sys.glob(paste(path,"*.xpt",sep='/'))
   if (!is.null(domainsOfInterest)) {
     domainsOfInterest <- paste(paste(path,'/',domainsOfInterest,'.xpt',sep=''))

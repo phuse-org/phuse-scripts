@@ -36,6 +36,7 @@
 # 5) Output BG.xpt file
 # 6) Statistical Analysis (Dunnet's test; repeated-measures ANOVA) -- Kevin
 # 7) Add tests of dataset assumptions
+# 8) Remove writing to local disk so that it can run on Shiny Server -- Kevin
 #####################################################
 # Hints
 #      If the directory selection dialog does not appear when clicking on the "..." button, then
@@ -45,7 +46,7 @@
 # Check for Required Packages, Install if Necessary, and Load
 # devtools::install_github('hadley/ggplot2',quiet=TRUE)
 # devtools::install_github("ropensci/plotly",quiet=TRUE)
-list.of.packages <- c("shiny","SASxport","httr","haven","ini",'tools')
+list.of.packages <- c("shiny","SASxport","httr",'ggplot2','tools','plotly')
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages,repos='http://cran.us.r-project.org')
 library(shiny)
@@ -56,18 +57,21 @@ library(tools)
 library(plotly)
 
 # Source Required Functions
-# source('https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/contributed/Nonclinical/R/Functions/Functions.R')
-source('~/PhUSE/Repo/trunk/contributed/Nonclinical/R/Functions/Functions.R')
-# source('https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/contributed/Nonclinical/R/Functions/groupSEND.R')
-source('~/PhUSE/Repo/trunk/contributed/Nonclinical/R/Functions/groupSEND.R')
-source('~/passwordGitHub.R')
+source('https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/contributed/Nonclinical/R/Functions/Functions.R')
+# source('~/PhUSE/Repo/trunk/contributed/Nonclinical/R/Functions/Functions.R')
+source('https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/contributed/Nonclinical/R/Functions/groupSEND.R')
+# source('~/PhUSE/Repo/trunk/contributed/Nonclinical/R/Functions/groupSEND.R')
+if (file.exists('~/passwordGitHub.R')) {
+  source('~/passwordGitHub.R')
+  Authenticate <- TRUE
+} else {
+  Authenitcate <- FALSE
+}
 
-# Initial group list is empty
+# Initialize groupList
 groupList <- ""
 
-# set default study folder
-# defaultStudyFolder <- 'https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/data/send/PDS/Xpt'
-
+# Initialize values$path
 values <- reactiveValues()
 values$path <- NULL
 ############################################################################################
@@ -79,8 +83,12 @@ server <- function(input, output,session) {
   
   # Create Drop Down to Select Studies from PhUSE GitHub Repo
   output$selectGitHubStudy <- renderUI({
-    Req <- GET(paste('https://api.github.com/repos/phuse-org/phuse-scripts/contents/data/send'),
-               authenticate(userGitHub,passwordGitHub))
+    if (Authenticate == TRUE) {
+      Req <- GET(paste('https://api.github.com/repos/phuse-org/phuse-scripts/contents/data/send'),
+                 authenticate(userGitHub,passwordGitHub))
+    } else {
+      Req <- GET(paste('https://api.github.com/repos/phuse-org/phuse-scripts/contents/data/send'))
+    }
     contents <- content(Req,as='parsed')
     GitHubStudies <- NULL
     for (i in seq(length(contents))) {
@@ -97,8 +105,6 @@ server <- function(input, output,session) {
     },
     handlerExpr = {
       if (input$chooseBWfile >= 1) {
-        # FIX FILE PATH PROBLEM, Check OS, and remove ini, point to PDS github as default
-        # File <- choose.files(default=values$path,caption = "Select a BW Domain",multi=F,filters=cbind('.xpt or .csv files','*.xpt;*.csv'))
         File <- file.choose()
         
         # If file was chosen, update 
@@ -118,11 +124,6 @@ server <- function(input, output,session) {
   output$bwFilePath <- renderText({
     req(values$path)
     values$path
-    # if (!is.null(values$path)) {
-    #   values$path
-    # } else {
-    #   defaultStudyFolder
-    # }
   })
   
   # Load Dataset
@@ -531,9 +532,6 @@ ui <- fluidPage(
       ),br(),
       h5('Study Folder Location:'),
       verbatimTextOutput('bwFilePath'),
-      # shinyDirButton('bwDir','Change Directory','Select a Directory'),
-      # verbatimTextOutput('directoryPath'),
-      # directoryInput('directory',label = 'Directory:',value=defaultStudyFolder),
       h3('Select Plots:'),
       checkboxInput('showBWPlot','Show the Body Weight Plot',value=1),
       checkboxInput('showBWDiffPlot','Show the Body Weight Difference from Day 1 Plot',value=0),
