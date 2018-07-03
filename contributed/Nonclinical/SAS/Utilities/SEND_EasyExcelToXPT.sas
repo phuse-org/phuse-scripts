@@ -235,9 +235,15 @@ run;
                 &&Name&i.. $ 200
             %end; 
             %else %if %upcase("&&NewType&i.") = "NUM" %then %do;
-                &&Name&i.. &&Formatl&i..
+                %if &&Formatl&i.. < 8 %then %do;
+                    &&Name&i.. 8
+                %end;
+                %else %do;
+                    &&Name&i.. &&Formatl&i..
+                %end;
             %end; 
             %else %do;
+                ;
                 put "ERR" "OR: An improper variable type designation was found in the Master File: &&Name&i.. &&Formatl&i... The system will now terminate";
                 abort abend;
             %end;
@@ -271,7 +277,12 @@ run;
                     label &&Name&i.. = &&Label&i..;
                 %end;
                 %else %do;  /*Char to Num conversion*/
-                    &&Name&i.. = input(var&i., &&Formatl&i...&&Formatd&i..);
+                    %if &&Formatl&i.. < 8 %then %do;
+                        &&Name&i.. = input(var&i., 8.&&Formatd&i..);
+                    %end;
+                    %else %do;
+                        &&Name&i.. = input(var&i., &&Formatl&i...&&Formatd&i..);
+                    %end;
                     if missing(&&Name&i..) and missing(var&i.) ^= 1 then do;
                         put "ERR" "OR: The " &&Name&i.. " column was read in as character but converted to numeric. At least one non-missing value was converted to missing during the process. Please check your data and settings. The system will now terminate";
                         abort abend;
