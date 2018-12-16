@@ -3,6 +3,7 @@ Modified CDISC ADaM pilot data
 Modification:
   * [**See also the original single-study CDISC pilot data**](http://github.com/phuse-org/phuse-scripts/tree/master/data/adam/cdisc)
   * This "split" version has 2 studies: 01 and 02
+  * The split seems to be based on `SITEID`, with odd sites in "CDISCPILOT01" and even sites in "CDISCPILOT02"
 
 Future effort:
   * This allows testing of pooled (multiple study) analyses
