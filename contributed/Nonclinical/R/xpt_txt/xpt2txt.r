@@ -2,13 +2,13 @@
 # The "txt" extention is used instead of "csv" to avoid Excel's automatic conversion of what it thinks are dates into its date format.
 # 
 # 1. Open Excel, File, Open, select the file *.txt file.  Text Import wizard opens.
-# 3. Select Delimited
-# ?. Start import at row 1
-# ?. click the check-box to indicate "My data has headers."
-# ?. Click Next to get to Step 2 of 3 in the Wizard.
-# ?. Click the check-box to indicate Tab is the delimiter.
-# ?. Click Next to get to Step 3 of 3 in the Wizard.
-# 5. Use the scroll bar and Shift-Click to Select all the columns, Choose "Text" as the column format, Click Finish.
+# 2. Select Delimited
+# 3. Start import at row 1
+# 4. click the check-box to indicate "My data has headers."
+# 5. Click Next to get to Step 2 of 3 in the Wizard.
+# 6. Click the check-box to indicate Tab is the delimiter.
+# 7. Click Next to get to Step 3 of 3 in the Wizard.
+# 8. Use the scroll bar and Shift-Click to Select all the columns, Choose "Text" as the column format, Click Finish.
 #
 # Do the following to keep the column headers on the screen when scrolling through the data
 # 1. Scroll down so you see the headers you want to see 
