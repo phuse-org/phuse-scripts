@@ -134,7 +134,7 @@ charttitle <- "Change in Diastolic Blood Pressure" #in quotes
 
 
 #Read in DATASET if not yet read
-if (lastRead!=xptFile) {
+if (lastRead!=xptFile || !exists("testresultsread")) {
 	print(paste("Reading file: ",xptFile))
 	if (file_ext(testfilename) == "csv") {
   		testresultsread <- read.csv(xptFile)

@@ -7,7 +7,7 @@ Script:
          Visit and Planned Treatment
          Figure 7.2 Box plot - Change from Baseline by Analysis Timepoint, Visit and Treatment
   version: 1.1.0
-# do we need the following tags? 
+#  
   source : White paper
   topic  : Measures of Central Tendency Figure 7.2
   type   : figure
@@ -18,7 +18,7 @@ Script:
 Language:
   name   : R
   version: 3.1.3
-# do we need the comment here? 
+#  
   comments : >
 Environment:
   system: Linux or Window 2010
