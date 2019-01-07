@@ -144,8 +144,12 @@ server <- function(input, output,session) {
       }
     } else if (input$dataSource=='GitHub') {
       StudyDir <- paste0('data/send/',input$selectGitHubStudy)
-      Dataset <- load.GitHub.xpt.files(studyDir=StudyDir,
-                                       authenticate=TRUE,User=userGitHub,Password=passwordGitHub)
+      if (Authenticate==T) {
+        Dataset <- load.GitHub.xpt.files(studyDir=StudyDir,
+                                         authenticate=TRUE,User=userGitHub,Password=passwordGitHub)
+      } else {
+        Dataset <- load.GitHub.xpt.files(studyDir=StudyDir)
+      }
     }
     groupedData <- groupSEND(Dataset,'bw')
     return(groupedData)
