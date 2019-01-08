@@ -8,11 +8,8 @@ library(shinycssloaders)
 library(httr)
 library(Hmisc)
 library(DT)
-# library(xml2)
-# library(xslt)
-
-# Functionality to display define.xml has been commented out due to incompatibility of the
-# "xslt" package with the shinyapps.io environment
+library(xml2)
+library(xslt)
 
 GitHubPath <- 'https://raw.githubusercontent.com/phuse-org/phuse-scripts/master'
 dataPath <- 'data/send/CDISC-Safety-Pharmacology-POC'
@@ -354,21 +351,21 @@ server <- function(input, output,session) {
         datatable({
           Data <- loadData()
           rawTable <- Data[[tolower(values$domainNames[i])]]
-        },options=list(autoWidth=T,scrollX=F,pageLength=10,paging=T,searching=F,
+        },options=list(autoWidth=T,scrollX=T,pageLength=10,paging=T,searching=T,
                      columnDefs=list(list(className='dt-center',targets='_all'))),
         rownames=F)
       })
     })
   })
   
-  # output$define <- renderUI({
-  #   doc <- read_xml(paste(GitHubPath,dataPath,'define.xml',sep='/'))
-  #   style <- read_xml(paste(GitHubPath,dataPath,'define2-0-0.xsl',sep='/'))
-  #   html <- xml_xslt(doc,style)
-  #   cat(as.character(html),file='www/temp.html')
-  #   define <- tags$iframe(src='temp.html', height='700', width='100%')
-  #   define
-  # })
+  output$define <- renderUI({
+    doc <- read_xml(paste(GitHubPath,dataPath,'define.xml',sep='/'))
+    style <- read_xml(paste(GitHubPath,dataPath,'define2-0-0.xsl',sep='/'))
+    html <- xml_xslt(doc,style)
+    cat(as.character(html),file='www/temp.html')
+    define <- tags$iframe(src='temp.html', height='700', width='100%')
+    define
+  })
   
 }
 
@@ -400,9 +397,9 @@ ui <- shinyUI(
                                      tabPanel('SEND Domains',
                                               withSpinner(uiOutput('SENDdomains'),type=5)
                                      ),
-                                     # tabPanel('DEFINE',
-                                     #          withSpinner(htmlOutput('define'),type=5)  
-                                     # ),
+                                     tabPanel('DEFINE',
+                                              withSpinner(htmlOutput('define'),type=5)
+                                     ),
                                      tabPanel('README',
                                               column(11,
                                                      includeMarkdown('https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/data/send/CDISC-Safety-Pharmacology-POC/readme.txt')
