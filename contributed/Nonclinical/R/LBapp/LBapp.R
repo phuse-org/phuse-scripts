@@ -258,6 +258,9 @@ values$path <- NULL
 values$selectedTests <- NULL
 values$dayOrder <- NULL
 values$treatmentOrder <- NULL
+values$testDictionaryCodes <- NULL
+values$testDictionaryTests <- NULL
+values$testDictionaryUnits <- NULL
 
 # Set Heights and Widths
 sidebarWidth <- '400px'
@@ -337,6 +340,15 @@ server <- function(input, output, session) {
         }
       }
       setProgress(value=1,message='Processing Data...')
+      isolate({
+        testCodes <- levels(Dataset$lb$LBTESTCD)
+        for (i in seq(length(testCodes))) {
+          values$testDictionaryCodes[i] <- testCodes[i]
+          index <- which(Dataset$lb$LBTESTCD==testCodes[i])[1]
+          values$testDictionaryTests[i] <- levels(Dataset$lb$LBTEST[index])[Dataset$lb$LBTEST[index]]
+          values$testDictionaryUnits[i] <- levels(Dataset$lb$LBSTRESU[index])[Dataset$lb$LBSTRESU[index]]
+        }
+      })
       groupedData <- groupSEND(Dataset,'lb')
       index <- which((groupedData$LBSTRESU!='')&(is.null(groupedData$LBSTRESU)==F))
       groupedData <- groupedData[index,]
@@ -359,15 +371,16 @@ server <- function(input, output, session) {
           groupedData <- groupedData[-index,]
         }
       }
-      values$dayOrder <- as.character(sort(as.numeric(unique(groupedData$VISITDY))))
-      for (i in seq(length(values$dayOrder))) {
+      testDays <- sort(as.numeric(unique(groupedData$VISITDY)),decreasing=F)
+      for (i in seq(length(testDays))) {
         if (i > 1) {
-          if (as.numeric(values$dayOrder[i])==(as.numeric(values$dayOrder[i-1])+1)) {
-            index <- which(as.numeric(groupedData$VISITDY)==as.numeric(values$dayOrder[i]))
-            groupedData$VISITDY[index] <- as.numeric(values$dayOrder[i-1])
+          if (testDays[i]==(testDays[i-1]+1)) {
+            index <- which(groupedData$VISITDY==testDays[i])
+            groupedData$VISITDY[index] <- testDays[i-1]
           }
         }
       }
+      values$dayOrder <- as.character(sort(as.numeric(unique(groupedData$VISITDY))))
       doses <- paste0(' ',levels(factor(groupedData$Dose)))
       treatmentOrder <- NULL
       for (dose in doses) {
@@ -649,15 +662,17 @@ server <- function(input, output, session) {
   output$boxPlot <- renderPlot({
     if (!is.null(input$tests)) {
       Data <- longData()
-      N <- length(levels(Data[[input$groupBy]]))
+      N <- length(unique(Data[[input$groupBy]]))
       my_color_ramp <- my_color_palette(N)
       p <- ggplot(data=Data,aes(x=variable,y=value,fill=get(input$groupBy))) +
-        geom_boxplot() + xlab('Parameter') + scale_fill_manual(name=input$groupBy,values=my_color_ramp) +
+        geom_boxplot() + xlab('Test') + scale_fill_manual(name=input$groupBy,values=my_color_ramp) +
         theme(text = element_text(size=18))
       if (input$transformation == 'percentChange') {
         p <- p + ylab('Percent Change from Control Mean (%)')
+      } else if (input$transformation == 'zScore') {
+        p <- p + ylab('Z-Score')
       } else {
-        p <- p + ylab('Level')
+        p <- p + ylab('Raw Value')
       }
       print(p)
     }
@@ -672,7 +687,7 @@ server <- function(input, output, session) {
       } else {
         meanData <- createMeansTable(Data,'value',c('variable','Treatment','Day'))
       }
-      N <- length(levels(meanData[[input$groupBy]]))
+      N <- length(unique(Data[[input$groupBy]]))
       my_color_ramp <- my_color_palette(N)
       p <- ggplot(data=meanData,aes(x=variable,y=value_mean,fill=get(input$groupBy))) +
         geom_bar(position=position_dodge(),colour='black',stat='identity',size=.3) + xlab('Test') + 
@@ -684,8 +699,10 @@ server <- function(input, output, session) {
       }
       if (input$transformation == 'percentChange') {
         p <- p + ylab('Percent Change from Control Mean (%)')
+      } else if (input$transformation == 'zScore') {
+        p <- p + ylab('Z-Score')
       } else {
-        p <- p + ylab('Level')
+        p <- p + ylab('Raw Value')
       }
       print(p)
     }
@@ -700,7 +717,7 @@ server <- function(input, output, session) {
       } else {
         meanData <- createMeansTable(Data,'value',c('variable','Treatment','Day'))
       }
-      N <- length(levels(meanData[[input$groupBy]]))
+      N <- length(unique(Data[[input$groupBy]]))
       my_color_ramp <- my_color_palette(N)
       if (input$sex == '') {
         p <- ggplot(data=meanData,aes(x=variable,y=value_mean,colour=get(input$groupBy),group=get(input$groupBy),shape=Sex))
@@ -716,8 +733,10 @@ server <- function(input, output, session) {
       }
       if (input$transformation == 'percentChange') {
         p <- p + ylab('Percent Change from Control Mean (%)')
+      } else if (input$transformation == 'zScore') {
+        p <- p + ylab('Z-Score')
       } else {
-        p <- p + ylab('Level')
+        p <- p + ylab('Raw Value')
       }
       print(p)
     }
@@ -732,7 +751,7 @@ server <- function(input, output, session) {
       } else {
         meanData <- createMeansTable(Data,'value',c('variable','Treatment','Day'))
       }
-      N <- length(levels(meanData[[input$groupBy]]))
+      N <- length(unique(Data[[input$groupBy]]))
       my_color_ramp <- my_color_palette(N)
       if (input$sex == '') {
         p <- ggplot(data=meanData,aes(x=variable,y=value_mean,group=interaction(get(input$groupBy),Sex),colour=get(input$groupBy),shape=Sex))
@@ -748,8 +767,10 @@ server <- function(input, output, session) {
       }
       if (input$transformation == 'percentChange') {
         p <- p + ylab('Percent Change from Control Mean (%)')
+      } else if (input$transformation == 'zScore') {
+        p <- p + ylab('Z-Score')
       } else {
-        p <- p + ylab('Level')
+        p <- p + ylab('Raw Value')
       }
       print(p)
     }
@@ -782,14 +803,17 @@ server <- function(input, output, session) {
         } else {
           meanData <- createMeansTable(Data,test,c('Treatment','Day'))
         }
-        N <- length(levels(meanData$Treatment))
+        N <- length(unique(meanData$Treatment))
         my_color_ramp <- my_color_palette(N)
+        testName <- values$testDictionaryTests[which(values$testDictionaryCodes==test)]
+        testUnit <- values$testDictionaryUnits[which(values$testDictionaryCodes==test)]
+        testNameUnit <- paste0(testName,' (',testUnit,')')
         if (input$sex == '') {
           p <- ggplot(data=meanData,aes(x=Day,y=get(paste(test,'mean',sep='_')),group=interaction(Treatment,Sex),colour=Treatment,shape=Sex))
         } else {
           p <- ggplot(data=meanData,aes(x=Day,y=get(paste(test,'mean',sep='_')),group=Treatment,colour=Treatment))
         }
-        p <- p + geom_point(size=3) + geom_line() + ggtitle(test) + scale_colour_manual(name=input$groupby,values=my_color_ramp) +
+        p <- p + geom_point(size=3) + geom_line() + ggtitle(testNameUnit) + scale_colour_manual(name=input$groupby,values=my_color_ramp) +
           theme(text = element_text(size=18)) + xlab('Day')
         if (input$errorbars!='none') {
           p <- p + geom_errorbar(aes(ymin=get(paste(test,'mean',sep='_'))-get(paste(test,input$errorbars,sep='_')),
@@ -798,8 +822,10 @@ server <- function(input, output, session) {
         }
         if (input$transformation == 'percentChange') {
           p <- p + ylab('Percent Change from Control Mean (%)')
+        } else if (input$transformation == 'zScore') {
+          p <- p + ylab('Z-Score')
         } else {
-          p <- p + ylab('Level')
+          p <- p + ylab(paste0('Raw Value'))
         }
         print(p)
       })
@@ -810,7 +836,7 @@ server <- function(input, output, session) {
   output$linePlot <- renderPlotly({
     if (!is.null(input$tests)) {
       Data <- longData()
-      N <- length(levels(Data[[input$groupBy]]))
+      N <- length(unique(Data[[input$groupBy]]))
       my_color_ramp <- my_color_palette(N)
       if (input$sex == '') {
         p <- ggplot(data=Data,aes(x=variable,y=value,group=ID,colour=get(input$groupBy),shape=Sex,label=ID))
@@ -822,10 +848,10 @@ server <- function(input, output, session) {
       print(p)
       if (input$transformation == 'percentChange') {
         p <- p + ylab('Percent Change from Control Mean (%)')
-      } else if (grep('zScore',input$transformation)) {
+      } else if (input$transformation == 'zScore') {
         p <- p + ylab('Z-Score')
       } else {
-        p <- p + ylab('Level')
+        p <- p + ylab('Raw Value')
       }
       p <- ggplotly(p,tooltip='label')
       p$elementId <- NULL
@@ -856,22 +882,24 @@ server <- function(input, output, session) {
         }
         test <- input$tests[my_i]
         Data$Treatment <- factor(Data$Treatment,levels=values$treatmentOrder)
-        N <- length(levels(Data$Treatment))
+        N <- length(unique(Data$Treatment))
         my_color_ramp <- my_color_palette(N)
+        testName <- values$testDictionaryTests[which(values$testDictionaryCodes==test)]
+        testUnit <- values$testDictionaryUnits[which(values$testDictionaryCodes==test)]
+        testNameUnit <- paste0(testName,' (',testUnit,')')
         if (input$sex == '') {
           p <- ggplot(data=Data,aes(x=Day,y=get(test),group=ID,colour=Treatment,shape=Sex,label=ID))
         } else {
           p <- ggplot(data=Data,aes(x=Day,y=get(test),group=ID,colour=Treatment,label=ID))
         }
-        p <- p + geom_point(size=3)+geom_path() + ggtitle(test) + scale_colour_manual(name=input$groupby,values=my_color_ramp) +
+        p <- p + geom_point(size=3)+geom_path() + ggtitle(testNameUnit) + scale_colour_manual(name=input$groupby,values=my_color_ramp) +
           theme(text = element_text(size=18)) + xlab('Day')
         if (input$transformation == 'percentChange') {
-          ##########################################
-          ####     Parameterize these labels!   #### and need to provide option not to use plotly
-          ##########################################
-          p <- p + ylab('Percent Difference (%)')
+          p <- p + ylab('Percent Change from Control Mean (%)')
+        } else if (input$transformation == 'zScore') {
+          p <- p + ylab('Z-Score')
         } else {
-          p <- p + ylab('Level')
+          p <- p + ylab(paste0('Raw Value'))
         }
         p <- ggplotly(p,tooltip='label')
         p$elementId <- NULL
@@ -912,7 +940,7 @@ server <- function(input, output, session) {
         Data$Day <- factor(Data$Day,levels=values$dayOrder)
       }
       print(head(Data))
-      N <- length(levels(Data$Treatment))
+      N <- length(unique(Data$Treatment))
       my_color_ramp <- my_color_palette(N)
       p <- ggpairs(Data,aes(colour=Treatment,shape=Sex,label=ID),columns=(1:length(input$tests)),legend=1,
                    lower=list(continuous = wrap('points',size=3)),upper='blank',diag='blank',switch='both')
@@ -953,7 +981,7 @@ server <- function(input, output, session) {
     } else {
       Data$Day <- factor(Data$Day,levels=values$dayOrder)
     }
-    N <- length(levels(Data$Treatment))
+    N <- length(unique(Data$Treatment))
     my_color_ramp <- my_color_palette(N)
     pData <- Data[,input$tests]
     rowIndex <- NULL
