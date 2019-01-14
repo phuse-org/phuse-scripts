@@ -235,6 +235,14 @@ ggbiplot <- function(pcobj, choices = 1:2, scale = 1, pc.biplot = TRUE,
   return(g)
 }
 
+signif_df <- function(df, digits) {
+  nums <- vapply(df, is.numeric, FUN.VALUE = logical(1))
+  
+  df[,nums] <- signif(df[,nums], digits = digits)
+  
+  (df)
+}
+
 # Source Functions
 source('https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/contributed/Nonclinical/R/Functions/Functions.R')
 # source('~/PhUSE/Repo/trunk/contributed/Nonclinical/R/Functions/Functions.R')
@@ -265,6 +273,9 @@ values$testDictionaryUnits <- NULL
 # Set Heights and Widths
 sidebarWidth <- '400px'
 plotHeight <- '800px'
+
+# Set Number of Significant Figures Places to Display in Tables
+nSigFigs <- 3
 
 # Set Maximum Number of Tests to Plot
 max_plots <- 100
@@ -453,6 +464,12 @@ server <- function(input, output, session) {
     radioButtons('treatment',label='Select Treatment:',choices=treatmentList,selected='All Treatments')
   })
   
+  # Display Control Group Selection
+  output$selectControl <- renderUI({
+    req(values$treatmentOrder)
+    radioButtons('selectControl','Select Control Group:',choices=values$treatmentOrder)
+  })
+  
   # Transform Data
   transformData <- reactive({
     Data <- loadData()
@@ -496,8 +513,12 @@ server <- function(input, output, session) {
     if (input$transformation == 'none') {
       return(transformedData)
     } else {
-      if ((input$transformation=='percentChange')&(input$changeFromBaseline==T)) {
-        index <- which(Data$Treatment==values$treatmentOrder[1])
+      if ((input$transformation=='percentChange')&(input$changeFromBaseline==F)) {
+        if (is.null(input$selectControl)) {
+          index <- which(Data$Treatment==values$treatmentOrder[1])
+        } else {
+          index <- which(Data$Treatment==input$selectControl)
+        }
       } else {
         index <- seq(nrow(Data))
       }
@@ -531,7 +552,8 @@ server <- function(input, output, session) {
             if (input$changeFromBaseline==T) {
               transformedData[i,col] <- Data[i,col]/mean(baselineData[Index,col])*100
             } else {
-              transformedData[i,col] <- (Data[i,col]-mean(Data[Index,col],na.rm=T))/mean(Data[Index,col])*100
+              controlMean <- mean(Data[Index,col],na.rm=T)
+              transformedData[i,col] <- (Data[i,col]-controlMean)/controlMean*100
             }
           }
         }
@@ -615,6 +637,7 @@ server <- function(input, output, session) {
       index <- c(IDindex,groupByIndex,notIndex)
       Data <- Data[,index]
       Data <- Data[order(Data[[input$groupBy]]),]
+      Data <- signif_df(Data,digits=nSigFigs)
       Data
     }
   },options=list(autoWidth=T,scrollX=T,pageLength=10,paging=T,searching=T,
@@ -652,6 +675,7 @@ server <- function(input, output, session) {
       meanData <- meanData[,index]
       meanData <- meanData[order(meanData$Test,meanData[[input$groupBy]]),]
       colnames(meanData) <- c('Test',colnames(meanData)[2:(length(colnames(meanData))-3)],'Mean','Standard Deviation','Standard Error of Mean')
+      meanData <- signif_df(meanData,digits=nSigFigs)
       meanData
     }
   },options=list(autoWidth=T,scrollX=T,pageLength=10,paging=T,searching=T,
@@ -1015,7 +1039,7 @@ ui <- dashboardPage(
   dashboardHeader(title='LB Visualizations',titleWidth=sidebarWidth),
   
   dashboardSidebar(width=sidebarWidth,
-                   sidebarMenu(
+                   sidebarMenu(id='sidebar',
                      menuItem('Tables',icon=icon('table'),startExpanded=T,
                               menuSubItem('Individual Subject Data',tabName='individualTable'),
                               menuSubItem('Group Mean Data',tabName='meanTable',selected=T)
@@ -1059,11 +1083,21 @@ ui <- dashboardPage(
                                 withSpinner(uiOutput('treatment'),type=7,proxy.height='200px')
                               ),
                               radioButtons('sex',label='Select Sex:',choices=list(Male='M',Female='F',Both=''),selected=''),
-                              radioButtons('transformation',label='Select Transformation:',selected='zScore',
-                                           choiceNames=c('Percent Change from Control','Z-Score','None'),
-                                           choiceValues=c('percentChange','zScore','none')),
                               checkboxInput('changeFromBaseline','Calculate Change from Baseline?',value=F),
-                              conditionalPanel(condition='input.transformation=="Percent Change from Control"',
+                              conditionalPanel(condition='input.changeFromBaseline==false',
+                                               radioButtons('transformation',label='Select Transformation:',selected='zScore',
+                                                            choiceNames=c('Percent Change from Control','Z-Score','None'),
+                                                            choiceValues=c('percentChange','zScore','none'))
+                              ),
+                              conditionalPanel(condition='input.changeFromBaseline==true',
+                                               radioButtons('transformation',label='Select Transformation:',selected='zScore',
+                                                            choiceNames=c('Percent Change from Baseline','Z-Score','None'),
+                                                            choiceValues=c('percentChange','zScore','none'))
+                              ),
+                              conditionalPanel(condition='input.changeFromBaseline==false & input.transformation=="percentChange"',
+                                               uiOutput('selectControl')
+                              ),
+                              conditionalPanel(condition='input.sidebar=="barPlot" | input.sidebar=="pointPlot" | input.sidebar=="linePlot"',
                                                radioButtons('errorbars',label='Select Type of Error Bars:',
                                                             choices=list('None'='none','Standard Deviation'='sd','Standard Error of Mean'='se'),
                                                             selected='se')
