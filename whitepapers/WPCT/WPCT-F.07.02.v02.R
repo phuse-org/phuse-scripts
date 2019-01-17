@@ -12,7 +12,7 @@
 #' @param perpage
 #' @param dignum
 #' @param inputdiretory set input file directory
-#' @param outputdiretory set output file directory
+#' @param outputdirectory set output file directory
 #' @param testfilename accepts CSV or XPT files
 #' @param filetype output file type - TIFF or JPEG or PNG
 #' @param pixelwidth choose output file size: pixel width
@@ -39,8 +39,7 @@
 #  06/21/2017 (kb)  - converted to an R package
 #  02/22/2018 (htu) - added script metadata usage
 #  07/04/2018 (bjf) - create for input selection from YML
-
-
+#  1/17/2019 (bjf) -  skip plot save to a local directory if the directory is not available
 # HEADER
 # Display:     Figure 7.2 Box plot - Change from Baseline by Analysis Timepoint, Visit and Treatment
 # White paper: Central Tendency
@@ -103,6 +102,11 @@ dignum <- input$dignum
 #set input and output file directories
 
 outputdirectory <- cfgYML$Outputs$output_dir
+saveToFile <- TRUE
+# skip plot save to a local directory if the directory is not available
+ if (!dir.exists(outputdirectory)) {
+    saveToFile <- FALSE
+ }
 #accepts CSV or XPT files
 testfilename <- cfgYML$Inputs$datasets
 # special code to read from repository
@@ -137,9 +141,9 @@ charttitle <- "Change in Diastolic Blood Pressure" #in quotes
 if (lastRead!=xptFile || !exists("testresultsread")) {
 	print(paste("Reading file: ",xptFile))
 	if (file_ext(testfilename) == "csv") {
-  		testresultsread <- read.csv(xptFile)
+  		testresultsread <<- read.csv(xptFile)
 	} else {
-	  testresultsread <-
+	  testresultsread <<-
 	    sasxport.get(xptFile, lowernames = FALSE)
 	}
 	lastRead <<- xptFile
@@ -226,36 +230,42 @@ for(i in 1:visitsplits) {
   
   t1theme <- ttheme_default(core = list(fg_params = list (fontsize = outputfontsize)))
   t1 <- tableGrob(table_summary, theme = t1theme, cols = NULL,rows=NULL)
-  fileName <- file.path(outputdirectory,paste("plot",i,".",filetype,sep = "" ))
-  #
-  if (filetype == "TIFF"){
-    #Output to TIFF
-    tiff(fileName, 
+  if (saveToFile) {
+  	fileName <- file.path(outputdirectory,paste("plot",i,".",filetype,sep = "" ))
+  	#
+  	if (filetype == "TIFF"){
+    	#Output to TIFF
+    	tiff(fileName, 
          width = pixelwidth, height = pixelheight, units = "px", pointsize = 12)
-    grid.arrange(p3, t1, ncol = 1)
-    dev.off()
-  }
-  if (filetype == "JPEG") { 
-    # Optionally, use JPEG for output
-    jpeg(fileName, 
-    width = pixelwidth, height = pixelheight, units = "px", pointsize = 12)
-    grid.arrange(p3, t1, ncol = 1)
-    dev.off()
-  }
-  if (filetype == "PNG") { 
-    # Optionally, use PNG for output
-    png(fileName, 
-        width = pixelwidth, height = pixelheight, units = "px", pointsize = 12)
-    grid.arrange(p3, t1, ncol = 1)
-    dev.off()
-  }
-    print(paste("File created", fileName))
+    	grid.arrange(p3, t1, ncol = 1)
+    	dev.off()
+  	}
+  	if (filetype == "JPEG") { 
+  	  # Optionally, use JPEG for output
+  	  jpeg(fileName, 
+  	  width = pixelwidth, height = pixelheight, units = "px", pointsize = 12)
+  	  grid.arrange(p3, t1, ncol = 1)
+  	  dev.off()
+  	}
+  	if (filetype == "PNG") { 
+  	  # Optionally, use PNG for output
+  	  png(fileName, 
+  	   width = pixelwidth, height = pixelheight, units = "px", pointsize = 12)
+	  grid.arrange(p3, t1, ncol = 1)
+  	  dev.off()
+  	}
+  	  print(paste("File created", fileName))
+   }
     #
     #
     #
     # Save for display on the screen including file name
     #
-    p4 <- p3 + ggtitle(paste(charttitle,"File saved as: ",fileName)) 
+    chartTitleShow <- charttitle
+    if (saveToFile) {
+    	chartTitleShow <- paste(charttitle,"File saved as: ",fileName) 
+    	}
+    p4 <- p3 + ggtitle(chartTitleShow) 
     plot_list[[i]] = p4 
     # plot_list[[i*2]] = t1 
 }
