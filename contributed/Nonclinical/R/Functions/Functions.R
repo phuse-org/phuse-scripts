@@ -256,6 +256,7 @@ createMeansTable <- function(dataset,meanField,groupFields,otherFields=NULL) {
   meanData <- NA
   sdData <- NA
   seData <- NA
+  nData <- NA
   otherFieldList <- list()
   for (field in otherFields) {
     otherFieldList[[field]] <- rep(NA,nrow(groupsDF))
@@ -269,6 +270,7 @@ createMeansTable <- function(dataset,meanField,groupFields,otherFields=NULL) {
     meanData[i] <- mean(dataset[index,meanField],na.rm=TRUE)
     sdData[i] <- sd(dataset[index,meanField],na.rm=TRUE)
     seData[i] <- sd(dataset[index,meanField],na.rm=TRUE)/sqrt(length(which(is.finite(dataset[index,meanField]))))
+    nData[i] <- length(which(is.na(dataset[index,meanField])==0))
     for (field in otherFields) {
       if (length(unique(dataset[index,field]))>1) {
         stop('otherField has too many values')
@@ -281,7 +283,7 @@ createMeansTable <- function(dataset,meanField,groupFields,otherFields=NULL) {
       }
     }
   }
-  newDataset <- cbind(groupsDF,meanData,sdData,seData)
+  newDataset <- cbind(groupsDF,meanData,sdData,seData,nData)
   for (field in otherFields) {
     newField <- otherFieldList[[field]]
     if (length(levels(newField))>0) {
@@ -290,6 +292,7 @@ createMeansTable <- function(dataset,meanField,groupFields,otherFields=NULL) {
       newDataset <- cbind(newDataset,newField)
     }
   }
-  colnames(newDataset) <- c(groupFields,paste(meanField,'mean',sep='_'),paste(meanField,'sd',sep='_'),paste(meanField,'se',sep='_'),otherFields)
+  colnames(newDataset) <- c(groupFields,paste(meanField,'mean',sep='_'),paste(meanField,'sd',sep='_'),
+                            paste(meanField,'se',sep='_'),paste(meanField,'n',sep='_'),otherFields)
   return(newDataset)
 }
