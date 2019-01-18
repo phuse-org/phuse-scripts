@@ -247,14 +247,15 @@ ggbiplot <- function(pcobj, choices = 1:2, scale = 1, pc.biplot = TRUE,
 signif_df <- function(df, digits) {
   nums <- vapply(df, is.numeric, FUN.VALUE = logical(1))
   
+  df[,nums] <- round(df[,nums], digits = 10)
   df[,nums] <- signif(df[,nums], digits = digits)
   
   (df)
 }
 
 # Source Functions
-source('https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/contributed/Nonclinical/R/Functions/Functions.R')
-# source('~/PhUSE/Repo/trunk/contributed/Nonclinical/R/Functions/Functions.R')
+# source('https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/contributed/Nonclinical/R/Functions/Functions.R')
+source('~/PhUSE/Repo/trunk/contributed/Nonclinical/R/Functions/Functions.R')
 source('https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/contributed/Nonclinical/R/Functions/groupSEND.R')
 # source('~/PhUSE/Repo/trunk/contributed/Nonclinical/R/Functions/groupSEND.R')
 
@@ -290,6 +291,9 @@ nSigFigs <- 3
 max_plots <- 100
 
 server <- function(input, output, session) {
+  
+  # Store Client Data Regarding Height and Width of Plot Containers
+  cdata <- session$clientData
   
   # Create Drop Down to Select Studies from PhUSE GitHub Repo
   output$selectGitHubStudy <- renderUI({
@@ -631,12 +635,22 @@ server <- function(input, output, session) {
     if (!is.null(input$tests)) {
       longData <- longData()
       tmp <- NULL
-      for (i in seq(nrow(longData))) {
-        tmp[i] <- strsplit(as.character(longData[i,input$groupBy]),' ')[[1]][1]
-      }
       if (input$groupBy=='Treatment') {
+        if (length(unique(longData$Day))!=1) {
+          for (i in seq(nrow(longData))) {
+            Tmp <- strsplit(as.character(longData[i,input$groupBy]),' ')[[1]]
+            tmp[i] <- paste(Tmp[-length(Tmp)],collapse=' ')
+          }
+        } else {
+          tmp <- longData[[input$groupBy]]
+        }
         longData[[input$groupBy]] <- factor(tmp,levels=values$treatmentOrder)
+        longData[[input$groupBy]] <- as.factor(tmp)
       } else {
+        for (i in seq(nrow(longData))) {
+          Tmp <- strsplit(as.character(longData[i,input$groupBy]),' ')[[1]]
+          tmp[i] <- Tmp[1]
+        }
         longData[[input$groupBy]] <- as.factor(tmp)
       }
       Data <- dcast(longData,Treatment+ID+Sex+Day~variable)
@@ -659,9 +673,13 @@ server <- function(input, output, session) {
       longData <- longData()
       tmp <- NULL
       if (input$groupBy=='Treatment') {
-        for (i in seq(nrow(longData))) {
-          Tmp <- strsplit(as.character(longData[i,input$groupBy]),' ')[[1]]
-          tmp[i] <- paste(Tmp[-length(Tmp)],collapse=' ')
+        if (length(unique(longData$Day))!=1) {
+          for (i in seq(nrow(longData))) {
+            Tmp <- strsplit(as.character(longData[i,input$groupBy]),' ')[[1]]
+            tmp[i] <- paste(Tmp[-length(Tmp)],collapse=' ')
+          }
+        } else {
+          tmp <- longData[[input$groupBy]]
         }
         longData[[input$groupBy]] <- factor(tmp,levels=values$treatmentOrder)
         longData[[input$groupBy]] <- as.factor(tmp)
@@ -672,44 +690,20 @@ server <- function(input, output, session) {
         }
         longData[[input$groupBy]] <- as.factor(tmp)
       }
-      if (input$sex == '') {
-        meanData <- createMeansTable(longData,'value',c('variable','Treatment','Sex','Day'))
-      } else {
-        meanData <- createMeansTable(longData,'value',c('variable','Treatment','Day'))
-      }
+      meanData <- createMeansTable(longData,'value',c('variable','Treatment','Sex','Day'))
       colnames(meanData)[1] <- 'Test'
       groupByIndex <- which(colnames(meanData)==input$groupBy)
       notGroupByIndex <- which(colnames(meanData)!=input$groupBy)
       index <- c(notGroupByIndex[1],groupByIndex,notGroupByIndex[2:length(notGroupByIndex)])
       meanData <- meanData[,index]
       meanData <- meanData[order(meanData$Test,meanData[[input$groupBy]]),]
-      colnames(meanData) <- c('Test',colnames(meanData)[2:(length(colnames(meanData))-3)],'Mean','Standard Deviation','Standard Error of Mean')
+      colnames(meanData) <- c('Test',colnames(meanData)[2:(length(colnames(meanData))-4)],'Mean','Standard Deviation','Standard Error of Mean','N')
       meanData <- signif_df(meanData,digits=nSigFigs)
       meanData
     }
   },options=list(autoWidth=T,scrollX=T,pageLength=10,paging=T,searching=T,
-                 columnDefs=list(list(className='dt-center',width='100px',targets=seq(0,5)))),
+                 columnDefs=list(list(className='dt-center',width='100px',targets=seq(0,7)))),
   rownames=F)
-  
-  # Display Box Plot Figure
-  output$boxPlot <- renderPlot({
-    if (!is.null(input$tests)) {
-      Data <- longData()
-      N <- length(unique(Data[[input$groupBy]]))
-      my_color_ramp <- my_color_palette(N)
-      p <- ggplot(data=Data,aes(x=variable,y=value,fill=get(input$groupBy))) +
-        geom_boxplot() + xlab('Test') + scale_fill_manual(name=input$groupBy,values=my_color_ramp) +
-        theme(text = element_text(size=18))
-      if (input$transformation == 'percentChange') {
-        p <- p + ylab('Percent Change from Control Mean (%)')
-      } else if (input$transformation == 'zScore') {
-        p <- p + ylab('Z-Score')
-      } else {
-        p <- p + ylab('Raw Value')
-      }
-      print(p)
-    }
-  })
   
   # Display Bar Graph Figure
   output$barPlot <- renderPlot({
@@ -736,6 +730,15 @@ server <- function(input, output, session) {
         p <- p + ylab('Z-Score')
       } else {
         p <- p + ylab('Raw Value')
+      }
+      if (input$groupBy=='Day') {
+        if (length(unique(Data$Treatment))==1) {
+          p <- p + ggtitle(paste0('Treatment: ',unique(Data$Treatment)))
+        }
+      } else {
+        if (length(unique(Data$Day))==1) {
+          p <- p + ggtitle(paste0('Day: ',unique(Data$Day)))
+        }
       }
       print(p)
     }
@@ -771,6 +774,15 @@ server <- function(input, output, session) {
       } else {
         p <- p + ylab('Raw Value')
       }
+      if (input$groupBy=='Day') {
+        if (length(unique(Data$Treatment))==1) {
+          p <- p + ggtitle(paste0('Treatment: ',unique(Data$Treatment)))
+        }
+      } else {
+        if (length(unique(Data$Day))==1) {
+          p <- p + ggtitle(paste0('Day: ',unique(Data$Day)))
+        }
+      }
       print(p)
     }
   })
@@ -804,6 +816,15 @@ server <- function(input, output, session) {
         p <- p + ylab('Z-Score')
       } else {
         p <- p + ylab('Raw Value')
+      }
+      if (input$groupBy=='Day') {
+        if (length(unique(Data$Treatment))==1) {
+          p <- p + ggtitle(paste0('Treatment: ',unique(Data$Treatment)))
+        }
+      } else {
+        if (length(unique(Data$Day))==1) {
+          p <- p + ggtitle(paste0('Day: ',unique(Data$Day)))
+        }
       }
       print(p)
     }
@@ -886,6 +907,15 @@ server <- function(input, output, session) {
       } else {
         p <- p + ylab('Raw Value')
       }
+      if (input$groupBy=='Day') {
+        if (length(unique(Data$Treatment))==1) {
+          p <- p + ggtitle(paste0('Treatment: ',unique(Data$Treatment)))
+        }
+      } else {
+        if (length(unique(Data$Day))==1) {
+          p <- p + ggtitle(paste0('Day: ',unique(Data$Day)))
+        }
+      }
       p <- ggplotly(p,tooltip='label')
       p$elementId <- NULL
       p
@@ -941,14 +971,88 @@ server <- function(input, output, session) {
     })
   }
   
+  # Display Box Plot Figure
+  output$boxPlot <- renderPlot({
+    if (!is.null(input$tests)) {
+      Data <- longData()
+      N <- length(unique(Data[[input$groupBy]]))
+      my_color_ramp <- my_color_palette(N)
+      p <- ggplot(data=Data,aes(x=variable,y=value,fill=get(input$groupBy))) +
+        geom_boxplot() + xlab('Test') + scale_fill_manual(name=input$groupBy,values=my_color_ramp) +
+        theme(text = element_text(size=18))
+      if (input$transformation == 'percentChange') {
+        p <- p + ylab('Percent Change from Control Mean (%)')
+      } else if (input$transformation == 'zScore') {
+        p <- p + ylab('Z-Score')
+      } else {
+        p <- p + ylab('Raw Value')
+      }
+      if (input$groupBy=='Day') {
+        if (length(unique(Data$Treatment))==1) {
+          p <- p + ggtitle(paste0('Treatment: ',unique(Data$Treatment)))
+        }
+      } else {
+        if (length(unique(Data$Day))==1) {
+          p <- p + ggtitle(paste0('Day: ',unique(Data$Day)))
+        }
+      }
+      print(p)
+    }
+  })
+  
+  # Display Box Plot with Individual Subject Data Points
+  output$boxPlotly <- renderPlotly({
+    if (!is.null(input$tests)) {
+      Data <- longData()
+      N <- length(unique(Data[[input$groupBy]]))
+      my_color_ramp <- my_color_palette(N)
+      p <- ggplot(data=Data,aes(x=variable,y=value,fill=get(input$groupBy),label=ID)) +
+        geom_boxplot(outlier.shape='') + xlab('Test') + scale_fill_manual(name=input$groupBy,values=my_color_ramp) +
+        geom_point(aes(fill=get(input$groupBy),shape=Sex),size=2.5,position=position_jitterdodge()) +
+        theme(text = element_text(size=18))
+      if (input$transformation == 'percentChange') {
+        p <- p + ylab('Percent Change from Control Mean (%)')
+      } else if (input$transformation == 'zScore') {
+        p <- p + ylab('Z-Score')
+      } else {
+        p <- p + ylab('Raw Value')
+      }
+      if (input$groupBy=='Day') {
+        if (length(unique(Data$Treatment))==1) {
+          p <- p + ggtitle(paste0('Treatment: ',unique(Data$Treatment)))
+        }
+      } else {
+        if (length(unique(Data$Day))==1) {
+          p <- p + ggtitle(paste0('Day: ',unique(Data$Day)))
+        }
+      }
+      p <- ggplotly(p,height=800,width=cdata$output_boxPlotly_width,tooltip='label') %>% layout(boxmode='group')
+      if (input$sex=='') {
+        for (i in seq(length(p$x$data)/3)) {
+          p$x$data[[i]]$marker$`opacity` <- 0
+        }
+      } else {
+        for (i in seq(length(p$x$data)/2)) {
+          p$x$data[[i]]$marker$`opacity` <- 0
+        }
+      }
+      p$elementId <- NULL
+      p
+    }
+  })
+  
   output$scatterPlot <- renderPlotly({
     if (!is.null(input$tests)) {
       longData <- longData()
       tmp <- NULL
-      if (input$groupBy=='Treatment') { # this is cutting off the last character when a day is selected!
-        for (i in seq(nrow(longData))) {
-          Tmp <- strsplit(as.character(longData[i,input$groupBy]),' ')[[1]]
-          tmp[i] <- paste(Tmp[-length(Tmp)],collapse=' ')
+      if (input$groupBy=='Treatment') {
+        if (length(unique(longData$Day))!=1) {
+          for (i in seq(nrow(longData))) {
+            Tmp <- strsplit(as.character(longData[i,input$groupBy]),' ')[[1]]
+            tmp[i] <- paste(Tmp[-length(Tmp)],collapse=' ')
+          }
+        } else {
+          tmp <- longData[[input$groupBy]]
         }
         longData[[input$groupBy]] <- factor(tmp,levels=values$treatmentOrder)
         longData[[input$groupBy]] <- as.factor(tmp)
@@ -972,19 +1076,18 @@ server <- function(input, output, session) {
       } else {
         Data$Day <- factor(Data$Day,levels=values$dayOrder)
       }
-      print(head(Data))
-      N <- length(unique(Data$Treatment))
+      N <- length(values$treatmentOrder)
       my_color_ramp <- my_color_palette(N)
       p <- ggpairs(Data,aes(colour=Treatment,shape=Sex,label=ID),columns=(1:length(input$tests)),legend=1,
                    lower=list(continuous = wrap('points',size=3)),upper='blank',diag='blank',switch='both')
       for(i in 1:p$nrow) {
         for(j in 1:p$ncol){
           p[i,j] <- p[i,j] + 
-            scale_color_manual(values=my_color_ramp)  
+            scale_color_manual(values=my_color_ramp[which(values$treatmentOrder %in% unique(Data$Treatment))])  
         }
       }
       p <- gpairs_lower(p)
-      p <- ggplotly(p,tooltip='label') %>% layout(height=800,width=1000)
+      p <- ggplotly(p,height=800,width=1000,tooltip='label')
       p$elementId <- NULL
       p
     }
@@ -995,9 +1098,13 @@ server <- function(input, output, session) {
     longData <- longData()
     tmp <- NULL
     if (input$groupBy=='Treatment') {
-      for (i in seq(nrow(longData))) {
-        Tmp <- strsplit(as.character(longData[i,input$groupBy]),' ')[[1]]
-        tmp[i] <- paste(Tmp[-length(Tmp)],collapse=' ')
+      if (length(unique(longData$Day))!=1) {
+        for (i in seq(nrow(longData))) {
+          Tmp <- strsplit(as.character(longData[i,input$groupBy]),' ')[[1]]
+          tmp[i] <- paste(Tmp[-length(Tmp)],collapse=' ')
+        }
+      } else {
+        tmp <- longData[[input$groupBy]]
       }
       longData[[input$groupBy]] <- factor(tmp,levels=values$treatmentOrder)
       longData[[input$groupBy]] <- as.factor(tmp)
@@ -1014,7 +1121,7 @@ server <- function(input, output, session) {
     } else {
       Data$Day <- factor(Data$Day,levels=values$dayOrder)
     }
-    N <- length(unique(Data$Treatment))
+    N <- length(values$treatmentOrder)
     my_color_ramp <- my_color_palette(N)
     pData <- Data[,input$tests]
     rowIndex <- NULL
@@ -1031,18 +1138,20 @@ server <- function(input, output, session) {
     }
     pData <- pData[rowIndex,]
     pData.pca <- prcomp(pData,scale. = TRUE)
-    Groups <- Data$Treatment[rowIndex]
+    Groups <- factor(Data$Treatment[rowIndex],levels=values$treatmentOrder)
     Shape <- Data$Sex[rowIndex]
     Label <- Data$ID[rowIndex]
     p <- ggbiplot(pData.pca,obs.scale=1,var.scale=1,groups=Groups,groupName='Treatment',shape=Shape,label=Label,
                   color_ramp=my_color_ramp,ellipse=input$ellipse,ellipse.prob = input$ellipseConf/100,circle=F) +
       theme(text=element_text(size=18))
-    p <- ggplotly(p,tooltip='label') %>% layout(height=800,width=1200)
+    p <- ggplotly(p,height=800,width=1250,tooltip='label')
     p$elementId <- NULL
     p
   })
   
 }
+
+# NEED TO UPDATE SERVERS AND GITHUB
 
 ui <- dashboardPage(
   
@@ -1055,26 +1164,30 @@ ui <- dashboardPage(
                               menuSubItem('Individuals',tabName='individualTable',icon=icon('th'))
                      ),
                      menuItem('Figures',icon=icon('area-chart'),startExpanded=T,
-                              menuItem('Box Plot',tabName='boxPlot',icon=icon('cube')),
                               convertMenuItem(menuItem('Bar Graph',tabName='barPlot',icon=icon('bar-chart'),
                                                        menuSubItem(icon=NULL,
                                                                    radioButtons('barErrorbars',label='Select Type of Error Bars:',
                                                                                 choices=list('None'='none','Standard Deviation'='sd','Standard Error of Mean'='se'),
                                                                                 selected='se')                                                       )
                               ),'barPlot'),
-                              convertMenuItem(menuItem('Point Graph',tabName='pointPlot',icon=icon('genderless'),
+                              convertMenuItem(menuItem('Point Plot',tabName='pointPlot',icon=icon('genderless'),
                                                        menuSubItem(icon=NULL,
                                                                    radioButtons('pointErrorbars',label='Select Type of Error Bars:',
                                                                                 choices=list('None'='none','Standard Deviation'='sd','Standard Error of Mean'='se'),
                                                                                 selected='se')                                                       )
                               ),'pointPlot'),
-                              convertMenuItem(menuItem(text=tags$b('Line Plot',tags$br(),'(Group Means)'),tabName='meanLinePlot',icon=icon('line-chart'),
+                              convertMenuItem(menuItem(text=tags$b('Line Graph',tags$br(),'(Group Means)'),tabName='meanLinePlot',icon=icon('line-chart'),
                                                        menuSubItem(icon=NULL,
                                                                    radioButtons('lineErrorbars',label='Select Type of Error Bars:',
                                                                                 choices=list('None'='none','Standard Deviation'='sd','Standard Error of Mean'='se'),
                                                                                 selected='se')                                                       )
                               ),'meanLinePlot'),
-                              menuItem(text=tags$b('Line Plot',tags$br(),'(Individuals)'),tabName='linePlot',icon=icon('random')),
+                              menuItem(text=tags$b('Line Graph',tags$br(),'(Individuals)'),tabName='linePlot',icon=icon('random')),
+                              # menuItem('Box Plot',tabName='boxPlot',icon=icon('cube')),
+                              convertMenuItem(menuItem('Box Plot',tabName='boxPlot',icon=icon('cube'),
+                                                       menuSubItem(icon=NULL,
+                                                                   checkboxInput('addPoints','Add Individual Data Points?',value=F)                                                       )
+                              ),'boxPlot'),
                               menuItem('Scatter Plots',tabName='scatterPlot',icon=icon('braille')),
                               convertMenuItem(menuItem('PCA',tabName='PCA',icon=icon('codepen'),
                                                        menuSubItem(icon=NULL,
@@ -1147,10 +1260,6 @@ ui <- dashboardPage(
               h3('Group Means Data Table:'),
               withSpinner(DT::dataTableOutput('meanTable'),type=1)
       ),
-      tabItem(tabName='boxPlot',
-              h3('Box and Whisker Plot:'),
-              withSpinner(plotOutput('boxPlot',height=plotHeight),type=1)
-      ),
       tabItem(tabName='barPlot',
               h3('Bar Graph:'),
               withSpinner(plotOutput('barPlot',height=plotHeight),type=1)
@@ -1159,7 +1268,6 @@ ui <- dashboardPage(
               h3('Point Plot:'),
               withSpinner(plotOutput('pointPlot',height=plotHeight),type=1)
       ),
-      
       tabItem(tabName='meanLinePlot',
               conditionalPanel(
                 condition='(input.groupBy=="Treatment" & input.day!="All Days") | (input.groupBy=="Day" &input.treatment!="All Treatments")',
@@ -1172,7 +1280,6 @@ ui <- dashboardPage(
                 uiOutput('meanPlots')
               )
       ),
-      
       tabItem(tabName='linePlot',
               conditionalPanel(
                 condition='(input.groupBy=="Treatment" & input.day!="All Days") | (input.groupBy=="Day" &input.treatment!="All Treatments")',
@@ -1185,12 +1292,19 @@ ui <- dashboardPage(
                 uiOutput('plots')
               )
       ),
-      
+      tabItem(tabName='boxPlot',
+              h3('Box and Whisker Plot:'),
+              conditionalPanel(condition='input.addPoints==false',
+                               withSpinner(plotOutput('boxPlot',height=plotHeight),type=1)
+              ),
+              conditionalPanel(condition='input.addPoints==true',
+                               withSpinner(plotlyOutput('boxPlotly',height=plotHeight),type=1)
+              )
+      ),
       tabItem(tabName='scatterPlot',
               h3('Scatter Plots:'),
               withSpinner(plotlyOutput('scatterPlot',height=plotHeight),type=1)
       ),
-      
       tabItem(tabName='PCA',
               h3('Principal Component Analysis:'),
               withSpinner(plotlyOutput('PCA'),type=1)
