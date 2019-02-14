@@ -1242,7 +1242,8 @@ ui <- dashboardPage(
                               conditionalPanel(condition='input.changeFromBaseline==false & input.transformation=="percentChange"',
                                                uiOutput('selectControl')
                               )
-                     )
+                     ),
+                     menuItem('Source Code',icon=icon('code'),href='https://github.com/phuse-org/phuse-scripts/blob/master/contributed/Nonclinical/R/LBapp/LBapp.R')
                    )
   ),
   
