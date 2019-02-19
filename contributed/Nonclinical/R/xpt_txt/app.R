@@ -2,9 +2,7 @@
 # other transformations on the datasets.
 #
 # 2018-26-12 When using xpt input and xpt output, the Pinnacle21 report on the result has a few false errors, but no valid errors or warnings that appear to be introduced by this script.
-#  next I need to test the xpt output when using txt as input.
-#  will SENDView open the xpt files created from either txt or xpt?
-#  Then I should add code to read the configuration files and perform the transformations.
+#  Next I should add code to read the configuration files and perform the transformations.
 
 
 library(shiny)
@@ -17,7 +15,7 @@ library(plyr)
 FolderOut <- FolderIn <- FolderConfig <- "select a folder"
 sepchar <- "\t";
 
-FolderIn = "C:\\001\\DN18010 (20138184)\\20138184 FR"
+FolderIn = "C:\\001\\txt"
 FolderOut = "C:\\001\\empty"
 
 # Define UI 
@@ -98,14 +96,14 @@ server <- function(input, output) {
           
           # Read all the *.txt files as datasets
           i_file <- 1
-          FilesIn <- dir(FolderIn, pattern=".*.txt", ignore.case=TRUE)
+          FilesIn <- dir(FolderIn, pattern=".*.txt", ignore.case=TRUE)  # a list of files without the path, but with extentions.
           assign("DS",vector("list",length(FilesIn)), envir = .GlobalEnv)
           for (f in (FilesIn))
           {
-            # browser() #uncomment this line to pasue R Shiny an enable inspection of variables for
+            #browser() #uncomment this line to pasue R Shiny an enable inspection of variables for
             d <- tolower(str_extract(f,"[^\\.]*")) #extract the portion of the file name from the beginning until but not including the first period
-            pf <- paste(FolderIn,"\\",f,sep="")
-            h <- paste("DSHeader",d,sep=".")
+            pf <- paste(FolderIn,"\\",f,sep="") #full file name with path
+            h <- paste("DSHeader",d,sep=".") #a value like "DSHeader.bg" when the f=="bg.txt"
             
             DS[[i_file]] <<- d # create a list of the portion of the data files' names used for the variables.
             
@@ -155,6 +153,7 @@ server <- function(input, output) {
             }
             
             #read the variable names
+            #browser() #uncomment this line to pasue R Shiny an enable inspection of variables for
             row <- strsplit(myInLine[5],sepchar)
             variable_names <- row[[1]][keep]
             #give error if any name is more than 8 characters
@@ -176,19 +175,21 @@ server <- function(input, output) {
             studyData <- df1[,keep]
             # give the dataset a label
             label(studyData) <- domain_label
+            # give each numeric variable the correct variable class
+            for (i in which(variable_types=="numeric"))
+            {
+              studyData[,i] <- as.numeric(studyData[,i])
+            }
             # give each variable a label
+            #      This needs to be done after the converstion to numeric data types.   
+            #      In an earlier version the "as.numeric()" function was called after assigning the variable lables and the variable labels for numeric variables were erased.
             for (i in 1:length(variable_labels))
             {
               label(studyData[[i]]) <- variable_labels[i]
             }
-            # give each numeric variable the correct variable class
-            for (i in which(variable_types=="numeric"))
-            {
-              df1[,i] <- as.numeric(df1[,i])
-            }
             
             #store the dataset in global variables
-            assign(paste("DSTable"     ,d,sep="."),       df1,                        envir = .GlobalEnv) #reads the Table data
+            assign(paste("DSTable"     ,d,sep="."),       studyData,                  envir = .GlobalEnv) #reads the Table data
             assign(paste("DSName" ,d,sep="."),            domain_name,                envir = .GlobalEnv) #This is the dataset name like DM
             assign(paste("DSLabel",d,sep="."),            domain_label,               envir = .GlobalEnv) #This is the dataset label like DEMOGRAPHICS
             assign(paste("DSVariableLabels",d,sep="."),   variable_labels,            envir = .GlobalEnv) #This is a list of the variable labels (up to 40 characters each)
@@ -254,9 +255,9 @@ server <- function(input, output) {
         }
         if (foundData)
         {
-        # Read the configuration foler
+        # Read the configuration foler (code section is not yet written)
         
-        # Perform the transformations
+        # Perform the transformations (code sction is not yet written)
           
         #Output a revised set of SEND datasets in the output folder in both xpt format and txt (tab delimited).
           # write the txt output
@@ -297,6 +298,7 @@ server <- function(input, output) {
             # assign the dataset name to it
             names(aList)[1]<- get(paste("DSName",             DS[i],sep="."))
             # write out dataframe
+            #browser() #uncomment this line to pasue R Shiny an enable inspection of variables for
             write.xport(
               list=aList,
               file = pf,
