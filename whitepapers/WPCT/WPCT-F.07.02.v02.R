@@ -39,6 +39,7 @@
 #  02/22/2018 (htu) - added script metadata usage
 #  07/04/2018 (bjf) - create for input selection from YML
 #  1/17/2019 (bjf) -  skip plot save to a local directory if the directory is not available
+#  2/24/2019 (bjf) - correct errors for remote server running
 # HEADER
 # Display:     Figure 7.2 Box plot - Change from Baseline by Analysis Timepoint, Visit and Treatment
 # White paper: Central Tendency
@@ -51,7 +52,6 @@
 #10-JAN-2016, adapted from WPCT 7.01.R script
 #needs ANCOVA p values in table...
 
-### updated 21-June-2017, Kirsten - converted to an R package
 
 sleepSeconds <- function(x)
 {
@@ -166,9 +166,12 @@ charttitle <- "Change in Diastolic Blood Pressure" #in quotes
 
 
 #Read in DATASET if not yet read
-if (lastRead!=xptFile || !exists("testresultsread")) {
+withProgress(message = 'Loading data', value = 0, {
+  if (lastRead!=xptFile || !exists("testresultsread")) {
 	print(paste("Reading file: ",xptFile))
-	if (file_ext(testfilename) == "csv") {
+    sleepSeconds(4)
+    incProgress(1/7, detail = paste("   Reading data file", 1))
+    if (file_ext(testfilename) == "csv") {
   		testresultsread <<- read.csv(xptFile)
 	} else {
 	  testresultsread <<-
@@ -178,6 +181,7 @@ if (lastRead!=xptFile || !exists("testresultsread")) {
 } else {
 	print(paste("Using results previously read: ",xptFile))   
 }
+})
 # buildtable function to be called later, summarize data to enable 
 # creation of accompanying datatable
 buildtable <- function(avalue, dfname, by1, by2, dignum){
