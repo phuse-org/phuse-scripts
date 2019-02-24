@@ -54,19 +54,35 @@
 
 ### updated 21-June-2017, Kirsten - converted to an R package
 
-validate(
-  need(FALSE, "Starting up check")
-)
+sleepSeconds <- function(x)
+{
+  p1 <- proc.time()
+  Sys.sleep(x)
+  proc.time() - p1 # The cpu usage should be negligible
+}
 
 #ggplot2, data.table, gridExtra, Hmisc (for xpt import) required, if not installed, program will error.
-library(ggplot2)
-library(data.table)
-library(gridExtra)
-library(Hmisc)
-library(tools)
-library(phuse)
-library(httr)
-
+withProgress(message = 'Loading libraries', value = 0, {
+  library(ggplot2)
+  incProgress(1/7, detail = paste("Loading library", 1))
+  sleepSeconds(1)
+  library(data.table)
+  sleepSeconds(1)
+  incProgress(1/2, detail = paste("Loading library", 2))
+  library(gridExtra)
+  sleepSeconds(1)
+  incProgress(1/3, detail = paste("Loading library", 3))
+  library(Hmisc)
+  sleepSeconds(1)
+  incProgress(1/4, detail = paste("Loading library", 4))
+  library(tools)
+  sleepSeconds(1)
+  incProgress(1/5, detail = paste("Loading library", 5))
+  library(phuse)
+  sleepSeconds(1)
+  incProgress(1/6, detail = paste("Loading library", 6))
+  library(httr)
+})
 #============================================================================================#
 #=================================  Making 7.2 package  =====================================#
 #' @data data frame
@@ -110,9 +126,6 @@ saveToFile <- TRUE
  if (!dir.exists(outputdirectory)) {
     saveToFile <- FALSE
  }
-validate(
-  need(saveToFile, "Output directory is not available")
-)
 #accepts CSV or XPT files
 testfilename <- cfgYML$Inputs$datasets
 # special code to read from repository
