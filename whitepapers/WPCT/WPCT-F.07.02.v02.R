@@ -23,7 +23,6 @@
 #' @import ggplot2
 #' @import data.table
 #' @import gridExtra
-#' @import Hmisc
 #' @import tools
 #' @export boxplotfunc<-function(data, treatmentname, useshortnames = c(TRUE,FALSE),
 #'  oldnames, newnames,usepopflag = c(TRUE,FALSE), popflag, testname, yaxislabel,
@@ -66,13 +65,12 @@ list.of.packages <- c(
                       "ggplot2",
                       "data.table",
                       "gridExtra",
-                      "Hmisc",
                       "tools",
                       "phuse",
                       "httr")
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 withProgress(message = paste('Installing packages needed',new.packages), value = 0, {
-  sleepSeconds(10)
+  sleepSeconds(3)
   if(length(new.packages)) aResult <- install.packages(new.packages)
 })
 withProgress(message = 'Loading libraries', value = 0, {
@@ -85,15 +83,12 @@ withProgress(message = 'Loading libraries', value = 0, {
   library(gridExtra)
   sleepSeconds(1)
   incProgress(1/7, detail = paste("Loading library", 3))
-  library(Hmisc)
-  sleepSeconds(1)
-  incProgress(1/7, detail = paste("Loading library", 4))
   library(tools)
   sleepSeconds(1)
-  incProgress(1/7, detail = paste("Loading library", 5))
+  incProgress(1/7, detail = paste("Loading library", 4))
   library(phuse)
   sleepSeconds(1)
-  incProgress(1/7, detail = paste("Loading library", 6))
+  incProgress(1/7, detail = paste("Loading library", 5))
   library(httr)
 })
 #============================================================================================#
