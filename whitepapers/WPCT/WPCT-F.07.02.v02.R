@@ -66,13 +66,14 @@ list.of.packages <- c(
                       "ggplot2",
                       "data.table",
                       "GridExtra",
-                      "Hmisc",
-                      "tools",
-                      "phuse",
+#                      "Hmisc",
+#                      "tools",
+#                      "phuse",
                       "httr")
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 withProgress(message = 'Installing packages needed', value = 0, {
-  if(length(new.packages)) install.packages(new.packages, repos = "http://cran.us.r-project.org")
+  if(length(new.packages)) aResult <- install.packages(new.packages)
+  sleepSeconds(3)
 })
 withProgress(message = 'Loading libraries', value = 0, {
   library(ggplot2)
