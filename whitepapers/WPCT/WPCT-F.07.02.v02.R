@@ -208,17 +208,23 @@ colnames(testresultsread)[names(testresultsread) == treatmentname] <- "TREATMENT
 
 colnames(testresultsread)[names(testresultsread) == popflag] <- "FLAG" #select population flag to subset on such as SAFFL or ITTFL
 
+withProgress(message = 'Name translaton', value = 0, {
+  sleepSeconds(4)
+
 if (useshortnames == TRUE){
   for(i in 1:length(oldnames)) {
     testresultsread$TREATMENT <- ifelse(testresultsread$TREATMENT == oldnames[i], as.character(newnames[i]), as.character(testresultsread$TREATMENT))
   }
 }
-
+})
 #determine number of pages needed
-initial <- 1
+withProgress(message = 'Page splitting', value = 0, {
+  sleepSeconds(4)
+  initial <- 1
 visitsplits <- ceiling((length(selectedvisits)/perpage))
 plot_list <- list()
 #for each needed page, subset selected visits by number per page
+})
 for(i in 1:visitsplits) {
   
   #subset on test, visits, population to be analyzed
@@ -254,14 +260,20 @@ for(i in 1:visitsplits) {
   # horizontal line at 0
   p3 <- p2 + geom_hline(yintercept = 0, colour = "red")
 
+  withProgress(message = 'Building tables', value = 0, {
   #call summary table function
-  summary <- buildtable(avalue = quote(CHG), dfname= 
+    sleepSeconds(4)
+    incProgress(1/7, detail = paste("   Building table", 1))
+    summary <- buildtable(avalue = quote(CHG), dfname= 
                           quote(testresults), by1 = "AVISITN", by2 = "TREATMENT", 
                         dignum)[order(AVISITN, TREATMENT)]
   table_summary <- data.frame(t(summary))           
+  sleepSeconds(4)
+  incProgress(1/7, detail = paste("   Table summary", 1))
   
   t1theme <- ttheme_default(core = list(fg_params = list (fontsize = outputfontsize)))
   t1 <- tableGrob(table_summary, theme = t1theme, cols = NULL,rows=NULL)
+  })
   if (saveToFile) {
   	fileName <- file.path(outputdirectory,paste("plot",i,".",filetype,sep = "" ))
   	#
