@@ -72,8 +72,8 @@ list.of.packages <- c(
                       "httr")
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 withProgress(message = paste('Installing packages needed',new.packages), value = 0, {
+  sleepSeconds(10)
   if(length(new.packages)) aResult <- install.packages(new.packages)
-  sleepSeconds(3)
 })
 withProgress(message = 'Loading libraries', value = 0, {
   library(ggplot2)
