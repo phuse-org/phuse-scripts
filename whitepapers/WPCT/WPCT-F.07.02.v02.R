@@ -68,19 +68,19 @@ withProgress(message = 'Loading libraries', value = 0, {
   sleepSeconds(1)
   library(data.table)
   sleepSeconds(1)
-  incProgress(1/2, detail = paste("Loading library", 2))
+  incProgress(1/7, detail = paste("Loading library", 2))
   library(gridExtra)
   sleepSeconds(1)
-  incProgress(1/3, detail = paste("Loading library", 3))
+  incProgress(1/7, detail = paste("Loading library", 3))
   library(Hmisc)
   sleepSeconds(1)
-  incProgress(1/4, detail = paste("Loading library", 4))
+  incProgress(1/7, detail = paste("Loading library", 4))
   library(tools)
   sleepSeconds(1)
-  incProgress(1/5, detail = paste("Loading library", 5))
+  incProgress(1/7, detail = paste("Loading library", 5))
   library(phuse)
   sleepSeconds(1)
-  incProgress(1/6, detail = paste("Loading library", 6))
+  incProgress(1/7, detail = paste("Loading library", 6))
   library(httr)
 })
 #============================================================================================#
@@ -88,7 +88,9 @@ withProgress(message = 'Loading libraries', value = 0, {
 #' @data data frame
 print(append(date(),"WPCT-F.07.02.v02R Execution of source starting"))
 inYML <- get_inputs(fn())
+validate(need(exists("inYML"),"Unable to get input YML data"))
 cfgYML <- read_yml(fn())
+validate(need(exists("cfgYML"),"Unable to get input YML configuration data"))
 if (!exists("lastRead")) { 
 	lastRead <<-"Not read yet"
 	print(append("Last intput data file read: ",lastRead))
@@ -119,6 +121,7 @@ perpage <- input$perpage
 dignum <- input$dignum
 
 #set input and output file directories
+validate(need(FALSE,"Directory check"))
 
 outputdirectory <- cfgYML$Outputs$output_dir
 saveToFile <- TRUE
