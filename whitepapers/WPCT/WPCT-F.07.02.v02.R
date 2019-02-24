@@ -61,7 +61,19 @@ sleepSeconds <- function(x)
   proc.time() - p1 # The cpu usage should be negligible
 }
 
-#ggplot2, data.table, gridExtra, Hmisc (for xpt import) required, if not installed, program will error.
+# libraries required, if not installed, program will error.
+list.of.packages <- c(
+                      "ggplot2",
+                      "data.table",
+                      "GridExtra",
+                      "Hmisc",
+                      "tools",
+                      "phuse",
+                      "httr")
+new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
+withProgress(message = 'Installing packages needed', value = 0, {
+  if(length(new.packages)) install.packages(new.packages, repos = "http://cran.us.r-project.org")
+})
 withProgress(message = 'Loading libraries', value = 0, {
   library(ggplot2)
   incProgress(1/7, detail = paste("Loading library", 1))
