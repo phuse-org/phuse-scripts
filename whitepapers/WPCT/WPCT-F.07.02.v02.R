@@ -67,7 +67,7 @@ list.of.packages <- c(
                       "gridExtra",
                       "tools",
                       "phuse",
-                      "SASxport",
+                      "Hmisc",
                       "httr")
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 withProgress(message = paste('Installing packages needed',new.packages), value = 0, {
@@ -93,7 +93,7 @@ withProgress(message = 'Loading libraries', value = 0, {
   library(httr)
   sleepSeconds(1)
   incProgress(1/7, detail = paste("Loading library", 6))
-  library(SASxport)
+  library(Hmisc)
 })
 #============================================================================================#
 #=================================  Making 7.2 package  =====================================#
