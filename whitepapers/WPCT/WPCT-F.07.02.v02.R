@@ -54,6 +54,9 @@
 
 ### updated 21-June-2017, Kirsten - converted to an R package
 
+validate(
+  need(FALSE, "Starting")
+)
 
 #ggplot2, data.table, gridExtra, Hmisc (for xpt import) required, if not installed, program will error.
 library(ggplot2)
@@ -68,9 +71,6 @@ library(httr)
 #=================================  Making 7.2 package  =====================================#
 #' @data data frame
 print(append(date(),"WPCT-F.07.02.v02R Execution of source starting"))
-validate(
-  need(FALSE, "Starting")
-)
 inYML <- get_inputs(fn())
 cfgYML <- read_yml(fn())
 if (!exists("lastRead")) { 
