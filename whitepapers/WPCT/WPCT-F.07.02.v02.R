@@ -66,12 +66,12 @@ list.of.packages <- c(
                       "ggplot2",
                       "data.table",
                       "GridExtra",
-#                      "Hmisc",
-#                      "tools",
-#                      "phuse",
+                      "Hmisc",
+                      "tools",
+                      "phuse",
                       "httr")
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
-withProgress(message = 'Installing packages needed', value = 0, {
+withProgress(message = paste('Installing packages needed',new.packages), value = 0, {
   if(length(new.packages)) aResult <- install.packages(new.packages)
   sleepSeconds(3)
 })
