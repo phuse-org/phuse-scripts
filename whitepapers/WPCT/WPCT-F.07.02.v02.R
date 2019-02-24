@@ -65,7 +65,7 @@ sleepSeconds <- function(x)
 list.of.packages <- c(
                       "ggplot2",
                       "data.table",
-                      "GridExtra",
+                      "gridExtra",
                       "Hmisc",
                       "tools",
                       "phuse",
@@ -134,8 +134,6 @@ perpage <- input$perpage
 dignum <- input$dignum
 
 #set input and output file directories
-validate(need(FALSE,"Directory check"))
-
 outputdirectory <- cfgYML$Outputs$output_dir
 saveToFile <- TRUE
 # skip plot save to a local directory if the directory is not available
