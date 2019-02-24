@@ -107,6 +107,9 @@ saveToFile <- TRUE
  if (!dir.exists(outputdirectory)) {
     saveToFile <- FALSE
  }
+outputdirectory <- "c:/bad"
+saveToFile <- TRUE
+
 #accepts CSV or XPT files
 testfilename <- cfgYML$Inputs$datasets
 # special code to read from repository
