@@ -55,7 +55,7 @@
 ### updated 21-June-2017, Kirsten - converted to an R package
 
 validate(
-  need(FALSE, "Starting")
+  need(FALSE, "Starting up check")
 )
 
 #ggplot2, data.table, gridExtra, Hmisc (for xpt import) required, if not installed, program will error.
