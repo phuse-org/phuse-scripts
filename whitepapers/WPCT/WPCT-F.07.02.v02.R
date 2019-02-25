@@ -67,12 +67,16 @@ list.of.packages <- c(
                       "gridExtra",
                       "tools",
                       "phuse",
-                      "Hmisc",
                       "httr")
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 withProgress(message = paste('Installing packages needed',new.packages), value = 0, {
   sleepSeconds(3)
   if(length(new.packages)) aResult <- install.packages(new.packages)
+})
+# get this one separately
+withProgress(message = paste('Installing Hmisc',new.packages), value = 0, {
+  sleepSeconds(3)
+  install.packages("Hmisc", type = "source")
 })
 withProgress(message = 'Loading libraries', value = 0, {
   library(ggplot2)
