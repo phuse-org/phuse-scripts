@@ -59,7 +59,8 @@ sleepSeconds <- function(x)
   Sys.sleep(x)
   proc.time() - p1 # The cpu usage should be negligible
 }
-
+# create a new temporary library path for this run
+.libPaths(tempdir())
 # libraries required, if not installed, program will error.
 list.of.packages <- c(
                       "ggplot2",
