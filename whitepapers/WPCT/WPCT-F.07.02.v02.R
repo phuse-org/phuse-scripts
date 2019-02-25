@@ -72,12 +72,12 @@ list.of.packages <- c(
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 withProgress(message = paste('Installing packages needed',new.packages), value = 0, {
   sleepSeconds(2)
-  if(length(new.packages)) aResult <- install.packages(new.packages)
+  if(length(new.packages)) aResult <- install.packages(new.packages,repos = "http://cran.us.r-project.org")
 })
 # get this one separately
 withProgress(message = paste('Installing Hmisc',new.packages), value = 0, {
   sleepSeconds(2)
-  tryCatch( { utils::install.packages("Hmisc")}
+  tryCatch( { utils::install.packages("Hmisc",repos = "http://cran.us.r-project.org")}
             , error = function(e) {validate(need(FALSE,paste("Loading error: ",e)))}
             )
 })
