@@ -59,6 +59,28 @@ sleepSeconds <- function(x)
   Sys.sleep(x)
   proc.time() - p1 # The cpu usage should be negligible
 }
+
+# buildtable function to be called later, summarize data to enable 
+# creation of accompanying datatable
+buildtable <- function(avalue, dfname, by1, by2, dignum){
+  byvarslist <- c(by1,by2)
+  summary <- eval(dfname)[,list(
+    n = .N,
+    mean = round(mean(eval(avalue), na.rm = TRUE), digits=dignum),
+    sd = round(sd(eval(avalue), na.rm = TRUE), digits=dignum+1),
+    min = round(min(eval(avalue), na.rm = TRUE), digits=dignum),
+    q1 = round(quantile(eval(avalue), .25, na.rm = TRUE), digits=dignum),
+    mediam = round(median(eval(avalue), na.rm = TRUE), digits=dignum),
+    q3 = round(quantile(eval(avalue), .75, na.rm = TRUE), digits = dignum),
+    max = round(max(eval(avalue), na.rm = TRUE), digits = dignum)
+  ), 
+  by = byvarslist]
+  
+  return(summary)
+}
+
+# tryCatch around entire code
+tryCatch( { 
 # create a new temporary library path for this run
 .libPaths(tempdir())
 # libraries required, if not installed, program will error.
@@ -68,18 +90,12 @@ list.of.packages <- c(
                       "gridExtra",
                       "tools",
                       "phuse",
+                      "Hmisc",
                       "httr")
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 withProgress(message = paste('Installing packages needed',new.packages), value = 0, {
-  sleepSeconds(2)
+  sleepSeconds(1)
   if(length(new.packages)) aResult <- install.packages(new.packages,repos = "http://cran.us.r-project.org")
-})
-# get this one separately
-withProgress(message = paste('Installing Hmisc',new.packages), value = 0, {
-  sleepSeconds(2)
-  tryCatch( { utils::install.packages("Hmisc",repos = "http://cran.us.r-project.org")}
-            , error = function(e) {validate(need(FALSE,paste("Loading error: ",e)))}
-            )
 })
 withProgress(message = 'Loading libraries', value = 0, {
   library(ggplot2)
@@ -180,7 +196,7 @@ charttitle <- "Change in Diastolic Blood Pressure" #in quotes
 withProgress(message = 'Loading data', value = 0, {
   if (lastRead!=xptFile || !exists("testresultsread")) {
 	print(paste("Reading file: ",xptFile))
-    sleepSeconds(2)
+    sleepSeconds(1)
     incProgress(1/7, detail = paste("   Reading data file", 1))
     if (file_ext(testfilename) == "csv") {
   		testresultsread <<- read.csv(xptFile)
@@ -193,24 +209,6 @@ withProgress(message = 'Loading data', value = 0, {
 	print(paste("Using results previously read: ",xptFile))   
 }
 })
-# buildtable function to be called later, summarize data to enable 
-# creation of accompanying datatable
-buildtable <- function(avalue, dfname, by1, by2, dignum){
-  byvarslist <- c(by1,by2)
-  summary <- eval(dfname)[,list(
-    n = .N,
-    mean = round(mean(eval(avalue), na.rm = TRUE), digits=dignum),
-    sd = round(sd(eval(avalue), na.rm = TRUE), digits=dignum+1),
-    min = round(min(eval(avalue), na.rm = TRUE), digits=dignum),
-    q1 = round(quantile(eval(avalue), .25, na.rm = TRUE), digits=dignum),
-    mediam = round(median(eval(avalue), na.rm = TRUE), digits=dignum),
-    q3 = round(quantile(eval(avalue), .75, na.rm = TRUE), digits = dignum),
-    max = round(max(eval(avalue), na.rm = TRUE), digits = dignum)
-  ), 
-  by = byvarslist]
-  
-  return(summary)
-}
 
 #SELECT VARIABLES (examples in parenthesis): TREATMENT (TRTP, TRTA), PARAMCD (LBTESTCD)
 #colnames(testresults)[names(testresults) == "OLD VARIABLE"] <- "NEW VARIABLE"
@@ -220,7 +218,7 @@ colnames(testresultsread)[names(testresultsread) == treatmentname] <- "TREATMENT
 colnames(testresultsread)[names(testresultsread) == popflag] <- "FLAG" #select population flag to subset on such as SAFFL or ITTFL
 
 withProgress(message = 'Name translaton', value = 0, {
-  sleepSeconds(2)
+  sleepSeconds(1)
 
 if (useshortnames == TRUE){
   for(i in 1:length(oldnames)) {
@@ -230,7 +228,7 @@ if (useshortnames == TRUE){
 })
 #determine number of pages needed
 withProgress(message = 'Page splitting', value = 0, {
-  sleepSeconds(2)
+  sleepSeconds(1)
   initial <- 1
 visitsplits <- ceiling((length(selectedvisits)/perpage))
 plot_list <- list()
@@ -273,13 +271,13 @@ for(i in 1:visitsplits) {
 
   withProgress(message = 'Building tables', value = 0, {
   #call summary table function
-    sleepSeconds(2)
+    sleepSeconds(1)
     incProgress(1/7, detail = paste("   Building table", 1))
     summary <- buildtable(avalue = quote(CHG), dfname= 
                           quote(testresults), by1 = "AVISITN", by2 = "TREATMENT", 
                         dignum)[order(AVISITN, TREATMENT)]
   table_summary <- data.frame(t(summary))           
-  sleepSeconds(2)
+  sleepSeconds(1)
   incProgress(1/7, detail = paste("   Table summary", 1))
   
   t1theme <- ttheme_default(core = list(fg_params = list (fontsize = outputfontsize)))
@@ -326,3 +324,6 @@ for(i in 1:visitsplits) {
 }
     # Now show graphs only on the execution page
     grid.arrange(grobs = c(plot_list),ncol=1,nrow=i)
+# end of try catch
+  }, error = function(e) {validate(need(FALSE,paste("Loading error: ",e)))}
+)
