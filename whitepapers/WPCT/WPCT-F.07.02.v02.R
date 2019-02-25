@@ -70,13 +70,15 @@ list.of.packages <- c(
                       "httr")
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 withProgress(message = paste('Installing packages needed',new.packages), value = 0, {
-  sleepSeconds(3)
+  sleepSeconds(2)
   if(length(new.packages)) aResult <- install.packages(new.packages)
 })
 # get this one separately
 withProgress(message = paste('Installing Hmisc',new.packages), value = 0, {
-  sleepSeconds(3)
-  install.packages("Hmisc", type = "source")
+  sleepSeconds(2)
+  tryCatch( { utils::install.packages("Hmisc")}
+            , error = function(e) {validate(need(FALSE,paste("Loading error: ",e)))}
+            )
 })
 withProgress(message = 'Loading libraries', value = 0, {
   library(ggplot2)
@@ -177,7 +179,7 @@ charttitle <- "Change in Diastolic Blood Pressure" #in quotes
 withProgress(message = 'Loading data', value = 0, {
   if (lastRead!=xptFile || !exists("testresultsread")) {
 	print(paste("Reading file: ",xptFile))
-    sleepSeconds(4)
+    sleepSeconds(2)
     incProgress(1/7, detail = paste("   Reading data file", 1))
     if (file_ext(testfilename) == "csv") {
   		testresultsread <<- read.csv(xptFile)
@@ -217,7 +219,7 @@ colnames(testresultsread)[names(testresultsread) == treatmentname] <- "TREATMENT
 colnames(testresultsread)[names(testresultsread) == popflag] <- "FLAG" #select population flag to subset on such as SAFFL or ITTFL
 
 withProgress(message = 'Name translaton', value = 0, {
-  sleepSeconds(4)
+  sleepSeconds(2)
 
 if (useshortnames == TRUE){
   for(i in 1:length(oldnames)) {
@@ -227,7 +229,7 @@ if (useshortnames == TRUE){
 })
 #determine number of pages needed
 withProgress(message = 'Page splitting', value = 0, {
-  sleepSeconds(4)
+  sleepSeconds(2)
   initial <- 1
 visitsplits <- ceiling((length(selectedvisits)/perpage))
 plot_list <- list()
@@ -270,13 +272,13 @@ for(i in 1:visitsplits) {
 
   withProgress(message = 'Building tables', value = 0, {
   #call summary table function
-    sleepSeconds(4)
+    sleepSeconds(2)
     incProgress(1/7, detail = paste("   Building table", 1))
     summary <- buildtable(avalue = quote(CHG), dfname= 
                           quote(testresults), by1 = "AVISITN", by2 = "TREATMENT", 
                         dignum)[order(AVISITN, TREATMENT)]
   table_summary <- data.frame(t(summary))           
-  sleepSeconds(4)
+  sleepSeconds(2)
   incProgress(1/7, detail = paste("   Table summary", 1))
   
   t1theme <- ttheme_default(core = list(fg_params = list (fontsize = outputfontsize)))
