@@ -180,6 +180,37 @@ addUIDep <- function(x) {
   attachDependencies(x, c(htmlDependencies(x), list(jqueryUIDep)))
 }
 
+## Read in CT file, This should only be called from the getCT function.
+importCT <- function(version) {
+  
+  # Switch function to determine version
+  # Assumes a CT folder with CDISC library exports
+  df <- switch(version,
+               '2018-09' = readWorksheetFromFile("CT/SEND_Terminology_2018-09-28.xls",
+                                                 "SEND Terminology 2018-09-28"),
+               '2018-06' = readWorksheetFromFile("CT/SEND_Terminology_2018-06-29.xls",
+                                                 "SEND Terminology 2018-06-29")
+  )
+  
+  # Attribute used to determine if user changes CT version.
+  attr(df, "version") <- version
+  
+  df
+  
+}
+
+# Return CT codelist
+getCT <- function(codelist, version) {
+  
+  # If CT hasn't been loaded in already, superassign to parent environment
+  if(!exists("CTdf") || !(attr(CTdf, "version") == version)) CTdf <<- importCT(version)
+  
+  
+  # Return the reqested codelist as a character vector, remove the codelist header row.
+  CTdf[(CTdf$`Codelist Name` == codelist) &
+         !(is.na(CTdf$`Codelist Code`)), "CDISC Submission Value"]
+}
+
 # Source Functions
 source('https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/contributed/Nonclinical/R/Functions/Functions.R')
 # source('~/PhUSE/Repo/trunk/contributed/Nonclinical/R/Functions/Functions.R')
