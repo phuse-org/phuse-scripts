@@ -8,19 +8,28 @@
 #    Expand and make selections in all left side selectors 
 #    Select "Product datasets", they will be downloaded through your browser
 #
+# Done:
+# [Eli] Read in CT versions (selectable by date) for use in Species and strain choices
+# [Eli] Read in CT versions (selectable by date) for use in observational domains especially
+# [Bob] Update CT read to use web location, use this to show Species choices
+# [Bob] SEND IG (for variables, domains and types) read from PDF file into a dataframe
+# [Bob] Uses the read SEND IG structure to create the ts.xpt file
+#
 # Next steps:
+# [Bob] Correct labels for each domain, ts.xpt file needs labels set correctly, ensure ts.xpt passes validator 
+# [Bob] Structure xls file no longer needed, as now read from SEND IG directly
+# [Eli] Allow selection of controlled terminology version dates from GUI
+# [Eli] Allow selection of controlled terminology for other dashboard items that should come from controlled terminology. strain is one.
+#
 # [Kevin] Update so that no errors occur in main window on initial run
 # [Kevin] Update so that you see in main windows all the dataset files with row counts and allow drill down to each
 # [Kevin] Update measurement choices to cover all possible 3.1 domains
-# [Bob] Need SEND IG (for variables, domains and types) in readable format (csv, excel, owl, etc)
-# [Eli] Read in CT versions (selectable by date?) for use in Species and strain choices
-# [Eli] Read in CT versions (selectable by date?) for use in observational domains especially
 # [Kevin] Configuration files for ranges of numeric fields
-# Output of all domains selected (each person can pic)
-#   Trial domains
-#   Animal demographics and disposition
-#   In-life domains
-#   Post mortem domains
+# Output of all domains selected
+#   [Eli] Trial domains
+#   [Eli] Animal demographics and disposition 
+#   [Bob] In-life domains 
+#   [Bob] Post mortem domains 
 # Implementation for SEND 3.1 first, then DART, SEND 3.0
 #     
 #
@@ -35,6 +44,14 @@ list.of.packages <- c("shiny",
 "RColorBrewer",
 "grid",
 "GGally",
+"reference (",
+"represents the",
+"Demographics (DM)",
+"letters",
+"such as",
+"the value",
+"An example",
+"Treated site",
 "MASS",
 "shinydashboard",
 "shinycssloaders",
@@ -44,7 +61,8 @@ list.of.packages <- c("shiny",
 "XLConnect",
 "SASxport",
 "utils",
-"DT")
+"DT",
+"pdftools")
 
 
 
@@ -69,6 +87,7 @@ library(XLConnect)
 library(SASxport)
 library(utils)
 library(DT)
+library(pdftools)
 
 if(packageVersion("SASxport") < "1.5.7") {
   stop("You need version 1.5.7 or later of SASxport")
@@ -90,39 +109,467 @@ convertMenuItem <- function(mi,tabName) {
   mi
 }
 
-readDomainStructure <- function(domain) {
-  sourceDir <- getSrcDirectory(function(dummy) {dummy})
-  inFile <- (paste(sourceDir, "/",domain,"Structure.xlsx", sep=""))
-  # Read in XLSX file
-  tsIn <<- readWorksheetFromFile(inFile,
-                              sheet=1,
-                              startRow = 1,
-                              endCol = 7)
-}
-
 # read all domain structures
 readDomainStructures <-function() {
-  # FIXME Read more domains
-  readDomainStructure("TS")
+  withProgress({
+    setProgress(value=1,message='Reading domain structures from the SEND IG')
+    readSENDIG()
+  })
+}
+
+isDomainStart <- function(aLine) {
+  # Fine the description start
+  theDomain <- ""
+  pattern <- ".xpt, "
+  aLocation <- gregexpr(pattern =pattern,aLine)[[1]][1]
+  # if found, and within 8 of begining of line is a table of
+  # defining a domain
+  if (aLocation>0 & aLocation<9) {
+    # found a table start
+    # set the domain name
+    theDomain <- toupper(substring(aLine,1,aLocation-1))
+    print(theDomain)
+  }
+  theDomain
+}
+
+addDomainRow <- function(inLine,inDomain) {
+  bResult <- FALSE
+  # see if you can split the line into "Column","Type","Label","Codelist","Expectancy"
+  Headerpattern1 <- "^Variable {1,}Controlled Terms"
+  Headerpattern2 <- "^Variable Label"
+  Headerpattern3 <- "^Variable Name"
+  Headerpattern4 <- "^Name "
+  Headerpattern5 <- "^Controlled Terms"
+  aLocation1 <- gregexpr(pattern =Headerpattern1,trimws(inLine))[[1]][1]
+  aLocation2 <- gregexpr(pattern =Headerpattern2,trimws(inLine))[[1]][1]
+  aLocation3 <- gregexpr(pattern =Headerpattern3,trimws(inLine))[[1]][1]
+  aLocation4 <- gregexpr(pattern =Headerpattern4,trimws(inLine))[[1]][1]
+  aLocation5 <- gregexpr(pattern =Headerpattern5,trimws(inLine))[[1]][1]
+  if (aLocation1>0 | aLocation2>0 | aLocation3>0| aLocation4>0| aLocation5>0) {
+  # Header line found, return true since still within the table
+    bResult <- TRUE
+    print (paste("Debug Header found:",inLine))
+  # tables end with a number for the next section
+  } else if (!is.numeric(substring(inLine,1,1)) ) {
+    aSplit <<- strsplit(inLine,'\\s{2,}')
+    if (inDomain=="CV") print (paste("debug A split created",aSplit," for line: ",inLine))
+    dataFound <- FALSE
+    newRow <- FALSE
+
+    # if the first phrase has field description and merged together
+    firstPhrase <-  aSplit[[1]][[1]]
+    aLoc <- gregexpr(pattern =" ",trimws(firstPhrase))[[1]][1]
+    if (substring(firstPhrase,1,1)==" " & aLoc>1) {
+      # split it further
+      aSplit[[1]] <<- c(substring(firstPhrase,2,aLoc),
+                substring(firstPhrase,aLoc+2),aSplit[[1]][-1] )
+    }
+
+    # if expectancy is merged to the end of the split, separate it out
+    aLength <- length(aSplit[[1]])
+    lastString <- aSplit[[1]][[aLength]]
+    lastWord <- tail(strsplit(lastString,split=" ")[[1]],1)
+    if ( nchar(lastString)>(nchar(lastWord)+1) & 
+         (lastWord == "Req" | lastWord == "Exp" | lastWord == "Perm" )) {
+      aSplit[[1]][[aLength+1]] <<- lastWord
+      # end remove last word from the previous
+      aSplit[[1]][[aLength]] <<- gsub("\\s*\\w*$", "",aSplit[[1]][[aLength]])
+    }
+    
+    # special case of type and codelist making it combine down to 5
+    #if 1st ends with Char ISO 8601 and length is 5, make it a 6 by spliting out type and codelist
+    if (length(aSplit[[1]])==5) {
+      aPart <- aSplit[[1]][[2]]
+      aLoc <- gregexpr(pattern =" Char ISO 8601",aPart)[[1]][1]
+      if (aLoc>1) {
+        theList <- c(aSplit[[1]][[1]],substring(aPart,1,aLoc-1),
+                     "Char",
+                     "ISO 8601",aSplit[[1]][[3]],
+                     aSplit[[1]][[4]],aSplit[[1]][[5]])
+        aSplit[[1]] <<- theList
+      }
+    }
+      
+    # special case of fields merged to first making it combine down to 4
+    #if 1st starts with blank and ends with Char ISO 8601
+    if (length(aSplit[[1]])==4) {
+      aPart <- aSplit[[1]][[1]]
+      aLocF <- gregexpr(pattern ="^ ",aPart)[[1]][1]
+      aLoc <- gregexpr(pattern =" Char ISO 8601",aPart)[[1]][1]
+      if (aLoc>1 & aLocF==1) {
+        aLocS <- gregexpr(pattern =" ",substring(aPart,2))[[1]][1]
+        theList <- c(substring(aPart,2,aLocS-1),substring(aPart,aLocS+1,aLoc-1),
+                     "Char",
+                     "ISO 8601",aSplit[[1]][[2]],
+                     aSplit[[1]][[3]],aSplit[[1]][[4]])
+        aSplit[[1]] <<- theList
+      }
+    }
+
+    # special case of fields merged to first making it combine down to 4
+    #if 1st starts with blank and ends with Char ISO 8601
+    if (length(aSplit[[1]])==4) {
+      aPart <- aSplit[[1]][[1]]
+      aLocF <- gregexpr(pattern ="^ ",aPart)[[1]][1]
+      aLoc <- gregexpr(pattern =" Char ISO 8601",aPart)[[1]][1]
+      if (aLoc>1 & aLocF==1) {
+        aLocS <- gregexpr(pattern =" ",substring(aPart,2))[[1]][1]
+        theList <- c(substring(aPart,2,aLocS),substring(aPart,aLocS+2,aLoc-1),
+                     "Char",
+                     "ISO 8601",aSplit[[1]][[2]],
+                     aSplit[[1]][[3]],aSplit[[1]][[4]])
+        aSplit[[1]] <<- theList
+      }
+    }
+
+    # special case of fields merged to first making it combine down to 4
+    #if 1st starts with blank and ends with Char
+    if (length(aSplit[[1]])==4) {
+      aPart <- aSplit[[1]][[1]]
+      aLocF <- gregexpr(pattern ="^ ",aPart)[[1]][1]
+      aLoc <- gregexpr(pattern =" Char$",aPart)[[1]][1]
+      if (aLoc>1 & aLocF==1) {
+        aLocS <- gregexpr(pattern =" ",substring(aPart,2))[[1]][1]
+        theList <- c(substring(aPart,2,aLocS),substring(aPart,aLocS+2,aLoc-1),
+                     "Char",
+                     aSplit[[1]][[2]],
+                     aSplit[[1]][[3]],aSplit[[1]][[4]])
+        aSplit[[1]] <<- theList
+      }
+    }
+
+    # special case of fields merged to first making it combine down to 4
+    # where column name is merged with description
+    if (length(aSplit[[1]])==4) {
+      aPart <- trimws(aSplit[[1]][[1]])
+      aLoc <- gregexpr(pattern =" ",aPart)[[1]][1]
+      if (aLoc>1) {
+        theList <- c(substring(aPart,1,aLoc-1),substring(aPart,aLoc+1),
+                     aSplit[[1]][[2]],
+                     aSplit[[1]][[3]],aSplit[[1]][[4]])
+        aSplit[[1]] <<- theList
+      }
+    }
+
+    if (length(aSplit[[1]])==5) {
+      aPart <- aSplit[[1]][[2]]
+      # special case if type at end of 2nd field
+      aLoc <- gregexpr(pattern =" Char$",aPart)[[1]][1]
+      if (aLoc>1) {
+        theList <- c(aSplit[[1]][[1]],substring(aPart,1,aLoc-1),
+                     "Char",
+                     aSplit[[1]][[3]],
+                     aSplit[[1]][[4]],aSplit[[1]][[5]])
+        aSplit[[1]] <<- theList
+      }
+    }
+
+    if (length(aSplit[[1]])==5) {
+      aPart <- aSplit[[1]][[2]]
+      # special case if type at end of 2nd field
+      aLoc <- gregexpr(pattern =" Num$",aPart)[[1]][1]
+      if (aLoc>1) {
+        theList <- c(aSplit[[1]][[1]],substring(aPart,1,aLoc-1),
+                     "Num",
+                     aSplit[[1]][[3]],
+                     aSplit[[1]][[4]],aSplit[[1]][[5]])
+        aSplit[[1]] <<- theList
+      }
+    }
+
+        # some have no code list , making a new row
+    if (length(aSplit[[1]])==5) {
+      dataFound <- TRUE
+      newRow <- TRUE
+      aColumn <- trimws(aSplit[[1]][[1]])
+      aLabel <- aSplit[[1]][[2]]
+      aType <- aSplit[[1]][[3]]
+      # sometimes the codelist comes merged with the type
+      aTypeLoc <- gregexpr(pattern =" ",aType)[[1]][1]
+      if (aTypeLoc>1) {
+        aCodeList <- substring(aType,aTypeLoc+1)
+        aType <- substring(aType,1,aTypeLoc-1)       
+      } else {
+        aCodeList <- ""
+      }
+      anExpectancy <- aSplit[[1]][[5]]
+    }
+    # if codelist, making a new row
+    if (length(aSplit[[1]])==6) {
+      dataFound <- TRUE
+      newRow <- TRUE
+      aColumn <- trimws(aSplit[[1]][[1]])
+      aLabel <- aSplit[[1]][[2]]
+      aType <- aSplit[[1]][[3]]
+      # check if space within type
+      aLocType <- gregexpr(pattern =" ",aType)[[1]][1]
+      # if Topic or Identifier or Timing, Record or Synonym or Rule, these are Role field
+      aWord <- aSplit[[1]][[4]]
+      if (aWord != "Topic" & aWord != "Identifier" & aWord != "Result" & aWord != "Timing" &aWord != "Record" &aWord != "Synonym" & aWord != "Rule"& aWord != "Variable"){
+        aCodeList <- aSplit[[1]][[4]]
+      # If there is a space in the type, then second part is the codelist
+      } else if (aLocType>1) {
+        aCodeList <- substring(aType,aLocType+1)
+        aType <- substring(aType,1,aLocType-1)
+      } else {
+      aCodeList <- ""
+      }
+      anExpectancy <- aSplit[[1]][[6]]
+    } # end of length check 6
+    # if codelist, making a new row
+    if (length(aSplit[[1]])==7) {
+      dataFound <- TRUE
+      newRow <- TRUE
+      aColumn <- trimws(aSplit[[1]][[1]])
+      aLabel <- aSplit[[1]][[2]]
+      aType <- aSplit[[1]][[3]]
+      aCodeList <- aSplit[[1]][[4]]
+      anExpectancy <- aSplit[[1]][[7]]
+    } # end of length check 7
+    # if 2 or 3 or 4 in length and first is empty, is a continuation of the label from previous row
+    if ((length(aSplit[[1]])==2 | length(aSplit[[1]])==3
+                           | length(aSplit[[1]])==4) & (aSplit[[1]][[1]]=="")) {
+      # was part of table, discarding because is only about cdisc notes
+      dataFound <- TRUE
+      # check if should still be adding to row or already finished with description
+      if (exists("addMoreToRow") & addMoreToRow<3) {
+
+        # add at most 2 more to row, no variables have more than 3 rows for the label
+        addMoreToRow <<- addMoreToRow + 1
+        
+        # special case, not true that we want to append if starts with certain lines
+        aLabel <- aSplit[[1]][[2]]
+        aLabel <- trimws(aLabel)
+        checkList <- c(
+        "each subject",
+        "USUBJID",
+        "POOLID",
+        "COVAL1",
+        "group number",
+        "multiple records",
+        "sequential Element",
+        "Treatment, ",
+        "when identifying",
+        "Qualifier",
+        "for the",
+        "genetic",
+        "must be",
+        "whichever",
+        "This is ",
+        "during the",
+        "used ",
+        "Codelist,",
+        "only",
+        "or ,",
+        "Pparg",
+         "unrelated,",
+         "individual,",
+         "have,",
+         "or AGE",
+        "have special",
+        "The value",
+        "unique ",
+        "records that",
+        "disposition,",
+        "be either",
+        "domain records",
+        "--DY",
+        "The sponsor",
+        "calculations",
+        "BEAGLE",
+        "collected or is missing",
+        "Terminology codelist",
+        "accomodate",
+        "unless",
+        "collected",
+        "define what",
+        "in the data",
+        "codelist",
+        "excluded",
+        "sets or trial",
+        "origin",
+        "designations",
+        "number",
+        "Wt",
+        "in LBSTRESN",
+        "ABNORMAL",
+        "Sponsors should",
+        "in the LBSPEC",
+        "description LBSPEC",
+        "terms, utilizing",
+        "DOSE",
+        "period of",
+        "time point",
+        "example could",
+        "identification should",
+        "description MASPEC",
+        "VSTESTCD cannot",
+        "algorithm for",
+        "after dosing",
+        "those",
+        "specified in",
+        "to Treatment",
+        "the sponsor",
+        "to the sponsor",
+        "the reference",
+        "variables",
+        "should also",
+        "NONE",
+        "character format",
+        "metadata",
+        "indicated by",
+        "Examples:",
+        "mass identification",
+        "1 FIRST",
+        "semantic value",
+        "be left",
+        "submitted in",
+        "and NEGATIVE",
+        "include the",
+        " CVTPTNUM and ",
+        "to represent",
+        "primates")
+        # check if any match
+        aMatch <- FALSE
+        for (aPhrase in checkList) {
+          if (gregexpr(pattern =aPhrase,aLabel)[[1]][1]==1) aMatch <- TRUE
+        }
+        if (!aMatch){
+            newRow <- FALSE
+            dataFound <- TRUE
+            dfSENDIG[nrow(dfSENDIG),]$Label <<- paste(dfSENDIG[nrow(dfSENDIG),]$Label,aLabel)
+            # DEBUG - use this next line to clean up the description labels
+            # dfSENDIG[nrow(dfSENDIG),]$Label <<- paste(dfSENDIG[nrow(dfSENDIG),]$Label,aLabel,"END?")
+        }
+      } # end of check if addMoreToRow
+    } # end of 2,3,4 length
+    # if 2 and starts with copyright character
+    if (length(aSplit[[1]])==2 & (substring(aSplit[[1]][[1]],1,1)=='\u00A9')) {
+      # continues within table still
+      dataFound <- TRUE
+    } # end of page break check
+    # if 2 and starts with "Final"
+    if (length(aSplit[[1]])==2 & (aSplit[[1]][[1]]=="Final")) {
+      # continues within table still
+      dataFound <- TRUE
+    } # end of page break check
+    # if 1 and starts with "CDISC Standard"
+    if (length(aSplit[[1]])==1 & (substring(aSplit[[1]][[1]],1,14)=="CDISC Standard")) {
+      # continues within table still
+      dataFound <- TRUE
+    } # end of new page check
+    
+    # add this row
+    if (newRow) {
+      bResult <- TRUE
+      dfSENDIG[nrow(dfSENDIG) + 1,] <<- list(inDomain,aColumn,aType,aLabel,aCodeList,anExpectancy)
+      addMoreToRow <<- 0
+    }
+    if (dataFound) bResult <- TRUE
+  } # end of if not numeric
+  # debug -
+  if (inDomain=="CV") {
+    print(paste("For domain: ",inDomain))
+    print(aSplit)
+    lastSplit <<- aSplit
+    print(inLine)
+    print(paste(" the length is:",length(aSplit[[1]])))
+    }
+  bResult
+}
+
+
+convertIGRaw <- function (SENDIGRaw) {
+  # using raw text, search and create structure dataframe
+  dfSENDIG <<- setNames(data.frame(matrix(ncol = 6, nrow = 1)),
+                       c("Domain","Column","Type","Label",
+                         "Codelist","Expectancy"))
+  # loop through raw looking for the start of a description
+  # states are "Searching","FoundDomain"
+  aState <- "Searching"
+  aCount <- 0
+  withProgress({
+  for (aPage in SENDIGRaw) {
+    for (aLine in aPage) {
+      if (aState == "Searching") {
+          theDomain <- isDomainStart(aLine)
+          if (theDomain != "") { 
+            aState <- "FoundDomain"
+            aCount <- aCount + 1
+            # assume about 30 domains
+            setProgress(value=aCount/30,message=paste('Reading domain structure for ',theDomain))
+            # give time for user to read
+            sleepSeconds(1)
+          }
+      } else if (aState == "FoundDomain") {
+        if (!addDomainRow(aLine,theDomain)) aState <- "Searching"
+      }
+      
+    } # end of line loop
+  } # end of Page loop
+  })  # end of progress
+  # remove first empty row
+  dfSENDIG <<- dfSENDIG[-1,]
+}
+
+readSENDIG <- function() {
+  # FIXME - show error that user must download manually
+  # FIXME - due to CDISC login needed
+  base <- "https://www.cdisc.org/system/files/members/standard/foundational/send/"
+  aZip <- "SENDIG_v_3_1.zip"
+  aFile <- "SENDIG_3_1.pdf"
+  SENDIGRaw <- readPDFFromURLZip(base,aZip,aFile)
+  convertIGRaw(SENDIGRaw)
 }
 
 setTSFile <- function(input) {
-    # start with input structure
-    tsOut <<- tsIn
-    # set values for output
-    if (!is.null(input$studyName)) {
-      tsOut$STUDYID <<- input$studyName
+    # create data frame based on structure
+    theColumns <- dfSENDIG[dfSENDIG$Domain=="TS",]$Column
+    theLabels <- dfSENDIG[dfSENDIG$Domain=="TS",]$Label
+    tsOut <<- setNames(data.frame(matrix(ncol = length(theColumns), nrow = 1)),
+                       theColumns
+                       )
+    # set labels for each field 
+    index <- 1
+    for (aColumn in theColumns) {
+      Hmisc::label(tsOut[[index]]) <<- theLabels[index]
+      index <- index + 1
     }
+    aRow <- 1
     if (!is.null(input$testArticle)) {
-      tsOut$TSVAL[tsOut$TSPARMCD=="TRT"] <<-  input$testArticle
+      tsOut[aRow,] <<- list(input$studyName,
+                           "TS",
+                           aRow,
+                           "",
+                           "TRT",
+                           "Investigational Therapy or Treatment",
+                           input$testArticle,
+                           "")        
+      aRow <- aRow + 1
     }
     if (!is.null(input$species)) {
-      tsOut$TSVAL[tsOut$TSPARMCD=="SPECIES"] <<-  input$species
+      tsOut[aRow,] <<- list(input$studyName,
+                           "TS",
+                           aRow,
+                           "",
+                           "SPECIES",
+                           "Species",
+                           input$species,
+                           "")        
+      aRow <- aRow + 1
     }
     if (!is.null(input$studyType)) {
-      tsOut$TSVAL[tsOut$TSPARMCD=="SSTYP"] <<-  input$studyType
+      tsOut[aRow,] <<- list(input$studyName,
+                           "TS",
+                           aRow,
+                           "",
+                           "SSTYP",
+                           "Study Type",
+                           input$studyType,
+                           "")        
+      aRow <- aRow + 1
     }
-    # FIXME - set rest of values
 }
 
 # set or create the output data
@@ -180,18 +627,53 @@ addUIDep <- function(x) {
   attachDependencies(x, c(htmlDependencies(x), list(jqueryUIDep)))
 }
 
+## read worksheet by first downloading a file
+readWorksheetFromURL <- function(aLocation,aName,aSheet) {
+  subdir <- "downloads"
+  createOutputDirectory(sourceDir,subdir)
+  aTarget <- paste(sourceDir,subdir,aName,sep="/")
+  aURL <- paste(aLocation,aName,sep="/")
+  # get file if not aleady downloaded
+  if (!file.exists(aTarget)) {
+    download.file(aURL,aTarget ,mode = "wb")
+  }
+  readWorksheetFromFile(aTarget,aSheet)
+}
+
+## read pdf by first downloading a file
+readPDFFromURLZip <- function(aLocation,aZip,aName) {
+  subdir <- "downloads"
+  anExDir <- paste(sourceDir,subdir,sep="/")
+  createOutputDirectory(sourceDir,subdir)
+  aTargetZip <- paste(sourceDir,subdir,aZip,sep="/")
+  aTarget <- paste(sourceDir,subdir,aName,sep="/")
+  aURL <- paste(aLocation,aZip,sep="/")
+  # get file if not aleady downloaded - cannot be done without a login, so assume it is there
+  # if (!file.exists(aTargetZip)) {
+  #  download.file(aURL,aTargetZip,mode = "wb")
+  # }
+  # now read from within the zip file, the actual file needed
+  unzip(aTargetZip, files = aName, list = FALSE, overwrite = TRUE,
+        junkpaths = FALSE, exdir = anExDir, unzip = "internal",
+        setTimes = FALSE)
+  txt <- pdf_text(aTarget) %>% strsplit(split = "\r\n")
+  txt
+}
+
 ## Read in CT file, This should only be called from the getCT function.
 importCT <- function(version) {
   
   # Switch function to determine version
-  # Assumes a CT folder with CDISC library exports
+  # Reads directly from the NCI location
+  base <- "https://evs.nci.nih.gov/ftp1/CDISC/SEND/Archive"
   df <- switch(version,
-               '2018-09' = readWorksheetFromFile("CT/SEND_Terminology_2018-09-28.xls",
-                                                 "SEND Terminology 2018-09-28"),
-               '2018-06' = readWorksheetFromFile("CT/SEND_Terminology_2018-06-29.xls",
-                                                 "SEND Terminology 2018-06-29")
+               '2019-03' = readWorksheetFromURL(base,"SEND%20Terminology%202019-03-29.xls",
+                                                 "SEND Terminology 2019-03-29"),
+               '2018-12' = readWorksheetFromURL(base,"SEND%20Terminology%202018-12-21.xls",
+                                                 "SEND Terminology 2018-12-21")
   )
   
+    
   # Attribute used to determine if user changes CT version.
   attr(df, "version") <- version
   
@@ -207,8 +689,8 @@ getCT <- function(codelist, version) {
   
   
   # Return the reqested codelist as a character vector, remove the codelist header row.
-  CTdf[(CTdf$`Codelist Name` == codelist) &
-         !(is.na(CTdf$`Codelist Code`)), "CDISC Submission Value"]
+  CTdf[(toupper(CTdf$Codelist.Name) == toupper(codelist)) &
+         !(is.na(CTdf$Codelist.Code)),]$CDISC.Submission.Value
 }
 
 # Source Functions
@@ -231,7 +713,10 @@ sidebarWidth <- '300px'
 plotHeight <- '800px'
 
 server <- function(input, output, session) {
-  
+
+  # Read domain structures
+  readDomainStructures()
+
   # Store Client Data Regarding previous choices
   cdata <- session$clientData
   
@@ -263,8 +748,9 @@ server <- function(input, output, session) {
 
     # Display species
   output$Species <- renderUI({
-    # FIXME - these should come from a configuration file
-    species <- c("Canine","Monkey","Rat","Mouse","Guinea pig","Rabbit")
+    # Get species choices from the code list
+    # FIXME - use the CT version selected by the user
+    species <- getCT("SPECIES","2019-03")
     radioButtons('species','Select species:',species,selected=species[1])
   })
   
@@ -317,12 +803,17 @@ server <- function(input, output, session) {
     checkboxGroupInput('treatment',label='Select Treatment Groups:',choices=treatmentList,selected=treatmentList)
   })
 
-  # view Tsdata
+  # view TsData
   output$tsData <- renderTable({
     tsOut
   })
   
-  # Downloadable  dataset ----
+  # view SEND structure
+  output$SENDIGStructure <- renderTable({
+    dfSENDIG
+  })
+
+    # Downloadable  dataset ----
   # FIXME _ make zip of all the data, all domains
   output$downloadData <- downloadHandler(
     filename = function() {
@@ -338,11 +829,14 @@ server <- function(input, output, session) {
   observeEvent(ignoreNULL=TRUE,eventExpr=input$produceDatasets,
                handlerExpr={
                  withProgress({
-                        # Read domain structures
-                        readDomainStructures()
                         setOutputData(input)
                         # FIXME - use temporary directory?
-                        createOutputDirectory(sourceDir,input$studyName)
+                        tryCatch ({
+                          createOutputDirectory(sourceDir,input$studyName)
+                        }, error = function(e) {validate(need(FALSE,
+                            paste("Unable to create directory. Ensure you have entered a study name "
+                            ,e
+                            )))})
                         # FIXME - must actually create all domain files
                         # FIXME - must actually create these files
                         aValue <- 1
@@ -398,8 +892,8 @@ ui <- dashboardPage(
     
     tags$script(HTML("$('body').addClass('sidebar-mini');")),
     tags$script(HTML("$('body').addClass('treeview');")),
-    h3('Datasets created'),
-    tableOutput("tsData")
+    h3('SEND IG structure'),
+    tableOutput("SENDIGStructure")
   )
   
 )
