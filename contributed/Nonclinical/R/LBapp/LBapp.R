@@ -1,6 +1,20 @@
 # This application can be run for free on a public server at the following address:
 # https://phuse-nonclinical-scripts.shinyapps.io/LBapp/
 
+# Ideas for improvement:
+#  - Add subcategory tree
+#  - Change Setting name to filters -- done
+#  - Change group by day/treatment to filter by day/treatment -- done
+#  - Fix transformations on change from baseline
+#  - Select multiple treatments/days but not all -- done
+#  - Change z-score to be like the percent change
+#  - Get rid of group mean line graph for single day -- done
+#  - Add filter to individual plot by animal ID  
+#  - Plotting multiple days separation
+
+#  - Two-way hiearchical clustering
+#  - Handle Time-Points within Days
+
 # Load Libraries
 library(shiny)
 library(ggplot2)
@@ -260,8 +274,8 @@ source('https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/contrib
 # source('~/PhUSE/Repo/trunk/contributed/Nonclinical/R/Functions/groupSEND.R')
 
 # Get GitHub Password (if possible)
-if (file.exists('~/passwordGitHub.R')) {
-  source('~/passwordGitHub.R')
+if (file.exists('passwordGitHub.R')) {
+  source('passwordGitHub.R')
   Authenticate <- TRUE
 } else {
   Authenticate <- FALSE
@@ -279,6 +293,8 @@ values$treatmentOrder <- NULL
 values$testDictionaryCodes <- NULL
 values$testDictionaryTests <- NULL
 values$testDictionaryUnits <- NULL
+values$day <- NULL
+values$treatment <- NULL
 
 # Set Heights and Widths
 sidebarWidth <- '300px'
@@ -308,9 +324,9 @@ server <- function(input, output, session) {
     for (i in seq(length(contents))) {
       GitHubStudies[i] <- strsplit(contents[[i]]$path,'/send/')[[1]][2]
     }
-    selectInput('selectGitHubStudy',label='Select Study from PhUSE GitHub:',choices = GitHubStudies,selected='PDS')
+    selectInput('selectGitHubStudy',label='Select Study from PhUSE GitHub:',choices =GitHubStudies,selected='PDS')
   })
-  
+
   # Handle Study Selection
   observeEvent(ignoreNULL = TRUE,eventExpr = input$chooseBWfile,
                handlerExpr = {
@@ -466,15 +482,21 @@ server <- function(input, output, session) {
   # Display Day Selection
   output$day <- renderUI({
     Data <- loadData()
-    dayList <- as.list(c(unique(Data$VISITDY),'All Days'))
-    radioButtons('day',label='Select Day:',choices=dayList,selected='All Days')
+    dayList <- as.list(c(unique(Data$VISITDY)))
+    checkboxGroupInput('day',label='Select Day:',choices=dayList,selected=dayList)
   })
   
   # Display Treatment Selection
   output$treatment <- renderUI({
     Data <- loadData()
-    treatmentList <- as.list(c(unique(Data$TreatmentDose),'All Treatments'))
-    radioButtons('treatment',label='Select Treatment:',choices=treatmentList,selected='All Treatments')
+    treatmentList <- as.list(c(unique(Data$TreatmentDose)))
+    checkboxGroupInput('treatment',label='Select Treatment:',choices=treatmentList,selected=treatmentList)
+  })
+  
+  # Track Day and Treatment Selections
+  observe({
+    values$day <- input$day
+    values$treatment <- input$treatment
   })
   
   # Display Control Group Selection
@@ -486,6 +508,24 @@ server <- function(input, output, session) {
   # Transform Data
   transformData <- reactive({
     Data <- loadData()
+    if (!is.null(values$day)) {
+      dayIndex <- which(Data$VISITDY %in% as.numeric(values$day))
+    }
+    if (!is.null(values$treatment)) {
+      treatmentIndex <- which(Data$TreatmentDose %in% values$treatment)
+      if (!is.null(values$day)) {
+        index <- intersect(dayIndex,treatmentIndex)
+      } else {
+        index <- treatmentIndex
+      }
+    } else {
+      if (!is.null(values$day)) {
+        index <- dayIndex
+      }
+    }
+    if ((!is.null(values$day))|(!is.null(values$treatment))) {
+      Data <- Data[index,]
+    }
     Data <- Data[which(Data$LBCAT %in% input$testCategories),]
     tests <- input$tests
     CATTESTs <- grep('_',tests,value = T)
@@ -586,8 +626,8 @@ server <- function(input, output, session) {
     if (input$sex != '') {
       DataLong <- DataLong[which(DataLong$Sex==input$sex),]
     }
-    if (input$groupBy=='Treatment') {
-      if (input$day=='All Days') {
+    if (input$filterBy=='Day') {
+      if (length(input$day) != 1) {
         treatmentDay <- paste(DataLong$Treatment,DataLong$Day)
         treatmentDayOrder <- NULL
         for (treatment in values$treatmentOrder) {
@@ -597,7 +637,6 @@ server <- function(input, output, session) {
         }
         DataLong$Treatment <- factor(treatmentDay,levels=treatmentDayOrder)
       } else {
-        DataLong <- DataLong[which(DataLong$Day==as.numeric(input$day)),]
         variableOrder <- NULL
         for (i in seq(nrow(DataLong))) {
           variableOrder[i] <- which(input$tests==DataLong$variable[i])
@@ -606,8 +645,8 @@ server <- function(input, output, session) {
         DataLong$Treatment <- factor(DataLong$Treatment,levels=values$treatmentOrder)
       }
     }
-    if (input$groupBy=='Day') {
-      if (input$treatment=='All Treatments') {
+    if (input$filterBy=='Treatment') {
+      if (length(input$treatment) != 1) {
         dayTreatment <- paste(DataLong$Day,DataLong$Treatment)
         dayTreatmentOrder <- NULL
         for (day in values$dayOrder) {
@@ -617,7 +656,6 @@ server <- function(input, output, session) {
         }
         DataLong$Day <- factor(dayTreatment,levels=dayTreatmentOrder)
       } else {
-        DataLong <- DataLong[which(DataLong$Treatment==input$treatment),]
         variableOrder <- NULL
         for (i in seq(nrow(DataLong))) {
           variableOrder[i] <- which(input$tests==DataLong$variable[i])
@@ -635,31 +673,33 @@ server <- function(input, output, session) {
     if (!is.null(input$tests)) {
       longData <- longData()
       tmp <- NULL
-      if (input$groupBy=='Treatment') {
+      if (input$filterBy=='Day') {
+        groupBy <- 'Treatment'
         if (length(unique(longData$Day))!=1) {
           for (i in seq(nrow(longData))) {
-            Tmp <- strsplit(as.character(longData[i,input$groupBy]),' ')[[1]]
+            Tmp <- strsplit(as.character(longData[i,groupBy]),' ')[[1]]
             tmp[i] <- paste(Tmp[-length(Tmp)],collapse=' ')
           }
         } else {
-          tmp <- longData[[input$groupBy]]
+          tmp <- longData[[groupBy]]
         }
-        longData[[input$groupBy]] <- factor(tmp,levels=values$treatmentOrder)
-        longData[[input$groupBy]] <- as.factor(tmp)
+        longData[[groupBy]] <- factor(tmp,levels=values$treatmentOrder)
+        longData[[groupBy]] <- as.factor(tmp)
       } else {
+        groupBy <- 'Day'
         for (i in seq(nrow(longData))) {
-          Tmp <- strsplit(as.character(longData[i,input$groupBy]),' ')[[1]]
+          Tmp <- strsplit(as.character(longData[i,groupBy]),' ')[[1]]
           tmp[i] <- Tmp[1]
         }
-        longData[[input$groupBy]] <- as.factor(tmp)
+        longData[[groupBy]] <- as.factor(tmp)
       }
       Data <- dcast(longData,Treatment+ID+Sex+Day~variable)
       IDindex <- which(colnames(Data)=='ID')
-      groupByIndex <- which(colnames(Data)==input$groupBy)
-      notIndex <- which((colnames(Data)!='ID')&(colnames(Data)!=input$groupBy))
+      groupByIndex <- which(colnames(Data)==groupBy)
+      notIndex <- which((colnames(Data)!='ID')&(colnames(Data)!=groupBy))
       index <- c(IDindex,groupByIndex,notIndex)
       Data <- Data[,index]
-      Data <- Data[order(Data[[input$groupBy]]),]
+      Data <- Data[order(Data[[groupBy]]),]
       Data <- signif_df(Data,digits=nSigFigs)
       Data
     }
@@ -672,31 +712,32 @@ server <- function(input, output, session) {
     if (!is.null(input$tests)) {
       longData <- longData()
       tmp <- NULL
-      if (input$groupBy=='Treatment') {
+      if (input$filterBy=='Day') {
+        groupBy <- 'Treatment'
         if (length(unique(longData$Day))!=1) {
           for (i in seq(nrow(longData))) {
-            Tmp <- strsplit(as.character(longData[i,input$groupBy]),' ')[[1]]
+            Tmp <- strsplit(as.character(longData[i,groupBy]),' ')[[1]]
             tmp[i] <- paste(Tmp[-length(Tmp)],collapse=' ')
           }
         } else {
-          tmp <- longData[[input$groupBy]]
+          tmp <- longData[[groupBy]]
         }
-        longData[[input$groupBy]] <- factor(tmp,levels=values$treatmentOrder)
-        longData[[input$groupBy]] <- as.factor(tmp)
+        longData[[groupBy]] <- factor(tmp,levels=values$treatmentOrder)
       } else {
+        groupBy <- 'Day'
         for (i in seq(nrow(longData))) {
-          Tmp <- strsplit(as.character(longData[i,input$groupBy]),' ')[[1]]
+          Tmp <- strsplit(as.character(longData[i,groupBy]),' ')[[1]]
           tmp[i] <- Tmp[1]
         }
-        longData[[input$groupBy]] <- as.factor(tmp)
+        longData[[groupBy]] <- as.factor(tmp)
       }
       meanData <- createMeansTable(longData,'value',c('variable','Treatment','Sex','Day'))
       colnames(meanData)[1] <- 'Test'
-      groupByIndex <- which(colnames(meanData)==input$groupBy)
-      notGroupByIndex <- which(colnames(meanData)!=input$groupBy)
+      groupByIndex <- which(colnames(meanData)==groupBy)
+      notGroupByIndex <- which(colnames(meanData)!=groupBy)
       index <- c(notGroupByIndex[1],groupByIndex,notGroupByIndex[2:length(notGroupByIndex)])
       meanData <- meanData[,index]
-      meanData <- meanData[order(meanData$Test,meanData[[input$groupBy]]),]
+      meanData <- meanData[order(meanData$Test,meanData[[groupBy]]),]
       colnames(meanData) <- c('Test',colnames(meanData)[2:(length(colnames(meanData))-4)],'Mean','Standard Deviation','Standard Error of Mean','N')
       meanData <- signif_df(meanData,digits=nSigFigs)
       meanData
@@ -714,11 +755,16 @@ server <- function(input, output, session) {
       } else {
         meanData <- createMeansTable(Data,'value',c('variable','Treatment','Day'))
       }
-      N <- length(unique(Data[[input$groupBy]]))
+      if (input$filterBy=='Treatment') {
+        groupBy <- 'Day'
+      } else {
+        groupBy <- 'Treatment'
+      }
+      N <- length(unique(Data[[groupBy]]))
       my_color_ramp <- my_color_palette(N)
-      p <- ggplot(data=meanData,aes(x=variable,y=value_mean,fill=get(input$groupBy))) +
+      p <- ggplot(data=meanData,aes(x=variable,y=value_mean,fill=get(groupBy))) +
         geom_bar(position=position_dodge(),colour='black',stat='identity',size=.3) + xlab('Test') + 
-        scale_fill_manual(name=input$groupby,values=my_color_ramp) + theme(text = element_text(size=18))
+        scale_fill_manual(name=groupBy,values=my_color_ramp) + theme(text = element_text(size=18))
       if (input$barErrorbars!='none') {
         p <- p + geom_errorbar(aes(ymin=value_mean-get(paste('value',input$barErrorbars,sep='_')),
                                    ymax=value_mean+get(paste('value',input$barErrorbars,sep='_'))),
@@ -731,7 +777,7 @@ server <- function(input, output, session) {
       } else {
         p <- p + ylab('Raw Value')
       }
-      if (input$groupBy=='Day') {
+      if (input$filterBy=='Treatment') {
         if (length(unique(Data$Treatment))==1) {
           p <- p + ggtitle(paste0('Treatment: ',unique(Data$Treatment)))
         }
@@ -753,15 +799,20 @@ server <- function(input, output, session) {
       } else {
         meanData <- createMeansTable(Data,'value',c('variable','Treatment','Day'))
       }
-      N <- length(unique(Data[[input$groupBy]]))
+      if (input$filterBy=='Treatment') {
+        groupBy <- 'Day'
+      } else {
+        groupBy <- 'Treatment'
+      }
+      N <- length(unique(Data[[groupBy]]))
       my_color_ramp <- my_color_palette(N)
       if (input$sex == '') {
-        p <- ggplot(data=meanData,aes(x=variable,y=value_mean,colour=get(input$groupBy),group=get(input$groupBy),shape=Sex))
+        p <- ggplot(data=meanData,aes(x=variable,y=value_mean,colour=get(groupBy),group=get(groupBy),shape=Sex))
       } else {
-        p <- ggplot(data=meanData,aes(x=variable,y=value_mean,colour=get(input$groupBy),group=get(input$groupBy)))
+        p <- ggplot(data=meanData,aes(x=variable,y=value_mean,colour=get(groupBy),group=get(groupBy)))
       }
-      p <- p + geom_point(size=3,position=position_dodge(.9),aes(y=value_mean,colour=get(input$groupBy))) + xlab('Test') + 
-        scale_colour_manual(name=input$groupby,values=my_color_ramp) + theme(text = element_text(size=18))
+      p <- p + geom_point(size=3,position=position_dodge(.9),aes(y=value_mean,colour=get(groupBy))) + xlab('Test') + 
+        scale_colour_manual(name=groupBy,values=my_color_ramp) + theme(text = element_text(size=18))
       if (input$pointErrorbars!='none') {
         p <- p + geom_errorbar(aes(ymin=value_mean-get(paste('value',input$pointErrorbars,sep='_')),
                                    ymax=value_mean+get(paste('value',input$pointErrorbars,sep='_'))),
@@ -774,7 +825,7 @@ server <- function(input, output, session) {
       } else {
         p <- p + ylab('Raw Value')
       }
-      if (input$groupBy=='Day') {
+      if (input$filterBy=='Treatment') {
         if (length(unique(Data$Treatment))==1) {
           p <- p + ggtitle(paste0('Treatment: ',unique(Data$Treatment)))
         }
@@ -788,47 +839,52 @@ server <- function(input, output, session) {
   })
   
   # Display Mean Line Plot Figure
-  output$meanLinePlot <- renderPlot({
-    if (!is.null(input$tests)) {
-      Data <- longData()
-      if (input$sex == '') {
-        meanData <- createMeansTable(Data,'value',c('variable','Treatment','Sex','Day'))
-      } else {
-        meanData <- createMeansTable(Data,'value',c('variable','Treatment','Day'))
-      }
-      N <- length(unique(Data[[input$groupBy]]))
-      my_color_ramp <- my_color_palette(N)
-      if (input$sex == '') {
-        p <- ggplot(data=meanData,aes(x=variable,y=value_mean,group=interaction(get(input$groupBy),Sex),colour=get(input$groupBy),shape=Sex))
-      } else {
-        p <- ggplot(data=meanData,aes(x=variable,y=value_mean,group=get(input$groupBy),colour=get(input$groupBy)))
-      }
-      p <- p + geom_point(size=3) + geom_line() + xlab('Test') + scale_colour_manual(name=input$groupby,values=my_color_ramp) + 
-        theme(text = element_text(size=18))
-      if (input$lineErrorbars!='none') {
-        p <- p + geom_errorbar(aes(ymin=value_mean-get(paste('value',input$lineErrorbars,sep='_')),
-                                   ymax=value_mean+get(paste('value',input$lineErrorbars,sep='_'))),
-                               size=.3,width=0.3)
-      }
-      if (input$transformation == 'percentChange') {
-        p <- p + ylab('Percent Change from Control Mean (%)')
-      } else if (input$transformation == 'zScore') {
-        p <- p + ylab('Z-Score')
-      } else {
-        p <- p + ylab('Raw Value')
-      }
-      if (input$groupBy=='Day') {
-        if (length(unique(Data$Treatment))==1) {
-          p <- p + ggtitle(paste0('Treatment: ',unique(Data$Treatment)))
-        }
-      } else {
-        if (length(unique(Data$Day))==1) {
-          p <- p + ggtitle(paste0('Day: ',unique(Data$Day)))
-        }
-      }
-      print(p)
-    }
-  })
+  # output$meanLinePlot <- renderPlot({
+  #   if (!is.null(input$tests)) {
+  #     Data <- longData()
+  #     if (input$sex == '') {
+  #       meanData <- createMeansTable(Data,'value',c('variable','Treatment','Sex','Day'))
+  #     } else {
+  #       meanData <- createMeansTable(Data,'value',c('variable','Treatment','Day'))
+  #     }
+  #     if (input$filterBy=='Treatment') {
+  #       groupBy <- 'Day'
+  #     } else {
+  #       groupBy <- 'Treatment'
+  #     }
+  #     N <- length(unique(Data[[groupBy]]))
+  #     my_color_ramp <- my_color_palette(N)
+  #     if (input$sex == '') {
+  #       p <- ggplot(data=meanData,aes(x=variable,y=value_mean,group=interaction(get(groupBy),Sex),colour=get(groupBy),shape=Sex))
+  #     } else {
+  #       p <- ggplot(data=meanData,aes(x=variable,y=value_mean,group=get(groupBy),colour=get(groupBy)))
+  #     }
+  #     p <- p + geom_point(size=3) + geom_line() + xlab('Test') + scale_colour_manual(name=groupBy,values=my_color_ramp) + 
+  #       theme(text = element_text(size=18))
+  #     if (input$lineErrorbars!='none') {
+  #       p <- p + geom_errorbar(aes(ymin=value_mean-get(paste('value',input$lineErrorbars,sep='_')),
+  #                                  ymax=value_mean+get(paste('value',input$lineErrorbars,sep='_'))),
+  #                              size=.3,width=0.3)
+  #     }
+  #     if (input$transformation == 'percentChange') {
+  #       p <- p + ylab('Percent Change from Control Mean (%)')
+  #     } else if (input$transformation == 'zScore') {
+  #       p <- p + ylab('Z-Score')
+  #     } else {
+  #       p <- p + ylab('Raw Value')
+  #     }
+  #     if (input$filterBy=='Day') {
+  #       if (length(unique(Data$Treatment))==1) {
+  #         p <- p + ggtitle(paste0('Treatment: ',unique(Data$Treatment)))
+  #       }
+  #     } else {
+  #       if (length(unique(Data$Day))==1) {
+  #         p <- p + ggtitle(paste0('Day: ',unique(Data$Day)))
+  #       }
+  #     }
+  #     print(p)
+  #   }
+  # })
   
   # Display Mean Line Plot Figures
   output$meanPlots <- renderUI({
@@ -867,7 +923,7 @@ server <- function(input, output, session) {
         } else {
           p <- ggplot(data=meanData,aes(x=Day,y=get(paste(test,'mean',sep='_')),group=Treatment,colour=Treatment))
         }
-        p <- p + geom_point(size=3) + geom_line() + ggtitle(testNameUnit) + scale_colour_manual(name=input$groupby,values=my_color_ramp) +
+        p <- p + geom_point(size=3) + geom_line() + ggtitle(testNameUnit) + scale_colour_manual(name='Treatment',values=my_color_ramp) +
           theme(text = element_text(size=18)) + xlab('Day')
         if (input$lineErrorbars!='none') {
           p <- p + geom_errorbar(aes(ymin=get(paste(test,'mean',sep='_'))-get(paste(test,input$lineErrorbars,sep='_')),
@@ -890,14 +946,19 @@ server <- function(input, output, session) {
   output$linePlot <- renderPlotly({
     if (!is.null(input$tests)) {
       Data <- longData()
-      N <- length(unique(Data[[input$groupBy]]))
+      if (input$filterBy=='Treatment') {
+        groupBy <- 'Day'
+      } else {
+        groupBy <- 'Treatment'
+      }
+      N <- length(unique(Data[[groupBy]]))
       my_color_ramp <- my_color_palette(N)
       if (input$sex == '') {
-        p <- ggplot(data=Data,aes(x=variable,y=value,group=ID,colour=get(input$groupBy),shape=Sex,label=ID))
+        p <- ggplot(data=Data,aes(x=variable,y=value,group=ID,colour=get(groupBy),shape=Sex,label=ID))
       } else {
-        p <- ggplot(data=Data,aes(x=variable,y=value,group=ID,colour=get(input$groupBy),label=ID))
+        p <- ggplot(data=Data,aes(x=variable,y=value,group=ID,colour=get(groupBy),label=ID))
       }
-      p <- p + geom_point(size=3) + geom_path() + xlab('Test') + scale_colour_manual(name=input$groupby,values=my_color_ramp) +
+      p <- p + geom_point(size=3) + geom_path() + xlab('Test') + scale_colour_manual(name=groupBy,values=my_color_ramp) +
         theme(text = element_text(size=18))
       print(p)
       if (input$transformation == 'percentChange') {
@@ -907,7 +968,7 @@ server <- function(input, output, session) {
       } else {
         p <- p + ylab('Raw Value')
       }
-      if (input$groupBy=='Day') {
+      if (input$filterBy=='Treatment') {
         if (length(unique(Data$Treatment))==1) {
           p <- p + ggtitle(paste0('Treatment: ',unique(Data$Treatment)))
         }
@@ -945,6 +1006,11 @@ server <- function(input, output, session) {
         }
         test <- input$tests[my_i]
         Data$Treatment <- factor(Data$Treatment,levels=values$treatmentOrder)
+        if (input$filterBy=='Treatment') {
+          groupBy <- 'Day'
+        } else {
+          groupBy <- 'Treatment'
+        }
         N <- length(unique(Data$Treatment))
         my_color_ramp <- my_color_palette(N)
         testName <- values$testDictionaryTests[which(values$testDictionaryCodes==test)]
@@ -955,7 +1021,7 @@ server <- function(input, output, session) {
         } else {
           p <- ggplot(data=Data,aes(x=Day,y=get(test),group=ID,colour=Treatment,label=ID))
         }
-        p <- p + geom_point(size=3)+geom_path() + ggtitle(testNameUnit) + scale_colour_manual(name=input$groupby,values=my_color_ramp) +
+        p <- p + geom_point(size=3)+geom_path() + ggtitle(testNameUnit) + scale_colour_manual(name=groupBy,values=my_color_ramp) +
           theme(text = element_text(size=18)) + xlab('Day')
         if (input$transformation == 'percentChange') {
           p <- p + ylab('Percent Change from Control Mean (%)')
@@ -975,10 +1041,15 @@ server <- function(input, output, session) {
   output$boxPlot <- renderPlot({
     if (!is.null(input$tests)) {
       Data <- longData()
-      N <- length(unique(Data[[input$groupBy]]))
+      if (input$filterBy=='Treatment') {
+        groupBy <- 'Day'
+      } else {
+        groupBy <- 'Treatment'
+      }
+      N <- length(unique(Data[[groupBy]]))
       my_color_ramp <- my_color_palette(N)
-      p <- ggplot(data=Data,aes(x=variable,y=value,fill=get(input$groupBy))) +
-        geom_boxplot() + xlab('Test') + scale_fill_manual(name=input$groupBy,values=my_color_ramp) +
+      p <- ggplot(data=Data,aes(x=variable,y=value,fill=get(groupBy))) +
+        geom_boxplot() + xlab('Test') + scale_fill_manual(name=groupBy,values=my_color_ramp) +
         theme(text = element_text(size=18))
       if (input$transformation == 'percentChange') {
         p <- p + ylab('Percent Change from Control Mean (%)')
@@ -987,7 +1058,7 @@ server <- function(input, output, session) {
       } else {
         p <- p + ylab('Raw Value')
       }
-      if (input$groupBy=='Day') {
+      if (input$filterBy=='Treatment') {
         if (length(unique(Data$Treatment))==1) {
           p <- p + ggtitle(paste0('Treatment: ',unique(Data$Treatment)))
         }
@@ -1004,11 +1075,16 @@ server <- function(input, output, session) {
   output$boxPlotly <- renderPlotly({
     if (!is.null(input$tests)) {
       Data <- longData()
-      N <- length(unique(Data[[input$groupBy]]))
+      if (input$filterBy=='Treatment') {
+        groupBy <- 'Day'
+      } else {
+        groupBy <- 'Treatment'
+      }
+      N <- length(unique(Data[[groupBy]]))
       my_color_ramp <- my_color_palette(N)
-      p <- ggplot(data=Data,aes(x=variable,y=value,fill=get(input$groupBy),label=ID)) +
-        geom_boxplot(outlier.shape='') + xlab('Test') + scale_fill_manual(name=input$groupBy,values=my_color_ramp) +
-        geom_point(aes(fill=get(input$groupBy),shape=Sex),size=2.5,position=position_jitterdodge()) +
+      p <- ggplot(data=Data,aes(x=variable,y=value,fill=get(groupBy),label=ID)) +
+        geom_boxplot(outlier.shape='') + xlab('Test') + scale_fill_manual(name=groupBy,values=my_color_ramp) +
+        geom_point(aes(fill=get(groupBy),shape=Sex),size=2.5,position=position_jitterdodge()) +
         theme(text = element_text(size=18))
       if (input$transformation == 'percentChange') {
         p <- p + ylab('Percent Change from Control Mean (%)')
@@ -1017,7 +1093,7 @@ server <- function(input, output, session) {
       } else {
         p <- p + ylab('Raw Value')
       }
-      if (input$groupBy=='Day') {
+      if (input$filterBy=='Day') {
         if (length(unique(Data$Treatment))==1) {
           p <- p + ggtitle(paste0('Treatment: ',unique(Data$Treatment)))
         }
@@ -1045,33 +1121,35 @@ server <- function(input, output, session) {
     if (!is.null(input$tests)) {
       longData <- longData()
       tmp <- NULL
-      if (input$groupBy=='Treatment') {
+      if (input$filterBy=='Day') {
+        groupBy <- 'Treatment'
         if (length(unique(longData$Day))!=1) {
           for (i in seq(nrow(longData))) {
-            Tmp <- strsplit(as.character(longData[i,input$groupBy]),' ')[[1]]
+            Tmp <- strsplit(as.character(longData[i,groupBy]),' ')[[1]]
             tmp[i] <- paste(Tmp[-length(Tmp)],collapse=' ')
           }
         } else {
-          tmp <- longData[[input$groupBy]]
+          tmp <- longData[[groupBy]]
         }
-        longData[[input$groupBy]] <- factor(tmp,levels=values$treatmentOrder)
-        longData[[input$groupBy]] <- as.factor(tmp)
+        longData[[groupBy]] <- factor(tmp,levels=values$treatmentOrder)
+        longData[[groupBy]] <- as.factor(tmp)
       } else {
+        groupBy <- 'Day'
         for (i in seq(nrow(longData))) {
-          Tmp <- strsplit(as.character(longData[i,input$groupBy]),' ')[[1]]
+          Tmp <- strsplit(as.character(longData[i,groupBy]),' ')[[1]]
           tmp[i] <- Tmp[1]
         }
-        longData[[input$groupBy]] <- as.factor(tmp)
+        longData[[groupBy]] <- as.factor(tmp)
       }
       Data <- dcast(longData,Treatment+ID+Sex+Day~variable)
       IDindex <- which(colnames(Data)=='ID')
-      groupByIndex <- which(colnames(Data)==input$groupBy)
-      notIndex <- which((colnames(Data)!='ID')&(colnames(Data)!=input$groupBy))
+      groupByIndex <- which(colnames(Data)==groupBy)
+      notIndex <- which((colnames(Data)!='ID')&(colnames(Data)!=groupBy))
       index <- c(IDindex,groupByIndex,notIndex)
       Data <- Data[,index]
-      Data <- Data[order(Data[[input$groupBy]]),]
+      Data <- Data[order(Data[[groupBy]]),]
       Data <- Data[,c(input$tests,'Day','Treatment','Sex','ID')]
-      if (input$groupBy=='Day') {
+      if (input$filterBy=='Treatment') {
         Data$Treatment <- factor(Data$Treatment,levels=values$treatmentOrder)
       } else {
         Data$Day <- factor(Data$Day,levels=values$dayOrder)
@@ -1097,26 +1175,28 @@ server <- function(input, output, session) {
     req(input$tests)
     longData <- longData()
     tmp <- NULL
-    if (input$groupBy=='Treatment') {
+    if (input$filterBy=='Treatment') {
+      groupBy <- 'Day'
       if (length(unique(longData$Day))!=1) {
         for (i in seq(nrow(longData))) {
-          Tmp <- strsplit(as.character(longData[i,input$groupBy]),' ')[[1]]
+          Tmp <- strsplit(as.character(longData[i,groupBy]),' ')[[1]]
           tmp[i] <- paste(Tmp[-length(Tmp)],collapse=' ')
         }
       } else {
-        tmp <- longData[[input$groupBy]]
+        tmp <- longData[[groupBy]]
       }
-      longData[[input$groupBy]] <- factor(tmp,levels=values$treatmentOrder)
-      longData[[input$groupBy]] <- as.factor(tmp)
+      longData[[groupBy]] <- factor(tmp,levels=values$treatmentOrder)
+      longData[[groupBy]] <- as.factor(tmp)
     } else {
+      groupBy <- 'Treatment'
       for (i in seq(nrow(longData))) {
-        Tmp <- strsplit(as.character(longData[i,input$groupBy]),' ')[[1]]
+        Tmp <- strsplit(as.character(longData[i,groupBy]),' ')[[1]]
         tmp[i] <- Tmp[1]
       }
-      longData[[input$groupBy]] <- as.factor(tmp)
+      longData[[groupBy]] <- as.factor(tmp)
     }
     Data <- dcast(longData,Treatment+ID+Sex+Day~variable)
-    if (input$groupBy=='Day') {
+    if (groupBy=='Day') {
       Data$Treatment <- factor(Data$Treatment,levels=values$treatmentOrder)
     } else {
       Data$Day <- factor(Data$Day,levels=values$dayOrder)
@@ -1204,6 +1284,7 @@ ui <- dashboardPage(
                                 condition = 'input.dataSource=="GitHub"',
                                 uiOutput('selectGitHubStudy')
                               ),
+                              # selectInput('selectGitHubStudy',label='Select Study from PhUSE GitHub:',choices ='PDS',selected='PDS'),
                               conditionalPanel(
                                 condition = 'input.dataSource=="local"',
                                 actionButton('chooseBWfile','Choose a BW Domain File')
@@ -1217,14 +1298,15 @@ ui <- dashboardPage(
                               actionButton('clearTests',label='Clear All'),
                               actionButton('displayTests',label='Display All')
                      ),
-                     menuItem('Settings',icon=icon('cogs'),startExpanded=T,
-                              selectInput('groupBy',label='Group by Treatment or Day?',choices=c('Treatment','Day'),selected='Day'),
+                     menuItem('Filters',icon=icon('filter'),startExpanded=T,
+                              # selectInput('groupBy',label='Group by Treatment or Day?',choices=c('Treatment','Day'),selected='Day'),
+                              selectInput('filterBy',label='Filter by Treatment or Day?',choices=c('Treatment','Day'),selected='Treatment'),
                               conditionalPanel(
-                                condition = 'input.groupBy == "Treatment"',
+                                condition = 'input.filterBy == "Day"',
                                 withSpinner(uiOutput('day'),type=7,proxy.height='200px')
                               ),
                               conditionalPanel(
-                                condition = 'input.groupBy == "Day"',
+                                condition = 'input.filterBy == "Treatment"',
                                 withSpinner(uiOutput('treatment'),type=7,proxy.height='200px')
                               ),
                               radioButtons('sex',label='Select Sex:',choices=list(Male='M',Female='F',Both=''),selected=''),
@@ -1270,27 +1352,35 @@ ui <- dashboardPage(
               withSpinner(plotOutput('pointPlot',height=plotHeight),type=1)
       ),
       tabItem(tabName='meanLinePlot',
-              conditionalPanel(
-                condition='(input.groupBy=="Treatment" & input.day!="All Days") | (input.groupBy=="Day" &input.treatment!="All Treatments")',
-                h3('Line Plot of Group Means:'),
-                withSpinner(plotOutput('meanLinePlot',height=plotHeight),type=1)
-              ),
-              conditionalPanel(
-                condition='(input.groupBy=="Treatment" & input.day=="All Days") | (input.groupBy=="Day" &input.treatment=="All Treatments")',
-                h3('Line Plots of Group Means:'),
+              # conditionalPanel(
+              #   # condition='(input.filterBy=="Day" & input.day.length==1) | (input.filterBy=="Treatment" & input.treatment.length==1)',#!="All Treatments")',
+              #   condition='values.day.length==1',
+              #   h3('Cannot Plot Line Graph of Group Means for Only One Day!')
+              #   # withSpinner(plotOutput('meanLinePlot',height=plotHeight),type=1)
+              # ),
+              # conditionalPanel(
+              #   # condition='(input.filterBy=="Day" & input.day.length>1) | (input.filterBy=="Treatment" & input.treatment.length>1)',#=="All Treatments")',
+              #   condition='values.day.length!=1',
+              #   h3('Line Plots of Group Means:'),
                 uiOutput('meanPlots')
-              )
+              # )
       ),
       tabItem(tabName='linePlot',
               conditionalPanel(
-                condition='(input.groupBy=="Treatment" & input.day!="All Days") | (input.groupBy=="Day" &input.treatment!="All Treatments")',
+                # condition='(input.filterBy=="Day" & input.day!="All Days") | (input.filterBy=="Treatment" &input.treatment!="All Treatments")',
+                condition="(typeof input.day !== 'undefined' && input.day > 0 && input.day.length==1)",
                 h3('Line Plot of Individual Subjects:'),
                 withSpinner(plotlyOutput('linePlot',height=plotHeight),type=1)
               ),
               conditionalPanel(
-                condition='(input.groupBy=="Treatment" & input.day=="All Days") | (input.groupBy=="Day" &input.treatment=="All Treatments")',
+                # condition='(input.filterBy=="Day" & input.day=="All Days") | (input.filterBy=="Treatment" &input.treatment=="All Treatments")',
+                condition="(typeof input.day !== 'undefined' && input.day.length!=1)",
                 h3('Line Plots of Individual Subjects:'),
                 uiOutput('plots')
+              ),
+              conditionalPanel(
+                condition="(typeof input.day === 'undefined')",
+                h3('Select Filter by Day to Initialize Plot!')
               )
       ),
       tabItem(tabName='boxPlot',
