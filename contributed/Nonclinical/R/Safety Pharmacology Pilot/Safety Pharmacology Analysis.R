@@ -33,40 +33,54 @@ if (file.exists('~/passwordGitHub.R')) {
 server <- function(input, output,session) {
   
   loadData <- reactive({
-    if (Authenticate==T) {
-      Data <- load.GitHub.xpt.files(studyDir=dataPath,authenticate=T,User=userGitHub,Password=passwordGitHub)
-    } else {
-      Data <- load.GitHub.xpt.files(studyDir=dataPath,authenticate = F)
-    }
-    values$domainNames <- toupper(names(Data))
-    subjects <- unique(Data$dm$USUBJID)
-    elementLevels <- levels(Data$se$ELEMENT)
-    for (domain in DOIs) {
-      sexData <- Data$dm[,c('USUBJID','SEX')]
-      elementData <- Data$se[,c('USUBJID','SESTDTC','ELEMENT')]
-      Data[[domain]] <- merge(Data[[domain]],sexData,by='USUBJID')
-      Data[[domain]] <- merge(Data[[domain]],elementData,by.x=c('USUBJID',paste0(toupper(domain),'RFTDTC')),by.y=c('USUBJID','SESTDTC'))
-      Data[[domain]]$SEX <- factor(Data[[domain]]$SEX,levels=c('M','F'))
-      ELTM <- Data[[domain]][[paste0(toupper(domain),'ELTM')]]
-      ELTMnum <- sapply(ELTM,DUR_to_seconds)/3600
-      Data[[domain]][[paste0(toupper(domain),'ELTM')]] <- paste(ELTMnum,'h')
-      orderedELTM <- Data[[domain]][[paste0(toupper(domain),'ELTM')]][order(Data[[domain]][[paste0(toupper(domain),'TPTNUM')]])]
-      orderedLevelsELTM <- unique(orderedELTM)
-      Data[[domain]][[paste0(toupper(domain),'ELTM')]] <- factor(Data[[domain]][[paste0(toupper(domain),'ELTM')]],levels=orderedLevelsELTM)
-      Data[[domain]][[paste0(toupper(domain),'ELTMN')]] <- ELTMnum
-      if (length(grep('INT',colnames(Data[[domain]])))>=2) {
-        STINT <- Data[[domain]][[paste0(toupper(domain),'STINT')]]
-        STINTnum <- sapply(STINT,DUR_to_seconds)/3600
-        ENINT <- Data[[domain]][[paste0(toupper(domain),'ENINT')]]
-        ENINTnum <- sapply(ENINT,DUR_to_seconds)/3600
-        Data[[domain]][[paste0(toupper(domain),'EVLINT')]] <- paste0(STINTnum,' to ',ENINTnum,' h')
-        orderedEVLINT <- Data[[domain]][[paste0(toupper(domain),'EVLINT')]][order(Data[[domain]][[paste0(toupper(domain),'TPTNUM')]])]
-        orderedLevelsEVLINT <- unique(orderedEVLINT)
-        Data[[domain]][[paste0(toupper(domain),'EVLINT')]] <- factor(Data[[domain]][[paste0(toupper(domain),'EVLINT')]],levels=orderedLevelsEVLINT)
-        Data[[domain]][[paste0(toupper(domain),'EVLINTN')]] <- rowMeans(cbind(STINTnum,ENINTnum))
+    withProgress({
+      if (Authenticate==T) {
+        Data <- load.GitHub.xpt.files(studyDir=dataPath,authenticate=T,User=userGitHub,Password=passwordGitHub,showProgress=T)
+      } else {
+        Data <- load.GitHub.xpt.files(studyDir=dataPath,authenticate=F,showProgress=T)
       }
-    }
+      setProgress(value=1,message='Processing Data...')
+      values$domainNames <- toupper(names(Data))
+      subjects <- unique(Data$dm$USUBJID)
+      elementLevels <- levels(Data$se$ELEMENT)
+      for (domain in DOIs) {
+        sexData <- Data$dm[,c('USUBJID','SEX')]
+        elementData <- Data$se[,c('USUBJID','SESTDTC','ELEMENT')]
+        Data[[domain]] <- merge(Data[[domain]],sexData,by='USUBJID')
+        Data[[domain]] <- merge(Data[[domain]],elementData,by.x=c('USUBJID',paste0(toupper(domain),'RFTDTC')),by.y=c('USUBJID','SESTDTC'))
+        Data[[domain]]$SEX <- factor(Data[[domain]]$SEX,levels=c('M','F'))
+        ELTM <- Data[[domain]][[paste0(toupper(domain),'ELTM')]]
+        ELTMnum <- sapply(ELTM,DUR_to_seconds)/3600
+        Data[[domain]][[paste0(toupper(domain),'ELTM')]] <- paste(ELTMnum,'h')
+        orderedELTM <- Data[[domain]][[paste0(toupper(domain),'ELTM')]][order(Data[[domain]][[paste0(toupper(domain),'TPTNUM')]])]
+        orderedLevelsELTM <- unique(orderedELTM)
+        Data[[domain]][[paste0(toupper(domain),'ELTM')]] <- factor(Data[[domain]][[paste0(toupper(domain),'ELTM')]],levels=orderedLevelsELTM)
+        Data[[domain]][[paste0(toupper(domain),'ELTMN')]] <- ELTMnum
+        if (length(grep('INT',colnames(Data[[domain]])))>=2) {
+          STINT <- Data[[domain]][[paste0(toupper(domain),'STINT')]]
+          STINTnum <- sapply(STINT,DUR_to_seconds)/3600
+          ENINT <- Data[[domain]][[paste0(toupper(domain),'ENINT')]]
+          ENINTnum <- sapply(ENINT,DUR_to_seconds)/3600
+          Data[[domain]][[paste0(toupper(domain),'EVLINT')]] <- paste0(STINTnum,' to ',ENINTnum,' h')
+          orderedEVLINT <- Data[[domain]][[paste0(toupper(domain),'EVLINT')]][order(Data[[domain]][[paste0(toupper(domain),'TPTNUM')]])]
+          orderedLevelsEVLINT <- unique(orderedEVLINT)
+          Data[[domain]][[paste0(toupper(domain),'EVLINT')]] <- factor(Data[[domain]][[paste0(toupper(domain),'EVLINT')]],levels=orderedLevelsEVLINT)
+          Data[[domain]][[paste0(toupper(domain),'EVLINTN')]] <- rowMeans(cbind(STINTnum,ENINTnum))
+        }
+      }
+    })
     return(Data)
+  })
+  
+  output$tests <- renderUI({
+    req(input$DOIs)
+    Data <- loadData()
+    Tests <- NULL
+    for (domain in input$DOIs) {
+      testNames <- levels(Data[[domain]][[paste0(toupper(domain),'TEST')]])[unique(Data[[domain]][[paste0(toupper(domain),'TEST')]])]
+      Tests <- c(Tests,testNames)
+    }
+    checkboxGroupInput('tests','Tests of Interest:',Tests,Tests)
   })
   
   output$doses <- renderUI({
@@ -101,11 +115,13 @@ server <- function(input, output,session) {
   filterData <- reactive({
     Data <- loadData()
     for (domain in DOIs) {
+      testIndex <- which(levels(Data[[domain]][[paste0(toupper(domain),'TEST')]])[Data[[domain]][[paste0(toupper(domain),'TEST')]]] 
+                         %in% input$tests)
       sexIndex <- which(Data[[domain]][['SEX']] %in% input$sex)
       doseIndex <- which(Data[[domain]][['ELEMENT']] %in% input$doses)
       subjectIndex <- which(Data[[domain]][['USUBJID']] %in% input$subjects)
       dayIndex <- which(Data[[domain]][[paste0(toupper(domain),'NOMDY')]] %in% input$days)
-      index <- Reduce(intersect,list(sexIndex,doseIndex,subjectIndex,dayIndex))
+      index <- Reduce(intersect,list(testIndex,sexIndex,doseIndex,subjectIndex,dayIndex))
       Data[[domain]] <- Data[[domain]][index,]
     }
     return(Data)
@@ -176,14 +192,8 @@ server <- function(input, output,session) {
   })
   
   observe({
-    req(input$DOIs)
-    Data <- loadData()
-    domains <- input$DOIs
-    n <- 0
-    for (domain in domains) {
-      n <- n + length(unique(Data[[domain]][[paste0(toupper(domain),'TEST')]]))
-    }
-    values$nTests <- n
+    req(input$tests)
+    values$nTests <- length(input$tests)
   })
   
   observe({
@@ -375,6 +385,7 @@ ui <- shinyUI(
             sidebarLayout(
               sidebarPanel(width=3,
                            checkboxGroupInput('DOIs','Domains of Interest:',choiceNames=toupper(DOIs),choiceValues=DOIs,selected=DOIs),
+                           uiOutput('tests'),
                            radioButtons('summary','Display:',c('Group Means','Individual Subjects')),
                            checkboxGroupInput('sex','Filter by Sex:',list(Male='M',Female='F'),selected=c('M','F')),
                            uiOutput('doses'),
