@@ -19,11 +19,11 @@
 # [Bob] SEND IG (for variables, domains and types) read from PDF file into a dataframe
 # [Bob] Uses the read SEND IG structure to create the ts.xpt file
 # [Bob] Correct labels for each domain, ts.xpt file needs labels set correctly
+# [Eli] Allow selection of controlled terminology version dates from GUI
+# [Eli] Allow selection of controlled terminology for other dashboard items that should come from controlled terminology. strain is one.
 #
 # Next steps:
 # [Bob] Structure xls file no longer needed, as now read from SEND IG directly
-# [Eli] Allow selection of controlled terminology version dates from GUI
-# [Eli] Allow selection of controlled terminology for other dashboard items that should come from controlled terminology. strain is one.
 # [Bob] Test output against validator
 # [Bob] Animals per group should be a single selection
 # [Kevin] Update so that no errors occur in main window on initial run
@@ -61,7 +61,41 @@ list.of.packages <- c("shiny",
 "DT",
 "pdftools")
 
-
+# Currently available CT Versions
+CTVersions <- c(
+  "2011-06-10",
+  "2011-07-22",
+  "2011-12-09",
+  "2012-01-02",
+  "2012-03-23",
+  "2012-08-03",
+  "2012-12-21",
+  "2013-04-12",
+  "2013-06-28",
+  "2013-10-04",
+  "2013-12-20",
+  "2014-03-28",
+  "2014-06-27",
+  "2014-09-26",
+  "2014-12-19",
+  "2015-03-27",
+  "2015-06-26",
+  "2015-09-25",
+  "2015-12-18",
+  "2016-03-25",
+  "2016-06-24",
+  "2016-09-30",
+  "2016-12-16",
+  "2017-03-31",
+  "2017-06-30",
+  "2017-09-29",
+  "2017-12-22",
+  "2018-03-30",
+  "2018-06-29",
+  "2018-09-28",
+  "2018-12-21",
+  "2019-03-29"
+)
 
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages, repos = "http://cran.us.r-project.org")
@@ -823,20 +857,15 @@ importCT <- function(version) {
   
   # Switch function to determine version
   # Reads directly from the NCI location
-  base <- "https://evs.nci.nih.gov/ftp1/CDISC/SEND/Archive"
-  df <- switch(version,
-               '2019-03' = readWorksheetFromURL(base,"SEND%20Terminology%202019-03-29.xls",
-                                                 "SEND Terminology 2019-03-29"),
-               '2018-12' = readWorksheetFromURL(base,"SEND%20Terminology%202018-12-21.xls",
-                                                 "SEND Terminology 2018-12-21")
-  )
-  
+  base <- "https://evs.nci.nih.gov/ftp1/CDISC/SEND/Archive/"
+  path <- paste0(base, "SEND%20Terminology%20", version, ".xls")
+  GET(path, write_disk(temp <- tempfile(fileext = ".xls")))
+  df <- readWorksheet(loadWorkbook(temp), sheet = paste0("SEND Terminology ", version))
     
   # Attribute used to determine if user changes CT version.
   attr(df, "version") <- version
   
   df
-  
 }
 
 # Return CT codelist, if in parenthesis is the submission value to translate to a codelist name
@@ -975,16 +1004,15 @@ server <- function(input, output, session) {
     # Display species
   output$Species <- renderUI({
     # Get species choices from the code list
-    # FIXME - use the CT version selected by the user
-    species <- getCT("SPECIES","2019-03")
-    radioButtons('species','Select species:',species,selected=species[1])
+    species <- getCT("Species", input$CTSelection)
+    selectInput('species','Select species:',species,selected=species[1])
   })
   
   # Display output type
   output$Strain <- renderUI({
     # FIXME - these should come from a configuration file,conditional on species
-    strain <- c("TBD")
-    radioButtons('strain','Select strain:',strain,selected=strain[1])
+    strain <- getCT("Strain/Substrain", input$CTSelection)
+    selectInput('strain','Select strain:',strain,selected=strain[1])
   })
 
     # Display Study types
@@ -1102,6 +1130,7 @@ ui <- dashboardPage(
   dashboardSidebar(width=sidebarWidth,
                    sidebarMenu(id='sidebar',
                     menuItem('Output settings',icon=icon('database'),startExpanded=T,
+                              selectInput("CTSelection", "CT Version", choices = CTVersions),
                               withSpinner(uiOutput('SENDVersions'),type=7,proxy.height='200px'),
                               withSpinner(uiOutput('Outputtype'),type=7,proxy.height='200px')
                      ),
