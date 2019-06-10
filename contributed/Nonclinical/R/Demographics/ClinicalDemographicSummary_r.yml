@@ -9,7 +9,7 @@ Target : https://github.com/phuse-org/phuse-scripts/tree/master/contributed/Nonc
 Title : Clinical demographic summary
 Topic : Summary examples
 Type : file creation
-  Subtype: TS
+Subtype: TS
 Package:
   name :
   title:
