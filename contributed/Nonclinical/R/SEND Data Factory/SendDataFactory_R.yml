@@ -1,0 +1,36 @@
+Keywords: Test, Metadata, Distribution
+Script:
+  name   : Draw_Dist2.R
+  title  : Draw Distribution
+  desc   : >
+         demonstrates how to use YML to set inputs and build Web framework.
+  version: 0.0.1
+Language:
+  name   : R
+  version: 0.0.1
+Inputs:
+  datasets:
+  p1: rexp
+  p2: 100
+  RShinyUIs :
+Outputs:
+  datasets:
+  v1:
+  v2:
+Repo:
+  base_dir: https://github.com/phuse-org/phuse-scripts/raw/master
+  prog_dir: development/R
+  repo_dir: phuse-org/phuse-scripts
+  repo_url: https://api.github.com/repos
+  data_dir: data
+  lib_dir: libs
+  log_dir: logs
+  out_dir: outputs
+  script_dir: scripts
+  lib_files:
+Authors:
+  - name   : John Doo
+    email  :
+    company: PhUSE
+
+# end of file
