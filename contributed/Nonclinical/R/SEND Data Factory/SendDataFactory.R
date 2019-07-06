@@ -21,9 +21,11 @@
 # [Bob] Correct labels for each domain, ts.xpt file needs labels set correctly
 # [Eli] Allow selection of controlled terminology version dates from GUI
 # [Eli] Allow selection of controlled terminology for other dashboard items that should come from controlled terminology. strain is one.
+# [Bob] Structure xls file no longer needed, as now read from SEND IG directly
+# [Bob] Read rest of TS values from a csv file that can be edited on screen and saved
 #
 # Next steps:
-# [Bob] Structure xls file no longer needed, as now read from SEND IG directly
+# [Bob] Add remaining TS neede values from a file to read in
 # [Bob] Test output against validator
 # [Bob] Animals per group should be a single selection
 # [Kevin] Update so that no errors occur in main window on initial run
@@ -35,6 +37,7 @@
 #   [Eli] Animal demographics and disposition 
 #   [Bob] In-life domains 
 #   [Bob] Post mortem domains 
+#   [] Animal should only have 1 TBW, at the end
 # Implementation for SEND 3.1 first, then DART, SEND 3.0
 #     
 #
@@ -59,7 +62,8 @@ list.of.packages <- c("shiny",
 "SASxport",
 "utils",
 "DT",
-"pdftools")
+"pdftools",
+"rhandsontable")
 
 # Currently available CT Versions
 CTVersions <- c(
@@ -119,6 +123,7 @@ library(SASxport)
 library(utils)
 library(DT)
 library(pdftools)
+library(rhandsontable)
 
 if(packageVersion("SASxport") < "1.5.7") {
   stop("You need version 1.5.7 or later of SASxport")
@@ -142,12 +147,24 @@ convertMenuItem <- function(mi,tabName) {
 
 # read all domain structures
 readDomainStructures <-function() {
+  # read if it is not there yet
+  if (!exists("dfSENDIG")) {
   withProgress({
     setProgress(value=1,message='Reading domain structures from the SEND IG')
     readSENDIG()
   })
+  }
 }
 
+# read TS from CSV file saved
+readTSCSVFile <-function() {
+  TSFromFile <<- read.csv("TSFileSettings.csv", header=TRUE)
+}
+
+# write TS to CSV file
+writeTSCSVFile <-function() {
+  write.csv(TSFromFile,"TSFileSettings.csv")
+}
 # Add to list to be output
 addToSet <<- function(inDomain,inDescription,inDataframe) {
   index <- nrow(domainDFsMade)
@@ -711,6 +728,10 @@ readSENDIG <- function() {
 setTSFile <- function(input) {
     # create data frame based on structure
     aDomain <- "TS"
+    print(input$studyName)
+    print(input$CTSelection)
+    print(paste("SEND Implementation Guide Version ",input$SENDVersions))
+
     theColumns <- dfSENDIG[dfSENDIG$Domain==aDomain,]$Column
     theLabels <- dfSENDIG[dfSENDIG$Domain==aDomain,]$Label
     tsOut <<- setNames(data.frame(matrix(ncol = length(theColumns), nrow = 1)),
@@ -756,6 +777,52 @@ setTSFile <- function(input) {
                            "")        
       aRow <- aRow + 1
     }
+    if (!is.null(input$CTSelection)) {
+      tsOut[aRow,] <<- list(input$studyName,
+                            aDomain,
+                            aRow,
+                            "",
+                            "SNDCTVER",
+                            "SEND Controlled Terminology Version",
+                            paste("SEND Terminology",input$CTSelection),
+                            "")        
+      aRow <- aRow + 1
+    }
+    if (!is.null(input$SENDVersions)) {
+      tsOut[aRow,] <<- list(input$studyName,
+                            aDomain,
+                            aRow,
+                            "",
+                            "SNDIGVER",
+                            "SEND Implementation Guide Version",
+                            paste("SEND Implementation Guide Version",input$SENDVersions),
+                            "")        
+      aRow <- aRow + 1
+    }
+    if (!is.null(input$strain)) {
+      tsOut[aRow,] <<- list(input$studyName,
+                            aDomain,
+                            aRow,
+                            "",
+                            "STRAIN",
+                            "Strain/Substrain",
+                            input$strain,
+                            "")        
+      aRow <- aRow + 1
+    }
+    # Add in the other TS values
+    for(index in 1:nrow(TSFromFile)) {
+      tsOut[aRow,] <<- list(input$studyName,
+                            aDomain,
+                            aRow,
+                            "",
+                            as.character(TSFromFile$TSPARMCD[index]),
+                            as.character(TSFromFile$TSPARM[index]),
+                            as.character(TSFromFile$TSVAL[index]),
+                            "")        
+      aRow <- aRow + 1
+    }
+
     # add to set of data
     addToSet("TS","TRIAL SUMMARY","tsOut")
 }
@@ -765,6 +832,8 @@ setOutputData <- function(input) {
    # create a data frame to hold the created individual dataframes of data
   domainDFsMade <<- setNames(data.frame(matrix(ncol = 3, nrow = 1)),
                          c("Domain","Description","Dataframe"))
+   # save selected CT to a global variable
+   gCTVersion <<-input$CTSelection
    setTSFile(input)  
    setAnimalDataFiles(input)
 }
@@ -908,8 +977,7 @@ getCTDF <<- function(codelist, version) {
 
 # return a random result from a code list
 CTRandomName <<- function(nameList) {
-  # FIXME - use the CT version selected by the user
-  aSet <- getCTDF(nameList,"2019-03")
+  aSet <- getCTDF(nameList,gCTVersion)
   aRow <- aSet[sample(nrow(aSet), 1), ]
   # return the name
   aRow$CDISC.Submission.Value[1]
@@ -918,9 +986,8 @@ CTRandomName <<- function(nameList) {
 # return the name given a CT Code number
 CTSearchOnCode <<- function(nameList,aCode) {
 
-  # FIXME - use the CT version selected by the user
   # print(paste("trying last test code",aCode,nameList))
-  aSet <- getCTDF(nameList,"2019-03")
+  aSet <- getCTDF(nameList,gCTVersion)
   # print(paste("tring last test code",aSet))
   aSet[aSet$Code==aCode,]$CDISC.Submission.Value[1]
 }
@@ -929,18 +996,15 @@ CTSearchOnCode <<- function(nameList,aCode) {
 # return the code number given a CT name
 CTSearchOnName <<- function(nameList,aName) {
   
-  # FIXME - use the CT version selected by the user
-  # print(paste("Retrieving CT code for:",nameList,aName))
-  aSet <<- getCTDF(nameList,"2019-03")
+  aSet <<- getCTDF(nameList,gCTVersion)
   aSet[aSet$CDISC.Name==aName,]$Codelist.Code[1]
 }
 
 # return the code number given a CT short name (submission value)
 CTSearchOnShortName <<- function(nameList,aName) {
   
-  # FIXME - use the CT version selected by the user
   # print(paste("Retrieving CT code for:",nameList,aName))
-  aSet <<- getCTDF(nameList,"2019-03")
+  aSet <<- getCTDF(nameList,gCTVersion)
   aSet[aSet$CDISC.Submission.Value==aName,]$Code[1]
 }
 
@@ -971,6 +1035,8 @@ server <- function(input, output, session) {
 
   # Read domain structures
   readDomainStructures()
+  # Read TS domain other values
+  readTSCSVFile()
 
   # Store Client Data Regarding previous choices
   cdata <- session$clientData
@@ -990,7 +1056,7 @@ server <- function(input, output, session) {
   # Display Send versions
   output$SENDVersions <- renderUI({
     # FIXME - these should come from a configuration file
-    SENDVersion <- c("SEND IG 3.0","SEND IG 3.1", "DART IG 1.1")
+    SENDVersion <- c("3.0","3.1", "DART 1.1")
     radioButtons('SENDVersions','Select SEND Version:',SENDVersion,selected=SENDVersion[1])
   })
 
@@ -1040,7 +1106,7 @@ server <- function(input, output, session) {
   output$AnimalsPerGroup <- renderUI({
     # FIXME - these should come from a configuration file
     animalsPerGroup <- c("4","8","16","20","40","100")
-    checkboxGroupInput('animalsPerGroup','Select animals Per Group:',animalsPerGroup,selected=animalsPerGroup[1])
+    radioButtons('animalsPerGroup','Select animals Per Group:',animalsPerGroup,selected=animalsPerGroup[1])
   })
 
     # Display Test Categories
@@ -1067,7 +1133,14 @@ server <- function(input, output, session) {
     dfSENDIG
   })
 
-    # Downloadable  dataset ----
+  output$TSTable <- renderRHandsontable({
+     rhandsontable(TSFromFile) %>%
+      hot_col(col = "TSPARMCD", type = "text") %>%
+      hot_col(col = "TSPARM", type = "text") %>%
+      hot_col(col = "TSVAL", type = "text")
+  })
+  
+  # Downloadable  dataset ----
   # make zip of all the data, all domains
   output$downloadData <- downloadHandler(
     filename = function() {
@@ -1098,11 +1171,17 @@ server <- function(input, output, session) {
         }
       # combine into zip file
       setProgress(value=1,message=paste('Combining to a zip file'))
-      zip(file,unlist(fileList, use.names=FALSE))
+      zip(file,unlist(fileList, use.names=FALSE),flags = '-r9Xj')
       zip
       })
     }
   )  
+  
+  observeEvent(input$saveTSOther, {  
+    
+    TSFromFile <<-  hot_to_r(input$TSTable)
+    writeTSCSVFile()
+  })
   
   # Produce datasets
   observeEvent(ignoreNULL=TRUE,eventExpr=input$produceDatasets,
@@ -1119,6 +1198,7 @@ server <- function(input, output, session) {
                  })
                })
   
+  isolate({updateTabItems(session, "sidebar", "SEND_IG_Structure")})
 }
 
 # NEED TO UPDATE SERVERS AND GITHUB
@@ -1134,14 +1214,16 @@ ui <- dashboardPage(
                               withSpinner(uiOutput('SENDVersions'),type=7,proxy.height='200px'),
                               withSpinner(uiOutput('Outputtype'),type=7,proxy.height='200px')
                      ),
-                     menuItem('Study design',icon=icon('calendar'),startExpanded=F,
+                    menuItem("Show structure", tabName = "SEND_IG_Structure", icon = icon('calendar')), 
+                    menuItem('Study design',icon=icon('calendar'),startExpanded=F,
                               withSpinner(uiOutput('StudyName'),type=7,proxy.height='200px'),
                               withSpinner(uiOutput('TestArticle'),type=7,proxy.height='200px'),
                               withSpinner(uiOutput('StudyType'),type=7,proxy.height='200px'),
                               withSpinner(uiOutput('Treatment'),type=7,proxy.height='200px'),
                               withSpinner(uiOutput('Subgroups'),type=7,proxy.height='200px')
                      ),
-                     menuItem('Animal information',icon=icon('paw'),startExpanded=F,
+                    menuItem("Addt'l trial summary", tabName = "Additional_Trial_Summary", icon = icon("calendar")), 
+                    menuItem('Animal information',icon=icon('paw'),startExpanded=F,
                               withSpinner(uiOutput('Species'),type=7,proxy.height='200px'),
                               withSpinner(uiOutput('Strain'),type=7,proxy.height='200px'),
                               withSpinner(uiOutput('Sex'),type=7,proxy.height='200px'),
@@ -1153,10 +1235,7 @@ ui <- dashboardPage(
                      menuItem('Produce Data',icon=icon('angle-double-right'),startExpanded=T,
                              actionButton('produceDatasets',label='Produce datasets'),
                              downloadButton("downloadData", "Download dataset")
-                     ),
-                    menuItem('Other Settings',icon=icon('cogs'),startExpanded=F,
-                             actionButton('clearSetup',label='Clear All')
-                    )
+                     )
                    )
   ),
   
@@ -1164,10 +1243,19 @@ ui <- dashboardPage(
     
     tags$script(HTML("$('body').addClass('sidebar-mini');")),
     tags$script(HTML("$('body').addClass('treeview');")),
-    h3('SEND IG structure'),
-    tableOutput("SENDIGStructure")
-  )
-  
+    tabItems(
+      tabItem(tabName = "SEND_IG_Structure",
+              h3("SEND IG Structure"),
+              tableOutput("SENDIGStructure")
+      ),
+      
+      tabItem(tabName = "Additional_Trial_Summary",
+              h3("Additional trial summary (editable)"),
+              actionButton('saveTSOther',label='Save'),
+              rHandsontableOutput("TSTable")
+      )
+    )
+  )  
 )
 
 # Run Shiny App
