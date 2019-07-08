@@ -12,7 +12,8 @@ library(xml2)
 library(xslt)
 
 GitHubPath <- 'https://raw.githubusercontent.com/phuse-org/phuse-scripts/master'
-dataPath <- 'data/send/CDISC-Safety-Pharmacology-POC'
+# dataPath <- 'data/send/CDISC-Safety-Pharmacology-POC'
+# dataPath <- 'data/send/CJUGSEND00'
 functionPath <- 'contributed/Nonclinical/R/Functions/Functions.R'
 
 source(paste(GitHubPath,functionPath,sep='/'))
@@ -35,9 +36,9 @@ server <- function(input, output,session) {
   loadData <- reactive({
     withProgress({
       if (Authenticate==T) {
-        Data <- load.GitHub.xpt.files(studyDir=dataPath,authenticate=T,User=userGitHub,Password=passwordGitHub,showProgress=T)
+        Data <- load.GitHub.xpt.files(studyDir=input$dataPath,authenticate=T,User=userGitHub,Password=passwordGitHub,showProgress=T)
       } else {
-        Data <- load.GitHub.xpt.files(studyDir=dataPath,authenticate=F,showProgress=T)
+        Data <- load.GitHub.xpt.files(studyDir=input$dataPath,authenticate=F,showProgress=T)
       }
       setProgress(value=1,message='Processing Data...')
       values$domainNames <- toupper(names(Data))
@@ -139,6 +140,9 @@ server <- function(input, output,session) {
         domainColumns <- domainColumnsNoINT
         INTflag <- F
       }
+      if (length(grep('CJUGSEND00',input$dataPath))>0) {
+        INTflag <- F
+      }
       testDataColumns <- c('USUBJID',paste0(toupper(domain),domainColumns),'ELEMENT','SEX')
       testDataColumns <- testDataColumns[testDataColumns %in% colnames(Data[[domain]])]
       testCDs <- unique(Data[[domain]][[paste0(toupper(domain),'TESTCD')]])
@@ -168,6 +172,9 @@ server <- function(input, output,session) {
         INTflag <- T
       } else {
         domainColumns <- domainColumnsNoINT
+        INTflag <- F
+      }
+      if (length(grep('CJUGSEND00',input$dataPath))>0) {
         INTflag <- F
       }
       testDataColumns <- c('USUBJID',paste0(toupper(domain),domainColumns),'ELEMENT','SEX')
@@ -239,6 +246,9 @@ server <- function(input, output,session) {
         domainColumns <- domainColumnsNoINT
         INTflag <- F
       }
+      if (length(grep('CJUGSEND00',input$dataPath))>0) {
+        INTflag <- F
+      }
       testDataColumns <- c('USUBJID',paste0(toupper(domain),domainColumns),'ELEMENT','SEX')
       testDataColumns <- testDataColumns[testDataColumns %in% colnames(Data[[domain]])]
       testCDs <- unique(Data[[domain]][[paste0(toupper(domain),'TESTCD')]]) # this will be user-defined
@@ -268,6 +278,9 @@ server <- function(input, output,session) {
         INTflag <- T
       } else {
         domainColumns <- domainColumnsNoINT
+        INTflag <- F
+      }
+      if (length(grep('CJUGSEND00',input$dataPath))>0) {
         INTflag <- F
       }
       testDataColumns <- c('USUBJID',paste0(toupper(domain),domainColumns),'ELEMENT','SEX')
@@ -369,8 +382,8 @@ server <- function(input, output,session) {
   })
   
   output$define <- renderUI({
-    doc <- read_xml(paste(GitHubPath,dataPath,'define.xml',sep='/'))
-    style <- read_xml(paste(GitHubPath,dataPath,'define2-0-0.xsl',sep='/'))
+    doc <- read_xml(paste(GitHubPath,input$dataPath,'define.xml',sep='/'))
+    style <- read_xml(paste(GitHubPath,input$dataPath,'define2-0-0.xsl',sep='/'))
     html <- xml_xslt(doc,style)
     cat(as.character(html),file='www/temp.html')
     define <- tags$iframe(src='temp.html', height='700', width='100%')
@@ -384,6 +397,9 @@ ui <- shinyUI(
                        windowTitle = 'CDISC-SEND Safety Pharmacology Proof-of-Concept Pilot'),br(),
             sidebarLayout(
               sidebarPanel(width=3,
+                           selectInput('dataPath','Select Dataset:',
+                                       choices = list(CDISC='data/send/CDISC-Safety-Pharmacology-POC',
+                                                      CJUG='data/send/CJUGSEND00')),
                            checkboxGroupInput('DOIs','Domains of Interest:',choiceNames=toupper(DOIs),choiceValues=DOIs,selected=DOIs),
                            uiOutput('tests'),
                            radioButtons('summary','Display:',c('Group Means','Individual Subjects')),
@@ -413,7 +429,9 @@ ui <- shinyUI(
                                      ),
                                      tabPanel('README',
                                               column(11,
-                                                     includeMarkdown('https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/data/send/CDISC-Safety-Pharmacology-POC/readme.txt')
+                                                     conditionalPanel(condition="input.dataPath=='data/send/CDISC-Safety-Pharmacology-POC'",
+                                                                      includeMarkdown('https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/data/send/CDISC-Safety-Pharmacology-POC/readme.txt')
+                                                     )
                                               )
                                      )
                                    )
