@@ -63,7 +63,8 @@ list.of.packages <- c("shiny",
 "utils",
 "DT",
 "pdftools",
-"rhandsontable")
+"rhandsontable",
+"parsedate")
 
 # Currently available CT Versions
 CTVersions <- c(
@@ -124,13 +125,14 @@ library(utils)
 library(DT)
 library(pdftools)
 library(rhandsontable)
+library(parsedate)
 
 if(packageVersion("SASxport") < "1.5.7") {
   stop("You need version 1.5.7 or later of SASxport")
 }
 # This section is to replace functions in 1.5.7 or SASxport to allow column lengths of less than 8 bytes
 # This gives the directory of the file where the statement was placed , to get current .R script directory
-sourceDir <- getSrcDirectory(function(dummy) {dummy})
+sourceDir <<- getSrcDirectory(function(dummy) {dummy})
 source(paste(sourceDir, "/write.xport2.R", sep=""))
 tmpfun <- get("read.xport", envir = asNamespace("SASxport"))
 environment(write.xport2) <- environment(tmpfun)
@@ -143,6 +145,10 @@ convertMenuItem <- function(mi,tabName) {
   mi$children[[1]]$attribs['data-toggle']="tab"
   mi$children[[1]]$attribs['data-value'] = tabName
   mi
+}
+# convert ISO duration to days
+DUR_to_days <- function (duration) {
+  DUR_to_seconds(duration)/(24*3600)
 }
 
 # read all domain structures
@@ -158,12 +164,13 @@ readDomainStructures <-function() {
 
 # read TS from CSV file saved
 readTSCSVFile <-function() {
+  setwd(sourceDir)
   TSFromFile <<- read.csv("TSFileSettings.csv", header=TRUE)
 }
 
-# write TS to CSV file
+# write TS to CSV file  
 writeTSCSVFile <-function() {
-  write.csv(TSFromFile,"TSFileSettings.csv")
+  write.csv(TSFromFile,"TSFileSettings.csv",row.names=FALSE)
 }
 # Add to list to be output
 addToSet <<- function(inDomain,inDescription,inDataframe) {
@@ -350,14 +357,29 @@ addDomainRow <- function(inLine,inDomain) {
       if (aLoc>1) {
         theList <- c(aSplit[[1]][[1]],
                      substring(aPart,1,aLoc-1),
-                     substring(aPart,aLoc+1,4),
+                     substring(aPart,aLoc,aLoc+4),
                      substring(aPart,aLoc+5),
                      aSplit[[1]][[3]],aSplit[[1]][[4]])
         aSplit[[1]] <<- theList
       }
     }
 
-        # special case of fields merged to first making it combine down to 4
+    # special case of fields merged to first making it combine down to 4
+    # where lookup and column type and fixed value is merged with the description
+    if (length(aSplit[[1]])==4) {
+      aPart <- trimws(aSplit[[1]][[2]])
+      aLoc <- gregexpr(pattern ="Char T",aPart)[[1]][1]
+      if (aLoc>1) {
+        theList <- c(aSplit[[1]][[1]],
+                     substring(aPart,1,aLoc-1),
+                     substring(aPart,aLoc,aLoc+4),
+                     substring(aPart,aLoc+5),
+                     aSplit[[1]][[3]],aSplit[[1]][[4]])
+        aSplit[[1]] <<- theList
+      }
+    }
+    
+    # special case of fields merged to first making it combine down to 4
     # where column type is merged with the description
     if (length(aSplit[[1]])==4) {
       aPart <- trimws(aSplit[[1]][[2]])
@@ -671,7 +693,7 @@ addDomainRow <- function(inLine,inDomain) {
     if (dataFound) bResult <- TRUE
   } # end of if not numeric
   # debug -
-  if (inDomain=="TF") {  # Debug on parsing 
+  if (inDomain=="TE") {  # Debug on parsing 
     print(paste("-----------For domain: ",inDomain))
     print(paste(" the length is:",length(aSplit[[1]])))
     print(inLine)
@@ -725,107 +747,6 @@ readSENDIG <- function() {
   convertIGRaw(SENDIGRaw)
 }
 
-setTSFile <- function(input) {
-    # create data frame based on structure
-    aDomain <- "TS"
-    print(input$studyName)
-    print(input$CTSelection)
-    print(paste("SEND Implementation Guide Version ",input$SENDVersions))
-
-    theColumns <- dfSENDIG[dfSENDIG$Domain==aDomain,]$Column
-    theLabels <- dfSENDIG[dfSENDIG$Domain==aDomain,]$Label
-    tsOut <<- setNames(data.frame(matrix(ncol = length(theColumns), nrow = 1)),
-                       theColumns
-                       )
-    # set labels for each field 
-    index <- 1
-    for (aColumn in theColumns) {
-      Hmisc::label(tsOut[[index]]) <<- theLabels[index]
-      index <- index + 1
-    }
-    aRow <- 1
-    if (!is.null(input$testArticle)) {
-      tsOut[aRow,] <<- list(input$studyName,
-                            aDomain,
-                           aRow,
-                           "",
-                           "TRT",
-                           "Investigational Therapy or Treatment",
-                           input$testArticle,
-                           "")        
-      aRow <- aRow + 1
-    }
-    if (!is.null(input$species)) {
-      tsOut[aRow,] <<- list(input$studyName,
-                            aDomain,
-                           aRow,
-                           "",
-                           "SPECIES",
-                           "Species",
-                           input$species,
-                           "")        
-      aRow <- aRow + 1
-    }
-    if (!is.null(input$studyType)) {
-      tsOut[aRow,] <<- list(input$studyName,
-                            aDomain,
-                           aRow,
-                           "",
-                           "SSTYP",
-                           "Study Type",
-                           input$studyType,
-                           "")        
-      aRow <- aRow + 1
-    }
-    if (!is.null(input$CTSelection)) {
-      tsOut[aRow,] <<- list(input$studyName,
-                            aDomain,
-                            aRow,
-                            "",
-                            "SNDCTVER",
-                            "SEND Controlled Terminology Version",
-                            paste("SEND Terminology",input$CTSelection),
-                            "")        
-      aRow <- aRow + 1
-    }
-    if (!is.null(input$SENDVersions)) {
-      tsOut[aRow,] <<- list(input$studyName,
-                            aDomain,
-                            aRow,
-                            "",
-                            "SNDIGVER",
-                            "SEND Implementation Guide Version",
-                            paste("SEND Implementation Guide Version",input$SENDVersions),
-                            "")        
-      aRow <- aRow + 1
-    }
-    if (!is.null(input$strain)) {
-      tsOut[aRow,] <<- list(input$studyName,
-                            aDomain,
-                            aRow,
-                            "",
-                            "STRAIN",
-                            "Strain/Substrain",
-                            input$strain,
-                            "")        
-      aRow <- aRow + 1
-    }
-    # Add in the other TS values
-    for(index in 1:nrow(TSFromFile)) {
-      tsOut[aRow,] <<- list(input$studyName,
-                            aDomain,
-                            aRow,
-                            "",
-                            as.character(TSFromFile$TSPARMCD[index]),
-                            as.character(TSFromFile$TSPARM[index]),
-                            as.character(TSFromFile$TSVAL[index]),
-                            "")        
-      aRow <- aRow + 1
-    }
-
-    # add to set of data
-    addToSet("TS","TRIAL SUMMARY","tsOut")
-}
 
 # set or create the output data
 setOutputData <- function(input) {
@@ -835,6 +756,9 @@ setOutputData <- function(input) {
    # save selected CT to a global variable
    gCTVersion <<-input$CTSelection
    setTSFile(input)  
+   setTEFile(input)  
+   #setTAFile(input)  
+   #setTXFile(input)  
    setAnimalDataFiles(input)
 }
 
@@ -1015,6 +939,7 @@ CTSearchOnShortName <<- function(nameList,aName) {
 source('~/PhUSE-scripts/contributed/Nonclinical/R/Functions/Functions.R')
 source(paste(sourceDir, "/SENDColumnData.R", sep=""))
 source(paste(sourceDir, "/SetAnimalDataFiles.R", sep=""))
+source(paste(sourceDir, "/SetTrialDOmains.R", sep=""))
 
 # Get GitHub Password (if possible)
 if (file.exists('~/passwordGitHub.R')) {
@@ -1044,13 +969,13 @@ server <- function(input, output, session) {
   # Set study name
   output$StudyName <- renderUI({
     # FIXME - remember last choice
-    textInput('studyName','Study Name to create:')
+    textInput('studyName','Study Name to create:',value='MyStudy')
   })
 
   # Set test article
   output$TestArticle <- renderUI({
     # FIXME - remember last choice
-    textInput('testArticle','Test article:')
+    textInput('testArticle','Test article:',value='MyDrug')
   })
   
   # Display Send versions
@@ -1088,11 +1013,11 @@ server <- function(input, output, session) {
     radioButtons('studyType','Select Study Type:',studyType,selected=studyType[1])
   })
 
-  # Display Subgroups
-  output$Subgroups <- renderUI({
+  # Display ElementOptions
+  output$ElementOptions <- renderUI({
     # FIXME - these should come from a configuration file
-    subgroups <- c("TK animals","Recovery animals")
-    checkboxGroupInput('subgroups','Select set options:',subgroups,selected=subgroups[1])
+    elementOptionChoices <- c("Pre-treatment","TK animals","Recovery animals")
+    checkboxGroupInput('elementOptions','Select element options:',elementOptionChoices,selected=unlist(elementOptionChoices))
   })
   
   # Display Number of sex choice
@@ -1123,11 +1048,6 @@ server <- function(input, output, session) {
     checkboxGroupInput('treatment',label='Select Treatment Groups:',choices=treatmentList,selected=treatmentList)
   })
 
-  # view TsData
-  output$tsData <- renderTable({
-    tsOut
-  })
-  
   # view SEND structure
   output$SENDIGStructure <- renderTable({
     dfSENDIG
@@ -1220,7 +1140,7 @@ ui <- dashboardPage(
                               withSpinner(uiOutput('TestArticle'),type=7,proxy.height='200px'),
                               withSpinner(uiOutput('StudyType'),type=7,proxy.height='200px'),
                               withSpinner(uiOutput('Treatment'),type=7,proxy.height='200px'),
-                              withSpinner(uiOutput('Subgroups'),type=7,proxy.height='200px')
+                              withSpinner(uiOutput('ElementOptions'),type=7,proxy.height='200px')
                      ),
                     menuItem("Addt'l trial summary", tabName = "Additional_Trial_Summary", icon = icon("calendar")), 
                     menuItem('Animal information',icon=icon('paw'),startExpanded=F,
