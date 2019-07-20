@@ -932,6 +932,54 @@ CTSearchOnShortName <<- function(nameList,aName) {
   aSet[aSet$CDISC.Submission.Value==aName,]$Code[1]
 }
 
+## readConfig
+# Input - List of configuration data.frames
+# Output- List of configurations, which are lists of tests
+readConfig <- function(configFiles, domain){
+  sapply(
+    configFiles,
+    function(x) {
+      if (class(x) != "data.frame") {
+        stop(paste0("configFile must be a data.frame, it was ", class(x)))
+      }
+      
+      #Detect columns for an observation configuration.
+      configFileColumns <- names(x)
+      catInd <- str_detect(configFileColumns, "(CAT)$")
+      testInd <- str_detect(configFileColumns, "(TEST)$")
+      testcdInd <- str_detect(configFileColumns, "(TESTCD)$")
+      specInd <- str_detect(configFileColumns, "(SPEC)$")
+      speciesInd <- str_detect(configFileColumns, "SPECIES")
+      sexInd <- str_detect(configFileColumns, "SEX")
+      meanInd <- str_detect(configFileColumns, "(STRESM)$")
+      sdInd <- str_detect(configFileColumns, "(STRESSD)$")
+      unitInd <- str_detect(configFileColumns, "(STRESU)$")
+      factorInd <- str_detect(configFileColumns, "(FACT)$")
+      proportionInd <- str_detect(configFileColumns,"(PROP)$")
+      
+      configurations <- apply(
+        x,
+        MARGIN = 1,
+        function(x) {
+          list(
+            cat = x[catInd],
+            test = x[testInd],
+            testcd = x[testcdInd],
+            spec = x[specInd],
+            species = x[speciesInd],
+            sex = x[sexInd],
+            mean = x[meanInd],
+            sd = x[sdInd],
+            unit = x[unitInd],
+            fact = x[factorInd],
+            prop = x[proportionInd]
+          )
+        }
+      )
+    }
+  )
+}
+
 # Source Functions
 # allow to work offline by not using the next line:
 # source('https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/contributed/Nonclinical/R/Functions/Functions.R')
