@@ -2,18 +2,21 @@
 # https://phuse-nonclinical-scripts.shinyapps.io/LBapp/
 
 # Ideas for improvement:
-#  - Add subcategory tree
-#  - Change Setting name to filters -- done
-#  - Change group by day/treatment to filter by day/treatment -- done
-#  - Fix transformations on change from baseline
-#  - Select multiple treatments/days but not all -- done
-#  - Change z-score to be like the percent change
-#  - Get rid of group mean line graph for single day -- done
-#  - Add filter to individual plot by animal ID  
-#  - Plotting multiple days separation
+#  - Add subcategory tree (backlog--requires tree package)
+#  - Fix transformations on change from baseline (maybe not?)
+#  - Change z-score to be like the percent change (maybe not?)
+#  - Add filter to individual plot by animal ID (backlog requires tree package)
+#  - Plotting multiple days with separation
+# https://stackoverflow.com/questions/28006281/ggplot-nested-x-axis-for-interaction-factor-variables-in-bar-plot
+# https://www.datacamp.com/community/tutorials/facets-ggplot-r
+# this is kind of tricky -- not sure what the desired solution is...
 
 #  - Two-way hiearchical clustering
 #  - Handle Time-Points within Days
+
+# Bugs to fix:
+# Error in Line Graph views when no tests selected or when tests removed (done)
+# PCA not always displaying data points
 
 # Load Libraries
 library(shiny)
@@ -298,7 +301,7 @@ values$treatment <- NULL
 
 # Set Heights and Widths
 sidebarWidth <- '300px'
-plotHeight <- '800px'
+plotHeight <- '575px'
 
 # Set Number of Significant Figures Places to Display in Tables
 nSigFigs <- 3
@@ -311,18 +314,42 @@ server <- function(input, output, session) {
   # Store Client Data Regarding Height and Width of Plot Containers
   cdata <- session$clientData
   
+  output$dataSource <- renderUI({
+    if (dir.exists(GitHubPath)) {
+      selectInput('dataSource','Select Data Source:',c('GitHub','local'),selected='local')
+    } else {
+      selectInput('dataSource','Select Data Source:',c('GitHub'))
+    }
+  })
+  
   # Create Drop Down to Select Studies from PhUSE GitHub Repo
   output$selectGitHubStudy <- renderUI({
-    if (Authenticate == TRUE) {
-      Req <- GET(paste('https://api.github.com/repos/phuse-org/phuse-scripts/contents/data/send'),
-                 authenticate(userGitHub,passwordGitHub))
-    } else {
-      Req <- GET(paste('https://api.github.com/repos/phuse-org/phuse-scripts/contents/data/send'))
-    }
-    contents <- content(Req,as='parsed')
-    GitHubStudies <- NULL
-    for (i in seq(length(contents))) {
-      GitHubStudies[i] <- strsplit(contents[[i]]$path,'/send/')[[1]][2]
+    req(input$dataSource)
+    if (input$dataSource=='GitHub') {
+      if (Authenticate == TRUE) {
+        Req <- GET(paste('https://api.github.com/repos/phuse-org/phuse-scripts/contents/data/send'),
+                   authenticate(userGitHub,passwordGitHub))
+      } else {
+        Req <- GET(paste('https://api.github.com/repos/phuse-org/phuse-scripts/contents/data/send'))
+      }
+      contents <- content(Req,as='parsed')
+      GitHubStudies <- NULL
+      count <- 1
+      for (i in seq(length(contents))) {
+        if (Authenticate == TRUE) {
+          Req2 <- GET(contents[[i]]$url,
+                      authenticate(userGitHub,passwordGitHub))
+        } else {
+          Req2 <- GET(contents[[i]]$url)
+        }
+        contents2 <- content(Req2,as='parsed')
+        if (length(grep('lb.xpt',contents2))>0) {
+          GitHubStudies[count] <- unlist(strsplit(contents[[i]]$path,'/send/'))[2]
+          count <- count + 1
+        }
+      }
+    } else if (input$dataSource=='local') {
+      GitHubStudies <- list.dirs(GitHubPath,full.names = F,recursive = F)
     }
     selectInput('selectGitHubStudy',label='Select Study from PhUSE GitHub:',choices =GitHubStudies,selected='PDS')
   })
@@ -357,6 +384,8 @@ server <- function(input, output, session) {
     req(input$selectGitHubStudy)
     if (input$dataSource=='GitHub') {
       values$path <- paste0('https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/data/send/',input$selectGitHubStudy)
+    } else if (input$dataSource=='local') {
+      values$path <- paste0(GitHubPath,'/',input$selectGitHubStudy)
     }
     path <- values$path
     
@@ -890,7 +919,7 @@ server <- function(input, output, session) {
   output$meanPlots <- renderUI({
     plot_output_list <- lapply(seq(length(input$tests)), function(i) {
       meanPlotname <- paste("meanPlot", i, sep="")
-      withSpinner(plotOutput(meanPlotname, height = 800, width = '100%'),type=1)
+      plotOutput(meanPlotname, height = as.numeric(unlist(strsplit(plotHeight,'px'))), width = '100%')
     })
     do.call(tagList, plot_output_list)
   })
@@ -902,92 +931,94 @@ server <- function(input, output, session) {
       meanPlotname <- paste("meanPlot", my_i, sep="")
       
       output[[meanPlotname]] <- renderPlot({
-        Data <- transformData()
-        if (input$sex != '') {
-          sexIndex <- which(Data$Sex==input$sex)
-          Data <- Data[sexIndex,]
+        if (!is.null(input$tests)) {
+          Data <- transformData()
+          if (input$sex != '') {
+            sexIndex <- which(Data$Sex==input$sex)
+            Data <- Data[sexIndex,]
+          }
+          test <- input$tests[my_i]
+          if (input$sex == '') {
+            meanData <- createMeansTable(Data,test,c('Treatment','Sex','Day'))
+          } else {
+            meanData <- createMeansTable(Data,test,c('Treatment','Day'))
+          }
+          N <- length(unique(meanData$Treatment))
+          my_color_ramp <- my_color_palette(N)
+          testName <- values$testDictionaryTests[which(values$testDictionaryCodes==test)]
+          testUnit <- values$testDictionaryUnits[which(values$testDictionaryCodes==test)]
+          testNameUnit <- paste0(testName,' (',testUnit,')')
+          if (input$sex == '') {
+            p <- ggplot(data=meanData,aes(x=Day,y=get(paste(test,'mean',sep='_')),group=interaction(Treatment,Sex),colour=Treatment,shape=Sex))
+          } else {
+            p <- ggplot(data=meanData,aes(x=Day,y=get(paste(test,'mean',sep='_')),group=Treatment,colour=Treatment))
+          }
+          p <- p + geom_point(size=3) + geom_line() + ggtitle(testNameUnit) + scale_colour_manual(name='Treatment',values=my_color_ramp) +
+            theme(text = element_text(size=18)) + xlab('Day')
+          if (input$lineErrorbars!='none') {
+            p <- p + geom_errorbar(aes(ymin=get(paste(test,'mean',sep='_'))-get(paste(test,input$lineErrorbars,sep='_')),
+                                       ymax=get(paste(test,'mean',sep='_'))+get(paste(test,input$lineErrorbars,sep='_'))),
+                                   size=.3,width=0.3)
+          }
+          if (input$transformation == 'percentChange') {
+            p <- p + ylab('Percent Change from Control Mean (%)')
+          } else if (input$transformation == 'zScore') {
+            p <- p + ylab('Z-Score')
+          } else {
+            p <- p + ylab(paste0('Raw Value'))
+          }
+          print(p)
         }
-        test <- input$tests[my_i]
-        if (input$sex == '') {
-          meanData <- createMeansTable(Data,test,c('Treatment','Sex','Day'))
-        } else {
-          meanData <- createMeansTable(Data,test,c('Treatment','Day'))
-        }
-        N <- length(unique(meanData$Treatment))
-        my_color_ramp <- my_color_palette(N)
-        testName <- values$testDictionaryTests[which(values$testDictionaryCodes==test)]
-        testUnit <- values$testDictionaryUnits[which(values$testDictionaryCodes==test)]
-        testNameUnit <- paste0(testName,' (',testUnit,')')
-        if (input$sex == '') {
-          p <- ggplot(data=meanData,aes(x=Day,y=get(paste(test,'mean',sep='_')),group=interaction(Treatment,Sex),colour=Treatment,shape=Sex))
-        } else {
-          p <- ggplot(data=meanData,aes(x=Day,y=get(paste(test,'mean',sep='_')),group=Treatment,colour=Treatment))
-        }
-        p <- p + geom_point(size=3) + geom_line() + ggtitle(testNameUnit) + scale_colour_manual(name='Treatment',values=my_color_ramp) +
-          theme(text = element_text(size=18)) + xlab('Day')
-        if (input$lineErrorbars!='none') {
-          p <- p + geom_errorbar(aes(ymin=get(paste(test,'mean',sep='_'))-get(paste(test,input$lineErrorbars,sep='_')),
-                                     ymax=get(paste(test,'mean',sep='_'))+get(paste(test,input$lineErrorbars,sep='_'))),
-                                 size=.3,width=0.3)
-        }
-        if (input$transformation == 'percentChange') {
-          p <- p + ylab('Percent Change from Control Mean (%)')
-        } else if (input$transformation == 'zScore') {
-          p <- p + ylab('Z-Score')
-        } else {
-          p <- p + ylab(paste0('Raw Value'))
-        }
-        print(p)
       })
     })
   }
   
   # Display Individual Line Plot Figure
-  output$linePlot <- renderPlotly({
-    if (!is.null(input$tests)) {
-      Data <- longData()
-      if (input$filterBy=='Treatment') {
-        groupBy <- 'Day'
-      } else {
-        groupBy <- 'Treatment'
-      }
-      N <- length(unique(Data[[groupBy]]))
-      my_color_ramp <- my_color_palette(N)
-      if (input$sex == '') {
-        p <- ggplot(data=Data,aes(x=variable,y=value,group=ID,colour=get(groupBy),shape=Sex,label=ID))
-      } else {
-        p <- ggplot(data=Data,aes(x=variable,y=value,group=ID,colour=get(groupBy),label=ID))
-      }
-      p <- p + geom_point(size=3) + geom_path() + xlab('Test') + scale_colour_manual(name=groupBy,values=my_color_ramp) +
-        theme(text = element_text(size=18))
-      print(p)
-      if (input$transformation == 'percentChange') {
-        p <- p + ylab('Percent Change from Control Mean (%)')
-      } else if (input$transformation == 'zScore') {
-        p <- p + ylab('Z-Score')
-      } else {
-        p <- p + ylab('Raw Value')
-      }
-      if (input$filterBy=='Treatment') {
-        if (length(unique(Data$Treatment))==1) {
-          p <- p + ggtitle(paste0('Treatment: ',unique(Data$Treatment)))
-        }
-      } else {
-        if (length(unique(Data$Day))==1) {
-          p <- p + ggtitle(paste0('Day: ',unique(Data$Day)))
-        }
-      }
-      p <- ggplotly(p,tooltip='label')
-      p$elementId <- NULL
-      p
-    }
-  })
+  # output$linePlot <- renderPlotly({
+  #   if (!is.null(input$tests)) {
+  #     Data <- longData()
+  #     if (input$filterBy=='Treatment') {
+  #       groupBy <- 'Day'
+  #     } else {
+  #       groupBy <- 'Treatment'
+  #     }
+  #     N <- length(unique(Data[[groupBy]]))
+  #     my_color_ramp <- my_color_palette(N)
+  #     if (input$sex == '') {
+  #       p <- ggplot(data=Data,aes(x=variable,y=value,group=ID,colour=get(groupBy),shape=Sex,label=ID))
+  #     } else {
+  #       p <- ggplot(data=Data,aes(x=variable,y=value,group=ID,colour=get(groupBy),label=ID))
+  #     }
+  #     p <- p + geom_point(size=3) + geom_path() + xlab('Test') + scale_colour_manual(name=groupBy,values=my_color_ramp) +
+  #       theme(text = element_text(size=18))
+  #     print(p)
+  #     if (input$transformation == 'percentChange') {
+  #       p <- p + ylab('Percent Change from Control Mean (%)')
+  #     } else if (input$transformation == 'zScore') {
+  #       p <- p + ylab('Z-Score')
+  #     } else {
+  #       p <- p + ylab('Raw Value')
+  #     }
+  #     if (input$filterBy=='Treatment') {
+  #       if (length(unique(Data$Treatment))==1) {
+  #         p <- p + ggtitle(paste0('Treatment: ',unique(Data$Treatment)))
+  #       }
+  #     } else {
+  #       if (length(unique(Data$Day))==1) {
+  #         p <- p + ggtitle(paste0('Day: ',unique(Data$Day)))
+  #       }
+  #     }
+  #     p <- ggplotly(p,tooltip='label')
+  #     p$elementId <- NULL
+  #     p
+  #   }
+  # })
   
   # Display Individual Line Plot Figures
   output$plots <- renderUI({
     plot_output_list <- lapply(seq(length(input$tests)), function(i) {
       plotname <- paste("plot", i, sep="")
-      withSpinner(plotlyOutput(plotname, height = 800, width = '100%'),type=1)
+      plotlyOutput(plotname, height = as.numeric(unlist(strsplit(plotHeight,'px'))), width = '100%')
     })
     do.call(tagList, plot_output_list)
   })
@@ -997,42 +1028,44 @@ server <- function(input, output, session) {
     local({
       my_i <- i
       plotname <- paste("plot", my_i, sep="")
-      
+
       output[[plotname]] <- renderPlotly({
-        Data <- transformData()
-        if (input$sex != '') {
-          sexIndex <- which(Data$Sex==input$sex)
-          Data <- Data[sexIndex,]
+        if (!is.null(input$tests)) {
+          Data <- transformData()
+          if (input$sex != '') {
+            sexIndex <- which(Data$Sex==input$sex)
+            Data <- Data[sexIndex,]
+          }
+          test <- input$tests[my_i]
+          Data$Treatment <- factor(Data$Treatment,levels=values$treatmentOrder)
+          if (input$filterBy=='Treatment') {
+            groupBy <- 'Day'
+          } else {
+            groupBy <- 'Treatment'
+          }
+          N <- length(unique(Data$Treatment))
+          my_color_ramp <- my_color_palette(N)
+          testName <- values$testDictionaryTests[which(values$testDictionaryCodes==test)]
+          testUnit <- values$testDictionaryUnits[which(values$testDictionaryCodes==test)]
+          testNameUnit <- paste0(testName,' (',testUnit,')')
+          if (input$sex == '') {
+            p <- ggplot(data=Data,aes(x=Day,y=get(test),group=ID,colour=Treatment,shape=Sex,label=ID))
+          } else {
+            p <- ggplot(data=Data,aes(x=Day,y=get(test),group=ID,colour=Treatment,label=ID))
+          }
+          p <- p + geom_point(size=3)+geom_path() + ggtitle(testNameUnit) + scale_colour_manual(name=groupBy,values=my_color_ramp) +
+            theme(text = element_text(size=18)) + xlab('Day')
+          if (input$transformation == 'percentChange') {
+            p <- p + ylab('Percent Change from Control Mean (%)')
+          } else if (input$transformation == 'zScore') {
+            p <- p + ylab('Z-Score')
+          } else {
+            p <- p + ylab(paste0('Raw Value'))
+          }
+          p <- ggplotly(p,tooltip='label')
+          p$elementId <- NULL
+          p
         }
-        test <- input$tests[my_i]
-        Data$Treatment <- factor(Data$Treatment,levels=values$treatmentOrder)
-        if (input$filterBy=='Treatment') {
-          groupBy <- 'Day'
-        } else {
-          groupBy <- 'Treatment'
-        }
-        N <- length(unique(Data$Treatment))
-        my_color_ramp <- my_color_palette(N)
-        testName <- values$testDictionaryTests[which(values$testDictionaryCodes==test)]
-        testUnit <- values$testDictionaryUnits[which(values$testDictionaryCodes==test)]
-        testNameUnit <- paste0(testName,' (',testUnit,')')
-        if (input$sex == '') {
-          p <- ggplot(data=Data,aes(x=Day,y=get(test),group=ID,colour=Treatment,shape=Sex,label=ID))
-        } else {
-          p <- ggplot(data=Data,aes(x=Day,y=get(test),group=ID,colour=Treatment,label=ID))
-        }
-        p <- p + geom_point(size=3)+geom_path() + ggtitle(testNameUnit) + scale_colour_manual(name=groupBy,values=my_color_ramp) +
-          theme(text = element_text(size=18)) + xlab('Day')
-        if (input$transformation == 'percentChange') {
-          p <- p + ylab('Percent Change from Control Mean (%)')
-        } else if (input$transformation == 'zScore') {
-          p <- p + ylab('Z-Score')
-        } else {
-          p <- p + ylab(paste0('Raw Value'))
-        }
-        p <- ggplotly(p,tooltip='label')
-        p$elementId <- NULL
-        p
       })
     })
   }
@@ -1165,7 +1198,7 @@ server <- function(input, output, session) {
         }
       }
       p <- gpairs_lower(p)
-      p <- ggplotly(p,height=800,width=1000,tooltip='label')
+      p <- ggplotly(p,height=as.numeric(unlist(strsplit(plotHeight,'px'))),width=as.numeric(unlist(strsplit(plotHeight,'px')))*1.25,tooltip='label')
       p$elementId <- NULL
       p
     }
@@ -1224,109 +1257,129 @@ server <- function(input, output, session) {
     p <- ggbiplot(pData.pca,obs.scale=1,var.scale=1,groups=Groups,groupName='Treatment',shape=Shape,label=Label,
                   color_ramp=my_color_ramp,ellipse=input$ellipse,ellipse.prob = input$ellipseConf/100,circle=F) +
       theme(text=element_text(size=18))
-    p <- ggplotly(p,height=800,width=1250,tooltip='label')
+    p <- ggplotly(p,height=as.numeric(unlist(strsplit(plotHeight,'px'))),width=as.numeric(unlist(strsplit(plotHeight,'px')))*1.25+300,tooltip='label')
     p$elementId <- NULL
     p
   })
   
+  observe({
+    if (input$changeFromBaseline==T) {
+      isolate(updateRadioButtons(session,'transformation',choiceNames=c('Percent Change from Baseline','Z-Score','None'),
+                         choiceValues=c('percentChange','zScore','none'),selected=input$transformation))
+    } else if (input$changeFromBaseline==F) {
+      isolate(updateRadioButtons(session,'transformation',choiceNames=c('Percent Change from Control','Z-Score','None'),
+                         choiceValues=c('percentChange','zScore','none'),selected=input$transformation))
+    }
+  })
+  
 }
-
-# NEED TO UPDATE SERVERS AND GITHUB
 
 ui <- dashboardPage(
   
   dashboardHeader(title='LB Visualizations',titleWidth=sidebarWidth),
   
-  dashboardSidebar(width=sidebarWidth,
-                   sidebarMenu(id='sidebar',
-                     menuItem('Tables',icon=icon('table'),startExpanded=T,
-                              menuSubItem('Group Means',tabName='meanTable',icon=icon('th-list'),selected=T),
-                              menuSubItem('Individuals',tabName='individualTable',icon=icon('th'))
-                     ),
-                     menuItem('Figures',icon=icon('area-chart'),startExpanded=T,
-                              convertMenuItem(menuItem('Bar Graph',tabName='barPlot',icon=icon('bar-chart'),
-                                                       menuSubItem(icon=NULL,
-                                                                   radioButtons('barErrorbars',label='Select Type of Error Bars:',
-                                                                                choices=list('None'='none','Standard Deviation'='sd','Standard Error of Mean'='se'),
-                                                                                selected='se')                                                       )
-                              ),'barPlot'),
-                              convertMenuItem(menuItem('Point Plot',tabName='pointPlot',icon=icon('genderless'),
-                                                       menuSubItem(icon=NULL,
-                                                                   radioButtons('pointErrorbars',label='Select Type of Error Bars:',
-                                                                                choices=list('None'='none','Standard Deviation'='sd','Standard Error of Mean'='se'),
-                                                                                selected='se')                                                       )
-                              ),'pointPlot'),
-                              convertMenuItem(menuItem(text=tags$b('Line Graph',tags$br(),'(Group Means)'),tabName='meanLinePlot',icon=icon('line-chart'),
-                                                       menuSubItem(icon=NULL,
-                                                                   radioButtons('lineErrorbars',label='Select Type of Error Bars:',
-                                                                                choices=list('None'='none','Standard Deviation'='sd','Standard Error of Mean'='se'),
-                                                                                selected='se')                                                       )
-                              ),'meanLinePlot'),
-                              menuItem(text=tags$b('Line Graph',tags$br(),'(Individuals)'),tabName='linePlot',icon=icon('random')),
-                              # menuItem('Box Plot',tabName='boxPlot',icon=icon('cube')),
-                              convertMenuItem(menuItem('Box Plot',tabName='boxPlot',icon=icon('cube'),
-                                                       menuSubItem(icon=NULL,
-                                                                   checkboxInput('addPoints','Add Individual Data Points?',value=F)                                                       )
-                              ),'boxPlot'),
-                              menuItem('Scatter Plots',tabName='scatterPlot',icon=icon('braille')),
-                              convertMenuItem(menuItem('PCA',tabName='PCA',icon=icon('codepen'),
-                                                       menuSubItem(icon=NULL,
-                                                                   checkboxInput('ellipse','Show Treatment Group Ellipses?',value=F)
-                                                       ),
-                                                       conditionalPanel(condition='input.ellipse==true',
-                                                                        numericInput('ellipseConf','Percent Confidence:',min=0,max=100,value=95,step=5)
-                                                       )
-                              ),'PCA')
-                     ),
-                     menuItem('Select Dataset',icon=icon('database'),startExpanded=T,
-                              selectInput('dataSource','Select Data Source:',c('GitHub')),
-                              conditionalPanel(
-                                condition = 'input.dataSource=="GitHub"',
-                                uiOutput('selectGitHubStudy')
-                              ),
-                              # selectInput('selectGitHubStudy',label='Select Study from PhUSE GitHub:',choices ='PDS',selected='PDS'),
-                              conditionalPanel(
-                                condition = 'input.dataSource=="local"',
-                                actionButton('chooseBWfile','Choose a BW Domain File')
-                              ),
-                              h5('Study Folder Location:'),
-                              verbatimTextOutput('bwFilePath')
-                     ),
-                     menuItem('Select Tests',icon=icon('flask'),startExpanded=T,
-                              withSpinner(uiOutput('testCategories'),type=7,proxy.height='200px'),
-                              withSpinner(uiOutput('tests'),type=7,proxy.height='200px'),
-                              actionButton('clearTests',label='Clear All'),
-                              actionButton('displayTests',label='Display All')
-                     ),
-                     menuItem('Filters',icon=icon('filter'),startExpanded=T,
-                              # selectInput('groupBy',label='Group by Treatment or Day?',choices=c('Treatment','Day'),selected='Day'),
-                              selectInput('filterBy',label='Filter by Treatment or Day?',choices=c('Treatment','Day'),selected='Treatment'),
-                              conditionalPanel(
-                                condition = 'input.filterBy == "Day"',
-                                withSpinner(uiOutput('day'),type=7,proxy.height='200px')
-                              ),
-                              conditionalPanel(
-                                condition = 'input.filterBy == "Treatment"',
-                                withSpinner(uiOutput('treatment'),type=7,proxy.height='200px')
-                              ),
-                              radioButtons('sex',label='Select Sex:',choices=list(Male='M',Female='F',Both=''),selected=''),
-                              checkboxInput('changeFromBaseline','Calculate Change from Baseline?',value=F),
-                              conditionalPanel(condition='input.changeFromBaseline==false',
-                                               radioButtons('transformation',label='Select Transformation:',selected='zScore',
-                                                            choiceNames=c('Percent Change from Control','Z-Score','None'),
-                                                            choiceValues=c('percentChange','zScore','none'))
-                              ),
-                              conditionalPanel(condition='input.changeFromBaseline==true',
-                                               radioButtons('transformation',label='Select Transformation:',selected='zScore',
-                                                            choiceNames=c('Percent Change from Baseline','Z-Score','None'),
-                                                            choiceValues=c('percentChange','zScore','none'))
-                              ),
-                              conditionalPanel(condition='input.changeFromBaseline==false & input.transformation=="percentChange"',
-                                               uiOutput('selectControl')
-                              )
-                     ),
-                     menuItem('Source Code',icon=icon('code'),href='https://github.com/phuse-org/phuse-scripts/blob/master/contributed/Nonclinical/R/LBapp/LBapp.R')
-                   )
+  dashboardSidebar(
+    
+    # Add Scroll Bar to sidebarMenu
+    tags$head(
+      tags$style(
+        HTML(".sidebar {height: 94vh; overflow-y: auto;}")
+      )
+    ),
+    
+    width=sidebarWidth,
+    sidebarMenu(id='sidebar',
+                menuItem('Figures',icon=icon('area-chart'),startExpanded=T,
+                         convertMenuItem(menuItem('Box Plot',tabName='boxPlot',icon=icon('cube'),startExpanded = T,
+                                                  menuSubItem(icon=NULL,
+                                                              checkboxInput('addPoints','Add Individual Data Points?',value=F)                                                       )
+                         ),'boxPlot'),
+                         convertMenuItem(menuItem('Bar Graph',tabName='barPlot',icon=icon('bar-chart'),
+                                                  menuSubItem(icon=NULL,
+                                                              radioButtons('barErrorbars',label='Select Type of Error Bars:',
+                                                                           choices=list('None'='none','Standard Deviation'='sd','Standard Error of Mean'='se'),
+                                                                           selected='se')                                                       )
+                         ),'barPlot'),
+                         convertMenuItem(menuItem('Point Plot',tabName='pointPlot',icon=icon('genderless'),
+                                                  menuSubItem(icon=NULL,
+                                                              radioButtons('pointErrorbars',label='Select Type of Error Bars:',
+                                                                           choices=list('None'='none','Standard Deviation'='sd','Standard Error of Mean'='se'),
+                                                                           selected='se')                                                       )
+                         ),'pointPlot'),
+                         convertMenuItem(menuItem(text=tags$b('Line Graph',tags$br(),'(Group Means)'),tabName='meanLinePlot',icon=icon('line-chart'),
+                                                  menuSubItem(icon=NULL,
+                                                              radioButtons('lineErrorbars',label='Select Type of Error Bars:',
+                                                                           choices=list('None'='none','Standard Deviation'='sd','Standard Error of Mean'='se'),
+                                                                           selected='se')                                                       )
+                         ),'meanLinePlot'),
+                         menuItem(text=tags$b('Line Graph',tags$br(),'(Individuals)'),tabName='linePlot',icon=icon('random')),
+                         menuItem('Scatter Plots',tabName='scatterPlot',icon=icon('braille')),
+                         convertMenuItem(menuItem('PCA',tabName='PCA',icon=icon('codepen'),
+                                                  menuSubItem(icon=NULL,
+                                                              checkboxInput('ellipse','Show Treatment Group Ellipses?',value=F)
+                                                  ),
+                                                  conditionalPanel(condition='input.ellipse==true',
+                                                                   numericInput('ellipseConf','Percent Confidence:',min=0,max=100,value=95,step=5)
+                                                  )
+                         ),'PCA')
+                         
+                ),
+                menuItem('Tables',icon=icon('table'),startExpanded=T,
+                         menuSubItem('Group Means',tabName='meanTable',icon=icon('th-list')),
+                         menuSubItem('Individual Data',tabName='individualTable',icon=icon('th')
+                         )
+                ),
+                menuItem('Select Dataset',icon=icon('database'),startExpanded=T,
+                         # selectInput('dataSource','Select Data Source:',c('GitHub')),
+                         uiOutput('dataSource'),
+                         # conditionalPanel(
+                           # condition = 'input.dataSource=="GitHub"',
+                           uiOutput('selectGitHubStudy'),
+                         # ),
+                         # selectInput('selectGitHubStudy',label='Select Study from PhUSE GitHub:',choices ='PDS',selected='PDS'),
+                         # conditionalPanel(
+                           # condition = 'input.dataSource=="local"',
+                           # actionButton('chooseBWfile','Choose a BW Domain File')
+                         # ),
+                         h5('Study Folder Location:'),
+                         verbatimTextOutput('bwFilePath')
+                ),
+                menuItem('Select Tests',icon=icon('flask'),startExpanded=T,
+                         withSpinner(uiOutput('testCategories'),type=7,proxy.height='200px'),
+                         withSpinner(uiOutput('tests'),type=7,proxy.height='200px'),
+                         actionButton('clearTests',label='Clear All'),
+                         actionButton('displayTests',label='Display All')
+                ),
+                menuItem('Filters',icon=icon('filter'),startExpanded=T,
+                         # selectInput('groupBy',label='Group by Treatment or Day?',choices=c('Treatment','Day'),selected='Day'),
+                         radioButtons('filterBy',label='Sort by Treatment or Day?',choices=c('Treatment','Day'),selected='Treatment'),
+                         # conditionalPanel(
+                           # condition = 'input.filterBy == "Day"',
+                           withSpinner(uiOutput('day'),type=7,proxy.height='200px'),
+                         # ),
+                         # conditionalPanel(
+                           # condition = 'input.filterBy == "Treatment"',
+                           withSpinner(uiOutput('treatment'),type=7,proxy.height='200px'),
+                         # ),
+                         radioButtons('sex',label='Select Sex:',choices=list(Male='M',Female='F',Both=''),selected=''),
+                         # uiOutput('selectSubjects'),
+                         checkboxInput('changeFromBaseline','Calculate Change from Baseline?',value=F),
+                         # conditionalPanel(condition='input.changeFromBaseline==false',
+                                          radioButtons('transformation',label='Select Transformation:',selected='zScore',
+                                                       choiceNames=c('Percent Change from Control','Z-Score','None'),
+                                                       choiceValues=c('percentChange','zScore','none')),
+                         # ),
+                         # conditionalPanel(condition='input.changeFromBaseline==true',
+                         #                  radioButtons('transformation',label='Select Transformation:',selected='zScore',
+                         #                               choiceNames=c('Percent Change from Baseline','Z-Score','None'),
+                         #                               choiceValues=c('percentChange','zScore','none'))
+                         # ),
+                         conditionalPanel(condition='input.changeFromBaseline==false & input.transformation=="percentChange"',
+                                          uiOutput('selectControl')
+                         )
+                ),
+                menuItem('Source Code',icon=icon('code'),href='https://github.com/phuse-org/phuse-scripts/blob/master/contributed/Nonclinical/R/LBapp/LBapp.R')
+    )
   ),
   
   dashboardBody(
@@ -1366,22 +1419,22 @@ ui <- dashboardPage(
               # )
       ),
       tabItem(tabName='linePlot',
-              conditionalPanel(
-                # condition='(input.filterBy=="Day" & input.day!="All Days") | (input.filterBy=="Treatment" &input.treatment!="All Treatments")',
-                condition="(typeof input.day !== 'undefined' && input.day > 0 && input.day.length==1)",
-                h3('Line Plot of Individual Subjects:'),
-                withSpinner(plotlyOutput('linePlot',height=plotHeight),type=1)
-              ),
-              conditionalPanel(
-                # condition='(input.filterBy=="Day" & input.day=="All Days") | (input.filterBy=="Treatment" &input.treatment=="All Treatments")',
-                condition="(typeof input.day !== 'undefined' && input.day.length!=1)",
-                h3('Line Plots of Individual Subjects:'),
+              # conditionalPanel(
+              #   # condition='(input.filterBy=="Day" & input.day!="All Days") | (input.filterBy=="Treatment" &input.treatment!="All Treatments")',
+              #   condition="(typeof input.day !== 'undefined' && input.day > 0 && input.day.length==1)",
+              #   h3('Line Plot of Individual Subjects:'),
+              #   withSpinner(plotlyOutput('linePlot',height=plotHeight),type=1)
+              # ),
+              # conditionalPanel(
+              #   # condition='(input.filterBy=="Day" & input.day=="All Days") | (input.filterBy=="Treatment" &input.treatment=="All Treatments")',
+              #   condition="(typeof input.day !== 'undefined' && input.day.length!=1)",
+              #   h3('Line Plots of Individual Subjects:'),
                 uiOutput('plots')
-              ),
-              conditionalPanel(
-                condition="(typeof input.day === 'undefined')",
-                h3('Select Filter by Day to Initialize Plot!')
-              )
+              # ),
+              # conditionalPanel(
+                # condition="(typeof input.day === 'undefined')",
+                # h3('Select Filter by Day to Initialize Plot!')
+              # )
       ),
       tabItem(tabName='boxPlot',
               h3('Box and Whisker Plot:'),
