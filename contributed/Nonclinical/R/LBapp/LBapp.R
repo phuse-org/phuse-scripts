@@ -35,6 +35,8 @@ library(tools)
 library(Hmisc)
 library(DT)
 
+# Kevin Tests
+
 # Functions
 convertMenuItem <- function(mi,tabName) {
   mi$children[[1]]$attribs['data-toggle']="tab"
