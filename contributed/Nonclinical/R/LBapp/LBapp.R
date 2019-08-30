@@ -282,6 +282,7 @@ if (file.exists('passwordGitHub.R')) {
   Authenticate <- TRUE
 } else {
   Authenticate <- FALSE
+  GitHubPath <- '~/PhUSE/Repo/trunk/data/send'
 }
 
 # Setup Plot Color Ramp
