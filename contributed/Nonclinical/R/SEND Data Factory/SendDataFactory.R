@@ -24,8 +24,11 @@
 # [Bob] Structure xls file no longer needed, as now read from SEND IG directly
 # [Bob] Read rest of TS values from a csv file that can be edited on screen and saved
 #
+# working on
+# [Bob] Creates TA, TE, TX domains
+# [Bob] Animal should only have 1 TBW, at the end of animal disposition
+#
 # Next steps:
-# [Bob] Add remaining TS neede values from a file to read in
 # [Bob] Test output against validator
 # [Bob] Animals per group should be a single selection
 # [Kevin] Update so that no errors occur in main window on initial run
@@ -33,11 +36,9 @@
 # [Kevin] Update measurement choices to cover all possible 3.1 domains
 # [Kevin] Configuration files for ranges of numeric fields
 # Output of all domains selected
-#   [Eli] Trial domains
 #   [Eli] Animal demographics and disposition 
 #   [Bob] In-life domains 
 #   [Bob] Post mortem domains 
-#   [] Animal should only have 1 TBW, at the end
 # Implementation for SEND 3.1 first, then DART, SEND 3.0
 #     
 #
@@ -172,6 +173,18 @@ readTSCSVFile <-function() {
 writeTSCSVFile <-function() {
   write.csv(TSFromFile,"TSFileSettings.csv",row.names=FALSE)
 }
+
+# read Dose from CSV file saved
+readDoseFile <-function() {
+  setwd(sourceDir)
+  DoseFromFile <<- read.csv("DosingConfiguration.csv", header=TRUE)
+}
+
+# write TS to CSV file  
+writeDoseFile <-function() {
+  write.csv(DoseFromFile,"DosingConfiguration.csv",row.names=FALSE)
+}
+
 # Add to list to be output
 addToSet <<- function(inDomain,inDescription,inDataframe) {
   index <- nrow(domainDFsMade)
@@ -757,8 +770,10 @@ setOutputData <- function(input) {
    gCTVersion <<-input$CTSelection
    setTSFile(input)  
    setTEFile(input)  
-   #setTAFile(input)  
-   #setTXFile(input)  
+   setTAFile(input)  
+   setTXFile(input) 
+   setDMFile(input)
+   setSEFile(input)
    setAnimalDataFiles(input)
 }
 
@@ -987,7 +1002,8 @@ readConfig <- function(configFiles, domain){
 source('~/PhUSE-scripts/contributed/Nonclinical/R/Functions/Functions.R')
 source(paste(sourceDir, "/SENDColumnData.R", sep=""))
 source(paste(sourceDir, "/SetAnimalDataFiles.R", sep=""))
-source(paste(sourceDir, "/SetTrialDOmains.R", sep=""))
+source(paste(sourceDir, "/SetTrialDomains.R", sep=""))
+source(paste(sourceDir, "/SetAnimalDomains.R", sep=""))
 
 # Get GitHub Password (if possible)
 if (file.exists('~/passwordGitHub.R')) {
@@ -1010,7 +1026,8 @@ server <- function(input, output, session) {
   readDomainStructures()
   # Read TS domain other values
   readTSCSVFile()
-
+  readDoseFile()
+  
   # Store Client Data Regarding previous choices
   cdata <- session$clientData
   
@@ -1064,15 +1081,15 @@ server <- function(input, output, session) {
   # Display ElementOptions
   output$ElementOptions <- renderUI({
     # FIXME - these should come from a configuration file
-    elementOptionChoices <- c("Pre-treatment","TK animals","Recovery animals")
+    elementOptionChoices <- c("Pre-treatment","Recovery")
     checkboxGroupInput('elementOptions','Select element options:',elementOptionChoices,selected=unlist(elementOptionChoices))
   })
   
   # Display Number of sex choice
   output$Sex <- renderUI({
     # FIXME - these should come from a configuration file
-    sex <- c("Male","Female")
-    checkboxGroupInput('sex','Select sex:',sex,selected=c(sex))
+    sexList <- c("Male","Female")
+    checkboxGroupInput('sex','Select sex:',sexList,selected=c(sexList))
   })
 
     # Display Number of animals per group
@@ -1082,7 +1099,14 @@ server <- function(input, output, session) {
     radioButtons('animalsPerGroup','Select animals Per Group:',animalsPerGroup,selected=animalsPerGroup[1])
   })
 
-    # Display Test Categories
+  # Display Number of TK animals per group
+  output$TKAnimalsPerGroup <- renderUI({
+    # FIXME - these should come from a configuration file
+    TKanimalsPerGroupList <- c("0","2","4","6","8")
+    radioButtons('TKanimalsPerGroup','Select TK animals Per Group:',TKanimalsPerGroupList,selected=TKanimalsPerGroupList[1])
+  })
+  
+  # Display Test Categories
   output$OutputCategories <- renderUI({
   # FIXME - these should come from a configuration file
     testCategories <- c("Exposure","Body weights","Mass observations","Food consumption","Urinanalysis","Hematology","Organ weights","Macropathology","Micropathology","ECG")
@@ -1092,7 +1116,7 @@ server <- function(input, output, session) {
   # Display Treatment Selection
   output$Treatment <- renderUI({
     # FIXME - these should come from a configuration file
-    treatmentList <- c("Control group","Group 2: Low dose","Group 3: Mid dose","Group 4: High dose")
+    treatmentList <- c("Vehicle Control","Group 2: Low dose","Group 3: Mid dose","Group 4: High dose")
     checkboxGroupInput('treatment',label='Select Treatment Groups:',choices=treatmentList,selected=treatmentList)
   })
 
@@ -1108,7 +1132,16 @@ server <- function(input, output, session) {
       hot_col(col = "TSVAL", type = "text")
   })
   
-  # Downloadable  dataset ----
+  output$DoseTable <- renderRHandsontable({
+    rhandsontable(DoseFromFile) %>%
+      hot_col(col = "Dose.group", type = "text") %>%
+      hot_col(col = "Male.dose.level", type = "text") %>%
+      hot_col(col = "Male.dose.units", type = "text") %>%
+      hot_col(col = "Female.dose.level", type = "text") %>%
+      hot_col(col = "Female.dose.units", type = "text")
+  })
+
+    # Downloadable  dataset ----
   # make zip of all the data, all domains
   output$downloadData <- downloadHandler(
     filename = function() {
@@ -1129,7 +1162,7 @@ server <- function(input, output, session) {
         setProgress(value=0,message='Dataset file preparation')
         for (aRow in 2:nrow(domainDFsMade)) {
           # append name with domain to make up the individual files that go into the zip
-          filePart <- paste(dirname(file),.Platform$file.sep,domainDFsMade$Domain[aRow],".xpt",sep="")
+          filePart <- paste(dirname(file),.Platform$file.sep,tolower(domainDFsMade$Domain[aRow]),".xpt",sep="")
           # pass the data frame itself instead of its name as a string
           aDF <- get(domainDFsMade$Dataframe[aRow])
           writeDatasetToTempFile(aDF,domainDFsMade$Domain[aRow],domainDFsMade$Description[aRow],filePart)
@@ -1149,6 +1182,11 @@ server <- function(input, output, session) {
     
     TSFromFile <<-  hot_to_r(input$TSTable)
     writeTSCSVFile()
+  })
+
+    observeEvent(input$saveDoseConf, {  
+    DoseFromFile <<-  hot_to_r(input$DoseTable)
+    writeDoseFile()
   })
   
   # Produce datasets
@@ -1191,12 +1229,14 @@ ui <- dashboardPage(
                               withSpinner(uiOutput('ElementOptions'),type=7,proxy.height='200px')
                      ),
                     menuItem("Addt'l trial summary", tabName = "Additional_Trial_Summary", icon = icon("calendar")), 
+                    menuItem("Dosing configuration", tabName = "Dosing_Configuration", icon = icon("calendar")), 
                     menuItem('Animal information',icon=icon('paw'),startExpanded=F,
                               withSpinner(uiOutput('Species'),type=7,proxy.height='200px'),
                               withSpinner(uiOutput('Strain'),type=7,proxy.height='200px'),
                               withSpinner(uiOutput('Sex'),type=7,proxy.height='200px'),
-                              withSpinner(uiOutput('AnimalsPerGroup'),type=7,proxy.height='200px')
-                     ),
+                              withSpinner(uiOutput('AnimalsPerGroup'),type=7,proxy.height='200px'),
+                              withSpinner(uiOutput('TKAnimalsPerGroup'),type=7,proxy.height='200px')
+                    ),
                      menuItem('Data selections',icon=icon('flask'),startExpanded=F,
                               withSpinner(uiOutput('OutputCategories'),type=7,proxy.height='200px')
                      ),
@@ -1221,6 +1261,11 @@ ui <- dashboardPage(
               h3("Additional trial summary (editable)"),
               actionButton('saveTSOther',label='Save'),
               rHandsontableOutput("TSTable")
+      ),
+      tabItem(tabName = "Dosing_Configuration",
+              h3("Dosing configurration (editable)"),
+              actionButton('saveDoseConf',label='Save'),
+              rHandsontableOutput("DoseTable")
       )
     )
   )  

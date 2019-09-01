@@ -1,5 +1,15 @@
 # These functions work together with the SendDataFactory
 
+
+# 
+skipRow <- function(aTestCD,iDay,endDay) {
+  aResult <- FALSE
+  # skip terminal body weight except on last day
+  if (aTestCD=="TERMBW" && (iDay != endDay)) {
+    aResult <- TRUE
+  }
+  aResult
+}
 #
 getTestCDs <- function(aDomain) {
   # FIXME read these from a configuration file combined with on screen choices
@@ -76,6 +86,7 @@ createAnimalDataDomain <- function(input,aDomain,aDescription,aDFName) {
         for (iDay in 1:endDay) {
           # loop over the tests for this domain
           for (aTestCD in getTestCDs(aDomain)) {
+            if (!skipRow(aTestCD,iDay,endDay)) {
             # print(paste(" About to create row animal for",aTestCD,input$studyName))
             aRowList <<- createRowAnimal(aSex,aTreatment,anAnimal,aDF,aRow,aDomain,
             input$studyName,aTestCD,iDay)
@@ -84,6 +95,7 @@ createAnimalDataDomain <- function(input,aDomain,aDescription,aDFName) {
             aRowList <<- sub("$^", NA, aRowList)
             aDF[aRow,] <<- aRowList        
             aRow <- aRow + 1
+            } # end of skipRow check
           } # end of test loop
         } # end of day loop
       } # end of animal loop
