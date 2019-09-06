@@ -282,8 +282,11 @@ if (file.exists('passwordGitHub.R')) {
   Authenticate <- TRUE
 } else {
   Authenticate <- FALSE
-  GitHubPath <- '~/PhUSE/Repo/trunk/data/send'
 }
+
+# Set Local GitHub Repo
+GitHubPath <- '~/PhUSE/Repo/trunk/data/send'
+
 
 # Setup Plot Color Ramp
 my_color_palette <- colorRampPalette(c('green','red'),space = "Lab")
@@ -403,10 +406,10 @@ server <- function(input, output, session) {
       } else if (input$dataSource=='GitHub') {
         StudyDir <- paste0('data/send/',input$selectGitHubStudy)
         if (Authenticate==T) {
-          Dataset <- load.GitHub.xpt.files(studyDir=StudyDir,showProgress=T,
+          Dataset <- load.GitHub.xpt.files(studyDir=StudyDir,showProgress=T,domainsOfInterest = 'LB',
                                            authenticate=TRUE,User=userGitHub,Password=passwordGitHub)
         } else {
-          Dataset <- load.GitHub.xpt.files(studyDir=StudyDir,showProgress=T)
+          Dataset <- load.GitHub.xpt.files(studyDir=StudyDir,showProgress=T,domainsOfInterest = 'LB')
         }
       }
       setProgress(value=1,message='Processing Data...')
