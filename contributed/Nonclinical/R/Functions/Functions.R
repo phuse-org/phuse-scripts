@@ -84,6 +84,8 @@ load.GitHub.xpt.files <- function (
   }
   xptFiles <- files[grep('.xpt',files)]
   if (!is.null(domainsOfInterest)) {
+    groupSENDdomains <- c('dm','ex','tx','pp','ta','se','ds')
+    domainsOfInterest <- union(groupSENDdomains,domainsOfInterest)
     domainsOfInterest <- paste(paste(dirname(xptFiles[1]),'/',domainsOfInterest,'.xpt',sep=''))
     xptFiles <- xptFiles[which(tolower(xptFiles) %in% tolower(domainsOfInterest))]
   }
