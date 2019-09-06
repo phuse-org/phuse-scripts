@@ -8,14 +8,12 @@ library(shinycssloaders)
 library(httr)
 library(Hmisc)
 library(DT)
-# library(xml2)
-# library(xslt)
-
-# Functionality to display define.xml has been commented out due to incompatibility of the
-# "xslt" package with the shinyapps.io environment
+library(xml2)
+library(xslt)
 
 GitHubPath <- 'https://raw.githubusercontent.com/phuse-org/phuse-scripts/master'
-dataPath <- 'data/send/CDISC-Safety-Pharmacology-POC'
+# dataPath <- 'data/send/CDISC-Safety-Pharmacology-POC'
+# dataPath <- 'data/send/CJUGSEND00'
 functionPath <- 'contributed/Nonclinical/R/Functions/Functions.R'
 
 source(paste(GitHubPath,functionPath,sep='/'))
@@ -36,40 +34,54 @@ if (file.exists('~/passwordGitHub.R')) {
 server <- function(input, output,session) {
   
   loadData <- reactive({
-    if (Authenticate==T) {
-      Data <- load.GitHub.xpt.files(studyDir=dataPath,authenticate=T,User=userGitHub,Password=passwordGitHub)
-    } else {
-      Data <- load.GitHub.xpt.files(studyDir=dataPath,authenticate = F)
-    }
-    values$domainNames <- toupper(names(Data))
-    subjects <- unique(Data$dm$USUBJID)
-    elementLevels <- levels(Data$se$ELEMENT)
-    for (domain in DOIs) {
-      sexData <- Data$dm[,c('USUBJID','SEX')]
-      elementData <- Data$se[,c('USUBJID','SESTDTC','ELEMENT')]
-      Data[[domain]] <- merge(Data[[domain]],sexData,by='USUBJID')
-      Data[[domain]] <- merge(Data[[domain]],elementData,by.x=c('USUBJID',paste0(toupper(domain),'RFTDTC')),by.y=c('USUBJID','SESTDTC'))
-      Data[[domain]]$SEX <- factor(Data[[domain]]$SEX,levels=c('M','F'))
-      ELTM <- Data[[domain]][[paste0(toupper(domain),'ELTM')]]
-      ELTMnum <- sapply(ELTM,DUR_to_seconds)/3600
-      Data[[domain]][[paste0(toupper(domain),'ELTM')]] <- paste(ELTMnum,'h')
-      orderedELTM <- Data[[domain]][[paste0(toupper(domain),'ELTM')]][order(Data[[domain]][[paste0(toupper(domain),'TPTNUM')]])]
-      orderedLevelsELTM <- unique(orderedELTM)
-      Data[[domain]][[paste0(toupper(domain),'ELTM')]] <- factor(Data[[domain]][[paste0(toupper(domain),'ELTM')]],levels=orderedLevelsELTM)
-      Data[[domain]][[paste0(toupper(domain),'ELTMN')]] <- ELTMnum
-      if (length(grep('INT',colnames(Data[[domain]])))>=2) {
-        STINT <- Data[[domain]][[paste0(toupper(domain),'STINT')]]
-        STINTnum <- sapply(STINT,DUR_to_seconds)/3600
-        ENINT <- Data[[domain]][[paste0(toupper(domain),'ENINT')]]
-        ENINTnum <- sapply(ENINT,DUR_to_seconds)/3600
-        Data[[domain]][[paste0(toupper(domain),'EVLINT')]] <- paste0(STINTnum,' to ',ENINTnum,' h')
-        orderedEVLINT <- Data[[domain]][[paste0(toupper(domain),'EVLINT')]][order(Data[[domain]][[paste0(toupper(domain),'TPTNUM')]])]
-        orderedLevelsEVLINT <- unique(orderedEVLINT)
-        Data[[domain]][[paste0(toupper(domain),'EVLINT')]] <- factor(Data[[domain]][[paste0(toupper(domain),'EVLINT')]],levels=orderedLevelsEVLINT)
-        Data[[domain]][[paste0(toupper(domain),'EVLINTN')]] <- rowMeans(cbind(STINTnum,ENINTnum))
+    withProgress({
+      if (Authenticate==T) {
+        Data <- load.GitHub.xpt.files(studyDir=input$dataPath,authenticate=T,User=userGitHub,Password=passwordGitHub,showProgress=T)
+      } else {
+        Data <- load.GitHub.xpt.files(studyDir=input$dataPath,authenticate=F,showProgress=T)
       }
-    }
+      setProgress(value=1,message='Processing Data...')
+      values$domainNames <- toupper(names(Data))
+      subjects <- unique(Data$dm$USUBJID)
+      elementLevels <- levels(Data$se$ELEMENT)
+      for (domain in DOIs) {
+        sexData <- Data$dm[,c('USUBJID','SEX')]
+        elementData <- Data$se[,c('USUBJID','SESTDTC','ELEMENT')]
+        Data[[domain]] <- merge(Data[[domain]],sexData,by='USUBJID')
+        Data[[domain]] <- merge(Data[[domain]],elementData,by.x=c('USUBJID',paste0(toupper(domain),'RFTDTC')),by.y=c('USUBJID','SESTDTC'))
+        Data[[domain]]$SEX <- factor(Data[[domain]]$SEX,levels=c('M','F'))
+        ELTM <- Data[[domain]][[paste0(toupper(domain),'ELTM')]]
+        ELTMnum <- sapply(ELTM,DUR_to_seconds)/3600
+        Data[[domain]][[paste0(toupper(domain),'ELTM')]] <- paste(ELTMnum,'h')
+        orderedELTM <- Data[[domain]][[paste0(toupper(domain),'ELTM')]][order(Data[[domain]][[paste0(toupper(domain),'TPTNUM')]])]
+        orderedLevelsELTM <- unique(orderedELTM)
+        Data[[domain]][[paste0(toupper(domain),'ELTM')]] <- factor(Data[[domain]][[paste0(toupper(domain),'ELTM')]],levels=orderedLevelsELTM)
+        Data[[domain]][[paste0(toupper(domain),'ELTMN')]] <- ELTMnum
+        if (length(grep('INT',colnames(Data[[domain]])))>=2) {
+          STINT <- Data[[domain]][[paste0(toupper(domain),'STINT')]]
+          STINTnum <- sapply(STINT,DUR_to_seconds)/3600
+          ENINT <- Data[[domain]][[paste0(toupper(domain),'ENINT')]]
+          ENINTnum <- sapply(ENINT,DUR_to_seconds)/3600
+          Data[[domain]][[paste0(toupper(domain),'EVLINT')]] <- paste0(STINTnum,' to ',ENINTnum,' h')
+          orderedEVLINT <- Data[[domain]][[paste0(toupper(domain),'EVLINT')]][order(Data[[domain]][[paste0(toupper(domain),'TPTNUM')]])]
+          orderedLevelsEVLINT <- unique(orderedEVLINT)
+          Data[[domain]][[paste0(toupper(domain),'EVLINT')]] <- factor(Data[[domain]][[paste0(toupper(domain),'EVLINT')]],levels=orderedLevelsEVLINT)
+          Data[[domain]][[paste0(toupper(domain),'EVLINTN')]] <- rowMeans(cbind(STINTnum,ENINTnum))
+        }
+      }
+    })
     return(Data)
+  })
+  
+  output$tests <- renderUI({
+    req(input$DOIs)
+    Data <- loadData()
+    Tests <- NULL
+    for (domain in input$DOIs) {
+      testNames <- levels(Data[[domain]][[paste0(toupper(domain),'TEST')]])[unique(Data[[domain]][[paste0(toupper(domain),'TEST')]])]
+      Tests <- c(Tests,testNames)
+    }
+    checkboxGroupInput('tests','Tests of Interest:',Tests,Tests)
   })
   
   output$doses <- renderUI({
@@ -104,11 +116,13 @@ server <- function(input, output,session) {
   filterData <- reactive({
     Data <- loadData()
     for (domain in DOIs) {
+      testIndex <- which(levels(Data[[domain]][[paste0(toupper(domain),'TEST')]])[Data[[domain]][[paste0(toupper(domain),'TEST')]]] 
+                         %in% input$tests)
       sexIndex <- which(Data[[domain]][['SEX']] %in% input$sex)
       doseIndex <- which(Data[[domain]][['ELEMENT']] %in% input$doses)
       subjectIndex <- which(Data[[domain]][['USUBJID']] %in% input$subjects)
       dayIndex <- which(Data[[domain]][[paste0(toupper(domain),'NOMDY')]] %in% input$days)
-      index <- Reduce(intersect,list(sexIndex,doseIndex,subjectIndex,dayIndex))
+      index <- Reduce(intersect,list(testIndex,sexIndex,doseIndex,subjectIndex,dayIndex))
       Data[[domain]] <- Data[[domain]][index,]
     }
     return(Data)
@@ -124,6 +138,9 @@ server <- function(input, output,session) {
         INTflag <- T
       } else {
         domainColumns <- domainColumnsNoINT
+        INTflag <- F
+      }
+      if (length(grep('CJUGSEND00',input$dataPath))>0) {
         INTflag <- F
       }
       testDataColumns <- c('USUBJID',paste0(toupper(domain),domainColumns),'ELEMENT','SEX')
@@ -157,6 +174,9 @@ server <- function(input, output,session) {
         domainColumns <- domainColumnsNoINT
         INTflag <- F
       }
+      if (length(grep('CJUGSEND00',input$dataPath))>0) {
+        INTflag <- F
+      }
       testDataColumns <- c('USUBJID',paste0(toupper(domain),domainColumns),'ELEMENT','SEX')
       testDataColumns <- testDataColumns[testDataColumns %in% colnames(Data[[domain]])]
       testCDs <- unique(Data[[domain]][[paste0(toupper(domain),'TESTCD')]]) # this will be user-defined
@@ -179,14 +199,8 @@ server <- function(input, output,session) {
   })
   
   observe({
-    req(input$DOIs)
-    Data <- loadData()
-    domains <- input$DOIs
-    n <- 0
-    for (domain in domains) {
-      n <- n + length(unique(Data[[domain]][[paste0(toupper(domain),'TEST')]]))
-    }
-    values$nTests <- n
+    req(input$tests)
+    values$nTests <- length(input$tests)
   })
   
   observe({
@@ -232,6 +246,9 @@ server <- function(input, output,session) {
         domainColumns <- domainColumnsNoINT
         INTflag <- F
       }
+      if (length(grep('CJUGSEND00',input$dataPath))>0) {
+        INTflag <- F
+      }
       testDataColumns <- c('USUBJID',paste0(toupper(domain),domainColumns),'ELEMENT','SEX')
       testDataColumns <- testDataColumns[testDataColumns %in% colnames(Data[[domain]])]
       testCDs <- unique(Data[[domain]][[paste0(toupper(domain),'TESTCD')]]) # this will be user-defined
@@ -261,6 +278,9 @@ server <- function(input, output,session) {
         INTflag <- T
       } else {
         domainColumns <- domainColumnsNoINT
+        INTflag <- F
+      }
+      if (length(grep('CJUGSEND00',input$dataPath))>0) {
         INTflag <- F
       }
       testDataColumns <- c('USUBJID',paste0(toupper(domain),domainColumns),'ELEMENT','SEX')
@@ -354,21 +374,21 @@ server <- function(input, output,session) {
         datatable({
           Data <- loadData()
           rawTable <- Data[[tolower(values$domainNames[i])]]
-        },options=list(autoWidth=T,scrollX=F,pageLength=10,paging=T,searching=F,
+        },options=list(autoWidth=T,scrollX=T,pageLength=10,paging=T,searching=T,
                      columnDefs=list(list(className='dt-center',targets='_all'))),
         rownames=F)
       })
     })
   })
   
-  # output$define <- renderUI({
-  #   doc <- read_xml(paste(GitHubPath,dataPath,'define.xml',sep='/'))
-  #   style <- read_xml(paste(GitHubPath,dataPath,'define2-0-0.xsl',sep='/'))
-  #   html <- xml_xslt(doc,style)
-  #   cat(as.character(html),file='www/temp.html')
-  #   define <- tags$iframe(src='temp.html', height='700', width='100%')
-  #   define
-  # })
+  output$define <- renderUI({
+    doc <- read_xml(paste(GitHubPath,input$dataPath,'define.xml',sep='/'))
+    style <- read_xml(paste(GitHubPath,input$dataPath,'define2-0-0.xsl',sep='/'))
+    html <- xml_xslt(doc,style)
+    cat(as.character(html),file='www/temp.html')
+    define <- tags$iframe(src='temp.html', height='700', width='100%')
+    define
+  })
   
 }
 
@@ -377,7 +397,11 @@ ui <- shinyUI(
                        windowTitle = 'CDISC-SEND Safety Pharmacology Proof-of-Concept Pilot'),br(),
             sidebarLayout(
               sidebarPanel(width=3,
+                           selectInput('dataPath','Select Dataset:',
+                                       choices = list(CDISC='data/send/CDISC-Safety-Pharmacology-POC',
+                                                      CJUG='data/send/CJUGSEND00')),
                            checkboxGroupInput('DOIs','Domains of Interest:',choiceNames=toupper(DOIs),choiceValues=DOIs,selected=DOIs),
+                           uiOutput('tests'),
                            radioButtons('summary','Display:',c('Group Means','Individual Subjects')),
                            checkboxGroupInput('sex','Filter by Sex:',list(Male='M',Female='F'),selected=c('M','F')),
                            uiOutput('doses'),
@@ -400,12 +424,14 @@ ui <- shinyUI(
                                      tabPanel('SEND Domains',
                                               withSpinner(uiOutput('SENDdomains'),type=5)
                                      ),
-                                     # tabPanel('DEFINE',
-                                     #          withSpinner(htmlOutput('define'),type=5)  
-                                     # ),
+                                     tabPanel('DEFINE',
+                                              withSpinner(htmlOutput('define'),type=5)
+                                     ),
                                      tabPanel('README',
                                               column(11,
-                                                     includeMarkdown('https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/data/send/CDISC-Safety-Pharmacology-POC/readme.txt')
+                                                     conditionalPanel(condition="input.dataPath=='data/send/CDISC-Safety-Pharmacology-POC'",
+                                                                      includeMarkdown('https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/data/send/CDISC-Safety-Pharmacology-POC/readme.txt')
+                                                     )
                                               )
                                      )
                                    )

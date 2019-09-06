@@ -1,13 +1,13 @@
 Keywords: Central Tendencies, Boxplot, labs, vital signs, ECGs
 Script:
-  name   : WPCT_F.07.02_R
+  name   : WPCT-F.07.02.v02.R
   title  : Boxplot of analysis timepoint observations by visit and treatment
   desc   : > 
          Box plot - Change from Baseline by Analysis Timepoint, 
          Visit and Planned Treatment
          Figure 7.2 Box plot - Change from Baseline by Analysis Timepoint, Visit and Treatment
   version: 1.1.0
-# do we need the following tags? 
+#  
   source : White paper
   topic  : Measures of Central Tendency Figure 7.2
   type   : figure
@@ -18,7 +18,7 @@ Script:
 Language:
   name   : R
   version: 3.1.3
-# do we need the comment here? 
+#  
   comments : >
 Environment:
   system: Linux or Window 2010
@@ -29,19 +29,14 @@ Environment:
     log_lvl: 1
     write2log: FALSE
 Inputs:
-  datasets: 
-    - name: advs.xpt
-      type: xpt
-      class: ADaM
-      req_params: 
-      version:       
-      desc: CDISC ADaM dataset
-    - name: 
-      type: 
-      class: 
-      req_params:
-      version: 
-      desc:      
+  datasets: advs.xpt
+  RShinyUIs :
+  - control: radioButtons("ft","File type:",c("PNG"="PNG","TIFF"="TIFF","JPEG"="JPEG"))
+  - control: radioButtons("usn","Use short names?",c("TRUE"="TRUE","FALSE"="FALSE"))
+  - control: radioButtons("upf","Subset on population flag?",c("TRUE"="TRUE","FALSE"="FALSE"))
+  - control: radioButtons("trn","Treatment name?",c("TRTA"="TRTA","TRTP"="TRTP"))
+  - control: sliderInput("perpage","Number per page:",value = 6,min = 1,max = 20)
+  - control: sliderInput("dignum","Number of digits:",value = 1,min = 0,max = 6)
 Parameters:
   treatmentname: "TRTA" 
   useshortnames: TRUE
@@ -57,31 +52,26 @@ Parameters:
   filetype: "PNG"
   pixelwidth: 1200
   pixelheight: 1000
-  outputfontsize: 16
+  outputfontsize: 12
   charttitle: "Box and Whisker Plot Title"
+
 Outputs:
-  datasets: 
-    - name: advs.xpt
-      type: xpt
-      class: ADaM
-      req_params: 
-      version:       
-      desc: CDISC ADaM dataset
-  parameters:
-    - v1: Date - scription execution date and time
-    - v2: User - user who executes the script
+  datasets:
+  output_dir: C:/temp
+
 Repo:
   base_dir: https://github.com/phuse-org/phuse-scripts/raw/master
-  prog_dir: development/R
-  repo_dir: phuse-org/phuse-scripts
+  repo_dir: phuse-org
+  prog_dir: 
   repo_url: https://api.github.com/repos
-  data_dir: data/cdisc
-  lib_dir: libs
+  data_dir: data/adam/cdisc
+  lib_dir:  development/R/libs
   log_dir: logs
   out_dir: outputs
-  script_dir: scripts
+  script_dir: whitepapers/WPCT
   lib_files: Func_comm.R
   work_dir: C:/Users/hanming.h.tu/documents/R
+
 Authors:
   - name   : Jon Doo
     email  : jon.doo@phuse.com

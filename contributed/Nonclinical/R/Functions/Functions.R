@@ -66,11 +66,11 @@ download.GitHub.folder <- function (
 # Function to list all files from a GitHub folder
 # NOTE: this function requires the packages: "httr", "Hmisc" and "tools"
 load.GitHub.xpt.files <- function (
-  GitHubRepo="phuse-org/phuse-scripts"
-  , baseDirGitHub="https://github.com/phuse-org/phuse-scripts/raw/master"
-  , studyDir="data/send/PDS/Xpt"
-  , domainsOfInterest=NULL
-  , authenticate=FALSE,User=NULL,Password=NULL) {
+  GitHubRepo="phuse-org/phuse-scripts",
+  baseDirGitHub="https://github.com/phuse-org/phuse-scripts/raw/master",
+  studyDir="data/send/PDS/Xpt",
+  domainsOfInterest=NULL,showProgress=F,
+  authenticate=FALSE,User=NULL,Password=NULL) {
   if (authenticate==TRUE) {
     req <- GET(paste('https://api.github.com/repos',GitHubRepo,'contents',studyDir,sep='/'),
                authenticate(User,Password))
@@ -90,6 +90,9 @@ load.GitHub.xpt.files <- function (
   dataFrames <- list()
   count <- 0
   for (xptFile in xptFiles) {
+    if (showProgress==T) {
+      setProgress(value=count/length(xptFiles),message=paste0('Loading ',basename(xptFile),'...'))
+    }
     count <- count + 1
     xptData <- sasxport.get(xptFile)
     colnames(xptData) <- toupper(colnames(xptData))
@@ -101,7 +104,7 @@ load.GitHub.xpt.files <- function (
 
 # Function to create a list of R dataframes for each .xpt file
 # NOTE: this function requries the packages: "Hmisc" and "tools"
-load.xpt.files <- function(path=getwd(),domainsOfInterest=NULL) {
+load.xpt.files <- function(path=getwd(),domainsOfInterest=NULL,showProgress=F) {
   xptFiles <- Sys.glob(paste(path,"*.xpt",sep='/'))
   if (!is.null(domainsOfInterest)) {
     domainsOfInterest <- paste(paste(path,'/',domainsOfInterest,'.xpt',sep=''))
@@ -110,6 +113,9 @@ load.xpt.files <- function(path=getwd(),domainsOfInterest=NULL) {
   dataFrames <- list()
   count <- 0
   for (xptFile in xptFiles) {
+    if (showProgress==T) {
+      setProgress(value=count/length(xptFiles),message=paste0('Loading ',basename(xptFile),'...'))
+    }
     count <- count + 1
     xptData <- sasxport.get(xptFile)
     colnames(xptData) <- toupper(colnames(xptData))
@@ -130,6 +136,9 @@ load.csv.files <- function(path=getwd(),domainsOfInterest=NULL) {
   dataFrames <- list()
   count <- 0
   for (csvFile in csvFiles) {
+    if (showProgress==T) {
+      setProgress(value=count/length(xptFiles),message=paste0('Loading ',basename(xptFile),'...'))
+    }
     count <- count + 1
     dataFrames[[count]] <- read.csv(csvFile)
   }
@@ -247,6 +256,7 @@ createMeansTable <- function(dataset,meanField,groupFields,otherFields=NULL) {
   meanData <- NA
   sdData <- NA
   seData <- NA
+  nData <- NA
   otherFieldList <- list()
   for (field in otherFields) {
     otherFieldList[[field]] <- rep(NA,nrow(groupsDF))
@@ -260,6 +270,7 @@ createMeansTable <- function(dataset,meanField,groupFields,otherFields=NULL) {
     meanData[i] <- mean(dataset[index,meanField],na.rm=TRUE)
     sdData[i] <- sd(dataset[index,meanField],na.rm=TRUE)
     seData[i] <- sd(dataset[index,meanField],na.rm=TRUE)/sqrt(length(which(is.finite(dataset[index,meanField]))))
+    nData[i] <- length(which(is.na(dataset[index,meanField])==0))
     for (field in otherFields) {
       if (length(unique(dataset[index,field]))>1) {
         stop('otherField has too many values')
@@ -272,7 +283,7 @@ createMeansTable <- function(dataset,meanField,groupFields,otherFields=NULL) {
       }
     }
   }
-  newDataset <- cbind(groupsDF,meanData,sdData,seData)
+  newDataset <- cbind(groupsDF,meanData,sdData,seData,nData)
   for (field in otherFields) {
     newField <- otherFieldList[[field]]
     if (length(levels(newField))>0) {
@@ -281,6 +292,7 @@ createMeansTable <- function(dataset,meanField,groupFields,otherFields=NULL) {
       newDataset <- cbind(newDataset,newField)
     }
   }
-  colnames(newDataset) <- c(groupFields,paste(meanField,'mean',sep='_'),paste(meanField,'sd',sep='_'),paste(meanField,'se',sep='_'),otherFields)
+  colnames(newDataset) <- c(groupFields,paste(meanField,'mean',sep='_'),paste(meanField,'sd',sep='_'),
+                            paste(meanField,'se',sep='_'),paste(meanField,'n',sep='_'),otherFields)
   return(newDataset)
 }

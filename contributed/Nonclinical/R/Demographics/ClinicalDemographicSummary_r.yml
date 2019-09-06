@@ -1,0 +1,59 @@
+KeyWords: Clinical, Demographic Summary, xpt
+Script: 
+  Desc : Creates demographic summary file from adam data
+  Name : ClinicalDemographicSummary.r
+  GCR : 
+  SRV :
+Source : Contributed
+Target : https://github.com/phuse-org/phuse-scripts/tree/master/contributed/Nonclinical/R/Demographics
+Title : Clinical demographic summary
+Topic : Summary examples
+Type : file creation
+Subtype: TS
+Package:
+  name :
+  title:
+Language:
+  name : R
+  version: 3.2.2
+  Comments: 
+Inputs:
+  datasets:
+  P1:
+  P2:
+  P3:
+Outputs:
+  datasets:
+  O1:
+  O2:
+Authors:
+- name : Bob Friedman
+  email : bfriedman@xybion.com
+  company: Xybion
+- name :
+  email :
+  company:
+Qualification:
+  LastQualDate:
+  LastQualBy:
+  Stage:
+  Document:
+  Note: C - Contributed; D - Development; T - Testing; Q - Qualified
+Stages:
+- Date: 12/8/2016
+  Name: Bob Friedman
+  Stage: C
+  Docs:
+- Date:
+  Name:
+  Stage:
+  Docs:
+Rating:
+- User:
+  Date:
+  Association:
+  Stars:
+- User:
+  Date:
+  Association:
+  Stars:

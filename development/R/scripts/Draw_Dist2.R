@@ -13,18 +13,14 @@
 
 library(phuse)
 # 1. get the script name and YML name
-script_name <- sys.frame(1)$ofile
-str(paste0("D2: ", script_name))
-cm <- commandArgs()
-str("From commandArgs: ")
-str(pm)
-pm <- get_inputs(script_name)
-str("From get_inputs: ")
-str(pm)
+# the fn() is from phuse web frame work to provide selected YML file full path and name 
+yml_fn <- fn(); 
+inYML <- get_inputs(yml_fn)
+cfgYML <- read_yml(yml_fn)
 
 # we need to remove any R Shiny specification here
-dn <- pm[1]
-nn <- as.numeric(pm[2])
+dn <- ifelse(is.null(input$p1), cfgYML$Inputs$p1, input$p1);
+nn <- ifelse(is.null(input$p2), cfgYML$Inputs$p2, input$p2);
 d <- eval(call(dn, nn))
 t <- paste(dn, "(", nn, ")", sep = "")
 hist(d, main = t,col="#75AADB", border = "white")
