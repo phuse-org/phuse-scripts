@@ -14,10 +14,19 @@
 #7) Deal with POOLID's
 #8) Create Structured Comments in this script to explain what it's doing
 
+'%ni%' <- Negate('%in%')
 
 groupSEND <- function(dataset,targetDomain,dmFields=c('SEX','ARMCD','SETCD','USUBJID'),
                       exFields=c('EXTRT','EXDOSE','EXDOSU'),
                       txParams=c('TRTDOS','TRTDOSU','TKDESC','GRPLBL','SPGRPCD')) {
+  
+  # Check to ensure that dataset contains all required domains
+  requiredDomains <- c('dm','ex','tx','pp','ta','se','ds')
+  for (domain in requiredDomains) {
+    if (domain %ni% names(dataset)) {
+      stop('SEND dataset does not contain required domains!')
+    }
+  }
   
   # Get dataframe of domain of interest and identify subjects
   groupedData <- dataset[[targetDomain]]
