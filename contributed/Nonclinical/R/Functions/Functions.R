@@ -128,7 +128,7 @@ load.xpt.files <- function(path=getwd(),domainsOfInterest=NULL,showProgress=F) {
 }
 
 # Function to create a list of R dataframes for each .csv file
-load.csv.files <- function(path=getwd(),domainsOfInterest=NULL) {
+load.csv.files <- function(path=getwd(),domainsOfInterest=NULL,showProgress=F) {
   # NOTE: this function requries the packages: "tools"
   csvFiles <- Sys.glob(paste(path,"*.csv",sep='/'))
   if (!is.null(domainsOfInterest)) {
