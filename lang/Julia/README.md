@@ -9,7 +9,7 @@ PhUSE Standard Analyses and Code Sharing Working Group.
 ## Goals and Objectives
 
 ## Participants
-
+Julia Dedic
 
 ## Deliverables
 
