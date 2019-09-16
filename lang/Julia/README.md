@@ -24,4 +24,5 @@ Name (GitHub Handle) eMail
 
 ## Deliverables
 
-TBD
+* Create a TS creation app just like the R Shiny app at: https://geotiger.shinyapps.io/07_genTS/
+
