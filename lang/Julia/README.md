@@ -1,15 +1,15 @@
-[![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/phuse-org/phuse-scripts/blob/master/LICENSE.md) 
+[![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/phuse-org/phuse-scripts/blob/master/LICENSE.md)
 [Search](https://github.com/search/advanced)
 
-# Julia Initiative 
+# Julia Initiative
 
-Julia initiative is one of the sub-project in the Code Sharing Project in 
+Julia initiative is one of the sub-project in the Code Sharing Project in
 PhUSE Standard Analyses and Code Sharing Working Group.
 
 
 ## Goals and Objectives
 
-To develop and evaluate scripts based on the Julia programming language.
+To develop and evaluate potential standard scripts based on the Julia programming language.
 
 ## Participants
 
@@ -25,4 +25,3 @@ Name (GitHub Handle) eMail
 ## Deliverables
 
 * Create a TS creation app just like the R Shiny app at: https://geotiger.shinyapps.io/07_genTS/
-
