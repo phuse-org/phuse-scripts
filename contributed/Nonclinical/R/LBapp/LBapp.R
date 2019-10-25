@@ -347,6 +347,7 @@ server <- function(input, output, session) {
           Req2 <- GET(contents[[i]]$url)
         }
         contents2 <- content(Req2,as='parsed')
+        # Fix here and in other places to allow it load the data from Nimble (LB.xpt)
         if (length(grep('lb.xpt',contents2))>0) {
           GitHubStudies[count] <- unlist(strsplit(contents[[i]]$path,'/send/'))[2]
           count <- count + 1
@@ -357,31 +358,33 @@ server <- function(input, output, session) {
     }
     selectInput('selectGitHubStudy',label='Select Study from PhUSE GitHub:',choices =GitHubStudies,selected='PDS')
   })
-
-  # Handle Study Selection
-  observeEvent(ignoreNULL = TRUE,eventExpr = input$chooseBWfile,
-               handlerExpr = {
-                 if (input$chooseBWfile >= 1) {
-                   File <- file.choose()
-                   
-                   # If file was chosen, update 
-                   if (length(File>0)) {
-                     path <- dirname(File)
-                     
-                     # save for next run if good one selected
-                     if (dir.exists(path)) {
-                       values$path <- path
-                     }
-                   }
-                 }
-               }
-  )
   
-  # Print Current Study Folder Location
-  output$bwFilePath <- renderText({
-    req(values$path)
-    values$path
-  })
+  # COMMENTED OUT FOR NOW unitl I allow local file upload
+  #
+  # # Handle Study Selection
+  # observeEvent(ignoreNULL = TRUE,eventExpr = input$chooseBWfile,
+  #              handlerExpr = {
+  #                if (input$chooseBWfile >= 1) {
+  #                  File <- file.choose()
+  # 
+  #                  # If file was chosen, update
+  #                  if (length(File>0)) {
+  #                    path <- dirname(File)
+  # 
+  #                    # save for next run if good one selected
+  #                    if (dir.exists(path)) {
+  #                      values$path <- path
+  #                    }
+  #                  }
+  #                }
+  #              }
+  # )
+  # 
+  # # Print Current Study Folder Location
+  # output$bwFilePath <- renderText({
+  #   req(values$path)
+  #   values$path
+  # })
   
   # Load Dataset
   loadData <- reactive({
