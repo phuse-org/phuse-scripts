@@ -148,7 +148,7 @@ convertMenuItem <- function(mi,tabName) {
   mi
 }
 # convert ISO duration to days
-DUR_to_days <- function (duration) {
+DUR_to_days <- function(duration) {
   DUR_to_seconds(duration)/(24*3600)
 }
 
