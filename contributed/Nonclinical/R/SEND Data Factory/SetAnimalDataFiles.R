@@ -70,16 +70,29 @@ getConfig <- function(domain) {
 getTestCDs <- function(aDomain) {
   configFiles <- list.files("configs)")
   switch(aDomain,
-         "BW" = {aList <- getConfig("BW")["testcd"]},
-         "CL" = {aList <- getConfig("CL")["testcd"]},
-         "LB" = {aList <- getConfig("LB")["testcd"]},
-         "MI" = {aList <- getConfig("MI")["testcd"]},
-         "PM" = {aList <- getConfig("PM")["testcd"]},
-         "MA" = {aList <- getConfig("MA")["testcd"]},
-         "OM" = {aList <- getConfig("OM")["testcd"]},
-         "PC" = {aList <- getConfig("PC")["testcd"]} 
+         "BW" = {aList <- getConfig("BW")$testcd},
+         "CL" = {aList <- getConfig("CL")$testcd},
+         "LB" = {aList <- getConfig("LB")$testcd},
+         "MI" = {aList <- getConfig("MI")$testcd},
+         "PM" = {aList <- getConfig("PM")$testcd},
+         "MA" = {aList <- getConfig("MA")$testcd},
+         "OM" = {aList <- getConfig("OM")$testcd},
+         "PP" = {aList <- getConfig("PP")$testcd},
+         "PC" = {aList <- getConfig("PC")$testcd}
   )
-  aList
+  as.data.frame(unique(aList))
+}
+
+# from configuration, get column based upon incoming column (like testcd to test)
+getMatchColumn <- function(aDomain,aColumn1,aValue1,aColumn2) {
+  configFiles <- list.files("configs)")
+  df1 <- unique(getConfig(aDomain)[aColumn1])
+  df2 <- unique(getConfig(aDomain)[aColumn2])
+  # FIXME might need other discriminating factors like Sex, Species,...
+  # find position in first list
+  df3 <- cbind(as.data.frame(df1), as.data.frame(df2)) 
+  # get first matching one
+  answer <- df3[df3[1]==aValue1,][2][1]
 }
 
 #check if data frame has a DY component
@@ -141,7 +154,9 @@ createAnimalDataDomain <- function(input,aDomain,aDescription,aDFName) {
         }
         for (iDay in 1:endDay) {
           # loop over the tests for this domain
-          for (aTestCD in getTestCDs(aDomain)) {
+          aCodes <- getTestCDs(aDomain)
+          for(i in 1:nrow(aCodes)) {
+            aTestCD <- aCodes[i,]
             if (!skipRow(aTestCD,iDay,endDay)) {
             # print(paste(" About to create row animal for",aTestCD,input$studyName))
             aRowList <<- createRowAnimal(aSex,aTreatment,anAnimal,aDF,aRow,aDomain,
@@ -179,7 +194,7 @@ createRowAnimal <- function(aSex,aTreatment,anAnimal,aDF,aRow,aDomain,aStudyID,
 
 setAnimalDataFiles <- function(input) {
     # Make a list of domains to handle
-    DomainsList <- c("BW","CL","LB","MA","MI","OM","PC","PM")
+    DomainsList <- c("BW","LB","MA","MI","OM","PC","PP","PM","CL")
     # create data frame based on structure
     # Loop on num domains
     index <- 0
@@ -187,7 +202,7 @@ setAnimalDataFiles <- function(input) {
       index <- index + 1
       percentOfList <- index/length(DomainsList)
       setProgress(value=percentOfList,message=paste('Producting dataset: ',aDomain))
-      aDFName <- paste(aDomain,"Out",sep="")
+      aDFName <- paste(tolower(aDomain),"Out",sep="")
       aDescription <- "FIXME - read description from SENDIG"
       aDFReturned <<- createAnimalDataDomain(input,aDomain,aDescription,aDFName)
       # now reset the name of this dataframe to keep it

@@ -9,25 +9,25 @@ getCodeList <- function(aCol){
 getSENDTestCode <- function(aCol,aTestCD) {
   # use test code passed in  
   nameList <- getCodeList(aCol)
-  if (!is.null(nameList)) {
+  if (!is.null(nameList)&& nchar(nameList)>0) {
     lastTestCode <<- CTSearchOnShortName(nameList,aTestCD)
   } else {
-    # FIXME for some domains, this must come from a configuration file
-    aValue <- "not set"
-    lastTestCode <<- "not set"
+    # for some domains, this must come from a configuration file
+    aValue <- aTestCD
+    lastTestCode <<- aTestCD
   }
   # pass back same set code
   aTestCD
 }
-getSENDLastTestCodeName <- function(aCol) {
+getSENDLastTestCodeName <- function(aCol,aDomain) {
   # Retrieve from terminology, the test name matching the last test code
   nameList <- getCodeList(aCol)
-  if (!is.null(nameList)) {
+  if (!is.null(nameList)&& nchar(nameList)>0) {
     aValue <- CTSearchOnCode(nameList,lastTestCode)
     # print(paste("Last test code is ",lastTestCode,aValue))
   } else {
-    # FIXME for some domains, this must come from a configuration file
-    aValue <- "not set"
+    # some domains, this must come from a configuration file
+    aValue <- getMatchColumn(aDomain,"testcd",lastTestCode,"test")
   }
   aValue
 }
@@ -66,6 +66,8 @@ getOrresUnit <- function(aCol){
   nameList <- getCodeList(aCol)
   if (aCol=="BWORRESU" || aCol == "OMORRESU") {
     aValue <- "g"
+  } else if (aCol=="PCORRESU") {
+      aValue <- "ng/mL"
   } else if (!is.null(nameList)) {
     aValue <- CTRandomName(nameList)
   } else {
@@ -98,14 +100,17 @@ getColumnData <- function (aCol,aSex,aTreatment,anAnimal,aRow,aDomain,aStudyID,a
   aSPECCol <- paste(aDomain,"SPEC",sep="")
   aDay <- paste(aDomain,"DY",sep="")
   aData <- NA
+  # Next line for help in debugging
   # print(paste(" Getting column data for:",aCol,aSex,aTreatment,anAnimal,aRow,aDomain,aStudyID,aTestCD),set=":")
   if (aCol=="DOMAIN") aData <- aDomain
   if (aCol=="STUDYID") {aData <- aStudyID}
   if (aCol==aSeqCol) {aData <- aRow}
   if (aCol=="USUBJID") {aData <- paste(aStudyID,"-",anAnimal,sep="")
   }
-  if (aCol==aTestCDCol) {aData <- getSENDTestCode(aCol,aTestCD)}
-  if (aCol==aTestCol)  {aData <- getSENDLastTestCodeName(aCol)}
+  if (aCol==aTestCDCol) {
+    aData <- getSENDTestCode(aCol,aTestCD)
+    }
+  if (aCol==aTestCol)  {aData <- getSENDLastTestCodeName(aCol,aDomain)}
   if (aCol==aORRESCol) aData <- getOrres(aDomain)
   if (aCol==aORRESUCol) {aData <- getOrresUnit(aCol)}
   if (aCol==aSTRESCCol) {aData <- getStresc(aCol)}

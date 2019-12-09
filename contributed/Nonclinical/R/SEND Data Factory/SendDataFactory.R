@@ -23,10 +23,9 @@
 # [Eli] Allow selection of controlled terminology for other dashboard items that should come from controlled terminology. strain is one.
 # [Bob] Structure xls file no longer needed, as now read from SEND IG directly
 # [Bob] Read rest of TS values from a csv file that can be edited on screen and saved
-#
-# working on
 # [Bob] Creates TA, TE, TX domains
 # [Bob] Animal should only have 1 TBW, at the end of animal disposition
+# [Bob] No need for sasxport changes after 1.6.0 version
 #
 # Next steps:
 # [Bob] Test output against validator
@@ -45,7 +44,7 @@
 #
 # install pacakges if needed
 .libPaths()
-list.of.packages <- c("shiny",
+list.of.packages <- c("shiny","shinyalert",
 "ggplot2",
 "plotly",
 "reshape2",
@@ -107,6 +106,7 @@ new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"
 if(length(new.packages)) install.packages(new.packages, repos = "http://cran.us.r-project.org")
 # Load Libraries
 library(shiny)
+library(shinyalert)
 library(ggplot2)
 library(plotly)
 library(reshape2)
@@ -128,18 +128,12 @@ library(pdftools)
 library(rhandsontable)
 library(parsedate)
 
-if(packageVersion("SASxport") < "1.5.7") {
-  stop("You need version 1.5.7 or later of SASxport")
+if(packageVersion("SASxport") < "1.6.0") {
+  stop("You need version 1.6.0 or later of SASxport")
 }
-# This section is to replace functions in 1.5.7 or SASxport to allow column lengths of less than 8 bytes
-# This gives the directory of the file where the statement was placed , to get current .R script directory
+
+# sourcedir works in rstudio
 sourceDir <<- getSrcDirectory(function(dummy) {dummy})
-source(paste(sourceDir, "/write.xport2.R", sep=""))
-tmpfun <- get("read.xport", envir = asNamespace("SASxport"))
-environment(write.xport2) <- environment(tmpfun)
-attributes(write.xport2) <- attributes(tmpfun)
-assignInNamespace("write.xport", write.xport2, ns="SASxport")
-##########
 
 # Functions
 convertMenuItem <- function(mi,tabName) {
@@ -147,6 +141,27 @@ convertMenuItem <- function(mi,tabName) {
   mi$children[[1]]$attribs['data-value'] = tabName
   mi
 }
+
+# Check for all required input selections
+checkRequiredInput <- function (input) {
+  aList <- ""
+  saveI <<- input
+  if (is.null(input$studyName)) { aList <- paste(aList,"Study name;") }
+  if (is.null(input$CTSelection)) { aList <- paste(aList,"CT version;") }
+  if (is.null(input$TSTable)) { aList <- paste(aList,"Trial summary data;") }
+  if (is.null(input$DoseTable)) { aList <- paste(aList,"Dose levels;") }
+  if (is.null(input$testArticle)) { aList <- paste(aList,"Test article;") }
+  if (is.null(input$sex)) { aList <- paste(aList,"Sexes;") }
+  if (is.null(input$treatment)) { aList <- paste(aList,"Treatments;") }
+  if (is.null(input$animalsPerGroup)) { aList <- paste(aList,"Animals per group;") }
+  if (is.null(input$species)) { aList <- paste(aList,"Species;") }
+  if (is.null(input$strain)) { aList <- paste(aList,"Strain;") }
+  if (is.null(input$elementOptions )) { aList <- paste(aList,"Element options;") }
+  if (is.null(input$TKanimalsPerGroup)) { aList <- paste(aList,"TK animals per group;") }
+  if (nchar(aList)>1) {stop(aList)}
+}
+
+
 # convert ISO duration to days
 DUR_to_days <- function(duration) {
   DUR_to_seconds(duration)/(24*3600)
@@ -155,7 +170,10 @@ DUR_to_days <- function(duration) {
 # read all domain structures
 readDomainStructures <-function() {
   # read if it is not there yet
-  if (!exists("dfSENDIG")) {
+  if (!exists("bSENDIGRead")) {
+    bSENDIGRead <<- FALSE
+  } 
+  if (!bSENDIGRead) {
   withProgress({
     setProgress(value=1,message='Reading domain structures from the SEND IG')
     readSENDIG()
@@ -393,6 +411,21 @@ addDomainRow <- function(inLine,inDomain) {
     }
     
     # special case of fields merged to first making it combine down to 4
+    # where lookup and column type and fixed value is merged with the description
+    if (length(aSplit[[1]])==4) {
+      aPart <- trimws(aSplit[[1]][[2]])
+      aLoc <- gregexpr(pattern ="Char D",aPart)[[1]][1]
+      if (aLoc>1) {
+        theList <- c(aSplit[[1]][[1]],
+                     substring(aPart,1,aLoc-1),
+                     substring(aPart,aLoc,aLoc+4),
+                     substring(aPart,aLoc+5),
+                     aSplit[[1]][[3]],aSplit[[1]][[4]])
+        aSplit[[1]] <<- theList
+      }
+    }
+
+        # special case of fields merged to first making it combine down to 4
     # where column type is merged with the description
     if (length(aSplit[[1]])==4) {
       aPart <- trimws(aSplit[[1]][[2]])
@@ -560,6 +593,7 @@ addDomainRow <- function(inLine,inDomain) {
           "genetic",
           "group",
           "have",
+          "hours [(]",
           "identification",
           "in BWSTRESN",
           "in LBSTRESN",
@@ -573,6 +607,7 @@ addDomainRow <- function(inLine,inDomain) {
           "indicated",
           "individual",
           "interval",
+          "is not the",
           "INVESTIGATOR", 
           "LBTPTNUM and ",
           "letters",
@@ -663,6 +698,7 @@ addDomainRow <- function(inLine,inDomain) {
         "whichever",
         "with a number",
         "Wt",
+        "4.3.6.2",
         "[(]e.g.",
         "[^0-9]-PT1",
         "[^0-9]1TEST",
@@ -696,6 +732,10 @@ addDomainRow <- function(inLine,inDomain) {
       # continues within table still
       dataFound <- TRUE
     } # end of new page check
+    if (length(aSplit[[1]])==1 & (substring(aSplit[[1]][[1]],1,11)=="Tabulation.")) {
+      # continues within table still
+      dataFound <- TRUE
+    } # end of new page check
     
     # add this row
     if (newRow) {
@@ -706,7 +746,7 @@ addDomainRow <- function(inLine,inDomain) {
     if (dataFound) bResult <- TRUE
   } # end of if not numeric
   # debug -
-  if (inDomain=="TE") {  # Debug on parsing 
+  if (inDomain=="PP") {  # Debug on parsing 
     print(paste("-----------For domain: ",inDomain))
     print(paste(" the length is:",length(aSplit[[1]])))
     print(inLine)
@@ -748,16 +788,19 @@ convertIGRaw <- function (SENDIGRaw) {
   })  # end of progress
   # remove first empty row
   dfSENDIG <<- dfSENDIG[-1,]
+  bSENDIGRead <<- TRUE
 }
 
 readSENDIG <- function() {
-  # FIXME - show error that user must download manually
   # FIXME - due to CDISC login needed
   base <- "https://www.cdisc.org/system/files/members/standard/foundational/send/"
   aZip <- "SENDIG_v_3_1.zip"
   aFile <- "SENDIG_3_1.pdf"
   SENDIGRaw <- readPDFFromURLZip(base,aZip,aFile)
-  convertIGRaw(SENDIGRaw)
+  # Continue if not there yet, because otherwise might have been built with error row
+  if (bSENDIGFound && !bSENDIGRead) {
+    convertIGRaw(SENDIGRaw)
+  }
 }
 
 
@@ -774,6 +817,7 @@ setOutputData <- function(input) {
    setTXFile(input) 
    setDMFile(input)
    setSEFile(input)
+   setDSFile(input)
    setAnimalDataFiles(input)
 }
 
@@ -799,7 +843,7 @@ createOutputDirectory <- function (aDir,aStudy) {
     # and label it
     attr(aList,"label") <- domainLabel
     # write out dataframe
-    write.xport2(
+    write.xport(
       list=aList,
       file = tempFile,
       verbose=FALSE,
@@ -841,7 +885,7 @@ readWorksheetFromURL <- function(aLocation,aName,aSheet) {
 }
 
 ## read pdf by first downloading a file
-readPDFFromURLZip <- function(aLocation,aZip,aName) {
+readPDFFromURLZip <- function(aLocation,aZip,aName,output) {
   subdir <- "downloads"
   anExDir <- paste(sourceDir,subdir,sep="/")
   createOutputDirectory(sourceDir,subdir)
@@ -852,12 +896,21 @@ readPDFFromURLZip <- function(aLocation,aZip,aName) {
   # if (!file.exists(aTargetZip)) {
   #  download.file(aURL,aTargetZip,mode = "wb")
   # }
+  if (!file.exists(aTargetZip)) {
+    dfSENDIG <<- setNames(data.frame(matrix(ncol = 1, nrow = 1)),
+                          c("Error"))
+    dfSENDIG$Error <<- paste("You must obtain a copy of the SEND IG zip file from ",aURL," and place here: ",aTargetZip," before running the application.")
+    bSENDIGFound <<- FALSE
+  } else {
   # now read from within the zip file, the actual file needed
-  unzip(aTargetZip, files = aName, list = FALSE, overwrite = TRUE,
+    bSENDIGFound <<- TRUE
+    unzip(aTargetZip, files = aName, list = FALSE, overwrite = TRUE,
         junkpaths = FALSE, exdir = anExDir, unzip = "internal",
         setTimes = FALSE)
   txt <- pdf_text(aTarget) %>% strsplit(split = "\r\n")
   txt
+  }
+  
 }
 
 ## Read in CT file, This should only be called from the getCT function.
@@ -971,7 +1024,6 @@ values <- reactiveValues()
 # Set Heights and Widths
 sidebarWidth <- '300px'
 plotHeight <- '800px'
-
 server <- function(input, output, session) {
 
   # Read domain structures
@@ -985,13 +1037,11 @@ server <- function(input, output, session) {
   
   # Set study name
   output$StudyName <- renderUI({
-    # FIXME - remember last choice
     textInput('studyName','Study Name to create:',value='MyStudy')
   })
 
   # Set test article
   output$TestArticle <- renderUI({
-    # FIXME - remember last choice
     textInput('testArticle','Test article:',value='MyDrug')
   })
   
@@ -1145,14 +1195,19 @@ server <- function(input, output, session) {
   observeEvent(ignoreNULL=TRUE,eventExpr=input$produceDatasets,
                handlerExpr={
                  withProgress({
-                        setOutputData(input)
-                        # FIXME - use temporary directory?
-                        tryCatch ({
-                          createOutputDirectory(sourceDir,input$studyName)
-                        }, error = function(e) {validate(need(FALSE,
+                      tryCatch ({ checkRequiredInput(input) 
+                          setOutputData(input)
+                          # FIXME - use temporary directory?
+                          tryCatch ({
+                            createOutputDirectory(sourceDir,input$studyName)
+                          }, error = function(e) {validate(need(FALSE,
                             paste("Unable to create directory. Ensure you have entered a study name "
                             ,e
                             )))})
+                      } , error = function(e) {
+                        errore <<- e
+                        shinyalert("Missing required selections (you must at least open each data selection section)", e$message, type = "error")}
+                      )
                  })
                })
   
@@ -1162,7 +1217,6 @@ server <- function(input, output, session) {
 # NEED TO UPDATE SERVERS AND GITHUB
 
 ui <- dashboardPage(
-  
   dashboardHeader(title='SEND data factory',titleWidth=sidebarWidth),
   
   dashboardSidebar(width=sidebarWidth,
@@ -1200,7 +1254,7 @@ ui <- dashboardPage(
   ),
   
   dashboardBody(
-    
+    useShinyalert(),  # Set up shinyalert
     tags$script(HTML("$('body').addClass('sidebar-mini');")),
     tags$script(HTML("$('body').addClass('treeview');")),
     tabItems(

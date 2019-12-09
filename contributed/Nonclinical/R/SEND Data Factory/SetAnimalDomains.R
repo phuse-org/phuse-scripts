@@ -37,6 +37,29 @@ getAgeNumber <- function() {
   sub(" ","",toupper(anAge))
 }
 
+# get maximum value for a column as a date
+getAnimalMaxDateColumn <- function(aDf,aUsub,aCol) {
+  aFilter <- aDf[aDf$USUBJID==aUsub,]
+  theMax <- max(as.Date(aFilter[,aCol]))
+  values <- as.character(theMax)
+  values[1]
+}
+
+# get value from a second column based upon maximum value for a column as a date
+getAnimalMaxDateColumnOther <- function(aDf,aUsub,aCol1,aCol2) {
+  aFilter <- aDf[aDf$USUBJID==aUsub,]
+  theMax <- max(as.Date(aFilter[,aCol1]))
+  values <-  aFilter[aFilter[aCol1]==as.character(theMax),][aCol2]
+  values[1]
+}
+
+# get value from a column filtered to the animal
+getAnimalColumn <- function(aDf,aUsub,aCol) {
+  aFilter <- aDf[aDf$USUBJID==aUsub,]
+  values <- as.character(aFilter[,aCol])
+  values[1]
+}
+
 getAgeUnits  <- function() {
   anAge <-as.character((TSFromFile[TSFromFile$TSPARMCD=="AGETXT",]$TSVAL))
   #return Days or Weeks
@@ -119,6 +142,99 @@ setDMFile <- function(input) {
   dmOut <<- tOut
   # add to set of data
   addToSet("DM","Demographics","dmOut")
+}
+
+setDSFile <- function(input) {
+  # create data frame based on structure
+  aDomain <- "DS"
+
+  theColumns <- dfSENDIG[dfSENDIG$Domain==aDomain,]$Column
+  theLabels <- dfSENDIG[dfSENDIG$Domain==aDomain,]$Label
+  tOut <<- setNames(data.frame(matrix(ncol = length(theColumns), nrow = 1)),
+                     theColumns
+  )
+  # set labels for each field 
+  index <- 1
+  for (aColumn in theColumns) {
+    Hmisc::label(tOut[[index]]) <<- theLabels[index]
+    index <- index + 1
+  }
+  aRow <- 1
+  theArm <- 1
+  hasTK <- FALSE
+  if (as.integer(input$TKanimalsPerGroup)>0 ) {hasTK<-TRUE}
+  # loop for each group
+  for (theGroup in input$treatment) {
+    theSet <- theArm
+    # if has TK, doubles the number of sets
+    if (hasTK) {
+      theSet <- theArm*2-1
+    }
+    # loop for each animal per group, males and females (assume same number)
+    for (aSex in input$sex) {
+      for (nAnimal in 1:as.integer(input$animalsPerGroup)) {
+        tOut[aRow,]$STUDYID <<- input$studyName
+        tOut[aRow,]$DOMAIN <<- aDomain
+        aUSUBJID <-  paste(input$studyName,aRow,sep="-")
+        tOut[aRow,]$USUBJID <<- aUSUBJID
+		    tOut[aRow,]$DSSEQ <<- aRow
+		    # get last element for animal
+		    lastElement <- getAnimalMaxDateColumnOther(seOut,aUSUBJID,"SEENDTC","ELEMENT")
+		    if (as.character(lastElement$ELEMENT)=="Recovery period") {
+		      tOut[aRow,]$DSDECOD <<- "RECOVERY SACRIFICE"
+		      tOut[aRow,]$DSNOMLBL <<- "Recovery Sacrifice" 
+		    } else {
+		      tOut[aRow,]$DSDECOD <<- "TERMINAL SACRIFICE"
+		      tOut[aRow,]$DSNOMLBL <<- "Terminal Sacrifice" 
+		    }
+    		tOut[aRow,]$DSTERM <<- "Exsanguinated"
+    		# get last date on study
+    		aDSSTDTC <- getAnimalMaxDateColumn(seOut,aUSUBJID,"SEENDTC")
+    		tOut[aRow,]$DSSTDTC <<- aDSSTDTC
+    		# get number of days on study
+    		aDiffDate <- as.character(as.Date(aDSSTDTC) - as.Date(getAnimalColumn(dmOut,aUSUBJID,"RFSTDTC")))
+    		tOut[aRow,]$DSSTDY <<- aDiffDate
+		    tOut[aRow,]$DSNOMDY <<- aDiffDate
+        aRow <- aRow + 1
+    } # end animal loop
+    } # end of sex loop
+    if (hasTK) {
+      # TK is the next set number
+      theTKSet <- theSet+1
+      for (aSex in input$sex) {
+        for (nAnimal in 1:as.integer(input$TKanimalsPerGroup)) {
+          tOut[aRow,]$STUDYID <<- input$studyName
+          tOut[aRow,]$DOMAIN <<- aDomain
+          aUSUBJID <-  paste(input$studyName,aRow,sep="-")
+          tOut[aRow,]$USUBJID <<- aUSUBJID
+          tOut[aRow,]$DSSEQ <<- aRow
+          tOut[aRow,]$DSTERM <<- "Exsanguinated"
+          # get last element for animal
+          lastElement <- getAnimalMaxDateColumnOther(seOut,aUSUBJID,"SEENDTC","ELEMENT")
+          if (as.character(lastElement$ELEMENT)=="Recovery period") {
+            tOut[aRow,]$DSDECOD <<- "RECOVERY SACRIFICE"
+            tOut[aRow,]$DSNOMLBL <<- "Recovery Sacrifice" 
+          } else {
+            tOut[aRow,]$DSDECOD <<- "TERMINAL SACRIFICE"
+            tOut[aRow,]$DSNOMLBL <<- "Terminal Sacrifice" 
+          }
+          # get last date on study
+          aDSSTDTC <- getAnimalMaxDateColumn(seOut,aUSUBJID,"SEENDTC")
+          tOut[aRow,]$DSSTDTC <<- aDSSTDTC
+          # get number of days on study
+          aDiffDate <- as.character(as.Date(aDSSTDTC) - as.Date(getAnimalColumn(dmOut,aUSUBJID,"RFSTDTC")))
+          tOut[aRow,]$DSSTDY <<- aDiffDate
+          tOut[aRow,]$DSNOMDY <<- aDiffDate
+          tOut[aRow,]$DSNOMLBL <<- "Terminal Sacrifice" 
+          aRow <- aRow + 1
+        } # end TK animal loop
+    } # end of sex loop
+    } # end of TK check
+    theArm <- theArm + 1
+  } # end group loop
+  dsOut <<- tOut
+  # add to set of data
+  addToSet("DS","Disposition","dsOut")
 }
 
 #
