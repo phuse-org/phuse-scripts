@@ -332,7 +332,7 @@ server <- function(input, output, session) {
     if (input$dataSource=='GitHub') {
       if (Authenticate == TRUE) {
         Req <- GET(paste('https://api.github.com/repos/phuse-org/phuse-scripts/contents/data/send'),
-                   authenticate(userGitHub,passwordGitHub))
+                   authenticate(userGitHub,readToken))
       } else {
         Req <- GET(paste('https://api.github.com/repos/phuse-org/phuse-scripts/contents/data/send'))
       }
@@ -342,7 +342,7 @@ server <- function(input, output, session) {
       for (i in seq(length(contents))) {
         if (Authenticate == TRUE) {
           Req2 <- GET(contents[[i]]$url,
-                      authenticate(userGitHub,passwordGitHub))
+                      authenticate(userGitHub,readToken))
         } else {
           Req2 <- GET(contents[[i]]$url)
         }
@@ -410,7 +410,7 @@ server <- function(input, output, session) {
         StudyDir <- paste0('data/send/',input$selectGitHubStudy)
         if (Authenticate==T) {
           Dataset <- load.GitHub.xpt.files(studyDir=StudyDir,showProgress=T,domainsOfInterest = 'LB',
-                                           authenticate=TRUE,User=userGitHub,Password=passwordGitHub)
+                                           authenticate=TRUE,User=userGitHub,Password=readToken)
         } else {
           Dataset <- load.GitHub.xpt.files(studyDir=StudyDir,showProgress=T,domainsOfInterest = 'LB')
         }
