@@ -35,7 +35,7 @@ readConfig <- function(configFile){
   proportionInd <- str_detect(configFileColumns,"(PROP)$")
   
   
-  list(
+  data.frame(
     cat = configFile[catInd],
     test = configFile[testInd],
     testcd = configFile[testcdInd],
@@ -194,7 +194,8 @@ createRowAnimal <- function(aSex,aTreatment,anAnimal,aDF,aRow,aDomain,aStudyID,
 
 setAnimalDataFiles <- function(input) {
     # Make a list of domains to handle
-    DomainsList <- c("BW","LB","MA","MI","OM","PC","PP","PM","CL")
+    DomainsList <- input$testCategories
+    print(DomainsList)
     # create data frame based on structure
     # Loop on num domains
     index <- 0
