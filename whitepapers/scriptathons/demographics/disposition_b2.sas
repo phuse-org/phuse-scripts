@@ -16,7 +16,9 @@
 ***********************************************************************;
 
 ** Reading ADSL data ;
-filename source url "http://phuse-scripts.googlecode.com/svn/trunk/lang/R/report/test/data/adsl.xpt";
+%* modification 2019-12-23 - update path as data has been moved;
+
+filename source url "https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/data/adam/cdisc/adsl.xpt";
 libname source xport ;
 
 data adsl(keep = usubjid trt01an trt01a dcreascd ittfl);
@@ -85,7 +87,8 @@ data disp;
 	nper = put(cnt, 3.) || "(" || put(per, 5.1) || ")";
 run;
 
-
+/*
 proc transpose data = disp out = disp_t;
 	by 
 run;
+*/

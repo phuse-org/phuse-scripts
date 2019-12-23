@@ -20,17 +20,17 @@
 *   Date:                                                                      *;
 *   Description:                                                               *;
 ********************************************************************************;
-/*
+
 filename source clear;
 libname source clear;
-filename source url "http://phuse-scripts.googlecode.com/svn/trunk/scriptathon2014/data/adpc.xpt" ;
+%* modification 2019-12-23 - update path as data has been moved;
+
+filename source url "https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/data/adam/cdisc/adpc.xpt";
 libname source xport ;
 
 data work.orig_adpc ;
 set source.adpc;
 run;
-
-*/
 
 %let syscc=0;
 options mprint;

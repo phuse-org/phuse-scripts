@@ -16,21 +16,23 @@
 *                   SAS 9.3                                                    *;
 *------------------------------------------------------------------------------*;
 * Modification Log                                                             *;
-*   Programmers Name:                                                          *;
-*   Date:                                                                      *;
-*   Description:                                                               *;
+*   Programmers Name: Katja Glass                                              *;
+*   Date:             2019-12-23                                               *;
+*   Description:      path update                                              *;
 ********************************************************************************;
-/*
+
+
+
 filename source clear;
 libname source clear;
-filename source url "http://phuse-scripts.googlecode.com/svn/trunk/scriptathon2014/data/adpc.xpt" ;
+filename source url "https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/data/adam/cdisc/adpc.xpt" ;
 libname source xport ;
 
 data work.orig_adpc ;
 set source.adpc;
 run;
 
-*/
+
 
 %let syscc=0;
 options mprint;

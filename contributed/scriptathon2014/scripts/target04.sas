@@ -15,7 +15,9 @@
 **eoh**********************************************************************************************/
 options  NOCENTER MPRINT ;
 
-filename source url "http://phuse-scripts.googlecode.com/svn/trunk/scriptathon2014/data/advs.xpt" ;
+%* modification 2019-12-23 - update path as data has been moved;
+
+filename source url "https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/data/adam/cdisc/advs.xpt";
 libname source xport ;
 
 /*read in ADVS data with selected variables and obs*/
@@ -124,7 +126,7 @@ blockplot x=xc block=b_n / display=(values label) valuehalign=center label='54' 
                                      valueattrs=graphdata3 labelattrs=graphdata3;                                                       
 blockplot x=xc block=a_n / display=(values label) valuehalign=center label='0' repeatedvalues=true                          
                                      valueattrs=graphdata2 labelattrs=graphdata2;                                                                                                                                                                                         
-idebar / spacefill=false;                                                                                                      
+sidebar / spacefill=false;                                                                                                      
 discretelegend  'al' 'bl' 'cl' / title='Treatment Group: ' across=3;                                                          
 endsidebar;                                                                                                                     
 endlayout;                                                                                                                        

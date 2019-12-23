@@ -3,7 +3,7 @@ Annotations
 (assuming table of diastolic blood pressure after lying down for 5 minutes over time for subjects in safety population)
 Dataset: ADVS
 Variables: USUBJID, TRTPN, PARAM, PARAMCD, AVAL, CRIT1, CRIT1FL, , CRIT2, CRIT2FL
-Record Selection: WHERE PARAMCD=’DIABP’ and ATPTN=815 and ADY > 1 and SAFFL=’Y’ and (not missing(CRIT1FL) or not missing(CRIT2FL))
+Record Selection: WHERE PARAMCD=ï¿½DIABPï¿½ and ATPTN=815 and ADY > 1 and SAFFL=ï¿½Yï¿½ and (not missing(CRIT1FL) or not missing(CRIT2FL))
 Abnormality Direction: Low
 N = number of subjects with at least 1 record with non-missing CRIT2FL.
 n = number of subjects with CRIT2FL='Y'.
@@ -13,10 +13,12 @@ n = number of subjects with CRIT1FL='Y'.
 Percentage = 100 * n / N.
 **/
 
-filename source url "http://phuse-scripts.googlecode.com/svn/trunk/scriptathon2014/data/advs.xpt";
+%* modification 2019-12-23 - update path as data has been moved;
+
+filename source url "https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/data/adam/cdisc/advs.xpt" ;
 libname source xport;
 data advs;
-	set inlib.advs;
+	set source.advs;
 	WHERE PARAMCD="DIABP" and ATPTN=815 and ADY > 1 and SAFFL="Y" and (not missing(CRIT1FL) or not missing(CRIT2FL));
 	keep USUBJID TRTPN PARAM PARAMCD AVAL CRIT1 CRIT1FL CRIT2 CRIT2FL;
 run;

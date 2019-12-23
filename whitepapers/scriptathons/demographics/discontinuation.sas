@@ -5,7 +5,7 @@ Annotations
 
 Dataset: ADSL
  Variables: USUBJID, TRTAN, DSREASCD, DSTERM, ITTFL
- Record Selection: WHERE ITTFL=’Y’ 
+ Record Selection: WHERE ITTFL=ï¿½Yï¿½ 
 
 Subject ID = USUBJID.
  Reason for Discontinuation = DSREASCD.
@@ -21,7 +21,10 @@ options mlogic mprint;
 ** phuse scripathon standard access code;
 **----------------------------------------------------------------------------;
 *filename source url "http://phuse-scripts.googlecode.com/svn/trunk/scriptathon2014/data/adsl.xpt" ;
-filename source url "http://phuse-scripts.googlecode.com/svn/trunk/scriptathon2014/data/&_dd..xpt" ;
+
+%* modification 2019-12-23 - update path as data has been moved, still not working as variables are not in ADSL;
+
+filename source url "https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/data/adam/cdisc/&_dd..xpt";
 libname source xport ;
 
 
@@ -30,7 +33,7 @@ libname source xport ;
 **----------------------------------------------------------------------------;
 proc contents data=source.&_dd;
 run;
-/*
+
 data work.adsl ;
 set source.adsl ;
 keep usubjid ;
@@ -38,7 +41,7 @@ run ;
 proc print data=work.adsl ;
 title1 "A test of accessing datasets from the PhUSE Code Repository" ;
 run ;
-*/
+
 
 %macro stdrep;
 

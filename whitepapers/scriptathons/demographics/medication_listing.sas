@@ -11,8 +11,9 @@
 /*                                                                          */
 /****************************************************************************/
 
+%* modification 2019-12-23 - update path as data has been moved;
 
-filename source url "http://phuse-scripts.googlecode.com/svn/trunk/scriptathon2014/data/adcm.xpt" ;
+filename source url "https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/data/adam/cdisc/adcm.xpt";
 libname source xport ;
 
 %let POPN=SAFFL;
