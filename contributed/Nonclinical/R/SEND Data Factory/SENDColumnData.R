@@ -38,8 +38,15 @@ getOrres <- function(aDomain){
     # print(paste("Orres randomize from: ",nameList,nchar(nameList)))
     aValue <- CTRandomName(nameList)
   } else {
-    # FIXME - need from configuration if no codelist from corresponding stresc
-    aValue <- round(runif(1, 2.0, 100),digits=2)
+    aDomainConfig <- getConfig(aDomain)
+    #Random Value if no config found
+    if(is.null()) {
+      aValue <- round(runif(1, 2.0, 100), digits=2)
+    } else{
+      aValueMean <- aDomainConfig$mean
+      aValueSD <- aDomainConfig$sd
+      aValue <- round(rnorm(1, aValueMean, aValueSD), digits=2)
+    }
   }
   
   lastOrres <<- aValue 
