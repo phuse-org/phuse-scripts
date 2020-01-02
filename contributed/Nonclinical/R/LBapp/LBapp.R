@@ -1385,7 +1385,8 @@ ui <- dashboardPage(
                                           uiOutput('selectControl')
                          )
                 ),
-                menuItem('Source Code',icon=icon('code'),href='https://github.com/phuse-org/phuse-scripts/blob/master/contributed/Nonclinical/R/LBapp/LBapp.R')
+                menuItem('Source Code',icon=icon('code'),href='https://github.com/phuse-org/phuse-scripts/blob/master/contributed/Nonclinical/R/LBapp/LBapp.R'),
+                menuItem('White Paper',icon=icon('file-alt'),href='https://www.lexjansen.com/phuse-us/2019/dv/DV03.pdf')
     )
   ),
   
