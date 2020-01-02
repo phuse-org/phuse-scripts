@@ -476,9 +476,13 @@ ui <- shinyUI(
                                           tags$a(href='https://github.com/phuse-org/phuse-scripts/tree/master/data/send/CDISC-Safety-Pharmacology-POC',
                                                  'https://github.com/phuse-org/phuse-scripts/tree/master/data/send/CDISC-Safety-Pharmacology-POC'),
                                           br(),br(),
-                                          h4('The source code for this R Shiny application is also publicly availalble at:'),
+                                          h4('The source code for this R Shiny application is publicly availalble at:'),
                                           tags$a(href='https://github.com/phuse-org/phuse-scripts/tree/master/contributed/Nonclinical/R/Safety%20Pharmacology%20Pilot',
                                                  'https://github.com/phuse-org/phuse-scripts/tree/master/contributed/Nonclinical/R/Safety%20Pharmacology%20Pilot'),
+                                          br(),br(),
+                                          h4('A PHUSE white paper describing this project is publicly available at:'),
+                                          tags$a(href='https://www.phusewiki.org/docs/2019%20US%20Connect%20Final%20Papers/SI/si09-20039.pdf',
+                                                 'https://www.phusewiki.org/docs/2019%20US%20Connect%20Final%20Papers/SI/si09-20039.pdf'),
                                           br(),br()
                                    )
                           )
