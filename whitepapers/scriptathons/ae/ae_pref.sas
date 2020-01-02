@@ -1,16 +1,19 @@
-
+%* modification 2019-12-23 - update path as data has been moved;
+%* dataset adae_updated is not available, but program runs also with adae (slow);
 
   %LOCAL _num_groups ;
 
   *** read input datasets: adsl *** ;
-  filename source url "http://phuse-scripts.googlecode.com/svn/trunk/scriptathon2014/data/adsl.xpt" ;
+  filename source url "https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/data/adam/cdisc/adsl.xpt" ;
+  *filename source url "http://phuse-scripts.googlecode.com/svn/trunk/scriptathon2014/data/adsl.xpt" ;
   libname source xport ;
   data work.adsl ;
     set source.adsl ;
   run ;
 
   *** read input datasets: adsl *** ;
-  filename source url "http://phuse-scripts.googlecode.com/svn/trunk/scriptathon2014/data/adae_updated.xpt" ;
+  filename source url "https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/data/adam/cdisc/adae.xpt" ;
+  *filename source url "http://phuse-scripts.googlecode.com/svn/trunk/scriptathon2014/data/adae_updated.xpt" ;
   libname source xport ;
   data work.adae ;
     set source.adae ;
@@ -76,5 +79,3 @@
 %MEND scriptathon_target24 ; 
 
 %scriptathon_target24 ; 
-
-.sas" ;

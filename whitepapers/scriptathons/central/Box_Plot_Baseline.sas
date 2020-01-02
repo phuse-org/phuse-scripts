@@ -1,4 +1,6 @@
-filename source "C:\how\Scriptathon\sasdata\advs.xpt";
+%* modification 2019-12-23 - update path as data has been moved;
+
+filename source "https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/data/adam/cdisc/advs.xpt";
 libname source xport;
 data advs;
 	keep USUBJID SAFFL PARAMCD TRTPN TRTP AVAL AVISIT AVISITN ATPT;

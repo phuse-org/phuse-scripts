@@ -4,17 +4,16 @@
 /* Target:	18						*/
 /************************************/
 
+%* modification 2019-12-23 - update path as data has been moved;
 
-
-
-filename source url "http://phuse-scripts.googlecode.com/svn/trunk/scriptathon2014/data/adsl.xpt" ;
+filename source url "https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/data/adam/cdisc/adsl.xpt";
 libname source xport ;
  data work.adsl ;
    set source.adsl ;
  run ;
 
 
-filename source url "http://phuse-scripts.googlecode.com/svn/trunk/scriptathon2014/data/split/advsmax.xpt" ;
+filename source url "https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/data/adam/cdisc/advsmax.xpt" ;
 libname source xport ;
 
   data advsmax ;

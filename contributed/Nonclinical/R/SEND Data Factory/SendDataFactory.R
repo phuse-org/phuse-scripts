@@ -143,7 +143,7 @@ convertMenuItem <- function(mi,tabName) {
 }
 
 # Check for all required input selections
-checkRequiredInput <- function (input) {
+checkRequiredInput <- function(input) {
   aList <- ""
   saveI <<- input
   if (is.null(input$studyName)) { aList <- paste(aList,"Study name;") }
@@ -916,13 +916,22 @@ readPDFFromURLZip <- function(aLocation,aZip,aName,output) {
 ## Read in CT file, This should only be called from the getCT function.
 importCT <- function(version) {
   
-  # Switch function to determine version
-  # Reads directly from the NCI location
-  base <- "https://evs.nci.nih.gov/ftp1/CDISC/SEND/Archive/"
-  path <- paste0(base, "SEND%20Terminology%20", version, ".xls")
-  GET(path, write_disk(temp <- tempfile(fileext = ".xls")))
-  df <- readWorksheet(loadWorkbook(temp), sheet = paste0("SEND Terminology ", version))
-    
+  CTDownloadsDir <- paste0(sourceDir, "/downloads/CT/")
+  
+  if(file.exists(paste0(CTDownloadsDir, version, ".xls"))) {
+    print("CT Loading...")
+    df <- readWorksheet(loadWorkbook(paste0(CTDownloadsDir, version, ".xls")), sheet = paste0("SEND Terminology ", version))
+  } else {
+    print("CT Downloading...")
+    # Switch function to determine version
+    # Reads directly from the NCI location
+    base <- "https://evs.nci.nih.gov/ftp1/CDISC/SEND/Archive/"
+    path <- paste0(base, "SEND%20Terminology%20", version, ".xls")
+    print(paste0(CTDownloadsDir, version))
+    GET(path, write_disk(CTxl <- paste0(CTDownloadsDir, version, ".xls")))
+    df <- readWorksheet(loadWorkbook(CTxl), sheet = paste0("SEND Terminology ", version))
+  }
+  
   # Attribute used to determine if user changes CT version.
   attr(df, "version") <- version
   
@@ -1004,7 +1013,7 @@ CTSearchOnShortName <<- function(nameList,aName) {
 # allow to work offline by not using the next line:
 # source('https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/contributed/Nonclinical/R/Functions/Functions.R')
 # Use this next line if not on internet
-source('~/PhUSE-scripts/contributed/Nonclinical/R/Functions/Functions.R')
+source(paste(sourceDir, '/Functions.R', sep = ""))
 source(paste(sourceDir, "/SENDColumnData.R", sep=""))
 source(paste(sourceDir, "/SetAnimalDataFiles.R", sep=""))
 source(paste(sourceDir, "/SetTrialDomains.R", sep=""))

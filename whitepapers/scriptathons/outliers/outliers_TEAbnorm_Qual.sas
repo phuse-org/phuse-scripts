@@ -5,7 +5,9 @@ are overlaped and the legend is not perfect. I am glad if I could continue to
 finish it. My name is Xiaopeng Li and I can be reached at xiaopeng.li@celerion.com
 ********************************************************************************/
 
-filename source "c:\how\scriptathon\sasdata\advs.xpt";
+%* modification 2019-12-23 - update path as data has been moved;
+
+filename source url "https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/data/adam/cdisc/advs.xpt";
 libname source xport ;
 data work.advs ;
   set source.advs ;

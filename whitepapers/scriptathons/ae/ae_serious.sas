@@ -7,9 +7,10 @@
    Author:    Prathamesh Athavale / Rucha Landge
 
 **eoh**********************************************************************************************/
+%* modification 2019-12-23 - update path as data has been moved;
 
-filename source url "http://phuse-scripts.googlecode.com/svn/trunk/scriptathon2014/data/adae.xpt" ;
-filename an_sour url "http://phuse-scripts.googlecode.com/svn/trunk/scriptathon2014/data/adsl.xpt" ;
+filename source url "https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/data/adam/cdisc/adae.xpt" ;
+filename an_sour url "https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/data/adam/cdisc/adsl.xpt" ;
 
  libname source xport ;
  libname an_sour xport ;
