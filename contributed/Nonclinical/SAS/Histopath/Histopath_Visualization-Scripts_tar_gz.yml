@@ -1,0 +1,28 @@
+KeyWords: Histopath, Histopathology, Visualization
+Script: 
+  Desc   : Histopathology visualization using SAS scripts to create HTML output, Display Microscopic Findings, Macrocopic Findings and Trial Summary information
+  Name   : Histopath_visualization-Scripts.tar_gz
+  GCR    : 
+  SRV    : 
+  Source : Contributed
+  Topic  : Histopathology
+  Title  : Histopathology Reporting
+  Type   : HTML
+  Subtype  : 
+  Target : https://github.com/phuse-org/phuse-scripts/blob/master/contributed/Nonclinical/SAS/Histopath/CodeForDeployment_12MAR2015/PDS2014ReportsBody.html
+Language: 
+  name   : SAS
+  version: 
+Comments : This is the original package provided.
+Qualification: 
+  LastQualDate:
+  LastQualBy:
+  Stage: Contributed 
+Authors: 
+  - name   : Henrietta Cummings
+    company: SAS Institute
+Screenshots: 
+  - https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/contributed/Nonclinical/SAS/Histopath/CodeForDeployment_12MAR2015/screenshot_01.png
+  - https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/contributed/Nonclinical/SAS/Histopath/CodeForDeployment_12MAR2015/screenshot_01.png
+  - https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/contributed/Nonclinical/SAS/Histopath/CodeForDeployment_12MAR2015/screenshot_01.png
+
