@@ -9,7 +9,30 @@
     Test Data:      https://github.com/phuse-org/phuse-scripts/tree/master/data/adam/cdisc
     Sample Output:  https://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/WPCT/outputs_sas/WPCT-F.07.01_Box_plot_DIABP_by_visit_for_timepoint_815.pdf
 
-	/*Some changes*/
+	*Some changes*
+	
+	********************
+	Comments and modifications 2020-01-17:
+	
+	- comment %assert_timepoint_exist as this is not available;
+	
+	To have this script runnable for the example data, you need to update some settings (SASAUTOS, pathes),
+	furthermore you need to create dummy ATPTN and ATPT variables as these are currently not in the test data.
+	
+	OPTIONS SASAUTOS=("<PATH>/whitepapers/utilities", SASAUTOS);
+	OPTIONS MRECALL MAUTOSOURCE;
+	
+	%let ds = ADLBC;
+	%util_access_test_data(&ds);
+	%* program requires time point variables, so create dummy content as not available in test data;
+	DATA &ds;
+		SET &ds;
+		ATPTN = 1;
+		ATPT = "TimePoint unknown";
+	RUN;
+	
+	%let outputs_folder = <PATH>/results;
+	********************
 
     Using this program:
 
@@ -154,7 +177,7 @@ end HEADER ***/
 
 		trtp_short = put(&tn_var,trt_short.);
 
-		%assert_timepoint_exist(ds=&ds._sub);
+		%*assert_timepoint_exist(ds=&ds._sub);
       run;
 
   /*** end USER PROCESSING AND SETTINGS ***********************************
@@ -195,7 +218,7 @@ end HEADER ***/
       data css_anadata;
         set &m_lb..&m_ds (keep=&ana_variables);
         where &p_fl = 'Y' and &a_fl = 'Y';
-		%assert_timepoint_exist(ds=css_anadata);
+		%*assert_timepoint_exist(ds=css_anadata);
         *--- Create a Normal Range Outlier variable, for scatter plot overlay ---*;
           if (2 = n(&m_var, &lo_var) and &m_var < &lo_var) or
              (2 = n(&m_var, &hi_var) and &m_var > &hi_var) then m_var_outlier = &m_var;
@@ -332,7 +355,7 @@ end HEADER ***/
 
           *--- ODS PDF destination (Traditional Graphics, No ODS or Listing output) ---*;
             ods listing close;
-            ods pdf file="&outputs_folder\WPCT-F.07.01_Box_plot_&&paramcd_val&pdx.._by_visit_for_timepoint_&&atptn_val&tdx...pdf"
+            ods pdf file="&outputs_folder/WPCT-F.07.01_Box_plot_&&paramcd_val&pdx.._by_visit_for_timepoint_&&atptn_val&tdx...pdf"
                     notoc bookmarklist=none dpi=300
                     author="(&SYSUSERID) PhUSE CS Standard Analysis Library"
                     subject='PhUSE CS Measures of Central Tendency'
