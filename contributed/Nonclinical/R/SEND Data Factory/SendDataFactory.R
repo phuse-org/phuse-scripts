@@ -1099,7 +1099,7 @@ server <- function(input, output, session) {
   # Display Number of sex choice
   output$Sex <- renderUI({
     # FIXME - these should come from a configuration file
-    sexList <- c("Male","Female")
+    sexList <- c("M","F")
     checkboxGroupInput('sex','Select sex:',sexList,selected=c(sexList))
   })
 

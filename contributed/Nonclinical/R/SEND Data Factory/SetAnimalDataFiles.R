@@ -17,7 +17,7 @@ skipRow <- function(aTestCD,iDay,endDay) {
 readConfig <- function(configFile){
   
   if (class(configFile) != "data.frame") {
-    stop(paste0("configFile must be a data.frame, it was ", class(x)))
+    stop(paste0("configFile must be a data.frame, it was ", class(configFile)))
   }
   
   #Detect columns for an observation configuration.
@@ -55,12 +55,15 @@ getConfig <- function(domain) {
   if(exists(paste0(domain, "config"))) {
     return(get0(paste0(domain, "config")))
   } else {
-    if(file.exists(paste0("configs/", domain, "config.csv"))){
+    if(file.exists(paste0("contributed/Nonclinical/R/SEND Data Factory/configs/", domain, "config.csv"))){
       print(paste0("Reading Configuration Files: ", domain))
-      assign(paste0(domain,"config"), readConfig(read.csv(paste0("configs/",domain,"config.csv"), stringsAsFactors = FALSE)),
+      assign(paste0(domain,"config"), 
+             readConfig(read.csv(paste0("contributed/Nonclinical/R/SEND Data Factory/configs/", 
+                                        domain, "config.csv"), stringsAsFactors = FALSE)),
              envir = .GlobalEnv)
     } else {
-      warning(paste0("Config Not Found in ", getwd(), "/configs/"))
+      warning(paste0("Config Not Found in ", paste0("contributed/Nonclinical/R/SEND Data Factory/configs/", 
+                                                    domain, "config.csv")))
       NULL
     }
 
@@ -68,18 +71,20 @@ getConfig <- function(domain) {
 }
 
 getTestCDs <- function(aDomain) {
-  configFiles <- list.files("configs)")
   switch(aDomain,
-         "BW" = {aList <- getConfig("BW")$testcd},
-         "CL" = {aList <- getConfig("CL")$testcd},
-         "LB" = {aList <- getConfig("LB")$testcd},
-         "MI" = {aList <- getConfig("MI")$testcd},
-         "PM" = {aList <- getConfig("PM")$testcd},
-         "MA" = {aList <- getConfig("MA")$testcd},
-         "OM" = {aList <- getConfig("OM")$testcd},
-         "PP" = {aList <- getConfig("PP")$testcd},
-         "PC" = {aList <- getConfig("PC")$testcd}
+         "BW" = {aConfig <- getConfig("BW")},
+         "CL" = {aConfig <- getConfig("CL")},
+         "LB" = {aConfig <- getConfig("LB")},
+         "MI" = {aConfig <- getConfig("MI")},
+         "PM" = {aConfig <- getConfig("PM")},
+         "MA" = {aConfig <- getConfig("MA")},
+         "OM" = {aConfig <- getConfig("OM")},
+         "PP" = {aConfig <- getConfig("PP")},
+         "PC" = {aConfig <- getConfig("PC")}
   )
+  testcd_ind <- str_which(names(aConfig), "TESTCD")
+  aList <- aConfig[,testcd_ind]
+  print(aList)
   as.data.frame(unique(aList))
 }
 
@@ -121,7 +126,7 @@ createAnimalDataDomain <- function(input,aDomain,aDescription,aDFName) {
   aRow <- 1
   # set some defaults
   if (is.null(input$sex)) {
-    sexList <- c("Male","Female")
+    sexList <- c("M","F")
   } else {
     sexList <- input$sex
   }
@@ -137,13 +142,13 @@ createAnimalDataDomain <- function(input,aDomain,aDescription,aDFName) {
     animalsList <- input$animalsPerGroup
   }
   
-  print(paste("Looping by SEX:",sexList))
+  # print(paste("Looping by SEX:",sexList))
   for (aSex in sexList) {
     # now loop on all groups
-    print(paste("Looping by treatment:",treatmentList))
+    # print(paste("Looping by treatment:",treatmentList))
     for (aTreatment in treatmentList) {
       # now loop on all animals for which we want to create rows
-      print(paste("Looping by animals per group:",animalsList))
+      # print(paste("Looping by animals per group:",animalsList))
       for (anAnimal in 1:animalsList) {
         # if this domain has days, loop over days
         if (hasDays(aDF,aDomain)) {
@@ -155,10 +160,11 @@ createAnimalDataDomain <- function(input,aDomain,aDescription,aDFName) {
         for (iDay in 1:endDay) {
           # loop over the tests for this domain
           aCodes <- getTestCDs(aDomain)
+          print(aCodes)
           for(i in 1:nrow(aCodes)) {
             aTestCD <- aCodes[i,]
             if (!skipRow(aTestCD,iDay,endDay)) {
-            # print(paste(" About to create row animal for",aTestCD,input$studyName))
+            print(paste(" About to create row animal for",aTestCD, iDay, anAnimal, aTreatment, aSex))
             aRowList <<- createRowAnimal(aSex,aTreatment,anAnimal,aDF,aRow,aDomain,
             input$studyName,aTestCD,iDay)
             # replace empties with NA

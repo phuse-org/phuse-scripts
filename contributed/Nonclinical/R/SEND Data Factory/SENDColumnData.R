@@ -31,7 +31,7 @@ getSENDLastTestCodeName <- function(aCol,aDomain) {
   }
   aValue
 }
-getOrres <- function(aDomain){   
+getOrres <- function(aDomain,aSex,aTestCD){
   # get from stresc value the codelist to use
   nameList <- getCodeList(paste(aDomain,"STRESC",sep=""))
   if (!is.na(nameList) && !is.null(nameList) && nchar(nameList)>0) {
@@ -40,11 +40,18 @@ getOrres <- function(aDomain){
   } else {
     aDomainConfig <- getConfig(aDomain)
     #Random Value if no config found
-    if(is.null()) {
+    if(is.null(aDomainConfig)) {
       aValue <- round(runif(1, 2.0, 100), digits=2)
     } else{
-      aValueMean <- aDomainConfig$mean
-      aValueSD <- aDomainConfig$sd
+      testcd_ind <- str_which(names(aDomainConfig), "TESTCD")
+      mean_ind <- str_which(names(aDomainConfig), "STRESM")
+      sd_ind <- str_which(names(aDomainConfig), "STRESSD")
+      aValueMean <- aDomainConfig[aDomainConfig$SEX == aSex &
+                                  aDomainConfig[,testcd_ind] == aTestCD,
+                                  mean_ind]
+      aValueSD <- aDomainConfig[aDomainConfig$SEX == aSex &
+                                aDomainConfig[,testcd_ind] == aTestCD,
+                                sd_ind]
       aValue <- round(rnorm(1, aValueMean, aValueSD), digits=2)
     }
   }
@@ -118,7 +125,7 @@ getColumnData <- function (aCol,aSex,aTreatment,anAnimal,aRow,aDomain,aStudyID,a
     aData <- getSENDTestCode(aCol,aTestCD)
     }
   if (aCol==aTestCol)  {aData <- getSENDLastTestCodeName(aCol,aDomain)}
-  if (aCol==aORRESCol) aData <- getOrres(aDomain)
+  if (aCol==aORRESCol) aData <- getOrres(aDomain,aSex,aTestCD)
   if (aCol==aORRESUCol) {aData <- getOrresUnit(aCol)}
   if (aCol==aSTRESCCol) {aData <- getStresc(aCol)}
   if (aCol==aSTRESNCol) {aData <- suppressWarnings(as.numeric(lastOrres))}
