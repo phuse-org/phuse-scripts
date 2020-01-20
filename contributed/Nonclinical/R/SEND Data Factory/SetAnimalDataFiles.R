@@ -5,7 +5,7 @@
 skipRow <- function(aTestCD,iDay,endDay) {
   aResult <- FALSE
   # skip terminal body weight except on last day
-  if (aTestCD=="TERMBW" && (iDay != endDay)) {
+  if (aTestCD=="TBW" && (iDay != endDay)) {
     aResult <- TRUE
   }
   aResult

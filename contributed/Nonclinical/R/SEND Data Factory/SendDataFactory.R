@@ -938,25 +938,6 @@ importCT <- function(version) {
   df
 }
 
-# Return CT codelist, if in parenthesis is the submission value to translate to a codelist name
-getCT <<- function(codelist, version) {
-  
-  # If CT hasn't been loaded in already, superassign to parent environment
-  if(!exists("CTdf") || !(attr(CTdf, "version") == version)) CTdf <<- importCT(version)
-  
-  # Remove parenthesis
-  parenthesisLoc <- gregexpr(codelist,pattern="[(]")[[1]][1]
-  if (parenthesisLoc==1) {
-      # starts with a parentheses, so is the code name for a codelist, remove it and find its name
-      aValue <- substr(codelist,parenthesisLoc+1,nchar(codelist)-1)
-      # find name from submission value
-      codelist <- CTdf[(toupper(CTdf$CDISC.Submission.Value) == toupper(aValue)),]$Codelist.Name[1]
-  }
-  # Return the reqested codelist as a character vector, remove the codelist header row.
-  CTdf[(toupper(CTdf$Codelist.Name) == toupper(codelist)) &
-         !(is.na(CTdf$Codelist.Code)),]$CDISC.Submission.Value
-}
-
 # Return CT filtered dataframe, if in parenthesis is the submission value to translate to a codelist name
 getCTDF <<- function(codelist, version) {
   
@@ -1071,14 +1052,14 @@ server <- function(input, output, session) {
     # Display species
   output$Species <- renderUI({
     # Get species choices from the code list
-    species <- getCT("Species", input$CTSelection)
+    species <- getCTDF("Species", input$CTSelection)[,"CDISC.Submission.Value"]
     selectInput('species','Select species:',species,selected=species[1])
   })
   
   # Display output type
   output$Strain <- renderUI({
     # FIXME - these should come from a configuration file,conditional on species
-    strain <- getCT("Strain/Substrain", input$CTSelection)
+    strain <- getCTDF("Strain/Substrain", input$CTSelection)[,"CDISC.Submission.Value"]
     selectInput('strain','Select strain:',strain,selected=strain[1])
   })
 
