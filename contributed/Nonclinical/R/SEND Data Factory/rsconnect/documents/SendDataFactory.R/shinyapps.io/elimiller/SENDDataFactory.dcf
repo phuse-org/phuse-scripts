@@ -1,0 +1,12 @@
+name: SENDDataFactory
+title: SENDDataFactory
+username:
+account: elimiller
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 1600251
+bundleId: 2668277
+url: https://elimiller.shinyapps.io/SENDDataFactory/
+when: 1576367116.50817
+asMultiple: FALSE
+asStatic: FALSE
