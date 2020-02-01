@@ -32,59 +32,27 @@ getSENDLastTestCodeName <- function(aCol,aDomain) {
   aValue
 }
 getOrres <- function(aDomain,aSex,aTestCD){
-  
-  aDomainConfig <- getConfig(aDomain)
-  ## If Domain is numeric
-  if(aDomain %in% c("BG", "BW", "EG", "FW", "LB", "PC", "PP", "VS")){
-    ## If config found
-    if(!is.null(aDomainConfig)) {
-      print('here')
+  # get from stresc value the codelist to use
+  nameList <- getCodeList(paste(aDomain,"STRESC",sep=""))
+  if (!is.na(nameList) && !is.null(nameList) && nchar(nameList)>0) {
+    # print(paste("Orres randomize from: ",nameList,nchar(nameList)))
+    aValue <- CTRandomName(nameList)
+  } else {
+    aDomainConfig <- getConfig(aDomain)
+    #Random Value if no config found
+    if(is.null(aDomainConfig)) {
+      aValue <- round(runif(1, 2.0, 100), digits=2)
+    } else{
       testcd_ind <- str_which(names(aDomainConfig), "TESTCD")
       mean_ind <- str_which(names(aDomainConfig), "STRESM")
       sd_ind <- str_which(names(aDomainConfig), "STRESSD")
       aValueMean <- aDomainConfig[aDomainConfig$SEX == aSex &
-                                    aDomainConfig[,testcd_ind] == aTestCD,
+                                  aDomainConfig[,testcd_ind] == aTestCD,
                                   mean_ind]
       aValueSD <- aDomainConfig[aDomainConfig$SEX == aSex &
-                                  aDomainConfig[,testcd_ind] == aTestCD,
+                                aDomainConfig[,testcd_ind] == aTestCD,
                                 sd_ind]
       aValue <- round(rnorm(1, aValueMean, aValueSD), digits=2)
-    ## If config not found
-    } else {
-      aValue <- round(runif(1, 2.0, 100), digits=2)
-    }
-    ## If domain is catagorical
-  } else {
-    ## If config is found:
-    if(!is.null(aDomainConfig)) {
-      testcd_ind <- str_which(names(aDomainConfig), "TESTCD")
-      fact_ind <- str_which(names(aDomainConfig), "FACT")
-      prop_ind <- str_which(names(aDomainConfig), "PROP")
-      
-      ## Pull proportions for this sex,testcd
-      testConfig <- aDomainConfig[aSex==aDomainConfig$SEX &
-                                  aTestCD==aDomainConfig[,testcd_ind],]
-      
-      totalProportion <- sum(testConfig[,prop_ind])
-      
-      ## If Proportions don't sum to 1 the sample() fucntion will normalize
-      if(totalProportion != 1) {
-        warning(paste0(
-          "Total Proportion for: ",
-          aTestCD,
-          " does not sum to 1: ",
-          totalProportion,
-          ", Normalizing to 1"
-        ))
-      }
-      
-      sample(testConfig[,fact_ind], size = 1, prob = testConfig[,prop_ind])
-      
-      
-      ## If config is not found
-    } else {
-      nameList <- getCodeList(paste(aDomain,"STRESC",sep=""))
-      aValue <- CTRandomName(nameList)
     }
   }
   
@@ -147,7 +115,7 @@ getColumnData <- function (aCol,aSex,aTreatment,anAnimal,aRow,aDomain,aStudyID,a
   aDay <- paste(aDomain,"DY",sep="")
   aData <- NA
   # Next line for help in debugging
-   print(paste(" Getting column data for:",aCol,aSex,aTreatment,anAnimal,aRow,aDomain,aStudyID,aTestCD),set=":")
+  # print(paste(" Getting column data for:",aCol,aSex,aTreatment,anAnimal,aRow,aDomain,aStudyID,aTestCD),set=":")
   if (aCol=="DOMAIN") aData <- aDomain
   if (aCol=="STUDYID") {aData <- aStudyID}
   if (aCol==aSeqCol) {aData <- aRow}
