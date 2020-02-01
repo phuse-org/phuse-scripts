@@ -55,14 +55,14 @@ getConfig <- function(domain) {
   if(exists(paste0(domain, "config"))) {
     return(get0(paste0(domain, "config")))
   } else {
-    if(file.exists(paste0("contributed/Nonclinical/R/SEND Data Factory/configs/", domain, "config.csv"))){
+    if(file.exists(paste0("configs/", domain, "config.csv"))){
       print(paste0("Reading Configuration Files: ", domain))
       assign(paste0(domain,"config"), 
-             readConfig(read.csv(paste0("contributed/Nonclinical/R/SEND Data Factory/configs/", 
+             readConfig(read.csv(paste0("configs/", 
                                         domain, "config.csv"), stringsAsFactors = FALSE)),
              envir = .GlobalEnv)
     } else {
-      warning(paste0("Config Not Found in ", paste0("contributed/Nonclinical/R/SEND Data Factory/configs/", 
+      warning(paste0("Config Not Found in ", paste0("configs/", 
                                                     domain, "config.csv")))
       NULL
     }
@@ -82,7 +82,7 @@ getTestCDs <- function(aDomain) {
          "PP" = {aConfig <- getConfig("PP")},
          "PC" = {aConfig <- getConfig("PC")}
   )
-  testcd_ind <- str_which(names(aConfig), "TESTCD")
+  testcd_ind <- str_detect(names(aConfig), "TESTCD")
   aList <- aConfig[,testcd_ind]
   print(aList)
   as.data.frame(unique(aList))
@@ -111,7 +111,7 @@ createAnimalDataDomain <- function(input,aDomain,aDescription,aDFName) {
   theColumns <- dfSENDIG[dfSENDIG$Domain==aDomain,]$Column
   theLabels <- dfSENDIG[dfSENDIG$Domain==aDomain,]$Label
   # Creating the data fames
-  print(paste("Creating the data frames with columns: ",theColumns))
+  print(paste0("Creating the data frames with columns: ",theColumns))
   aDF <<- setNames(data.frame(matrix(ncol = length(theColumns), nrow = 1)),
                      theColumns
   )
@@ -142,7 +142,7 @@ createAnimalDataDomain <- function(input,aDomain,aDescription,aDFName) {
     animalsList <- input$animalsPerGroup
   }
   
-  # print(paste("Looping by SEX:",sexList))
+  #print(paste("Looping by SEX:",sexList))
   for (aSex in sexList) {
     # now loop on all groups
     # print(paste("Looping by treatment:",treatmentList))
@@ -184,7 +184,7 @@ createAnimalDataDomain <- function(input,aDomain,aDescription,aDFName) {
 createRowAnimal <- function(aSex,aTreatment,anAnimal,aDF,aRow,aDomain,aStudyID,
                             aTestCD,iDay) {
  aList <- list() 
- # print(paste("Creating row for:",aSex,aTreatment,anAnimal,aRow,aDomain,aStudyID,aTestCD))
+ print(paste("Creating row for:",aSex,aTreatment,anAnimal,aRow,aDomain,aStudyID,aTestCD))
  # print(paste("Getting values for:",labels(aDF)[2][[1]]))
  # loop on fields in data frame
  for (aCol in labels(aDF)[2][[1]]) {
