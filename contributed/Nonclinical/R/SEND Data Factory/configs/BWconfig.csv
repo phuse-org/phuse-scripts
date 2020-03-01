@@ -1,3 +1,5 @@
-"BWTEST", "BWTESTCD", "SPECIES", "SEX", "BWSTRESM", "BWSTRESSD", "BWSTRESU"
-"Body Weight", "BW", "Rat", "M", "1.2", "0.3", "kg"
-"Terminal Body Weight", "TBW", "Rat", "F", "0.9", "0.02", "kg"
+BWTEST,BWTESTCD,SPECIES,SEX,BWSTRESM,BWSTRESSD,BWSTRESU
+Body Weight,BW,Rat,M,1.2,0.3,kg
+Body Weight,BW,Rat,F,1.2,0.3,kg
+Terminal Body Weight,TBW,Rat,M,0.9,0.02,kg
+Terminal Body Weight,TBW,Rat,F,0.9,0.02,kg
