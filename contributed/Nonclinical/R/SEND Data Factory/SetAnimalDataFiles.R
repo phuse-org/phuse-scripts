@@ -5,7 +5,7 @@
 skipRow <- function(aTestCD,iDay,endDay) {
   aResult <- FALSE
   # skip terminal body weight except on last day
-  if (aTestCD=="TBW" && (iDay != endDay)) {
+  if (aTestCD=="TERMBW" && (iDay != endDay)) {
     aResult <- TRUE
   }
   aResult
@@ -55,12 +55,11 @@ getConfig <- function(domain) {
   if(exists(paste0(domain, "config"))) {
     return(get0(paste0(domain, "config")))
   } else {
-    if(file.exists(paste0("configs/", domain, "config.csv"))){
+    if(file.exists(paste0(sourceDir,"/configs/", domain, "config.csv"))){
       print(paste0("Reading Configuration Files: ", domain))
-      assign(paste0(domain,"config"), 
-             readConfig(read.csv(paste0("configs/", 
-                                        domain, "config.csv"), stringsAsFactors = FALSE)),
-             envir = .GlobalEnv)
+      dfList = read.csv(paste0(sourceDir,"/configs/", domain, "config.csv"), stringsAsFactors = FALSE)
+      dfRead = readConfig(dfList)
+      assign(paste0(domain,"config"),dfRead,envir = .GlobalEnv)
     } else {
       warning(paste0("Config Not Found in ", paste0("configs/", 
                                                     domain, "config.csv")))
@@ -91,12 +90,14 @@ getTestCDs <- function(aDomain) {
 # from configuration, get column based upon incoming column (like testcd to test)
 getMatchColumn <- function(aDomain,aColumn1,aValue1,aColumn2) {
   configFiles <- list.files("configs)")
+  print(paste("Matching columns from ",aColumn1,aValue1,aColumn2))
   df1 <- unique(getConfig(aDomain)[aColumn1])
   df2 <- unique(getConfig(aDomain)[aColumn2])
   # FIXME might need other discriminating factors like Sex, Species,...
   # find position in first list
   df3 <- cbind(as.data.frame(df1), as.data.frame(df2)) 
   # get first matching one
+  print(paste("        answer",df3[df3[1]==aValue1,][2][1]))
   answer <- df3[df3[1]==aValue1,][2][1]
 }
 
@@ -153,11 +154,24 @@ createAnimalDataDomain <- function(input,aDomain,aDescription,aDFName) {
         # if this domain has days, loop over days
         if (hasDays(aDF,aDomain)) {
           # FIXME - use study length from configuration or user selection
+          startDay <- 1
           endDay <- 10
         } else {
+          startDay <- 1
           endDay <- 1  
         }
-        for (iDay in 1:endDay) {
+        # for Lab, just 1 day of data, last day of study
+        if (aDomain=="LB") {
+          startDay <- 10
+          endDay <- 10
+        }
+        # for PC and PP, just 1 day of data, day 1
+        if (aDomain=="PP" || aDomain=="PC") {
+          startDay <- 1
+          endDay <- 1
+        }
+        
+        for (iDay in startDay:endDay) {
           # loop over the tests for this domain
           aCodes <- getTestCDs(aDomain)
           print(aCodes)
@@ -193,7 +207,7 @@ createRowAnimal <- function(aSex,aTreatment,anAnimal,aDF,aRow,aDomain,aStudyID,
                                 aStudyID,aTestCD,iDay)
    aList <- c(aList, columnData)
  }
- # print(paste("  values are:",aList))
+ # print(paste("  FIXME values are:",aList))
  # return the list of fields
  aList
 }
@@ -208,7 +222,7 @@ setAnimalDataFiles <- function(input) {
     for (aDomain in DomainsList) {
       index <- index + 1
       percentOfList <- index/length(DomainsList)
-      setProgress(value=percentOfList,message=paste('Producting dataset: ',aDomain))
+      setProgress(value=percentOfList,message=paste('Producing dataset: ',aDomain))
       aDFName <- paste(tolower(aDomain),"Out",sep="")
       aDescription <- "FIXME - read description from SENDIG"
       aDFReturned <<- createAnimalDataDomain(input,aDomain,aDescription,aDFName)

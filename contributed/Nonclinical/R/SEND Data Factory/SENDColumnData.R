@@ -17,7 +17,7 @@ getSENDTestCode <- function(aCol,aTestCD) {
     lastTestCode <<- aTestCD
   }
   # pass back same set code
-  aTestCD
+  as.character(aTestCD)
 }
 getSENDLastTestCodeName <- function(aCol,aDomain) {
   # Retrieve from terminology, the test name matching the last test code
@@ -31,21 +31,25 @@ getSENDLastTestCodeName <- function(aCol,aDomain) {
   }
   aValue
 }
+
 getOrres <- function(aDomain,aSex,aTestCD){
-  
   aDomainConfig <- getConfig(aDomain)
   ## If Domain is numeric
   if(aDomain %in% c("BG", "BW", "EG", "FW", "LB", "PC", "PP", "VS")){
     ## If config found
-    if(!is.null(aDomainConfig)) {
-      print('here')
+    if(exists("aDomainConfig") && !is.null(aDomainConfig)) {
       testcd_ind <- str_which(names(aDomainConfig), "TESTCD")
       mean_ind <- str_which(names(aDomainConfig), "STRESM")
       sd_ind <- str_which(names(aDomainConfig), "STRESSD")
       aValueMean <- aDomainConfig[aDomainConfig$SEX == aSex &
                                     aDomainConfig[,testcd_ind] == aTestCD,
+                                  mean_ind]
+      aValueSD <- aDomainConfig[aDomainConfig$SEX == aSex &
+                                    aDomainConfig[,testcd_ind] == aTestCD,
                                   sd_ind]
       aValue <- round(rnorm(1, aValueMean, aValueSD), digits=2)
+      # print(paste(" DEBUG Domain: ",aDomain," sex: ",aSex," testcd: ",aTestCD))
+      # print(paste("    DEBUG Test cd: ",testcd_ind," mean index and value: ",mean_ind,aValueMean,aValue))
       ## If config not found
     } else {
       aValue <- round(runif(1, 2.0, 100), digits=2)
@@ -149,5 +153,6 @@ getColumnData <- function (aCol,aSex,aTreatment,anAnimal,aRow,aDomain,aStudyID,a
   if (aCol=="VISITDY") {aData <- iDay}
   if (aCol==aSPECCol) aData <- getSpec(aDomain)
   # return the data
+  # print(paste("               DEBUG aData returned: ",aData))
   aData
 }

@@ -26,9 +26,13 @@
 # [Bob] Creates TA, TE, TX domains
 # [Bob] Animal should only have 1 TBW, at the end of animal disposition
 # [Bob] No need for sasxport changes after 1.6.0 version
+# [Bob] Correct spelling of producting, read function.r online,add timeout for xls download,get mean and s.d. from configuration
+# [Bob] correct progress "message", only output 1 day each for PC,PP,LB data
+# [Bob] Correct TESTCD from numeric datasets, add note in selection that EG, FW, EX, OM,MA,MI,PC are not ready (need configurations)
+# [Bob] Enable pp output
 #
 # Next steps:
-# [Bob] Test output against validator
+# ???   Configuration files need units 
 # [Bob] Animals per group should be a single selection
 # [Kevin] Update so that no errors occur in main window on initial run
 # [Kevin] Update so that you see in main windows all the dataset files with row counts and allow drill down to each
@@ -36,9 +40,10 @@
 # [Kevin] Configuration files for ranges of numeric fields
 # Output of all domains selected
 #   [Eli] Animal demographics and disposition 
-#   [Bob] In-life domains 
+#   [Bob] In-life domains - adjust to length of the study
 #   [Bob] Post mortem domains 
 # Implementation for SEND 3.1 first, then DART, SEND 3.0
+# [Bob] Test output against validator
 #     
 #
 #
@@ -64,7 +69,8 @@ list.of.packages <- c("shiny","shinyalert",
 "DT",
 "pdftools",
 "rhandsontable",
-"parsedate")
+"parsedate",
+"shinyjs")
 
 # Currently available CT Versions
 CTVersions <- c(
@@ -99,13 +105,17 @@ CTVersions <- c(
   "2018-06-29",
   "2018-09-28",
   "2018-12-21",
-  "2019-03-29"
+  "2019-03-29",
+  "2019-06-28",
+  "2019-09-27",
+  "2019-12-20"
 )
 
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages, repos = "http://cran.us.r-project.org")
 # Load Libraries
 library(shiny)
+library(shinyjs)
 library(shinyalert)
 library(ggplot2)
 library(plotly)
@@ -811,12 +821,19 @@ setOutputData <- function(input) {
                          c("Domain","Description","Dataframe"))
    # save selected CT to a global variable
    gCTVersion <<-input$CTSelection
+   setProgress(value=1/30,message='  Producing TS data')
    setTSFile(input)  
+   setProgress(value=2/30,message='  Producing TE data')
    setTEFile(input)  
+   setProgress(value=3/30,message='  Producing TA data')
    setTAFile(input)  
+   setProgress(value=4/30,message='  Producing TX data')
    setTXFile(input) 
+   setProgress(value=5/30,message='  Producing DM data')
    setDMFile(input)
+   setProgress(value=6/30,message='  Producing SE data')
    setSEFile(input)
+   setProgress(value=7/30,message='  Producing DS data')
    setDSFile(input)
    setAnimalDataFiles(input)
 }
@@ -919,16 +936,21 @@ importCT <- function(version) {
   CTDownloadsDir <- paste0(sourceDir, "/downloads/CT/")
   
   if(file.exists(paste0(CTDownloadsDir, version, ".xls"))) {
-    print("CT Loading...")
+    print(paste0("CT Loading... from ",CTDownloadsDir, version, ".xls"))
     df <- readWorksheet(loadWorkbook(paste0(CTDownloadsDir, version, ".xls")), sheet = paste0("SEND Terminology ", version))
   } else {
     print("CT Downloading...")
     # Switch function to determine version
+    # Create directory if not there
+    createOutputDirectory(sourceDir,"downloads")
+    createOutputDirectory(paste0(sourceDir,"/downloads"),"CT")
     # Reads directly from the NCI location
     base <- "https://evs.nci.nih.gov/ftp1/CDISC/SEND/Archive/"
     path <- paste0(base, "SEND%20Terminology%20", version, ".xls")
     print(paste0(CTDownloadsDir, version))
-    GET(path, write_disk(CTxl <- paste0(CTDownloadsDir, version, ".xls")))
+    CTxl <- paste0(CTDownloadsDir, version, ".xls")
+    print(paste0("CT Downloading the file... ",path))
+    GET(path, write_disk(CTxl),timeout(20))
     df <- readWorksheet(loadWorkbook(CTxl), sheet = paste0("SEND Terminology ", version))
   }
   
@@ -992,9 +1014,9 @@ CTSearchOnShortName <<- function(nameList,aName) {
 
 # Source Functions
 # allow to work offline by not using the next line:
-# source('https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/contributed/Nonclinical/R/Functions/Functions.R')
-# Use this next line if not on internet
-source(paste(sourceDir, '/Functions.R', sep = ""))
+source('https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/contributed/Nonclinical/R/Functions/Functions.R')
+#  Use this next line if not on internet
+#  source(paste(sourceDir, '/Functions.R', sep = ""))
 source(paste(sourceDir, "/SENDColumnData.R", sep=""))
 source(paste(sourceDir, "/SetAnimalDataFiles.R", sep=""))
 source(paste(sourceDir, "/SetTrialDomains.R", sep=""))
@@ -1100,8 +1122,10 @@ server <- function(input, output, session) {
   
   # Display Test Categories
   output$OutputCategories <- renderUI({
-    testDomains <- c("EX", "BW", "FW", "LB", "OM", "MA", "MI", "EG")
-    testCategories <- c("Exposure","Body weights","Food consumption","Lab Tests","Organ weights","Macropathology","Micropathology","ECG")
+    testDomains <- c("EX", "BW", "CL", "FW", "LB", "OM", "MA", "MI", "EG","PC","PP")
+    testCategories <- c("Exposure (not ready)","Body weights","Clinical Observations (not ready)","Food consumption (not ready)","Lab Tests",
+                        "Organ weights (not ready)","Macropathology (not ready)","Micropathology (not ready)","ECG (not ready)",
+                        "Pharmacokinetic Concentrations (not ready)","Pharmacokinetic Parameters")
     checkboxGroupInput('testCategories','Data domains to create:',choiceValues=testDomains,choiceNames=testCategories,selected=testCategories)
   })
   
@@ -1185,6 +1209,7 @@ server <- function(input, output, session) {
   observeEvent(ignoreNULL=TRUE,eventExpr=input$produceDatasets,
                handlerExpr={
                  withProgress({
+                      setProgress(value=0,message=paste('Producting datasets...'))
                       tryCatch ({ checkRequiredInput(input) 
                           setOutputData(input)
                           # FIXME - use temporary directory?
@@ -1212,7 +1237,7 @@ ui <- dashboardPage(
   dashboardSidebar(width=sidebarWidth,
                    sidebarMenu(id='sidebar',
                     menuItem('Output settings',icon=icon('database'),startExpanded=T,
-                              selectInput("CTSelection", "CT Version", choices = CTVersions, selected = "2019-03-29"),
+                              selectInput("CTSelection", "CT Version", choices = CTVersions, selected = "2019-12-20"),
                               withSpinner(uiOutput('SENDVersions'),type=7,proxy.height='200px'),
                               withSpinner(uiOutput('Outputtype'),type=7,proxy.height='200px')
                      ),
