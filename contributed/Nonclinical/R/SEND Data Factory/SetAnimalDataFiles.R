@@ -69,7 +69,7 @@ getConfig <- function(domain) {
   }
 }
 
-getTestCDs <- function(aDomain) {
+getTestCDs <- function(aDomain, aSpecies) {
   switch(aDomain,
          "BW" = {aConfig <- getConfig("BW")},
          "CL" = {aConfig <- getConfig("CL")},
@@ -82,7 +82,7 @@ getTestCDs <- function(aDomain) {
          "PC" = {aConfig <- getConfig("PC")}
   )
   testcd_ind <- str_which(names(aConfig), "TESTCD")
-  aList <- aConfig[,testcd_ind]
+  aList <- aConfig[aConfig$SPECIES == aSpecies,testcd_ind]
   print(aList)
   as.data.frame(unique(aList))
 }
@@ -173,7 +173,7 @@ createAnimalDataDomain <- function(input,aDomain,aDescription,aDFName) {
         
         for (iDay in startDay:endDay) {
           # loop over the tests for this domain
-          aCodes <- getTestCDs(aDomain)
+          aCodes <- getTestCDs(aDomain, input$species)
           print(aCodes)
           for(i in 1:nrow(aCodes)) {
             aTestCD <- aCodes[i,]

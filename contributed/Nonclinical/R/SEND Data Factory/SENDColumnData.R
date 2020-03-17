@@ -118,7 +118,10 @@ getStresuUnit <- function() {
   # for now assume it is the same as the orresu
   lastOrresu  
 }
-
+getSpec <- function() {
+  ## TODO: Should be based on test/domain
+  "aSpec"
+}
 # returns column data based upon the column name
 getColumnData <- function (aCol,aSex,aTreatment,anAnimal,aRow,aDomain,aStudyID,aTestCD,iDay) {
   aData <- ""
@@ -151,7 +154,7 @@ getColumnData <- function (aCol,aSex,aTreatment,anAnimal,aRow,aDomain,aStudyID,a
   if (aCol==aSTRESUCol) {aData <- getStresuUnit()}
   if (aCol==aDay) {aData <- iDay}
   if (aCol=="VISITDY") {aData <- iDay}
-  if (aCol==aSPECCol) aData <- getSpec(aDomain)
+  if (aCol==aSPECCol) aData <- getSpec()
   # return the data
   # print(paste("               DEBUG aData returned: ",aData))
   aData
