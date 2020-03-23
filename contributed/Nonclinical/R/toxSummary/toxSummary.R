@@ -4,14 +4,35 @@ library(stringr)
 library(htmltools)
 library(shinydashboard)
 
-# NOTES:
+# Bugs:
+# - Fix space in HumanWeight vs. Human Weight (fixed?)
+
+# Project Improvement Ideas:
 # - Add legend to figure that lists dose compared and PK/HED option
-# - Text wrap finding names so that they don't overlap and use bullets to denote findings
-# - Stagger doses (up -> down) so they don't overlap when close
-# - and then start listing toxicities below lowest dose
-# - use error bar to combine findings across doses
 # - Allow user to create display names of findings with legend at bottom
-# - Display margin on top (optional)
+# - Add option to display margin on top of figure
+# - Make an optional figure legend (with checkbox)
+# - Color "errobar" to indicate severity (white for no toxicity at dose)
+#   Color by the lowest dose on the ladder and switch color half-way between dose edges if space allows
+#     on the UI bar side, change checkboxes to selectInputs to indicate dose severity
+# - For table export, generate the three tables from the smart template in Word format
+
+
+# Work for Kevin to contribute:
+# - Use R, NR, PR for reversiblity
+# - Add footnotes tied to findings (numbered) as well as a general footnote
+# - Start with Smart Template as default table layout
+# - Allow table to be flexibly modified
+
+# Work for Dan Russo to contribute:
+# - Read in study info from SEND data (Dan)
+
+# Work for DeYett Law to contribute:
+# - Brackets for findings (DeYett)
+# - Text wrap finding names so that they don't overlap and use bullets to denote findings
+# - Stagger doses (down -> up) so they don't overlap when close
+# - use error bar to combine findings across doses
+
 
 '%ni%' <- Negate('%in%')
 
@@ -227,9 +248,9 @@ server <- function(input,output,session) {
     Data <- getData()
     clinData <- Data[['Clinical Information']]
     if (input$MgKg==F) {
-      clinData[['Human Weight']] <- input$HumanWeight
+      clinData[['HumanWeight']] <- input$HumanWeight
     } else {
-      clinData[['Human Weight']] <- NULL
+      clinData[['HumanWeight']] <- NULL
     }
     clinData[['MgKg']] <- input$MgKg
     if (length(input$clinDosing)>0) {
@@ -497,6 +518,11 @@ server <- function(input,output,session) {
     plotData <- calculateSM()
     if (nrow(plotData)>0) {
       plotData$Study <- factor(plotData$Study,levels=rev(input$displayStudies))
+      print(unique(paste(plotData$Dose,'mg/kg/day')))
+      print(unique(as.numeric(plotData$Dose)))
+      plotData$DoseLabel <- factor(paste(plotData$Dose,'mg/kg/day'),levels=unique(paste(plotData$Dose,'mg/kg/day'))[order(unique(as.numeric(plotData$Dose),decreasing=F))])
+      print(plotData)
+      print(plotData$DoseLabel)
       maxFindings <- 1
       for (doseFinding in plotData$doseFindings) {
         nFindings <- str_count(doseFinding,'\n')
@@ -505,11 +531,13 @@ server <- function(input,output,session) {
         }
       }
       maxFindings <- maxFindings + 1
-      p <- ggplot(plotData,aes(x=SM,y=Study,label=paste(Dose,'mg/kg/day'))) +
+      p <- ggplot(plotData,aes(x=SM,y=Study,label=DoseLabel)) + #label=paste(Dose,'mg/kg/day'))) +
         geom_label(aes(fill=NOAEL),
                    color='white',
                    label.padding=unit(0.5,'lines'),
-                   fontface='bold') +
+                   fontface='bold',
+                   position = ggstance::position_dodge2v(height = .4,preserve='single',padding=0)) +
+        # for position need to modivy position_dodge2v code so that it n (groups) = 1 for all cases
         geom_text(aes(label=doseFindings),
                   nudge_y = -.08*maxFindings) +
         # geom_text_repel(aes(label=doseFindings),
