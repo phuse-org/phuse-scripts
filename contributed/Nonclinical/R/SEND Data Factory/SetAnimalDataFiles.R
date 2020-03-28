@@ -87,10 +87,34 @@ getTestCDs <- function(aDomain) {
   as.data.frame(unique(aList))
 }
 
+# Get specimins for some domains
+getSpecs <- function(aDomain) {
+  switch(aDomain,
+         "MI" = {aConfig <- getConfig("MI")},
+         "MA" = {aConfig <- getConfig("MA")},
+         "OM" = {aConfig <- getConfig("OM")},
+  )
+  aList <- list()  
+  if (exists("aConfig")) {
+    print("Obtaining specimen list")
+    # later on, read from configuration file
+    # for now, return 20 random tissueS
+    nameList <- getCodeList(paste(aDomain,"SPEC",sep=""))
+    for (i in 1:20) {
+      aValue <- CTRandomName(nameList)
+      aList <- append(aList,aValue)    
+    }
+  } else {
+    print("No specimen list")
+    aList <- append(aList,"No Specimen")  
+  }
+unique(aList)
+}
+
 # from configuration, get column based upon incoming column (like testcd to test)
 getMatchColumn <- function(aDomain,aColumn1,aValue1,aColumn2) {
   configFiles <- list.files("configs)")
-  print(paste("Matching columns from ",aColumn1,aValue1,aColumn2))
+  #print(paste("Matching columns from ",aColumn1,aValue1,aColumn2))
   df1 <- unique(getConfig(aDomain)[aColumn1])
   df2 <- unique(getConfig(aDomain)[aColumn2])
   # FIXME might need other discriminating factors like Sex, Species,...
@@ -146,10 +170,10 @@ createAnimalDataDomain <- function(input,aDomain,aDescription,aDFName) {
   #print(paste("Looping by SEX:",sexList))
   for (aSex in sexList) {
     # now loop on all groups
-    # print(paste("Looping by treatment:",treatmentList))
+    print(paste("Looping by treatment:",treatmentList))
     for (aTreatment in treatmentList) {
       # now loop on all animals for which we want to create rows
-      # print(paste("Looping by animals per group:",animalsList))
+      print(paste("Looping by animals per group:",animalsList))
       for (anAnimal in 1:animalsList) {
         # if this domain has days, loop over days
         if (hasDays(aDF,aDomain)) {
@@ -171,21 +195,32 @@ createAnimalDataDomain <- function(input,aDomain,aDescription,aDFName) {
           endDay <- 1
         }
         
+        # for OM, MA and MI, just 1 day of data, last day of study
+        if (aDomain=="MA" || aDomain=="MI" || aDomain=="OM") {
+          startDay <- 10
+          endDay <- 10
+        }
+        # deterimine specimens to use
+        aSpecs <- getSpecs(aDomain)
         for (iDay in startDay:endDay) {
           # loop over the tests for this domain
+          # for some domains, loop over the specimins as well
           aCodes <- getTestCDs(aDomain)
           print(aCodes)
           for(i in 1:nrow(aCodes)) {
-            aTestCD <- aCodes[i,]
+            aTestCD <-  as.character(aCodes[i,])
             if (!skipRow(aTestCD,iDay,endDay)) {
-            print(paste(" About to create row animal for",aTestCD, iDay, anAnimal, aTreatment, aSex))
-            aRowList <<- createRowAnimal(aSex,aTreatment,anAnimal,aDF,aRow,aDomain,
-            input$studyName,aTestCD,iDay)
-            # replace empties with NA
-            # print(paste(" inserting",aRowList))
-            aRowList <<- sub("$^", NA, aRowList)
-            aDF[aRow,] <<- aRowList        
-            aRow <- aRow + 1
+              for(iSpec in 1:length(aSpecs)) {
+                aSpec <- as.character(aSpecs[iSpec])
+                # print(paste(" About to create row animal for",aTestCD, iDay, anAnimal, aTreatment, aSex,aSpec))
+                aRowList <<- createRowAnimal(aSex,aTreatment,anAnimal,aDF,aRow,aDomain,
+                input$studyName,aTestCD,iDay,aSpec)
+                # replace empties with NA
+                # print(paste(" inserting",aRowList))
+                aRowList <<- sub("$^", NA, aRowList)
+                aDF[aRow,] <<- aRowList        
+                aRow <- aRow + 1
+              } # end of loop on specimen
             } # end of skipRow check
           } # end of test loop
         } # end of day loop
@@ -196,7 +231,7 @@ createAnimalDataDomain <- function(input,aDomain,aDescription,aDFName) {
 }
 
 createRowAnimal <- function(aSex,aTreatment,anAnimal,aDF,aRow,aDomain,aStudyID,
-                            aTestCD,iDay) {
+                            aTestCD,iDay,aSpec) {
  aList <- list() 
  #print(paste("Creating row for:",aSex,aTreatment,anAnimal,aRow,aDomain,aStudyID,aTestCD))
  # print(paste("Getting values for:",labels(aDF)[2][[1]]))
@@ -204,7 +239,7 @@ createRowAnimal <- function(aSex,aTreatment,anAnimal,aDF,aRow,aDomain,aStudyID,
  for (aCol in labels(aDF)[2][[1]]) {
    # add value to the list of column values, based upon the column name
    columnData <- getColumnData(aCol,aSex,aTreatment,anAnimal,aRow,aDomain,
-                                aStudyID,aTestCD,iDay)
+                                aStudyID,aTestCD,iDay,aSpec)
    aList <- c(aList, columnData)
  }
  # print(paste("  FIXME values are:",aList))

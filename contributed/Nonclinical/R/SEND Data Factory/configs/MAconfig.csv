@@ -1,0 +1,7 @@
+MATEST,MATESTCD,SPECIES,SEX,MASPEC,MAFACT,MAPROP
+"Gross Pathological Examination",GROSPATH,Rat,M,"BRAIN","NORMAL",.7
+"Gross Pathological Examination",GROSPATH,Rat,M,"BRAIN","Discoloration",.15
+"Gross Pathological Examination",GROSPATH,Rat,M,"BRAIN","Adhesion",.15
+"Gross Pathological Examination",GROSPATH,Rat,F,"BRAIN","NORMAL",.7
+"Gross Pathological Examination",GROSPATH,Rat,F,"BRAIN","Discoloration",.15
+"Gross Pathological Examination",GROSPATH,Rat,F,"BRAIN","Adhesion",.15
