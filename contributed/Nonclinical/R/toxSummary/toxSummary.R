@@ -5,30 +5,20 @@ library(htmltools)
 library(shinydashboard)
 
 # Bugs:
-# - Fix space in HumanWeight vs. Human Weight (fixed?)
 
 # Project Improvement Ideas:
 # - Add legend to figure that lists dose compared and PK/HED option
 # - Allow user to create display names of findings with legend at bottom
 # - Add option to display margin on top of figure
 # - Make an optional figure legend (with checkbox)
-# - Color "errobar" to indicate severity (white for no toxicity at dose)
+# - Color "errorbar" to indicate severity (white for no toxicity at dose)
 #   Color by the lowest dose on the ladder and switch color half-way between dose edges if space allows
 #     on the UI bar side, change checkboxes to selectInputs to indicate dose severity
 # - For table export, generate the three tables from the smart template in Word format
-
-
-# Work for Kevin to contribute:
-# - Use R, NR, PR for reversiblity
 # - Add footnotes tied to findings (numbered) as well as a general footnote
 # - Start with Smart Template as default table layout
 # - Allow table to be flexibly modified
-
-# Work for Dan Russo to contribute:
-# - Read in study info from SEND data (Dan)
-
-# Work for DeYett Law to contribute:
-# - Brackets for findings (DeYett)
+# - Brackets for findings
 # - Text wrap finding names so that they don't overlap and use bullets to denote findings
 # - Stagger doses (down -> up) so they don't overlap when close
 # - use error bar to combine findings across doses
@@ -64,6 +54,36 @@ library(shinydashboard)
 #   ),
 #   'Nonclinical Information' = list(
 #     'New Study' = list(
+#       Species = NULL,
+#       Duration = NULL,
+#       Doses = list(
+#         Dose = NULL,
+#         NOAEL = F,
+#         Cmax = NULL,
+#         AUC = NULL
+#       ),
+#       Findings = list(
+#         Finding = NULL,
+#         Reversibility = F,
+#         FindingDoses = NULL
+#       )
+#     ),
+#     'Rat Study' = list(
+  #       Species = NULL,
+  #       Duration = NULL,
+  #       Doses = list(
+  #         Dose = NULL,
+  #         NOAEL = F,
+  #         Cmax = NULL,
+  #         AUC = NULL
+  #       ),
+  #       Findings = list(
+  #         Finding = NULL,
+  #         Reversibility = F,
+  #         FindingDoses = NULL
+  #       )
+  #     )
+#     'Dog Study' = list(
 #       Species = NULL,
 #       Duration = NULL,
 #       Doses = list(
@@ -147,7 +167,7 @@ server <- function(input,output,session) {
     datasets <- c('blankData.rds',grep('.rds',list.files('Applications/',full.names = T),value=T))
     names(datasets) <- basename(unlist(strsplit(datasets,'.rds')))
     names(datasets)[which(datasets=='blankData.rds')] <- 'New Program'
-    selectInput('selectData','Select Application:',datasets)
+    selectInput('selectData','Select Program:',datasets)
     updateSelectInput(session,'selectData',choices=datasets,selected=values$Application)
   })
   
@@ -518,11 +538,7 @@ server <- function(input,output,session) {
     plotData <- calculateSM()
     if (nrow(plotData)>0) {
       plotData$Study <- factor(plotData$Study,levels=rev(input$displayStudies))
-      print(unique(paste(plotData$Dose,'mg/kg/day')))
-      print(unique(as.numeric(plotData$Dose)))
       plotData$DoseLabel <- factor(paste(plotData$Dose,'mg/kg/day'),levels=unique(paste(plotData$Dose,'mg/kg/day'))[order(unique(as.numeric(plotData$Dose),decreasing=F))])
-      print(plotData)
-      print(plotData$DoseLabel)
       maxFindings <- 1
       for (doseFinding in plotData$doseFindings) {
         nFindings <- str_count(doseFinding,'\n')
