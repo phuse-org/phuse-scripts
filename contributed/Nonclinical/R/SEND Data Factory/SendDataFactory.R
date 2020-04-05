@@ -30,9 +30,11 @@
 # [Bob] correct progress "message", only output 1 day each for PC,PP,LB data
 # [Bob] Correct TESTCD from numeric datasets, add note in selection that EG, FW, EX, OM,MA,MI,PC are not ready (need configurations)
 # [Bob] Enable pp output
-#
+# [Bob] Save SENDIG dataset so not SENDIG download needed, reestablish MA and MI output
+
 # Next steps:
-# ???   Configuration files need units 
+# [???] Need configuration file for OM domain
+# [???]   Configuration files need units 
 # [Bob] Animals per group should be a single selection
 # [Kevin] Update so that no errors occur in main window on initial run
 # [Kevin] Update so that you see in main windows all the dataset files with row counts and allow drill down to each
@@ -145,6 +147,17 @@ if(packageVersion("SASxport") < "1.6.0") {
 # sourcedir works in rstudio
 sourceDir <<- getSrcDirectory(function(dummy) {dummy})
 
+# Source Functions
+# allow to work offline by not using the next line:
+source('https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/contributed/Nonclinical/R/Functions/Functions.R')
+#  Use this next line if not on internet
+#  source(paste(sourceDir, '/Functions.R', sep = ""))
+source(paste(sourceDir, "/SENDColumnData.R", sep=""))
+source(paste(sourceDir, "/SetAnimalDataFiles.R", sep=""))
+source(paste(sourceDir, "/SetTrialDomains.R", sep=""))
+source(paste(sourceDir, "/SetAnimalDomains.R", sep=""))
+
+
 # Functions
 convertMenuItem <- function(mi,tabName) {
   mi$children[[1]]$attribs['data-toggle']="tab"
@@ -172,17 +185,24 @@ checkRequiredInput <- function(input) {
 }
 
 
-# convert ISO duration to days
-DUR_to_days <- function(duration) {
-  DUR_to_seconds(duration)/(24*3600)
-}
-
 # read all domain structures
 readDomainStructures <-function() {
   # read if it is not there yet
   if (!exists("bSENDIGRead")) {
     bSENDIGRead <<- FALSE
   } 
+  # read from saved file
+  # available since this was done and saved by developer: save(dfSENDIG,file=paste0(sourceDir,"/dfSENDIG.Rda"))
+  if (!bSENDIGRead) {
+    print(" SENDIG being read from saved Rda file")
+    load(file=paste0(sourceDir,"/dfSENDIG.Rda"))
+     if (exists("dfSENDIG")) {
+       print(" SENDIG successfully read")
+       # ensure as global
+       dfSENDIG <<- dfSENDIG
+       bSENDIGRead <<- TRUE
+     }
+  }
   if (!bSENDIGRead) {
   withProgress({
     setProgress(value=1,message='Reading domain structures from the SEND IG')
@@ -567,6 +587,7 @@ addDomainRow <- function(inLine,inDomain) {
           "be null",
           "be relative",
           "BEAGLE",
+          "because",
           "being submitted",
           "beyond",
           "branch",
@@ -590,6 +611,7 @@ addDomainRow <- function(inLine,inDomain) {
           "--DY",
           "each subject",
           "example",
+          "Element;",
           "Example",
           "excluded",
           "external",
@@ -670,6 +692,7 @@ addDomainRow <- function(inLine,inDomain) {
         "submi",
         "subject",
         "such as",
+        "terminology",
         "Terminology codelist",
         "Terminology list.",
         "terms, utilizing",
@@ -702,12 +725,15 @@ addDomainRow <- function(inLine,inDomain) {
         "UNCONSTRAINED",
         "value",
         "variable",
+        "Variable",
         "VETERINARIAN",
         "VSTESTCD cannot",
         "when identifying",
         "whichever",
         "with a number",
+        "within",
         "Wt",
+        ".",
         "4.3.6.2",
         "[(]e.g.",
         "[^0-9]-PT1",
@@ -849,8 +875,9 @@ createOutputDirectory <- function (aDir,aStudy) {
 }
 
   writeDatasetToTempFile <- function (studyData,domain,domainLabel,tempFile) {
-    # get rid of NAs
+    # get rid of NAs even if as a character value of "NA"
     studyData[is.na(studyData)] <- ""
+    studyData[studyData=="NA"] <- ""
     # Set length for character fields
     SASformat(studyData$DOMAIN) <-"$2."	
     # place this dataset into a list with a name
@@ -1012,15 +1039,6 @@ CTSearchOnShortName <<- function(nameList,aName) {
   aSet[aSet$CDISC.Submission.Value==aName,]$Code[1]
 }
 
-# Source Functions
-# allow to work offline by not using the next line:
-source('https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/contributed/Nonclinical/R/Functions/Functions.R')
-#  Use this next line if not on internet
-#  source(paste(sourceDir, '/Functions.R', sep = ""))
-source(paste(sourceDir, "/SENDColumnData.R", sep=""))
-source(paste(sourceDir, "/SetAnimalDataFiles.R", sep=""))
-source(paste(sourceDir, "/SetTrialDomains.R", sep=""))
-source(paste(sourceDir, "/SetAnimalDomains.R", sep=""))
 
 # Get GitHub Password (if possible)
 if (file.exists('~/passwordGitHub.R')) {
@@ -1123,8 +1141,8 @@ server <- function(input, output, session) {
   # Display Test Categories
   output$OutputCategories <- renderUI({
     testDomains <- c("EX", "BW", "CL", "FW", "LB", "OM", "MA", "MI", "EG","PC","PP")
-    testCategories <- c("Exposure (not ready)","Body weights","Clinical Observations (not ready)","Food consumption (not ready)","Lab Tests",
-                        "Organ weights (not ready)","Macropathology (not ready)","Micropathology (not ready)","ECG (not ready)",
+    testCategories <- c("Exposure (not ready)","Body weights","Clinical Observations","Food consumption (not ready)","Lab Tests",
+                        "Organ weights (not ready)","Macropathology","Micropathology","ECG (not ready)",
                         "Pharmacokinetic Concentrations (not ready)","Pharmacokinetic Parameters")
     checkboxGroupInput('testCategories','Data domains to create:',choiceValues=testDomains,choiceNames=testCategories,selected=testCategories)
   })

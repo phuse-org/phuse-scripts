@@ -1,5 +1,11 @@
 # These functions work together with the SendDataFactory
 
+# convert ISO duration to days
+DUR_to_days <- function(duration) {
+  DUR_to_seconds(duration)/(24*3600)
+}
+
+
 isControl <- function(theGroup) {
   # return if this group has control in its name
   grepl(toupper("control"),toupper(theGroup))

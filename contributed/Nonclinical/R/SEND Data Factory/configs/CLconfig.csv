@@ -1,2 +1,11 @@
-"CLCAT", CLTEST", "CLTESTCD", "SPECIES", "SEX", "CLFACT", "CLPROP"
-"Clinical Signs", "Observation", "OBS", "Rat", "M", "NORMAL", 1
+CLCAT,CLTEST,CLTESTCD,SPECIES,SEX,CLFACT,CLPROP
+"Clinical Signs","Observation","OBS","Rat","M","NORMAL",.8
+"Clinical Signs","Observation","OBS","Rat","M","SALIVATION",.1
+"Clinical Signs","Observation","OBS","Rat","M","TREMORS",.1
+"Clinical Signs","Eyes","EY","Rat","M","NORMAL",.8
+"Clinical Signs","Eyes","EY","Rat","M","Squinting",.2
+"Clinical Signs","Observation","OBS","Rat","F","NORMAL",.8
+"Clinical Signs","Observation","OBS","Rat","F","SALIVATION",.1
+"Clinical Signs","Observation","OBS","Rat","F","TREMORS",.1
+"Clinical Signs","Eyes","EY","Rat","F","NORMAL",.8
+"Clinical Signs","Eyes","EY","Rat","F","Squinting",.2

@@ -27,7 +27,8 @@ getSENDLastTestCodeName <- function(aCol,aDomain) {
     # print(paste("Last test code is ",lastTestCode,aValue))
   } else {
     # some domains, this must come from a configuration file
-    aValue <- getMatchColumn(aDomain,"testcd",lastTestCode,"test")
+    print(paste("  Reading test name from code",aDomain,lastTestCode,sep=":"))
+    aValue <- getMatchColumn(aDomain,paste0(aDomain,"TESTCD"),lastTestCode,paste0(aDomain,"TEST"))
   }
   aValue
 }
@@ -56,8 +57,9 @@ getOrres <- function(aDomain,aSex,aTestCD){
     }
     ## If domain is catagorical
   } else {
-    ## If config is found:
+    ## not numeric and If config is found:
     if(!is.null(aDomainConfig)) {
+      # print(paste(" DEBUG using factor and proportion ",aTestCD))
       testcd_ind <- str_which(names(aDomainConfig), "TESTCD")
       fact_ind <- str_which(names(aDomainConfig), "FACT")
       prop_ind <- str_which(names(aDomainConfig), "PROP")
@@ -65,10 +67,9 @@ getOrres <- function(aDomain,aSex,aTestCD){
       ## Pull proportions for this sex,testcd
       testConfig <- aDomainConfig[aSex==aDomainConfig$SEX &
                                     aTestCD==aDomainConfig[,testcd_ind],]
-      
       totalProportion <- sum(testConfig[,prop_ind])
       
-      ## If Proportions don't sum to 1 the sample() fucntion will normalize
+      ## If Proportions don't sum to 1 the sample() function will normalize
       if(totalProportion != 1) {
         warning(paste0(
           "Total Proportion for: ",
@@ -79,9 +80,8 @@ getOrres <- function(aDomain,aSex,aTestCD){
         ))
       }
       
-      sample(testConfig[,fact_ind], size = 1, prob = testConfig[,prop_ind])
-      
-      
+      aValue <- sample(testConfig[,fact_ind], size = 1, prob = testConfig[,prop_ind])
+
       ## If config is not found
     } else {
       nameList <- getCodeList(paste(aDomain,"STRESC",sep=""))
@@ -91,7 +91,6 @@ getOrres <- function(aDomain,aSex,aTestCD){
   lastOrres <<- aValue 
   aValue
 }
-
 
 getOrresUnit <- function(aCol){
   # should be tied by configuration to the ORRES value
@@ -123,7 +122,7 @@ getSpec <- function() {
   "aSpec"
 }
 # returns column data based upon the column name
-getColumnData <- function (aCol,aSex,aTreatment,anAnimal,aRow,aDomain,aStudyID,aTestCD,iDay) {
+getColumnData <- function (aCol,aSex,aTreatment,anAnimal,aRow,aDomain,aStudyID,aTestCD,iDay,aSpec) {
   aData <- ""
   aSeqCol <- paste(aDomain,"SEQ",sep="")
   aTestCDCol <- paste(aDomain,"TESTCD",sep="")
@@ -137,7 +136,7 @@ getColumnData <- function (aCol,aSex,aTreatment,anAnimal,aRow,aDomain,aStudyID,a
   aDay <- paste(aDomain,"DY",sep="")
   aData <- NA
   # Next line for help in debugging
-  # print(paste(" Getting column data for:",aCol,aSex,aTreatment,anAnimal,aRow,aDomain,aStudyID,aTestCD),set=":")
+  # print(paste(" Getting column data for:",aCol,aSex,aTreatment,anAnimal,aRow,aDomain,aStudyID,aTestCD,aSpec),sep=":")
   if (aCol=="DOMAIN") aData <- aDomain
   if (aCol=="STUDYID") {aData <- aStudyID}
   if (aCol==aSeqCol) {aData <- aRow}

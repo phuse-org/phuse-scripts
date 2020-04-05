@@ -285,7 +285,7 @@ setSEFile <- function(input) {
           # get set arm
           anArm <- getArmFromSet(aSet)
           # get elements this animal goes through based on its set
-          print(paste("Looping for this many elements per animsl",taOut[taOut$ARMCD==anArm,]$ETCD))
+          print(paste("Looping for this many elements per animal",taOut[taOut$ARMCD==anArm,]$ETCD))
           for (anElement in taOut[taOut$ARMCD==anArm,]$ETCD) {
             print(paste("Element:",anElement))
             elementName <- teOut[teOut$ETCD==anElement,]$ELEMENT
