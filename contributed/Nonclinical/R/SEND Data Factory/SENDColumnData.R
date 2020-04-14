@@ -1,37 +1,5 @@
 # These functions work together with the SendDataFactory
 
-# get the list for use for a column from the SENDIG
-getCodeList <- function(aCol){
-  dfSENDIG[dfSENDIG$Column==aCol,]$Codelist[1]
-}
-
-# get a test code selection
-getSENDTestCode <- function(aCol,aTestCD) {
-  # use test code passed in  
-  nameList <- getCodeList(aCol)
-  if (!is.null(nameList)&& nchar(nameList)>0) {
-    lastTestCode <<- CTSearchOnShortName(nameList,aTestCD)
-  } else {
-    # for some domains, this must come from a configuration file
-    aValue <- aTestCD
-    lastTestCode <<- aTestCD
-  }
-  # pass back same set code
-  as.character(aTestCD)
-}
-getSENDLastTestCodeName <- function(aCol,aDomain) {
-  # Retrieve from terminology, the test name matching the last test code
-  nameList <- getCodeList(aCol)
-  if (!is.null(nameList)&& nchar(nameList)>0) {
-    aValue <- CTSearchOnCode(nameList,lastTestCode)
-    # print(paste("Last test code is ",lastTestCode,aValue))
-  } else {
-    # some domains, this must come from a configuration file
-    print(paste("  Reading test name from code",aDomain,lastTestCode,sep=":"))
-    aValue <- getMatchColumn(aDomain,paste0(aDomain,"TESTCD"),lastTestCode,paste0(aDomain,"TEST"))
-  }
-  aValue
-}
 
 getOrres <- function(aDomain,aSex,aTestCD){
   aDomainConfig <- getConfig(aDomain)
