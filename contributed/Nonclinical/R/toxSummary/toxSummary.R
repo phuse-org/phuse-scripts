@@ -370,17 +370,22 @@ server <- function(input,output,session) {
                          choiceNames=c('Reversible [Rev]','Not Reversible [NR]','Partially Reversible [PR]','Not Assessed'),
                          choiceValues=c('[Rev]','[NR]','[PR]',''))
           } else {
-            for (j in seq(input$nDoses)) {
-              print(i%%numerator)
-              print(j+2)
-              if ((i %% numerator == 2+j)|(i%%numerator==0)) {
-                print('worked!')
-                selectInput(paste0('Severity',I,'_',j),paste0('Select Severity at Dose ',I),
+            lapply(1:input$nDoses, function(j) {
+              if ((i %% numerator == 2+j)|((i %% numerator == 0)&(j==input$nDoses))) {
+                selectInput(inputId = paste0('Severity',I,'_',j),label = paste0('Select Severity at Dose ',j),
                             choices = c('Absent','Present','Minimal','Mild','Moderate','Marked','Severe'))
-                break
               }
-            }
+            })
+            
+            
           }
+            # } else if (i %% numerator == 4) {
+          #   selectInput(inputId = paste0('Severity',I,'_2'),label = paste0('Select Severity at Dose ',I),
+          #               choices = c('Absent','Present','Minimal','Mild','Moderate','Marked','Severe'))
+          # } else {
+          #   selectInput(inputId = paste0('Severity',I,'_3'),label = paste0('Select Severity at Dose ',I),
+          #               choices = c('Absent','Present','Minimal','Mild','Moderate','Marked','Severe'))
+          # }
           
           
           
