@@ -360,59 +360,90 @@ server <- function(input,output,session) {
     req(input$selectStudy)
     if (input$selectStudy=='New Study') {
       if (input$nFindings>0) {
-        lapply(1:(3*input$nFindings), function(i) {
-          I <- ceiling(i/3)
-          if (i %% 3 == 1) {
+        numerator <- 2 + input$nDoses
+        lapply(1:(numerator*input$nFindings), function(i) {
+          I <- ceiling(i/numerator)
+          if (i %% numerator == 1) {
             textInput(paste0('Finding',I),paste0('Finding ',I,':'))
-          } else if (i %% 3 == 2) {
+          } else if (i %% numerator == 2) {
             radioButtons(paste0('Reversibility',I),'Reversibility:',
                          choiceNames=c('Reversible [Rev]','Not Reversible [NR]','Partially Reversible [PR]','Not Assessed'),
                          choiceValues=c('[Rev]','[NR]','[PR]',''))
           } else {
-            doseLevels <- NULL
-            for (i in seq(input$nDoses)) {
-              doseLevel <- input[[paste0('dose',i)]]
-              if (is.null(doseLevel)) {
-                doseLevels[i] <- ''
-              } else {
-                doseLevels[i] <- doseLevel
+            for (j in seq(input$nDoses)) {
+              print(i%%numerator)
+              print(j+2)
+              if ((i %% numerator == 2+j)|(i%%numerator==0)) {
+                print('worked!')
+                selectInput(paste0('Severity',I,'_',j),paste0('Select Severity at Dose ',I),
+                            choices = c('Absent','Present','Minimal','Mild','Moderate','Marked','Severe'))
+                break
               }
             }
-            checkboxGroupInput(paste0('FindingDoses',I),'Dose Levels:',
-                               choiceNames = paste(doseLevels,'mg/kg/day'),
-                               choiceValues = doseLevels,
-                               selected = NULL)
           }
+          
+          
+          
+          # else {
+          #   doseLevels <- NULL
+          #   for (i in seq(input$nDoses)) {
+          #     if (i %% numerator == 2+i)
+          #     doseLevel <- input[[paste0('dose',i)]]
+          #     if (is.null(doseLevel)) {
+          #       doseLevels[i] <- ''
+          #     } else {
+          #       doseLevels[i] <- doseLevel
+          #     }
+          #   }
+            # checkboxGroupInput(paste0('FindingDoses',I),'Dose Levels:',
+            #                    choiceNames = paste(doseLevels,'mg/kg/day'),
+            #                    choiceValues = doseLevels,
+            #                    selected = NULL)
+          # }
         })
       }
     } else {
       Data <- getData()
       studyData <- Data[['Nonclinical Information']][[input$selectStudy]]
       if (input$nFindings>0) {
+        numerator <- 2 + input$nDoses
         lapply(1:(3*input$nFindings), function(i) {
-          I <- ceiling(i/3)
-          if (i %% 3 == 1) {
+          I <- ceiling(i/numerator)
+          if (i %% numerator == 1) {
             textInput(paste0('Finding',I),paste0('Finding ',I,':'),studyData$Findings[[paste0('Finding',I)]]$Finding)
-          } else if (i %% 3 == 2) {
+          } else if (i %% numerator == 2) {
             radioButtons(paste0('Reversibility',I),'Reversibility:',
                          choiceNames=c('Reversible [Rev]','Not Reversible [NR]','Partially Reversible [PR]','Not Assessed'),
                          choiceValues=c('[Rev]','[NR]','[PR]',''),
                          selected=studyData$Findings[[paste0('Finding',I)]]$Reversibility)
           } else {
-            doseLevels <- NULL
-            for (i in seq(input$nDoses)) {
-              doseLevel <- input[[paste0('dose',i)]]
-              if (is.null(doseLevel)) {
-                doseLevels[i] <- ''
-              } else {
-                doseLevels[i] <- doseLevel
+            for (j in seq(input$nDoses)) {
+              print(i%%numerator)
+              print(j+2)
+              if ((i %% numerator == 2+j)|(i%%numerator==0)) {
+                print('worked!')
+                selectInput(paste0('Severity',I,'_',j),paste0('Select Severity at Dose ',I),
+                            choices = c('Absent','Present','Minimal','Mild','Moderate','Marked','Severe'))
+                break
               }
             }
-            checkboxGroupInput(paste0('FindingDoses',I),'Dose Levels:',
-                               choiceNames = paste(doseLevels,'mg/kg/day'),
-                               choiceValues = doseLevels,
-                               selected = studyData$Findings[[paste0('Finding',I)]]$FindingDoses)
           }
+         
+               # } else {
+          #   doseLevels <- NULL
+          #   for (i in seq(input$nDoses)) {
+          #     doseLevel <- input[[paste0('dose',i)]]
+          #     if (is.null(doseLevel)) {
+          #       doseLevels[i] <- ''
+          #     } else {
+          #       doseLevels[i] <- doseLevel
+          #     }
+          #   }
+          #   checkboxGroupInput(paste0('FindingDoses',I),'Dose Levels:',
+          #                      choiceNames = paste(doseLevels,'mg/kg/day'),
+          #                      choiceValues = doseLevels,
+          #                      selected = studyData$Findings[[paste0('Finding',I)]]$FindingDoses)
+          # }
         })
       }
     }
@@ -547,7 +578,7 @@ server <- function(input,output,session) {
         }
       }
       maxFindings <- maxFindings + 1
-      p <- ggplot(plotData,aes(x=SM,y=Study,label=DoseLabel)) + #label=paste(Dose,'mg/kg/day'))) +
+      p <- ggplot(plotData,aes(y=SM,x=Study,label=DoseLabel)) + #label=paste(Dose,'mg/kg/day'))) +
         geom_label(aes(fill=NOAEL),
                    color='white',
                    label.padding=unit(0.5,'lines'),
@@ -555,15 +586,15 @@ server <- function(input,output,session) {
                    position = ggstance::position_dodge2v(height = .4,preserve='single',padding=0)) +
         # for position need to modivy position_dodge2v code so that it n (groups) = 1 for all cases
         geom_text(aes(label=doseFindings),
-                  nudge_y = -.08*maxFindings) +
+                  nudge_x = -.08*maxFindings) +
         # geom_text_repel(aes(label=doseFindings),
         #                 direction='y',nudge_y = -.2) +
         scale_fill_manual(values=c(rgb(0,0,0),'#239B56')) +
-        scale_x_log10(limits=c(min(plotData$SM/2),max(plotData$SM*2))) +
-        labs(x='Safety Margin',y='Study',title='Summary of Toxicology Studies') +
+        scale_y_log10(limits=c(min(plotData$SM/2),max(plotData$SM*2))) +
+        labs(y='Safety Margin',x='Study',title='Summary of Toxicology Studies') +
         theme_classic(base_size=18) +
         theme(plot.title=element_text(hjust=0.5)) +
-        guides(fill='none')
+        guides(fill='none') + coord_flip() + geom_bar(aes(y=SM,x=doseFinding),stat='identity')
       p
     }
   },height=plotHeight)
