@@ -73,9 +73,9 @@ txnames <- c(
 setTSFile <- function(input) {
   # create data frame based on structure
   aDomain <- "TS"
-  print(input$studyName)
-  print(input$CTSelection)
-  print(paste("SEND Implementation Guide Version ",input$SENDVersions))
+  # print(input$studyName)
+  # print(input$CTSelection)
+  # print(paste("SEND Implementation Guide Version ",input$SENDVersions))
   
   theColumns <- dfSENDIG[dfSENDIG$Domain==aDomain,]$Column
   theLabels <- dfSENDIG[dfSENDIG$Domain==aDomain,]$Label

@@ -269,16 +269,16 @@ setSEFile <- function(input) {
     }
     TKLoop <- 1
     if (hasTK) { TKLoop <- 2 }
-    print(paste("Looping for this many subsets",TKLoop))
+    # print(paste("Looping for this many subsets",TKLoop))
     for (addTK in 1:TKLoop) {  
-      print(paste("Subset:",addTK))
-      print(paste("Looping for this many sexes",input$sex))
+      # print(paste("Subset:",addTK))
+      # print(paste("Looping for this many sexes",input$sex))
       for (aSex in input$sex) {
-        print(paste("Sex:",aSex))
+        # print(paste("Sex:",aSex))
         # loop for each animal per group, males and females (assume same number)
          animalsPerGroup <- input$animalsPerGroup
          if (addTK==2) {animalsPerGroup <- input$TKanimalsPerGroup}
-         print(paste("Looping for this many animals per group",animalsPerGroup))
+         # print(paste("Looping for this many animals per group",animalsPerGroup))
          for (nAnimal in 1:as.integer(animalsPerGroup)) {
           # set animal start0
           elementStart <- as.Date(getStartDate())
@@ -287,9 +287,9 @@ setSEFile <- function(input) {
           # get set arm
           anArm <- getArmFromSet(aSet)
           # get elements this animal goes through based on its set
-          print(paste("Looping for this many elements per animal",taOut[taOut$ARMCD==anArm,]$ETCD))
+          # print(paste("Looping for this many elements per animal",taOut[taOut$ARMCD==anArm,]$ETCD))
           for (anElement in taOut[taOut$ARMCD==anArm,]$ETCD) {
-            print(paste("Element:",anElement))
+            # print(paste("Element:",anElement))
             elementName <- teOut[teOut$ETCD==anElement,]$ELEMENT
               elementEnd <- elementStart + getElementDuration(anElement)
               tOut[aRow,] <<- list(input$studyName,
@@ -310,9 +310,79 @@ setSEFile <- function(input) {
     } # end of sex loop
     } # end of add TK loop
     theArm <- theArm + 1
-    print(paste("Complete SE domain for group:",theGroup))
+    # print(paste("Complete SE domain for group:",theGroup))
   } # end group loop
   seOut <<- tOut[, checkCore(tOut)]
   # add to set of data
   addToSet("SE","Subject Elements","seOut")
+}
+
+setEXFile <- function(input) {
+  
+  aDomain <- "EX"
+  theColumns <- dfSENDIG[dfSENDIG$Domain==aDomain,]$Column
+  theLabels <- dfSENDIG[dfSENDIG$Domain==aDomain,]$Label
+  tOut <<- setNames(data.frame(matrix(ncol = length(theColumns), nrow = 1)),
+                    theColumns
+  )
+  
+  dosingTable <- input$DoseTable
+  
+  tsTable <- input$TSTable
+  print(tsTable)
+  startDate <- tsTable[tsTable$TSPARMCD == "STSTDTC","TSVAL"]
+  # TODO: make this more robust
+  # Only implemented for single dose right now
+  animalList <- dmOut[, "USUBJID"]
+  
+  for(animal_i in animalList) {
+    print(animal_i)
+    sex_i <- dmOut[dmOut$USUBJID == animal_i, "SEX"]
+    armcd_i <- dmOut[dmOut$USUBJID == animal_i, "ARMCD"]
+    dose_level_i <- ifelse(sex_i == "M",
+                          dosingTable[dosingTable$Dose.group == armcd_i, "Male.dose.level"], # Male dose level
+                          dosingTable[dosingTable$Dose.group == armcd_i, "Female.dose.level"]) # Female dose level
+    dose_unit_i <- ifelse(sex_i == "M",
+                          dosingTable[dosingTable$Dose.group == armcd_i, "Male.dose.unit"], # Male dose unit
+                          dosingTable[dosingTable$Dose.group == armcd_i, "Female.dose.unit"]) # Female dose unit
+    print(tsOut)
+    tOut[aRow,] <<- list(
+      input$studyName,   #STUDYID
+      aDomain,           #DOMAIN
+      animal_i,          #USUBJID
+      NA,                #POOLID
+      NA,                #FOCID
+      aRow,              #EXSEQ
+      input$TestArticle, #EXTRT
+      dose_level_i,      #EXDOSE
+      NA,                #EXDOSTXT
+      dose_unit_i,       #EXDOSU
+      "UNKNOWN",         #EXDOSFRM
+      "ONCE",            #EXDOSFRQ
+      tsTable[tsTable$TSPARMCD == "ROUTE", "TSVAL"],
+      "theLotNumber",    #EXLOT
+      NA,                #EXLOC
+      NA,                #EXMETHOD
+      tsTable[tsTable$TSPARMCD == "TRTV", "TSVAL"],
+      NA,                #EXVAMT
+      NA,                #EXVAMTU
+      NA,                #EXADJ
+      tsTable[tsTable$TSPARMCD == "STSTDTC", "TSVAL"],
+      NA, #EXENDTC
+      NA, #EXSTDY
+      NA, #EXENDY
+      NA, #EXDUR
+      NA, #EXTPT
+      NA, #EXTPTNUM
+      NA, #EXELTM
+      NA, #EXTPTREF
+      NA  #EXRTFDTC
+    )
+    aRow <- aRow + 1
+    print(tOut[aRow,])
+  }
+  
+  exOut <<- tOut[, checkCore(tOut)]
+  # add to set of data
+  addToSet("EX","Exposure","exOut")
 }

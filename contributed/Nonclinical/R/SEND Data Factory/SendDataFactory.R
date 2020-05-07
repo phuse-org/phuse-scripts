@@ -202,6 +202,7 @@ setOutputData <- function(input) {
    setSEFile(input)
    setProgress(value=7/30,message='  Producing DS data')
    setDSFile(input)
+   setEXFile(input)
    setAnimalDataFiles(input)
 }
 
@@ -361,8 +362,8 @@ server <- function(input, output, session) {
   
   # Display Test Categories
   output$OutputCategories <- renderUI({
-    testDomains <- c("EX", "BW", "CL", "FW", "LB", "OM", "MA", "MI", "EG","PC","PP")
-    testCategories <- c("Exposure (not ready)","Body weights","Clinical Observations","Food consumption (not ready)","Lab Tests",
+    testDomains <- c("BW", "CL", "FW", "LB", "OM", "MA", "MI", "EG","PC","PP")
+    testCategories <- c("Body weights","Clinical Observations","Food consumption (not ready)","Lab Tests",
                         "Organ weights (not ready)","Macropathology","Micropathology","ECG (not ready)",
                         "Pharmacokinetic Concentrations (not ready)","Pharmacokinetic Parameters")
     checkboxGroupInput('testCategories','Data domains to create:',choiceValues=testDomains,choiceNames=testCategories,selected=testCategories)
