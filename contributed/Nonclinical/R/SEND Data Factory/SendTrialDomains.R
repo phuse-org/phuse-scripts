@@ -167,7 +167,7 @@ setTSFile <- function(input) {
                           "")        
     aRow <- aRow + 1
   }
-  
+  tsOut <<- tsOut[, checkCore(tsOut)]
   # add to set of data
   addToSet("TS","TRIAL SUMMARY","tsOut")
 }
@@ -228,7 +228,7 @@ setTEFile <- function(input) {
     aRow <- aRow + 1
   }
   # save final
-  teOut <<- tOut
+  teOut <<- tOut[, checkCore(tOut)]
   # add to set of data
   addToSet("TE","TRIAL ELEMENTS","teOut")
 }
@@ -306,7 +306,7 @@ setTAFile <- function(input) {
     nArm <- nArm+1
   } # treatment count loop
   # save final
-  taOut <<- tOut
+  taOut <<- tOut[, checkCore(tOut)]
   # add to set of data
   addToSet("TA","TRIAL ARMS","taOut")
 }
@@ -377,7 +377,7 @@ setTXFile <- function(input) {
     nArm <- nArm+1
   } # treatment count loop
   # save final
-  txOut <<- tOut
+  txOut <<- tOut[, checkCore(tOut)]
   # add to set of data
   addToSet("TX","TRIAL SETS","txOut")
 }

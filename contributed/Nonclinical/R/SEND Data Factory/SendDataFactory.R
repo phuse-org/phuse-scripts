@@ -205,6 +205,24 @@ setOutputData <- function(input) {
    setAnimalDataFiles(input)
 }
 
+# This function checks columns to verify if the column needs to be included
+# based upon the columns core requirement. Returns a logical vector. TRUE
+# if it should be included, FALSE otherwise
+# TODO: This isn't very effiecent
+checkCore <- function(dataset) {
+  
+  # Create TF vector for permisable columns
+  domain_i <- unique(dataset$DOMAIN)
+  cores <- dfSENDIG[dfSENDIG$Domain == domain_i, "Expectancy"]
+  isPerm <- cores == "Perm"
+  
+  # Create TF vector for blank cols
+  blankCol <- apply(dataset, 2, function(x) all(is.na(x)))
+  
+  # Return vector where both conditions are true.
+  !(isPerm & blankCol)
+}
+
 
   writeDatasetToTempFile <- function (studyData,domain,domainLabel,tempFile) {
     # get rid of NAs even if as a character value of "NA"

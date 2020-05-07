@@ -130,6 +130,8 @@ setDMFile <- function(input) {
           tOut[aRow,]$AGETXT <<- getAgeNumber()
           tOut[aRow,]$AGEU <<- getAgeUnits()
           tOut[aRow,]$SEX <<- substring(aSex,1,1)
+          tOut[aRow,]$SPECIES <<- input$species
+          tOut[aRow,]$STRAIN <<- input$strain
           tOut[aRow,]$ARMCD <<- theArm
           tOut[aRow,]$ARM <<- taOut[taOut$ARMCD==theArm,]$ARM[1]
           tOut[aRow,]$SETCD <<- theTKSet
@@ -139,7 +141,7 @@ setDMFile <- function(input) {
     } # end of TK check
     theArm <- theArm + 1
   } # end group loop
-  dmOut <<- tOut
+  dmOut <<- tOut[, checkCore(tOut)]
   # add to set of data
   addToSet("DM","Demographics","dmOut")
 }
@@ -232,7 +234,7 @@ setDSFile <- function(input) {
     } # end of TK check
     theArm <- theArm + 1
   } # end group loop
-  dsOut <<- tOut
+  dsOut <<- tOut[, checkCore(tOut)]
   # add to set of data
   addToSet("DS","Disposition","dsOut")
 }
@@ -310,7 +312,7 @@ setSEFile <- function(input) {
     theArm <- theArm + 1
     print(paste("Complete SE domain for group:",theGroup))
   } # end group loop
-  seOut <<- tOut  
+  seOut <<- tOut[, checkCore(tOut)]
   # add to set of data
   addToSet("SE","Subject Elements","seOut")
 }
