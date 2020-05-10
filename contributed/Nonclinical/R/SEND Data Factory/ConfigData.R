@@ -71,7 +71,10 @@ getTestCDs <- function(aDomain, aSpecies) {
          "PC" = {aConfig <- getConfig("PC")}
   )
   testcd_ind <- str_which(names(aConfig), "TESTCD")
-  aList <- aConfig[aConfig$SPECIES == aSpecies,testcd_ind]
+  aList <- aConfig[toupper(aConfig$SPECIES) == toupper(aSpecies),testcd_ind]
   print(aList)
+  if (length(aList)==0) {
+    stop(paste("Unable to find configurated tests for",aDomain,"for this species",aSpecies))
+  }
   as.data.frame(unique(aList))
 }

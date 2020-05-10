@@ -328,58 +328,39 @@ setEXFile <- function(input) {
   
   dosingTable <- input$DoseTable
   
-  tsTable <- input$TSTable
-  print(tsTable)
-  startDate <- tsTable[tsTable$TSPARMCD == "STSTDTC","TSVAL"]
+  print("Check TS table read from file with changes by user")
+  print(TSFromFile)
+  startDate <- TSFromFile[TSFromFile$TSPARMCD == "STSTDTC","TSVAL"]
   # TODO: make this more robust
   # Only implemented for single dose right now
-  animalList <- dmOut[, "USUBJID"]
-  
+  animalList <-as.character(dmOut$USUBJID)
+  aRow <- 1  
   for(animal_i in animalList) {
     print(animal_i)
     sex_i <- dmOut[dmOut$USUBJID == animal_i, "SEX"]
     armcd_i <- dmOut[dmOut$USUBJID == animal_i, "ARMCD"]
     dose_level_i <- ifelse(sex_i == "M",
-                          dosingTable[dosingTable$Dose.group == armcd_i, "Male.dose.level"], # Male dose level
-                          dosingTable[dosingTable$Dose.group == armcd_i, "Female.dose.level"]) # Female dose level
+                           DoseFromFile[DoseFromFile$Dose.group == armcd_i, "Male.dose.level"], # Male dose level
+                           DoseFromFile[DoseFromFile$Dose.group == armcd_i, "Female.dose.level"]) # Female dose level
     dose_unit_i <- ifelse(sex_i == "M",
-                          dosingTable[dosingTable$Dose.group == armcd_i, "Male.dose.unit"], # Male dose unit
-                          dosingTable[dosingTable$Dose.group == armcd_i, "Female.dose.unit"]) # Female dose unit
-    print(tsOut)
-    tOut[aRow,] <<- list(
-      input$studyName,   #STUDYID
-      aDomain,           #DOMAIN
-      animal_i,          #USUBJID
-      NA,                #POOLID
-      NA,                #FOCID
-      aRow,              #EXSEQ
-      input$TestArticle, #EXTRT
-      dose_level_i,      #EXDOSE
-      NA,                #EXDOSTXT
-      dose_unit_i,       #EXDOSU
-      "UNKNOWN",         #EXDOSFRM
-      "ONCE",            #EXDOSFRQ
-      tsTable[tsTable$TSPARMCD == "ROUTE", "TSVAL"],
-      "theLotNumber",    #EXLOT
-      NA,                #EXLOC
-      NA,                #EXMETHOD
-      tsTable[tsTable$TSPARMCD == "TRTV", "TSVAL"],
-      NA,                #EXVAMT
-      NA,                #EXVAMTU
-      NA,                #EXADJ
-      tsTable[tsTable$TSPARMCD == "STSTDTC", "TSVAL"],
-      NA, #EXENDTC
-      NA, #EXSTDY
-      NA, #EXENDY
-      NA, #EXDUR
-      NA, #EXTPT
-      NA, #EXTPTNUM
-      NA, #EXELTM
-      NA, #EXTPTREF
-      NA  #EXRTFDTC
-    )
-    aRow <- aRow + 1
-    print(tOut[aRow,])
+                          as.character(DoseFromFile[DoseFromFile$Dose.group == armcd_i, "Male.dose.units"]), # Male dose unit
+                          as.character(DoseFromFile[DoseFromFile$Dose.group == armcd_i, "Female.dose.units"])) # Female dose unit
+   
+      tOut[aRow,]$STUDYID <<- input$studyName
+      tOut[aRow,]$DOMAIN <<- aDomain
+      tOut[aRow,]$USUBJID <<- animal_i
+      tOut[aRow,]$EXSEQ <<- aRow
+      tOut[aRow,]$EXTRT <<- input$testArticle
+      tOut[aRow,]$EXDOSE <<- dose_level_i
+      tOut[aRow,]$EXDOSU <<- dose_unit_i
+      tOut[aRow,]$EXDOSFRM <<- "UNKNOWN"
+      tOut[aRow,]$EXDOSFRQ <<- "ONCE"
+      tOut[aRow,]$EXROUTE <<- TSFromFile[TSFromFile$TSPARMCD == "ROUTE", "TSVAL"]
+      tOut[aRow,]$EXLOT <<- "theLotNumber"
+      tOut[aRow,]$EXTRTV <<- TSFromFile[TSFromFile$TSPARMCD == "TRTV", "TSVAL"]
+      tOut[aRow,]$EXSTDTC <<- as.character(TSFromFile[TSFromFile$TSPARMCD == "STSTDTC", "TSVAL"])
+      print(tOut[aRow,])
+      aRow <- aRow + 1
   }
   
   exOut <<- tOut[, checkCore(tOut)]
