@@ -372,7 +372,7 @@ server <- function(input,output,session) {
           } else {
             lapply(1:input$nDoses, function(j) {
               if ((i %% numerator == 2+j)|((i %% numerator == 0)&(j==input$nDoses))) {
-                selectInput(inputId = paste0('Severity',I,'_',j),label = paste0('Select Severity at Dose ',j),
+                selectInput(inputId = paste0('Severity',I,'_',j),label = paste0('Select Severity at Dose ',j,' (',input[[paste0('dose',j)]],' mg/kg/day)'),
                             choices = c('Absent','Present','Minimal','Mild','Moderate','Marked','Severe'))
               }
             })
