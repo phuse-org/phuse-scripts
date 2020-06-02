@@ -285,7 +285,7 @@ if (file.exists('passwordGitHub.R')) {
 }
 
 # Set Local GitHub Repo
-GitHubPath <- '~/PhUSE/Repo/trunk/data/send'
+GitHubPath <- '~/PhUSE/Git/phuse-scripts/data/send'
 
 
 # Setup Plot Color Ramp
