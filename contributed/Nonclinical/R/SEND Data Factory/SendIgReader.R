@@ -8,16 +8,16 @@ readDomainStructures <-function() {
   } 
   # read from saved file
   # available since this was done and saved by developer: save(dfSENDIG,file=paste0(sourceDir,"/dfSENDIG.Rda"))
-  # if (!bSENDIGRead) {
-  #   print(" SENDIG being read from saved Rda file")
-  #   load(file=paste0(sourceDir,"/dfSENDIG.Rda"))
-  #    if (exists("dfSENDIG")) {
-  #      print(" SENDIG successfully read")
-  #      # ensure as global
-  #      dfSENDIG <<- dfSENDIG
-  #      bSENDIGRead <<- TRUE
-  #    }
-  # }
+   if (!bSENDIGRead) {
+     print(" SENDIG being read from saved Rda file")
+     load(file=paste0(sourceDir,"/dfSENDIG.Rda"))
+      if (exists("dfSENDIG")) {
+        print(" SENDIG successfully read")
+        # ensure as global
+        dfSENDIG <<- dfSENDIG
+        bSENDIGRead <<- TRUE
+      }
+   }
   if (!bSENDIGRead) {
     withProgress({
       setProgress(value=1,message='Reading domain structures from the SEND IG')

@@ -32,13 +32,13 @@
 # [Bob] Enable pp output
 # [Bob] Save SENDIG dataset so not SENDIG download needed, reestablish MA and MI output
 # [Bob] Move checkCore to SENDIGReader so it loads the function while loading other scripts
+# [Bob] Dislpay all created domains
 
 # Next steps:
 # [???] Need configuration file for OM domain
 # [???]   Configuration files need units 
 # [Bob] Animals per group should be a single selection
 # [Kevin] Update so that no errors occur in main window on initial run
-# [Kevin] Update so that you see in main windows all the dataset files with row counts and allow drill down to each
 # [Kevin] Update measurement choices to cover all possible 3.1 domains
 # [Kevin] Configuration files for ranges of numeric fields
 # Output of all domains selected
@@ -128,6 +128,18 @@ convertMenuItem <- function(mi,tabName) {
   mi$children[[1]]$attribs['data-toggle']="tab"
   mi$children[[1]]$attribs['data-value'] = tabName
   mi
+}
+
+# Count rows from datasets to prepare for display
+makeListDatasetsCreated <- function(input) {
+    # filter out first row
+    aList <- domainDFsMade[-1,]
+    domainsList <<- data.frame("Domain"=aList$Domain,"Descripion"=aList$Description)
+    for (aRow in 1:nrow(aList)) {
+      domainsList$"Row Count"[aRow] <<- nrow(get(aList$Dataframe[aRow]))
+      }
+    print(domainsList)
+    nrow(domainsList)
 }
 
 # Check for all required input selections
@@ -364,7 +376,65 @@ server <- function(input, output, session) {
     dfSENDIG
   })
 
-  output$TSTable <- renderRHandsontable({
+  output$showTS <- renderTable({
+    tsOut
+  })
+  
+  output$showTA <- 
+    renderTable({
+    taOut
+  })
+  
+  output$showTE <- renderTable({
+    teOut
+  })
+
+  output$showTX <- renderTable({
+    txOut
+  })
+
+  output$showDM <- renderTable({
+    dmOut
+  })
+
+  output$showDS <- renderTable({
+    dsOut
+  })
+  
+  output$showEX <- renderTable({
+    exOut
+  })
+
+  output$showBW <- renderTable({
+    bwOut
+  })
+
+  output$showLB <- renderTable({
+    lbOut
+  })
+
+  output$showMI <- renderTable({
+    miOut
+  })
+
+  output$showMA <- renderTable({
+    maOut
+  })
+
+  output$showPC <- renderTable({
+    pcOut
+  })
+  
+  output$showPP <- renderTable({
+    ppOut
+  })
+  
+  output$showCL <- renderTable({
+    clOut
+  })
+  
+  
+      output$TSTable <- renderRHandsontable({
      rhandsontable(TSFromFile) %>%
       hot_col(col = "TSPARMCD", type = "text") %>%
       hot_col(col = "TSPARM", type = "text") %>%
@@ -401,6 +471,8 @@ server <- function(input, output, session) {
         setProgress(value=0,message='Dataset file preparation')
         for (aRow in 2:nrow(domainDFsMade)) {
           # append name with domain to make up the individual files that go into the zip
+          print(paste('Preparing: ',
+                      domainDFsMade$Domain[aRow],".xpt",sep=""))
           filePart <- paste(dirname(file),.Platform$file.sep,tolower(domainDFsMade$Domain[aRow]),".xpt",sep="")
           # pass the data frame itself instead of its name as a string
           aDF <- get(domainDFsMade$Dataframe[aRow])
@@ -408,6 +480,8 @@ server <- function(input, output, session) {
           fileList <- c(fileList, filePart)
           setProgress(value=aRow/nrow(domainDFsMade),message=paste('File prepared: ',
           domainDFsMade$Domain[aRow],".xpt",sep=""))
+          print(paste('File prepared: ',
+                      domainDFsMade$Domain[aRow],".xpt",sep=""))
         }
       # combine into zip file
       setProgress(value=1,message=paste('Combining to a zip file'))
@@ -427,8 +501,107 @@ server <- function(input, output, session) {
     DoseFromFile <<-  hot_to_r(input$DoseTable)
     writeDoseFile()
   })
+
+  observeEvent(input$bShowdatasets, {
+  if (exists("teOut")) {
+    removeTab(inputId = "navDatasets",target = "TE")
+    insertTab(inputId = "navDatasets",
+            tabPanel("TE",tableOutput("showTE")),
+            position = 'after',
+            target = "TS"
+    )
+  }
+    if (exists("taOut")) {
+      removeTab(inputId = "navDatasets",target = "TA")
+      insertTab(inputId = "navDatasets",
+              tabPanel("TA",tableOutput("showTA")),
+              position = 'after',
+              target = "TS"
+    )
+    }
+    if (exists("txOut")) {
+      removeTab(inputId = "navDatasets",target = "TX")
+      insertTab(inputId = "navDatasets",
+              tabPanel("TX",tableOutput("showTX")),
+              position = 'after',
+              target = "TS"
+    )
+    }
+    if (exists("dmOut")) {
+      removeTab(inputId = "navDatasets",target = "DM")
+      insertTab(inputId = "navDatasets",
+              tabPanel("DM",tableOutput("showDM")),
+              position = 'after',
+              target = "TS"
+    )
+    }
+    if (exists("dsOut")) {
+      removeTab(inputId = "navDatasets",target = "DS")
+      insertTab(inputId = "navDatasets",
+                tabPanel("DS",tableOutput("showDS")),
+                position = 'after',
+                target = "TS"
+      )
+    }
+    if (exists("lbOut")) {
+      removeTab(inputId = "navDatasets",target = "LB")
+      insertTab(inputId = "navDatasets",
+                tabPanel("LB",tableOutput("showLB")),
+                position = 'after',
+                target = "TS"
+      )
+    }
+    if (exists("miOut")) {
+      removeTab(inputId = "navDatasets",target = "MI")
+      insertTab(inputId = "navDatasets",
+                tabPanel("MI",tableOutput("showMI")),
+                position = 'after',
+                target = "TS"
+      )
+    }
+    if (exists("maOut")) {
+      removeTab(inputId = "navDatasets",target = "MA")
+      insertTab(inputId = "navDatasets",
+                tabPanel("MA",tableOutput("showMA")),
+                position = 'after',
+                target = "TS"
+      )
+    }
+    if (exists("pcOut")) {
+      removeTab(inputId = "navDatasets",target = "PC")
+      insertTab(inputId = "navDatasets",
+                tabPanel("PC",tableOutput("showPC")),
+                position = 'after',
+                target = "TS"
+      )
+    }
+    if (exists("ppOut")) {
+      removeTab(inputId = "navDatasets",target = "PP")
+      insertTab(inputId = "navDatasets",
+                tabPanel("PP",tableOutput("showPP")),
+                position = 'after',
+                target = "TS"
+      )
+    }
+    if (exists("clOut")) {
+      removeTab(inputId = "navDatasets",target = "CL")
+      insertTab(inputId = "navDatasets",
+                tabPanel("CL",tableOutput("showCL")),
+                position = 'after',
+                target = "TS"
+      )
+    }
+    if (exists("bwOut")) {
+      removeTab(inputId = "navDatasets",target = "BW")
+      insertTab(inputId = "navDatasets",
+                tabPanel("BW",tableOutput("showBW")),
+                position = 'after',
+                target = "TS"
+      )
+    }
+  })
   
-  # Produce datasets
+      # Produce datasets
   observeEvent(ignoreNULL=TRUE,eventExpr=input$produceDatasets,
                handlerExpr={
                  withProgress({
@@ -485,11 +658,14 @@ ui <- dashboardPage(
                               withSpinner(uiOutput('OutputCategories'),type=7,proxy.height='200px')
                      ),
                      menuItem('Produce Data',icon=icon('angle-double-right'),startExpanded=T,
-                             actionButton('produceDatasets',label='Produce datasets'),
+                             actionButton('produceDatasets',label='Produce datasets')
+                     ),
+                    menuItem("Show datasets", tabName = "showDatasets", icon = icon('database')), 
+                    menuItem('Download Data',icon=icon('angle-double-right'),startExpanded=T,
                              downloadButton("downloadData", "Download dataset")
-                     )
+                    )
                    )
-  ),
+   ),
   
   dashboardBody(
     useShinyalert(),  # Set up shinyalert
@@ -501,6 +677,14 @@ ui <- dashboardPage(
               tableOutput("SENDIGStructure")
       ),
       
+      tabItem(tabName = "showDatasets",
+              h3("Datasets Created"),
+              actionButton(inputId = "bShowdatasets", label = "Show all"),
+              navbarPage("", id = "navDatasets",
+                         tabPanel("TS",tableOutput("showTS"))
+              )
+      ),
+
       tabItem(tabName = "Additional_Trial_Summary",
               h3("Additional trial summary (editable)"),
               actionButton('saveTSOther',label='Save'),

@@ -184,7 +184,7 @@ setAnimalDataFiles <- function(input) {
       percentOfList <- index/length(DomainsList)
       setProgress(value=percentOfList,message=paste('Producing dataset: ',aDomain))
       aDFName <- paste(tolower(aDomain),"Out",sep="")
-      aDescription <- "FIXME - read description from SENDIG"
+      aDescription <- paste(aDomain,"domain") #FIXME - read description from SENDIG
       aDFReturned <<- createAnimalDataDomain(input,aDomain,aDescription,aDFName)
       aDFReturned <<- aDFReturned[, checkCore(aDFReturned)]
       # now reset the name of this dataframe to keep it
