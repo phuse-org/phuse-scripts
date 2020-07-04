@@ -1,7 +1,7 @@
 # These functions work together with the SendDataFactory
 
 
-getOrres <- function(aDomain,aSex,aTestCD){
+getOrres <- function(aDomain,aSex,aTestCD,aSpec){
   aDomainConfig <- getConfig(aDomain)
   ## If Domain is numeric
   if(aDomain %in% c("BG", "BW", "EG", "FW", "LB", "PC", "PP", "VS")){
@@ -31,10 +31,18 @@ getOrres <- function(aDomain,aSex,aTestCD){
       testcd_ind <- str_which(names(aDomainConfig), "TESTCD")
       fact_ind <- str_which(names(aDomainConfig), "FACT")
       prop_ind <- str_which(names(aDomainConfig), "PROP")
+      spec_ind <- str_which(names(aDomainConfig), paste0(aDomain,"SPEC"))
       
       ## Pull proportions for this sex,testcd
-      testConfig <- aDomainConfig[aSex==aDomainConfig$SEX &
-                                    aTestCD==aDomainConfig[,testcd_ind],]
+      # check if config includes spec
+      if (identical(spec_ind, integer(0))) {
+        testConfig <- aDomainConfig[aSex==aDomainConfig$SEX &
+                                      aTestCD==aDomainConfig[,testcd_ind],]
+      } else {
+        testConfig <- aDomainConfig[aSex==aDomainConfig$SEX &
+                                      aTestCD==aDomainConfig[,testcd_ind] &
+                                      aSpec==aDomainConfig[,spec_ind],]
+      }
       totalProportion <- sum(testConfig[,prop_ind])
       
       ## If Proportions don't sum to 1 the sample() function will normalize
@@ -85,10 +93,6 @@ getStresuUnit <- function() {
   # for now assume it is the same as the orresu
   lastOrresu  
 }
-getSpec <- function() {
-  ## TODO: Should be based on test/domain
-  "aSpec"
-}
 # returns column data based upon the column name
 getColumnData <- function (aCol,aSex,aTreatment,anAnimal,aRow,aDomain,aStudyID,aTestCD,iDay,aSpec) {
   aData <- ""
@@ -114,14 +118,14 @@ getColumnData <- function (aCol,aSex,aTreatment,anAnimal,aRow,aDomain,aStudyID,a
     aData <- getSENDTestCode(aCol,aTestCD)
   }
   if (aCol==aTestCol)  {aData <- getSENDLastTestCodeName(aCol,aDomain)}
-  if (aCol==aORRESCol) aData <- getOrres(aDomain,aSex,aTestCD)
+  if (aCol==aORRESCol) aData <- getOrres(aDomain,aSex,aTestCD,aSpec)
   if (aCol==aORRESUCol) {aData <- getOrresUnit(aCol)}
   if (aCol==aSTRESCCol) {aData <- getStresc(aCol)}
   if (aCol==aSTRESNCol) {aData <- suppressWarnings(as.numeric(lastOrres))}
   if (aCol==aSTRESUCol) {aData <- getStresuUnit()}
   if (aCol==aDay) {aData <- iDay}
   if (aCol=="VISITDY") {aData <- iDay}
-  if (aCol==aSPECCol) aData <- getSpec()
+  if (aCol==aSPECCol) aData <- aSpec
   # return the data
   # print(paste("               DEBUG aData returned: ",aData))
   aData

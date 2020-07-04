@@ -14,7 +14,7 @@ skipRow <- function(aTestCD,iDay,endDay) {
 
 
 # Get specimins for some domains
-getSpecs <- function(aDomain) {
+getSpecs <- function(aDomain,aSex,aTestCD) {
   switch(aDomain,
          "MI" = {aConfig <- getConfig("MI")},
          "MA" = {aConfig <- getConfig("MA")},
@@ -23,13 +23,14 @@ getSpecs <- function(aDomain) {
   aList <- list()  
   if (exists("aConfig")) {
     print("Obtaining specimen list")
-    # later on, read from configuration file
-    # for now, return 20 random tissueS
-    nameList <- getCodeList(paste(aDomain,"SPEC",sep=""))
-    for (i in 1:20) {
-      aValue <- CTRandomName(nameList)
-      aList <- append(aList,aValue)    
-    }
+    # read from configuration file
+    ## Pull proportions for this sex,testcd
+    testcd_ind <- str_which(names(aConfig), "TESTCD")
+    testConfig <- aConfig[aSex==aConfig$SEX &
+                                  aTestCD==aConfig[,testcd_ind],]
+    spec_ind <- str_which(names(aConfig), paste0(aDomain,"SPEC"))
+    theSpecs <- testConfig[,spec_ind]
+    aList <- as.list(theSpecs)
   } else {
     print("No specimen list")
     aList <- append(aList,"No Specimen")  
@@ -127,13 +128,13 @@ createAnimalDataDomain <- function(input,aDomain,aDescription,aDFName) {
           endDay <- 10
         }
         # deterimine specimens to use
-        aSpecs <- getSpecs(aDomain)
         for (iDay in startDay:endDay) {
           # loop over the tests for this domain
           aCodes <- getTestCDs(aDomain, input$species)
           print(aCodes)
           for(i in 1:nrow(aCodes)) {
             aTestCD <-  as.character(aCodes[i,])
+            aSpecs <- getSpecs(aDomain,aSex,aTestCD)
             if (!skipRow(aTestCD,iDay,endDay)) {
               for(iSpec in 1:length(aSpecs)) {
                 aSpec <- as.character(aSpecs[iSpec])

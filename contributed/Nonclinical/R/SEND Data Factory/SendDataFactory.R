@@ -633,7 +633,7 @@ ui <- dashboardPage(
   dashboardSidebar(width=sidebarWidth,
                    sidebarMenu(id='sidebar',
                     menuItem('Output settings',icon=icon('database'),startExpanded=T,
-                              selectInput("CTSelection", "CT Version", choices = CTVersions, selected = "2019-12-20"),
+                              selectInput("CTSelection", "CT Version", choices = CTVersions, selected = "2020-05-08"),
                               withSpinner(uiOutput('SENDVersions'),type=7,proxy.height='200px'),
                               withSpinner(uiOutput('Outputtype'),type=7,proxy.height='200px')
                      ),

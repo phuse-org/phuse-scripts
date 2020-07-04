@@ -148,6 +148,7 @@ setDMFile <- function(input) {
 
 setDSFile <- function(input) {
   # create data frame based on structure
+  print(paste("FIXME DS","working on ds"))
   aDomain <- "DS"
 
   theColumns <- dfSENDIG[dfSENDIG$Domain==aDomain,]$Column
@@ -200,6 +201,8 @@ setDSFile <- function(input) {
         aRow <- aRow + 1
     } # end animal loop
     } # end of sex loop
+    print(paste("FIXME DS","Ds so far"))
+    print(head(tOut))
     if (hasTK) {
       # TK is the next set number
       theTKSet <- theSet+1

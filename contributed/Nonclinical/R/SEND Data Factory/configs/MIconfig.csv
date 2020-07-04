@@ -1,7 +1,11 @@
 MITEST,MITESTCD,SPECIES,SEX,MISPEC,MIFACT,MIPROP
-"Microscopic Examination",MIEXAM,Rat,M,"BRAIN","UNERMARKABLE",.7
-"Microscopic Examination",MIEXAM,Rat,M,"BRAIN","INFLAMATION",.15
-"Microscopic Examination",MIEXAM,Rat,M,"BRAIN","HYPERPLASIA",.15
-"Microscopic Examination",MIEXAM,Rat,F,"BRAIN","UNERMARKABLE",.7
-"Microscopic Examination",MIEXAM,Rat,F,"BRAIN","INFLAMATION",.15
-"Microscopic Examination",MIEXAM,Rat,F,"BRAIN","HYPERPLASIA",.15
+Microscopic Examination,MIEXAM,Rat,M,BRAIN,UNERMARKABLE,0.7
+Microscopic Examination,MIEXAM,Rat,M,BRAIN,INFLAMATION,0.15
+Microscopic Examination,MIEXAM,Rat,M,BRAIN,HYPERPLASIA,0.15
+Microscopic Examination,MIEXAM,Rat,F,BRAIN,UNERMARKABLE,0.7
+Microscopic Examination,MIEXAM,Rat,F,BRAIN,INFLAMATION,0.15
+Microscopic Examination,MIEXAM,Rat,F,BRAIN,HYPERPLASIA,0.15
+Microscopic Examination,MIEXAM,Rat,M,FEMUR,UNERMARKABLE,0.9
+Microscopic Examination,MIEXAM,Rat,M,FEMUR,NECROTIC,0.1
+Microscopic Examination,MIEXAM,Rat,F,FEMUR,UNERMARKABLE,0.9
+Microscopic Examination,MIEXAM,Rat,F,FEMUR,NECROTIC,0.1
