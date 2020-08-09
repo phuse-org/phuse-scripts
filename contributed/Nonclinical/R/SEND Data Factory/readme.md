@@ -1,3 +1,6 @@
+# This subproject and all its future worked moved to this separate project:
+https://github.com/phuse-org/SEND-TestDataFactory
+
 # SEND Data Factory
 Current Contributors:
 * Bob Friedman <bfriedman@xybion.com>
