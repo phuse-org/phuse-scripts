@@ -1,4 +1,4 @@
-# This subproject and all its future worked moved to this separate project:
+# This subproject and all its future work is moved to this separate project:
 https://github.com/phuse-org/SEND-TestDataFactory
 
 # SEND Data Factory
