@@ -248,6 +248,44 @@ roundSigfigs <- function(x,N=2) {
     }
 }
 
+# create Applications folder if it does not exist
+dir.create('Applications',showWarnings = F)
+
+# create ramdom number which will add with folder name
+directory_number <- ceiling(runif(1, min = 1, max = 10000))
+if (paste0('folder_',directory_number) %in% list.files('Applications')) {
+  directory_number <- ceiling(runif(1, min = 1, max = 10000))
+  if (paste0('folder_',directory_number) %in% list.files('Applications')) {
+    directory_number <- ceiling(runif(1, min = 1, max = 10000))
+    if (paste0('folder_',directory_number) %in% list.files('Applications')) {
+      directory_number <- ceiling(runif(1, min = 1, max = 10000))
+      if (paste0('folder_',directory_number) %in% list.files('Applications')) {
+        directory_number <- ceiling(runif(1, min = 1, max = 10000))
+      }
+    }
+  }
+}
+
+# get all the file path for Application_Demo.rds
+files_rds <- list.files('Applications', pattern = "Application_Demo.rds", recursive = T, full.names = T)
+
+# get current data time
+current <- Sys.time()
+
+for ( i in seq(files_rds)) {
+  file_dir <- files_rds[[i]]
+  last_mod_time <- file.mtime(file_dir)
+  differece_days <- ceiling(difftime(current, last_mod_time, units = 'days'))
+  
+  if (differece_days >= 3 ) {
+    dir_delet <- dirname(file_dir)
+    unlink(dir_delet, recursive = T)
+  }
+  
+  
+}
+
+
 # Server function started here (selectData) ----
 
 server <- function(input,output,session) {
@@ -298,10 +336,10 @@ server <- function(input,output,session) {
   #### user folder  ----
   
   user <- reactive({
-    url_search <- session$clientData$url_search
-    username <- unlist(strsplit(url_search,'user='))[2]
-    username <- str_to_lower(username)
-    #username <- "md.ali@fda.hhs.gov"
+    # url_search <- session$clientData$url_search
+    # username <- unlist(strsplit(url_search,'user='))[2]
+    # username <- str_to_lower(username)
+    username <- paste0('folder_', directory_number)
     username <- paste0("Applications/", username)
     return(username)
   })
@@ -418,6 +456,10 @@ server <- function(input,output,session) {
   
   observeEvent(input$selectData,ignoreNULL = T,{
     Data <- getData()
+    #update units for Cmax/AUC
+    updateTextInput(session, "cmax_unit", value=Data[["CmaxUnit"]])
+    updateTextInput(session, "auc_unit", value=Data[["AUCUnit"]])
+    # update clinical information
     clinData <- Data[['Clinical Information']]
     if (clinData$MgKg==F) {
       updateNumericInput(session,'HumanWeight',value = clinData$HumanWeight)
@@ -457,6 +499,12 @@ server <- function(input,output,session) {
     updateTextInput(session,'Duration',value=studyData$Duration)
     updateNumericInput(session,'nDoses',value=studyData$nDoses)
     updateNumericInput(session,'nFindings',value=studyData$nFindings)
+    updateCheckboxInput(session, "notes", value = studyData$check_note) 
+    # if (studyData$check_note==T) {
+    #   updateTextAreaInput(session, "note_text", value = studyData$Notes)
+    # }
+    #updateTextAreaInput(session, "study_note", value = studyData$Notes)
+    #print(studyData$Notes)
     
   })
   
@@ -504,10 +552,13 @@ server <- function(input,output,session) {
     Data[['Nonclinical Information']][[studyName]] <- list(
       Species = input$Species,
       Duration = input$Duration,
+      Notes = input$note_text,
+      check_note = input$notes,
       nDoses = input$nDoses,
       Doses = doseList,
       nFindings = input$nFindings,
       Findings = findingList
+      
     )
     
     saveRDS(Data,values$Application)
@@ -561,6 +612,8 @@ server <- function(input,output,session) {
     Data[['Nonclinical Information']][[studyName]] <- list(
       Species = input$Species,
       Duration = input$Duration,
+      Notes = input$note_text,
+      check_note = input$notes,
       nDoses = input$nDoses,
       Doses = doseList,
       nFindings = input$nFindings,
@@ -576,6 +629,10 @@ server <- function(input,output,session) {
   })
   
 
+  
+
+## save clinical information ---- 
+  
   observeEvent(input$saveClinicalInfo, {
     Data <- getData()
     clinData <- Data[['Clinical Information']]
@@ -683,20 +740,23 @@ server <- function(input,output,session) {
   
   output$Doses <- renderUI({
     req(input$selectStudy)
+    cmax_unit <- paste0(" Cmax (", input$cmax_unit, ")")
+    auc_unit <- paste0(" AUC (", input$auc_unit, ")")
     if (input$selectStudy=='New Study') {
       lapply(1:(4*input$nDoses), function(i) {
         I <- ceiling(i/4)
         if (i %% 4 == 1) {
           div(
             hr(style = "border-top: 1px dashed skyblue"),
-          numericInput(paste0('dose',I),paste0('Dose ',I,' (mg/kg/day):'), min = 0,NULL))
+          numericInput(paste0('dose',I),paste0('*Dose ',I,' (mg/kg/day):'), min = 0,NULL))
         } else if (i %% 4 == 2) {
           div(style="display: inline-block;vertical-align:top; width: 115px;",
-              numericInput(paste0('Cmax',I),paste0('Dose ',I,' Cmax (ng/mL):'), min = 0, NULL))
+              #numericInput(paste0('Cmax',I),paste0('Dose ',I,' Cmax (ng/mL):'), min = 0, NULL))
+              numericInput(paste0('Cmax',I),paste0('Dose ',I, cmax_unit), min = 0, NULL))
         }
         else if (i %% 4 == 3) {
           div(style="display: inline-block;vertical-align:top; width: 115px;",
-              numericInput(paste0('AUC',I),paste0('Dose ',I,' AUC (ng*h/mL):'),min = 0, NULL))
+              numericInput(paste0('AUC',I),paste0('Dose ',I, auc_unit),min = 0, NULL))
         } else {
           div(checkboxInput(paste0('NOAEL',I),'NOAEL?',value=F))
         }
@@ -709,14 +769,14 @@ server <- function(input,output,session) {
         doseName <- names(studyData$Doses)[I]
         if (i %% 4 == 1) {
           div(hr(style = "border-top: 1px dashed skyblue"),
-          textInput(paste0('dose',I),paste0('Dose ',I,' (mg/kg/day):'),studyData$Doses[[doseName]][['Dose']]))
+          numericInput(paste0('dose',I),paste0('*Dose ',I,' (mg/kg/day):'),studyData$Doses[[doseName]][['Dose']]))
         } else if (i %% 4 == 2) {
           div(style="display: inline-block;vertical-align:top; width: 115px;",
-              numericInput(paste0('Cmax',I),paste0('Dose ',I,' Cmax (ng/mL):'),studyData$Doses[[doseName]][['Cmax']]))
+              numericInput(paste0('Cmax',I),paste0('Dose ',I, cmax_unit),studyData$Doses[[doseName]][['Cmax']]))
         }
         else if (i %% 4 == 3) {
           div(style="display: inline-block;vertical-align:top; width: 115px;",
-              numericInput(paste0('AUC',I),paste0('Dose ',I,' AUC (ng*h/mL):'),studyData$Doses[[doseName]][['AUC']]))
+              numericInput(paste0('AUC',I),paste0('Dose ',I, auc_unit),studyData$Doses[[doseName]][['AUC']]))
           
         } else {
          div(checkboxInput(paste0('NOAEL',I),'NOAEL?',value=studyData$Doses[[doseName]][['NOAEL']]))
@@ -758,14 +818,14 @@ server <- function(input,output,session) {
                 hr(style = "border-top: 1px dashed skyblue"),
                 
                 #rightnow
-                selectizeInput(paste0('Finding',I),paste0('Finding ',I,':'), choices = findings,
+                selectizeInput(paste0('Finding',I),paste0('*Finding ',I,':'), choices = findings,
                                options = list(create = TRUE, onInitialize = I('function() { this.setValue(""); }'))))
  
             } else { div(
               hr(style = "border-top: 1px dashed skyblue"),
               
               #rightnow
-              selectizeInput(paste0('Finding',I),paste0('Finding ',I,':'), choices = findings,
+              selectizeInput(paste0('Finding',I),paste0('*Finding ',I,':'), choices = findings,
                              options = list(create = TRUE, 
                                             onInitialize = I('function() { this.setValue(""); }'))))
               
@@ -817,8 +877,8 @@ server <- function(input,output,session) {
             div(
               hr(style = "border-top: 1px dashed skyblue"),
               
-              #rightnow
-                selectizeInput(paste0('Finding',I),paste0('Finding ',I,':'), choices= findings,
+             
+                selectizeInput(paste0('Finding',I),paste0('*Finding ',I,':'), choices= findings,
                                selected = studyData$Findings[[paste0('Finding',I)]]$Finding,
                                options = list(create = TRUE)))
             
@@ -907,6 +967,31 @@ server <- function(input,output,session) {
   # })
   
   
+  ### add note for study ----
+  
+  output$study_note <- renderUI({
+    req(input$selectStudy)
+    Data <- getData()
+    studyData <- Data[['Nonclinical Information']][[input$selectStudy]]
+    
+    if (input$selectStudy=='New Study') {
+      if (input$notes ==T) {
+        textAreaInput("note_text", "Notes:", placeholder = "Enter Note here for this Study", height = "100px")
+      }
+    } else{
+        if (input$notes==T) {
+          textAreaInput("note_text", "Notes:", value = studyData$Notes, height = "100px")
+        }
+      }
+      
+    
+    
+    # if (input$notes ==T) {
+    #   textAreaInput("note_text", "Notes:", placeholder = "Enter Note here for this Study", height = "100px")
+    # }
+  })
+  
+  
   
   # Create PlotData (changed) -----
   
@@ -914,11 +999,16 @@ server <- function(input,output,session) {
   
  getPlotData <- reactive({
   Data <- getData()
-  plotData <- data.frame(matrix(ncol = 20 ))
-  column_names <- c("Study", "Species", "Months", "Dose_num", "Dose", 
+  plotData <- data.frame(matrix(ncol = 17 ))
+  column_names <- c("Study", "Dose", 
                     "NOAEL", "Cmax", "AUC", "Findings",
-                    "Reversibility", "Severity", "Value", "Value_order", 
-                    "SM", "HED_value", "SM_start_dose", "SM_MRHD", "noael_value", "Severity_max", "Severity_num")
+                    "Reversibility", "Severity",  "Value_order", 
+                    "SM", "HED_value", "SM_start_dose", "SM_MRHD", "noael_value", "Severity_max", "Severity_num", "Study_note")
+  # plotData <- data.frame(matrix(ncol = 21 ))
+  # column_names <- c("Study", "Species", "Months", "Dose_num", "Dose", 
+  #                   "NOAEL", "Cmax", "AUC", "Findings",
+  #                   "Reversibility", "Severity", "Value", "Value_order", 
+  #                   "SM", "HED_value", "SM_start_dose", "SM_MRHD", "noael_value", "Severity_max", "Severity_num", "Study_note")
   colnames(plotData) <- column_names
   
   
@@ -932,9 +1022,9 @@ server <- function(input,output,session) {
         for (j in seq(studyData$nDoses)){
           
           plotData[count, "Study"] <- Study
-          plotData[count, "Species"] <- studyData[["Species"]]
-          plotData[count, "Months"] <- studyData[["Duration"]]
-          plotData[count, "Dose_num"] <- names(studyData[["Doses"]][j])
+          #plotData[count, "Species"] <- studyData[["Species"]]
+          #plotData[count, "Months"] <- studyData[["Duration"]]
+          #plotData[count, "Dose_num"] <- names(studyData[["Doses"]][j])
           plotData[count, "Dose"] <- studyData[["Doses"]][[paste0("Dose", j)]][["Dose"]]
           plotData[count, "NOAEL"] <- studyData[["Doses"]][[paste0("Dose",j)]][["NOAEL"]]
           plotData[count, "Cmax"] <- studyData[["Doses"]][[paste0("Dose", j)]][["Cmax"]]
@@ -942,7 +1032,7 @@ server <- function(input,output,session) {
           plotData[count, "Findings"] <- studyData[["Findings"]][[paste0("Finding", i)]][["Finding"]]
           plotData[count, "Reversibility"] <- studyData[["Findings"]][[paste0("Finding", i)]][["Reversibility"]]
           plotData[count, "Severity"] <- studyData[["Findings"]][[paste0("Finding", i)]][["Severity"]][[paste0("Dose", j)]]
-          plotData[count, "Value"] <- 1
+          #plotData[count, "Value"] <- 1
           plotData[count, "Value_order"] <- j
           plotData[count, "SM"] <- NA
           plotData[count, "HED_value"] <- NA
@@ -951,6 +1041,12 @@ server <- function(input,output,session) {
           plotData[count, "noael_value"] <- NA
           plotData[count, "Severity_max"] <- NA
           plotData[count, "Severity_num"] <- NA
+          #plotData[count, "Study_note"] <- NA
+          
+          if (!is.null(studyData[["Notes"]])) {
+            plotData[count, "Study_note"] <- studyData[["Notes"]]
+            } else {plotData[count, "Study_note"] <- NA}
+          
           
           
           count <- count+1
@@ -966,14 +1062,15 @@ server <- function(input,output,session) {
   plotData$Rev <- gsub("\\[|\\]", "", plotData$Reversibility)
   #print(plotData$Findings)
   
-  plotData$finding_rev <- paste0(plotData$Findings,"_", plotData$Rev)
+  #plotData$finding_rev <- paste0(plotData$Findings,"_", plotData$Rev)
   #print(plotData$finding_rev)
-  plotData$find_rev_b <- paste0(plotData$Findings, plotData$Reversibility)
+  #plotData$find_rev_b <- paste0(plotData$Findings, plotData$Reversibility)
   # plotData$Study <- str_to_lower(plotData$Study)
   # plotData$Study <- str_to_title(plotData$Study)
 
   #plotData$Findings <- factor(plotData$Findings)
   plotData$Dose <- as.numeric(plotData$Dose)
+  plotData$Value <- 1
   
   
   plotData$Rev[plotData$Rev == ""] <- "Not Assessed"
@@ -988,8 +1085,11 @@ server <- function(input,output,session) {
                                         'Moderate', 'Marked', 'Severe'), ordered = TRUE)
   
   plotData$Severity_num <- as.numeric(plotData$Severity)
+  
+  
 
   return(plotData)
+  
   
 })
  
@@ -1223,6 +1323,7 @@ server <- function(input,output,session) {
     
     #plotData <- cbind(plotData,SM, HED_value)
     return(plotData)
+    
   })
 
   
@@ -1249,7 +1350,7 @@ server <- function(input,output,session) {
       select(-Severity) %>% 
       #arrange(Findings, Rev) %>% 
       rename(Reversibility = Rev,
-             "Clinical Safety Margin" = SM,
+             "Clinical Exposure Margin" = SM,
              "Dose (mg/kg/day)" = Dose)
     
     plotData_tab$Findings <- factor(plotData_tab$Findings,levels= input$displayFindings)
@@ -1334,22 +1435,26 @@ server <- function(input,output,session) {
 
 
 
-  observeEvent(dt_to_flex_01(), {save_as_docx(dt_to_flex_01(), path = paste0(user(), "/clinical_relevance.docx"))})
+  #observeEvent(input$down_01_doc, {save_as_docx(dt_to_flex_01(), path = paste0(user(), "/clinical_relevance.docx"))})
 
 
 
   output$down_01_doc <- downloadHandler(
+   
     filename = function() {
+      Sys.sleep(2)
       paste0("clinical_relevance", ".docx")
     },
     content = function(file) {
+      save_as_docx(dt_to_flex_01(), path = paste0(user(), "/clinical_relevance.docx"))
+    
       file.copy(paste0(user(),"/clinical_relevance.docx"), file)
 
 
     }
   )
 
-  #### table 02
+  #### table 02 ----
   
   dt_02 <- reactive({
  
@@ -1373,18 +1478,22 @@ server <- function(input,output,session) {
       distinct() 
       #mutate(Study = as.factor(Study))
     
-   
+    cmax_unit <- paste0("Cmax (", input$cmax_unit, ")")
+    auc_unit <- paste0("AUC (", input$auc_unit, ")")
     
     
     plotData_tab <- full_join(plotData_tab, greater_than_noeal, by="Study") %>% 
       arrange(Study,Dose,Cmax,AUC,SM,Findings) %>% 
       rename(
         "NOAEL (mg/kg/day)" = Dose,
-        "Cmax (ng/ml)" = Cmax, "AUC (ng*h/ml)" = AUC, 
+        #"Cmax (ng/ml)" = Cmax, "AUC (ng*h/ml)" = AUC, 
         "Safety Margin" = SM,
         "Findings at Greater than NOAEL for the Study" = Findings
       ) %>% 
       mutate(Study = as.factor(Study))
+    
+    names(plotData_tab)[names(plotData_tab)=="Cmax"] <- cmax_unit
+    names(plotData_tab)[names(plotData_tab)=="AUC"] <- auc_unit
     
     plotData_tab$Study <- factor(plotData_tab$Study,levels= input$displayStudies)
     plotData_tab <- plotData_tab %>%
@@ -1442,23 +1551,31 @@ server <- function(input,output,session) {
   
   
   dt_to_flex_02 <- reactive({
+    
+    cmax_unit <- paste0("Cmax (", input$cmax_unit, ")")
+    auc_unit <- paste0("AUC (", input$auc_unit, ")")
+    
     plotData_tab <- filtered_tab_02()
     plotData_tab <- plotData_tab %>% 
       rename(
          "Dose" ="NOAEL (mg/kg/day)",
-         "Cmax" = "Cmax (ng/ml)",
-         "AUC" = "AUC (ng*h/ml)", 
+         #"Cmax" = "Cmax (ng/ml)",
+         #"AUC" = "AUC (ng*h/ml)", 
          "SM"= "Safety Margin",
          "Findings" = "Findings at Greater than NOAEL for the Study"
       )
+    
+    colnames(plotData_tab)[3] <- "Cmax"
+    colnames(plotData_tab)[4] <- "AUC"
+    
     plotData_tab <- plotData_tab %>%
       flextable() %>% 
           merge_v(j = ~ Study + Dose + Cmax+ AUC +SM+Findings) %>%
           flextable::autofit() %>% 
       
           set_header_labels("Dose" = "NOAEL (mg/kg/day)",
-                        "Cmax" = "Cmax (ng/ml)",
-                        "AUC" = "AUC (ng*h/ml)",
+                        "Cmax" = cmax_unit,
+                        "AUC" = auc_unit,
                         "Findings" = "Findings at Greater than NOAEL for the Study",
                         "SM" = "Safety Margin") %>% 
       add_header_row(values = c("Key Study Findings"), colwidths = c(6)) %>%
@@ -1469,7 +1586,7 @@ server <- function(input,output,session) {
   
   
   
-  observeEvent(dt_to_flex_02(), {save_as_docx(dt_to_flex_02(), path = paste0(user(), "/key_findings.docx"))})
+  #observeEvent(dt_to_flex_02(), {save_as_docx(dt_to_flex_02(), path = paste0(user(), "/key_findings.docx"))})
   
   
   
@@ -1478,6 +1595,7 @@ server <- function(input,output,session) {
       paste0("key_findings", ".docx")
     },
     content = function(file) {
+      save_as_docx(dt_to_flex_02(), path = paste0(user(), "/key_findings.docx"))
       file.copy(paste0(user(), "/key_findings.docx"), file)
       
       
@@ -1488,10 +1606,12 @@ server <- function(input,output,session) {
   
   
   
-  ## table 04 ----
+  ## table 03 ----
   
   dt_03 <- reactive({
     
+    cmax_unit <- paste0("Cmax (", input$cmax_unit, ")")
+    auc_unit <- paste0("AUC (", input$auc_unit, ")")
     plotData_03 <- calculateSM()
     plotData_03 <- plotData_03 %>% 
       select( Study,NOAEL, Dose, SM , HED_value, Cmax, AUC , SM_start_dose, SM_MRHD) %>% 
@@ -1500,10 +1620,16 @@ server <- function(input,output,session) {
       filter(NOAEL == TRUE) %>% 
       select(-NOAEL) %>% 
       dplyr::rename("NOAEL (mg/kg/day)" = Dose,
-                     "Cmax (ng/ml)" = Cmax, "AUC (ng*h/ml)" = AUC, 
+                     #"Cmax (ng/ml)" = Cmax, "AUC (ng*h/ml)" = AUC, 
+                     #cmax_unit = Cmax, auc_unit = AUC,
+                    
                      "Safety Margin" = SM,
                      "Safety Margin at Starting Dose" = SM_start_dose,
                      "Safety Margin at MRHD" = SM_MRHD)
+  
+    names(plotData_03)[names(plotData_03)=="Cmax"] <- cmax_unit
+    names(plotData_03)[names(plotData_03)=="AUC"] <- auc_unit
+    
     
     if (input$MgKg==F) {
       plotData_03 <- plotData_03 %>% 
@@ -1576,7 +1702,7 @@ server <- function(input,output,session) {
   
   
   
-  observeEvent(dt_to_flex_03(), {save_as_docx(dt_to_flex_03(), path = paste0(user(), "/safety_margin.docx") )})
+  #observeEvent(dt_to_flex_03(), {save_as_docx(dt_to_flex_03(), path = paste0(user(), "/safety_margin.docx") )})
 
   
   output$down_03_doc <- downloadHandler(
@@ -1584,6 +1710,7 @@ server <- function(input,output,session) {
       paste0("safety_margin", ".docx")
     },
     content = function(file) {
+      save_as_docx(dt_to_flex_03(), path = paste0(user(), "/safety_margin.docx") )
       file.copy(paste0(user(), "/safety_margin.docx"), file)
       
       
@@ -1610,7 +1737,7 @@ server <- function(input,output,session) {
      doc_02
    })
 
-  observeEvent(download_all(), {print(download_all() , target = paste0(user(), "/table_all.docx"))})
+ #observeEvent(download_all(), {print(download_all() , target = paste0(user(), "/table_all.docx"))})
 
 
 
@@ -1619,14 +1746,70 @@ server <- function(input,output,session) {
        paste0("table_all", ".docx")
      },
      content = function(file) {
+       print(download_all() , target = paste0(user(), "/table_all.docx"))
        file.copy(paste0(user(), "/table_all.docx"), file)
 
 
      }
    )
   
-  
+  # craete notes table ----
+   
+   all_study_notes <- reactive({
+     plotData_tab <- calculateSM()
+     plotData_tab <- plotData_tab %>% 
+       dplyr::select(Study_note, Study) %>% 
+       dplyr::rename(Notes = Study_note)
+     plotData_tab$Study <- factor(plotData_tab$Study,levels= input$displayStudies)
+     plotData_tab <- plotData_tab %>% 
+       distinct() %>% 
+       arrange(Study)
+     
+     
+     plotData_tab
+   })
+   
  
+   # output table for notes  ----
+   
+   output$table_note <- renderTable({all_study_notes()},  
+                             bordered = TRUE,
+                             striped = TRUE,
+                             spacing = 'xs',  
+                             width = '100%', align = 'lr')
+   
+ 
+   ## download notes table
+   table_note_to_flex <- reactive({
+     note_table <- all_study_notes() %>% 
+       flextable() %>%
+       add_header_row(values = c("Note for Studies"), colwidths = c(2)) %>%
+       theme_box()
+     
+     note_table
+     
+     
+   })
+   
+   
+   
+   #observeEvent(table_note_to_flex(), {save_as_docx(table_note_to_flex(), path = paste0(user(), "/note_table.docx") )})
+   
+   
+   output$down_notes <- downloadHandler(
+     filename = function() {
+       paste0("note_table", ".docx")
+     },
+     content = function(file) {
+       save_as_docx(table_note_to_flex(), path = paste0(user(), "/note_table.docx"))
+       file.copy(paste0(user(), "/note_table.docx"), file)
+       
+       
+     }
+   )
+   
+   
+   
  #### plotheight ----
 
   # plotHeight <- function() {
@@ -1717,11 +1900,17 @@ server <- function(input,output,session) {
     plotData_p <- plotData
   
     plotData_p <- plotData_p %>% 
-      select(Study, Species, Months, Dose, SM, Value, NOAEL, Value_order) %>% 
+      select(Study, Dose, SM, Value, NOAEL, Value_order, Study_note) %>% 
       #group_by(Study, Dose, SM) %>% 
       unique()
     plotData_p$SM <- lapply(plotData_p$SM, roundSigfigs)
     plotData_p$SM <- as.numeric(plotData_p$SM)
+    
+    #note 
+    plotData_note <- plotData_p %>% 
+      select(Study, Study_note, SM, Value_order) %>% 
+      filter(Value_order==1) %>% 
+      unique()
       
     
     if (nrow(plotData)>0) {
@@ -1762,23 +1951,56 @@ server <- function(input,output,session) {
       tooltip_css <- "background-color:#3DE3D8;color:black;padding:2px;border-radius:5px;"
       
       
-      p <- ggplot(plotData_p)+
-      # suppressWarnings(geom_tile(aes (x = SM, y = Value_order, fill = NOAEL, text =paste("SM: ", SM)), 
-      #             color = "transparent", width = p_tile_width(), height = p_tile_height))+
+      if (input$dose_sm==1) {
         
+          plot_p_label <- ggplot(plotData_p)+
+          geom_label_interactive(aes(x = SM, y = Value_order,
+                                     label = paste0(Dose, " mg/kg/day"),
+                                     
+                                     tooltip =paste0("SM: ", SM, "x")), #DoseLabel changed
+                                 color = "white",
+                                 fontface = "bold",
+                                 size = 6,
+                                 fill= ifelse(plotData_p$NOAEL == TRUE, "#239B56", "black"),
+                                 label.padding = unit(0.6, "lines")
+          )
+          
+      } else if (input$dose_sm==2) {
+        plot_p_label <- ggplot(plotData_p)+
+          geom_label_interactive(aes(x = SM, y = Value_order,
+                                     label = paste0(Dose, " mg/kg/day", "\n", SM, "x"),
+                                     #label= ifelse(input$dose_sm==1, paste0(Dose, " mg/kg/day"), paste0(Dose, " mg/kg/day", "_", SM, "x")),
+                                     tooltip =paste0(Study_note)), #DoseLabel changed
+                                 color = "white",
+                                 fontface = "bold",
+                                 size = 6,
+                                 fill= ifelse(plotData_p$NOAEL == TRUE, "#239B56", "black"),
+                                 label.padding = unit(0.6, "lines"))
         
-       geom_label_interactive(aes(x = SM, y = Value_order, label = paste(Dose, " mg/kg/day"), tooltip =paste0("SM: ", SM)), #DoseLabel changed
-                  color = "white",
-                  fontface = "bold",
-                  size = 6,
-                  fill= ifelse(plotData_p$NOAEL == TRUE, "#239B56", "black"),
-                  label.padding = unit(0.6, "lines")
-                  )+
+      } else {
+        plot_p_label <- ggplot(plotData_p)+
+          geom_label_interactive(aes(x = SM, y = Value_order,
+                                     label = paste0(Dose, " mg/kg/day", "\n", SM, "x"),
+                                     #label= ifelse(input$dose_sm==1, paste0(Dose, " mg/kg/day"), paste0(Dose, " mg/kg/day", "_", SM, "x")),
+                                     tooltip =paste0(Study_note)), #DoseLabel changed
+                                 color = "white",
+                                 fontface = "bold",
+                                 size = 6,
+                                 fill= ifelse(plotData_p$NOAEL == TRUE, "#239B56", "black"),
+                                 label.padding = unit(0.6, "lines")
+          )+
+        
+          geom_text(data=plotData_note ,aes(x = 0.5*(SM_max), y=0.3 , label= Study_note),
+                    color = "black",
+                    size= 6)
+      }
+      
+      p <- plot_p_label +
         scale_x_log10(limits = c(min(axis_limit$SM/2), max(axis_limit$SM*2)))+
         #scale_fill_manual(values = color_NOAEL)+
         ylim(0,y_max)+
         facet_grid( Study ~ .)+
-        labs( title = "      Summary of Toxicology Studies", x = "Safety Margin")+
+        labs( title = "      Summary of Toxicology Studies", x = "Exposure Margin")+
         theme_bw(base_size=12)+
         theme(
           axis.title.y = element_blank(),
@@ -2058,12 +2280,68 @@ server <- function(input,output,session) {
   })
   
   
+  ## save units for Cmax and AUC ----
+  
+  # get_unit_cmax <- reactive({
+  #   input$save_units
+  #  
+  #   Data <- getData()
+  #   cmax <- Data[["CmaxUnit"]]
+  #   cmax
+  #   
+  # })
+  
+  observeEvent(input$save_units, {
+    Data <- getData()
+    Data[["CmaxUnit"]] <- input$cmax_unit
+    Data[["AUCUnit"]] <- input$auc_unit
+    saveRDS(Data,values$Application)
+    showNotification("saved", duration = 3)
+  })
+  
+  five_space <- paste0(HTML('&nbsp;'), HTML('&nbsp;'), HTML('&nbsp;'),
+                       HTML('&nbsp;'), HTML('&nbsp;'))
+  ## start dose cmax and auc untis
+  output$start_cmax <- renderUI({
+    cmax <- paste0("Start Dose Cmax ", "(", input$cmax_unit, "):")
+    HTML(paste0(five_space, strong(cmax)))
+  })
+  
+  output$start_auc <- renderUI({
+    auc <- paste0("Start Dose AUC ", "(", input$auc_unit, "):")
+    HTML(paste0(five_space, strong(auc)))
+  })
+  
+ ## MRHD dose cmax and auc unit
+  output$MRHD_cmax <- renderUI({
+    cmax <- paste0("MRHD Dose Cmax ", "(", input$cmax_unit, "):")
+    HTML(paste0(five_space, strong(cmax)))
+  })
+  
+  output$MRHD_auc <- renderUI({
+    auc <- paste0("MRHD Dose AUC ", "(", input$auc_unit, "):")
+    HTML(paste0(five_space, strong(auc)))
+  })
+  
+  ## custom dose 
+  output$custom_cmax <- renderUI({
+    cmax <- paste0("Custom Dose Cmax ", "(", input$cmax_unit, "):")
+    HTML(paste0(five_space, strong(cmax)))
+  })
+  
+  output$custom_auc <- renderUI({
+    auc <- paste0("Custom Dose AUC ", "(", input$auc_unit, "):")
+    HTML(paste0(five_space, strong(auc)))
+  })
   
   
   
+  
+   
   # output$menu function -----
   
   output$menu <- renderMenu({
+
     if (!is.null(input$selectData)) {
       if (input$selectData=='blankData.rds') {
         sidebarMenu(id='menu',
@@ -2075,12 +2353,17 @@ server <- function(input,output,session) {
                              actionButton('saveData','Open New Program',icon=icon('plus-circle')),
                              br()
                     ),
-                    br(),
-                    uiOutput('studyName'),
-                    br(),
-                    br()
+                    # br(),
+                    # uiOutput('studyName'),
+                    # br(),
+                    # br(),
+                    hr(),
+                    menuItem('Source Code',icon=icon('code'),href='https://github.com/phuse-org/phuse-scripts/blob/master/contributed/Nonclinical/R/toxSummary/toxSummary.R')
         )
       } else {
+        # Data <- getData()
+        # cmax <- Data[["CmaxUnit"]]
+        
         sidebarMenu(id='menu',
                     menuItem('Data Selection',icon=icon('database'),startExpanded = T,
                              uiOutput('selectData'),
@@ -2093,6 +2376,13 @@ server <- function(input,output,session) {
                     hr(),
                     uiOutput('studyName'),
                     hr(),
+                    menuItem("Units for Cmax/AUC", icon = icon("balance-scale"),
+                             textInput("cmax_unit", "*Insert Unit for Cmax:", value = "ng/mL"),
+                             textInput("auc_unit", "*Insert Unit for AUC:", value = "ng*h/mL"),
+                             actionButton('save_units','Save Units',icon=icon('plus-circle')),
+                             br()),
+                    
+                    
                     menuItem('Clinical Data',icon=icon('user'),
                              checkboxGroupInput('clinDosing','Clinical Dosing:',clinDosingOptions),
                              conditionalPanel('condition=input.MgKg==false',
@@ -2102,8 +2392,8 @@ server <- function(input,output,session) {
                              conditionalPanel(
                                condition='input.clinDosing.includes("Start Dose")',
                                hr(),
-              # hr line         
-             
+                               # hr line         
+                               
                                #tags$hr(style="height:3px;border-width:0;color:white;background-color:green"),
                                
                                h4('Start Dose Information:'),
@@ -2113,8 +2403,11 @@ server <- function(input,output,session) {
                                conditionalPanel(condition='input.MgKg==false',
                                                 numericInput('StartDose','*Start Dose (mg/day):',value = NULL, min=0)
                                ),
-                               numericInput('StartDoseCmax','Start Dose Cmax (ng/mL):',value=NULL, min=0),
-                               numericInput('StartDoseAUC','Start Dose AUC (ng*h/mL):',value=NULL, min=0)
+                               uiOutput("start_cmax"),
+                               numericInput('StartDoseCmax',NULL,value=NULL, min=0),
+                               #numericInput('StartDoseCmax',paste0('Start Dose Cmax ', input$cmax_unit),value=NULL, min=0),
+                               uiOutput("start_auc"),
+                               numericInput('StartDoseAUC',NULL,value=NULL, min=0)
                              ),
                              conditionalPanel(
                                condition='input.clinDosing.includes("MRHD")',
@@ -2128,15 +2421,17 @@ server <- function(input,output,session) {
                                conditionalPanel(condition='input.MgKg==false',
                                                 numericInput('MRHD','*MRHD (mg):',value = NULL, min=0)
                                ),
-                               numericInput('MRHDCmax','MRHD Cmax (ng/mL):',value=NULL, min=0),
-                               numericInput('MRHDAUC','MRHD AUC (ng*h/mL):',value=NULL, min=0)
+                               uiOutput("MRHD_cmax"),
+                               numericInput('MRHDCmax',NULL,value=NULL, min=0),
+                               uiOutput("MRHD_auc"),
+                               numericInput('MRHDAUC',NULL,value=NULL, min=0)
                              ),
                              conditionalPanel(
                                condition='input.clinDosing.includes("Custom Dose")',
                                
                                
-                            hr(),
-                            #tags$hr(style="height:3px;border-width:0;color:white;background-color:white"),
+                               hr(),
+                               #tags$hr(style="height:3px;border-width:0;color:white;background-color:white"),
                                
                                h4('Custom Dose Information:'),
                                conditionalPanel(condition='input.MgKg==true',
@@ -2145,8 +2440,10 @@ server <- function(input,output,session) {
                                conditionalPanel(condition='input.MgKg==false',
                                                 numericInput('CustomDose','*Custom Dose (mg):',value = NULL, min=0)
                                ),
-                               numericInput('CustomDoseCmax','Custom Dose Cmax (ng/mL):',value=NULL, min=0),
-                               numericInput('CustomDoseAUC','Custom Dose AUC (ng*h/mL):',value=NULL, min=0)
+                               uiOutput("custom_cmax"),
+                               numericInput('CustomDoseCmax',NULL,value=NULL, min=0),
+                               uiOutput("custom_auc"),
+                               numericInput('CustomDoseAUC',NULL,value=NULL, min=0)
                              ),
                              actionButton('saveClinicalInfo','Save Clinical Information',icon=icon('plus-circle')),
                              br()
@@ -2156,7 +2453,7 @@ server <- function(input,output,session) {
                              actionButton('saveStudy','Save Study',icon=icon('plus-circle')),
                              actionButton('deleteStudy','Delete Study',icon=icon('minus-circle')),
                              
-                           
+                             
                              
                              selectInput('Species','*Select Species:',choices=names(speciesConversion)),
                              textInput('Duration','*Study Duration/Description:'),
@@ -2167,22 +2464,25 @@ server <- function(input,output,session) {
                              hr(),
                              #tags$hr(style="height:3px;border-width:0;color:white;background-color:green"),
                              
-                             numericInput('nDoses','Number of Dose Levels:',value=3,step=1,min=1),
-                            
+                             numericInput('nDoses','*Number of Dose Levels:',value=3,step=1,min=1),
+                             
                              uiOutput('Doses'),
                              
                              hr(),
                              #tags$hr(style="height:3px;border-width:0;color:white;background-color:green"),
                              
-                             numericInput('nFindings','Number of Findings:',value=1,step=1,min=1),
-                            
+                             numericInput('nFindings','*Number of Findings:',value=1,step=1,min=1),
+                             
                              uiOutput('Findings'),
-                             br(),
+                             #br(),
+                             checkboxInput("notes", "Notes for Study?", value = FALSE),
+                             uiOutput("study_note"),
                              actionButton('saveStudy_02','Save Study',icon=icon('plus-circle'))
                     ),
                     hr(),
-                    h6('* Indicates Required Fields')
-                    
+                    h6('* Indicates Required Fields'),
+                    hr(),
+                    menuItem('Source Code',icon=icon('code'),href='https://github.com/phuse-org/phuse-scripts/blob/master/contributed/Nonclinical/R/toxSummary/toxSummary.R')
         )
       }
     } else {
@@ -2195,10 +2495,12 @@ server <- function(input,output,session) {
                            actionButton('saveData','Open New Program',icon=icon('plus-circle')),
                            br()
                   ),
-                  br(),
-                  uiOutput('studyName'),
-                  br(),
-                  br()
+                  # br(),
+                  # uiOutput('studyName'),
+                  # br(),
+                  # br(),
+                  hr(),
+                  menuItem('Source Code',icon=icon('code'),href='https://github.com/phuse-org/phuse-scripts/blob/master/contributed/Nonclinical/R/toxSummary/toxSummary.R')
       )
     }
   })
@@ -2245,7 +2547,7 @@ ui <- dashboardPage(
       column(2,
              conditionalPanel(
                'input.clinDosing != null && input.clinDosing != ""',
-               selectInput('SMbasis','Base Safety Margin on:',c('HED','Cmax','AUC'))
+               selectInput('SMbasis','Base Exposure Margin on:',c('HED','Cmax','AUC'))
              )
       ),
       column(4,
@@ -2269,15 +2571,31 @@ ui <- dashboardPage(
                    
                    column(2,
                           actionButton('refreshPlot','Refresh Plot')),
-                  column(2, 
+                  column(3, 
                          selectInput("NOAEL_choices", "Filter NOAEL:", choices = c("ALL", "Less than or equal to NOAEL", "Greater than NOAEL"),
                              selected = "ALL")),
-                 column(3, 
-                        sliderInput("plotheight", "Adjust Plot Height:", min = 1, max = 15, value = 4))),
+                  column(3, 
+                         radioButtons("dose_sm", "Display Units:", choices = list("Show Dose Only"=1,
+                                                                           "Show Dose with SM"= 2,
+                                                                           "Notes" =3))),
+                  column(3, 
+                         sliderInput("plotheight", "Adjust Plot Height:", min = 1, max = 15, value = 4))),
                  br(),
-                 # withSpinner(girafeOutput('figure'))),
-                 uiOutput('renderFigure')
-                 ),
+                 # <<<<<<< HEAD
+                 # withSpinner(girafeOutput('figure')),
+                 uiOutput('renderFigure'),
+                 br(),
+                 hr(style = "border-top: 1px dashed black"),
+                 fluidRow(
+                   column(9,
+                          tableOutput("table_note"),
+                          h4("Click on button below to export the table in a docx file"),
+                          downloadButton("down_notes", "Docx file download")))),
+        # =======
+        #                  # withSpinner(girafeOutput('figure'))),
+        #                  uiOutput('renderFigure')
+        #                  ),
+        # >>>>>>> shinyappsIO
         
         
   
@@ -2313,7 +2631,7 @@ ui <- dashboardPage(
       
     
       
-      tabPanel("All Table", 
+      tabPanel("All Tables", 
                br(),
                p("All three table can be downloaded in single docx file. Click button below to download."),
                downloadButton("down_all", "Docx file download")),
