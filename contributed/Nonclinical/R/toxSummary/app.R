@@ -2324,7 +2324,7 @@ server <- function(input,output,session) {
                     # br(),
                     # br(),
                     hr(),
-                    menuItem('Source Code',icon=icon('code'),href='https://github.com/phuse-org/phuse-scripts/blob/master/contributed/Nonclinical/R/toxSummary/app.R')
+                    menuItem('Source Code',icon=icon('code'),href='https://github.com/phuse-org/phuse-scripts/blob/master/contributed/Nonclinical/R/toxSummary')
         )
       } else {
         # Data <- getData()
