@@ -2179,40 +2179,6 @@ server <- function(input,output,session) {
       file.copy("all_file.tar", file)
     }
   )
-   
-  
-  
-  output$Admin_toggle <- renderUI({
-    if (basename(user()) == "md.ali@fda.hhs.gov") {
-"Admin"
-
-  
-    }
-    
-    
-  })
-  
-  
-  output$download_tar_file <- renderMenu({
-    
-    if (input$pass_admin == "HeLLo_aDMiN_PT") {
-      downloadButton("tar_file", "Download all file")
-    }
-    
-    
-  })
-  
-  output$show_file_table <- renderMenu({
-    
-    if (input$pass_admin == "HeLLo_aDMiN_PT") {
-      DT::dataTableOutput("dir_list")
-    }
-    
-    
-  })
-  
-  
-  
   
   dir_to_df <- reactive({
     
@@ -2358,7 +2324,7 @@ server <- function(input,output,session) {
                     # br(),
                     # br(),
                     hr(),
-                    menuItem('Source Code',icon=icon('code'),href='https://github.com/phuse-org/phuse-scripts/blob/master/contributed/Nonclinical/R/toxSummary/toxSummary.R')
+                    menuItem('Source Code',icon=icon('code'),href='https://github.com/phuse-org/phuse-scripts/blob/master/contributed/Nonclinical/R/toxSummary/app.R')
         )
       } else {
         # Data <- getData()
@@ -2648,25 +2614,7 @@ ui <- dashboardPage(
                hr(style = "border-top: 1px dashed black"),
                
                h4("Upload Program Data in RDS format:"),
-               fileInput("upload_rds", "Upload", accept = c(".rds"), multiple = F)),
-      tabPanel(uiOutput("Admin_toggle"),
-               br(),
-               passwordInput("pass_admin", "Password:", placeholder = "Restricted for Admin"),
-               
-               uiOutput("download_tar_file"),
-               br(),
-               hr(),
-            
-               br(),
-               uiOutput("show_file_table"))
-      
-      
-      
-      # tabPanel("Admin",
-      #          br(),
-      #          passwordInput("pass_admin", "Password:", placeholder = "Restricted for Admin"),
-      #          
-      #         uiOutput("download_tar_file"))
+               fileInput("upload_rds", "Upload", accept = c(".rds"), multiple = F))
   ))))
 
 
