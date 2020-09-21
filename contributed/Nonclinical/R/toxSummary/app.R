@@ -2448,7 +2448,7 @@ server <- function(input,output,session) {
                     hr(),
                     h6('* Indicates Required Fields'),
                     hr(),
-                    menuItem('Source Code',icon=icon('code'),href='https://github.com/phuse-org/phuse-scripts/blob/master/contributed/Nonclinical/R/toxSummary/toxSummary.R')
+                    menuItem('Source Code',icon=icon('code'),href='https://github.com/phuse-org/phuse-scripts/blob/master/contributed/Nonclinical/R/toxSummary')
         )
       }
     } else {
@@ -2466,7 +2466,7 @@ server <- function(input,output,session) {
                   # br(),
                   # br(),
                   hr(),
-                  menuItem('Source Code',icon=icon('code'),href='https://github.com/phuse-org/phuse-scripts/blob/master/contributed/Nonclinical/R/toxSummary/toxSummary.R')
+                  menuItem('Source Code',icon=icon('code'),href='https://github.com/phuse-org/phuse-scripts/blob/master/contributed/Nonclinical/R/toxSummary')
       )
     }
   })
