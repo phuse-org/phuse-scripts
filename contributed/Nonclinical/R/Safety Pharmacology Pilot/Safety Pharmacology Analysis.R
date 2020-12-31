@@ -481,8 +481,8 @@ ui <- shinyUI(
                                                  'https://github.com/phuse-org/phuse-scripts/tree/master/contributed/Nonclinical/R/Safety%20Pharmacology%20Pilot'),
                                           br(),br(),
                                           h4('A PHUSE white paper describing this project is publicly available at:'),
-                                          tags$a(href='https://www.phusewiki.org/docs/2019%20US%20Connect%20Final%20Papers/SI/si09-20039.pdf',
-                                                 'https://www.phusewiki.org/docs/2019%20US%20Connect%20Final%20Papers/SI/si09-20039.pdf'),
+                                          tags$a(href='https://www.lexjansen.com/phuse-us/2019/si/SI09.pdf',
+                                                 'https://www.lexjansen.com/phuse-us/2019/si/SI09.pdf'),
                                           br(),br()
                                    )
                           )
