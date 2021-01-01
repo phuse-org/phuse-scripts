@@ -26,6 +26,7 @@ Len,Source,Category,CTCode,Value
 5,MG/ML,u,,mg/mL
 5,\% \(V/V\),u,,% (V/V)
 5,WATER,c,059QF0KO0R,WATER
+4,\(\+/-,r,,±
 4,\+/-,r,,±
 4,W/V\%,u,,% (W/V)
 4,HPMC,c,3NXW29V3WO,"HYPROMELLOSE, UNSPECIFIED"

@@ -191,33 +191,35 @@ cleanTokens_ur <-function(TRTVtokens)
       numStringPos <- regexpr("[+-]{0,1}[0-9]*\\.{0,1}[0-9]+\\s*$",TRTVtokens$Source[i-1])
       numStringPosStop <- attr(numStringPos,"match.length") +numStringPos-1
       num = substr(TRTVtokens$Source[i-1],numStringPos,numStringPosStop)
-      # make a new row for the "U" row
+
+      #if a number was found at the end of the previous row.
       if (numStringPos>=2)
       {
+        # make a new row for the "U" row for the next before the number
         tokens_U <- data.frame(Source=substr(TRTVtokens$Source[i-1],1,numStringPos-1),
                                Category = "U",
                                CTCode = NA,
                                Value = NA,
                                stringsAsFactors=FALSE)
+        # make a new row for the new "n" row
+        tokens_n <- data.frame(Source = num,
+                               Category = "n",
+                               CTCode = NA,
+                               Value = num,
+                               stringsAsFactors=FALSE)
+        #make the new tokens table
+        if (i >= 3)
+        {
+          TRTVtokens <- rbind(slice(TRTVtokens,1:(i-2)),tokens_U,tokens_n,slice(TRTVtokens,i:nrow(TRTVtokens)))
+        }
+        else
+        {
+          TRTVtokens <- rbind(tokens_U,tokens_n,slice(TRTVtokens,i:nrow(TRTVtokens)))
+        }
       }
       else
       {
-        stop("A \"U\" row was found that contains only a number.  This is not expected.")
-      }
-      # make a new row for the new "n" row
-      tokens_n <- data.frame(Source = num,
-                             Category = "n",
-                             CTCode = NA,
-                             Value = num,
-                             stringsAsFactors=FALSE)
-      #make the new tokens table
-      if (i >= 3)
-      {
-        TRTVtokens <- rbind(slice(TRTVtokens,1:(i-2)),tokens_U,tokens_n,slice(TRTVtokens,i:nrow(TRTVtokens)))
-      }
-      else
-      {
-        TRTVtokens <- rbind(tokens_U,tokens_n,slice(TRTVtokens,i:nrow(TRTVtokens)))
+        # a number was not found at the end of the previous row to go with a "u" or an "r".
       }
     }
     if (i+1 <= nrow(TRTVtokens))
@@ -233,38 +235,40 @@ cleanTokens_ur <-function(TRTVtokens)
         #print(paste("numStringPosStop=",numStringPosStop))
         #print(paste("num =",num))
         #
-        # make a new row for the "U" row
+        # if a number was found at the end of the previous row... 
         if (numStringPosStop<nchar(TRTVtokens$Source[i+1]))
         {
+          # make a row for the text before the number as a "U" row
           tokens_U <- data.frame(Source=substr(TRTVtokens$Source[i+1],numStringPosStop+1,nchar(TRTVtokens$Source[i+1])),
                                  Category = "U",
                                  CTCode = NA,
                                  Value = NA,
                                  stringsAsFactors = FALSE)
+          # make a new row for the new "n" row
+          tokens_n <- data.frame(Source=num,
+                                 Category = "n",
+                                 CTCode = NA,
+                                 Value = num,
+                                 stringsAsFactors = FALSE)
+          #print(tokens_n)
+
+          #make the new tokens table
+          if (i+2 <= nrow(TRTVtokens))
+          {
+            TRTVtokens <- rbind(slice(TRTVtokens,1:i),tokens_n,tokens_U,slice(TRTVtokens,i+2:nrow(TRTVtokens)))
+          }
+          else
+          {
+            TRTVtokens <- rbind(slice(TRTVtokens,1:i),tokens_n,tokens_U)
+          }
+          
         }
         else
         {
-          stop("A \"U\" row was found that contains only a number.  This is not expected.")
+          # A number was not found at the end of the previous row to go with the r.
         }
         #print(tokens_U)
         
-        # make a new row for the new "n" row
-        tokens_n <- data.frame(Source=num,
-                               Category = "n",
-                               CTCode = NA,
-                               Value = num,
-                               stringsAsFactors = FALSE)
-        #print(tokens_n)
-        
-        #make the new tokens table
-        if (i+2 <= nrow(TRTVtokens))
-        {
-          TRTVtokens <- rbind(slice(TRTVtokens,1:i),tokens_n,tokens_U,slice(TRTVtokens,i+2:nrow(TRTVtokens)))
-        }
-        else
-        {
-          TRTVtokens <- rbind(slice(TRTVtokens,1:i),tokens_n,tokens_U)
-        }
       }
     }
     i <- i+1
