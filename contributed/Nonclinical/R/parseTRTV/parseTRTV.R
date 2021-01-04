@@ -53,9 +53,9 @@
 #   c = component
 #   a = attribute (like pH)
 #   r = range (like +/-)
+#   R = range (like "-" in "3-5")
 #   u = unit
 #   n = number [+-]{0,1}[0-9]*\.{0,1}[0-9]+
-#   s = separater (like AND , )
 #   f = the following item is diluent
 #   U = unknown
 #   i = ignore, for example if a component is supplied with a synonym, the synonym is categorized as "i" so that it is ignored.
@@ -180,14 +180,19 @@ vehicleTokenize <-function(string,firstRow=1)
 
 cleanTokens_ur <-function(TRTVtokens)
 {
-  # If we see +/- or a unit of measure and the previous row is "U",look for a number at the end of the "U" row.
-  # Also if we see +/- and the next row is "U", look for a number at the start of the "U" row.
+  # If we see "+/-" , a unit of measure, or (if after "f" a "-") and the previous row is "U",look for a number at the end of the "U" row.
+  # Also if we see "+/-" or (if after "f" a "-") and the next row is "U", look for a number at the start of the "U" row.
+  f_found <- FALSE
   i <- 2 #start with second row
   while (i <= nrow(TRTVtokens))
   {
-    if ((("u" == TRTVtokens$Category[i])||("r" == TRTVtokens$Category[i]))&&("U" == TRTVtokens$Category[i-1]))
+    if ("f" == TRTVtokens$Category[i])
     {
-      #look for a number at the end of Source in i-1 to go with the unit or +/-
+      f_found <-TRUE
+    }
+    if ((("u" == TRTVtokens$Category[i])||("r" == TRTVtokens$Category[i])||(f_found&&("R" == TRTVtokens$Category[i])))&&("U" == TRTVtokens$Category[i-1]))
+    {
+      #look for a number at the end of Source in i-1 to go with the unit or +/- or -
       numStringPos <- regexpr("[+-]{0,1}[0-9]*\\.{0,1}[0-9]+\\s*$",TRTVtokens$Source[i-1])
       numStringPosStop <- attr(numStringPos,"match.length") +numStringPos-1
       num = substr(TRTVtokens$Source[i-1],numStringPos,numStringPosStop)
@@ -219,14 +224,14 @@ cleanTokens_ur <-function(TRTVtokens)
       }
       else
       {
-        # a number was not found at the end of the previous row to go with a "u" or an "r".
+        # a number was not found at the end of the previous row to go with a "u" an "r" or an "R".
       }
     }
     if (i+1 <= nrow(TRTVtokens))
     {
-      if (("r" == TRTVtokens$Category[i])&&("U" == TRTVtokens$Category[i+1]))
+      if ((("r" == TRTVtokens$Category[i])||(f_found&&("R" == TRTVtokens$Category[i])))&&("U" == TRTVtokens$Category[i+1]))
       {
-        #look for a number at the start of Source in i+1 to go with the +/-
+        #look for a number at the start of Source in i+1 to go with the +/- or -
         numStringPos <-regexpr("^\\s*[+-]{0,1}[0-9]*\\.{0,1}[0-9]+",TRTVtokens$Source[i+1])
         numStringPosStop <- attr(numStringPos,"match.length")+numStringPos-1
         num = substr(TRTVtokens$Source[i+1],numStringPos, numStringPosStop)
@@ -235,7 +240,7 @@ cleanTokens_ur <-function(TRTVtokens)
         #print(paste("numStringPosStop=",numStringPosStop))
         #print(paste("num =",num))
         #
-        # if a number was found at the end of the previous row... 
+        # if a number was found at the end of the following row... 
         if (numStringPosStop<nchar(TRTVtokens$Source[i+1]))
         {
           # make a row for the text before the number as a "U" row
@@ -278,7 +283,7 @@ cleanTokens_ur <-function(TRTVtokens)
 
 
 # if the same component listed in two consecutive rows (ignoring unknown rows) the source probably is providing a synonym. Ignore the duplicate.
-cleanTokens_i <-function(TRTVtokens)
+cleanTokens_syn <-function(TRTVtokens)
 {
   i <- 2
   while (i <= nrow(TRTVtokens))
@@ -301,6 +306,35 @@ cleanTokens_i <-function(TRTVtokens)
   }
   return(TRTVtokens)
 }  
+
+cleanTokens_R <-function(TRTVtokens)
+{ # ignore R  before f.  Call this after cleanTokens_rn(). If you decide to change this to process R before f, also change the behaviour in the cleanTokens_ru() function.
+  f_found <-FALSE
+  i <- 1
+  while (i <= nrow(TRTVtokens))
+  {
+    if( ("f" == TRTVtokens$Category[i] ))
+    {
+      f_found <- TRUE
+    }
+    if ("R" == TRTVtokens$Category[i])
+    {
+      if (f_found)
+      {
+        # no change
+      }
+      else
+      {
+        #we found an R before an "f"
+        #   ignor the R now and ignore the number before and
+        TRTVtokens$Category[i] <- "i"  
+      }
+    }
+    i <- i+1
+  }
+  return(TRTVtokens)
+}  
+
 
 makeXV <- function(TRTVtokens)
 {
@@ -330,7 +364,7 @@ makeXV <- function(TRTVtokens)
   #   an attribute name
   #   an attribute value
   #   optionally an atribute tolerance range
-  attribute_regx <-paste("(an(rn)?)",sep="")
+  attribute_regx <-paste("(an(rn|(R)n)?)",sep="")
   # We will later put these regular expressions together to describe the treatment vehicle text string.
   
   #Put the categories together into a single string and delete the tokens that are Unknown and those that should be ignored.
@@ -557,13 +591,16 @@ makeXV <- function(TRTVtokens)
       
     }
     
-    #Add rows to XVtable for the attributes (an(rn)?)
+    #Add rows to XVtable for the attributes (an(r|(R)n)?)
     attribute_i <- 1
     while (attribute_i <= attribute_reps)
     {
-      if ((m[[1]][m_i+1]>0))
+      if (m[[1]][m_i+3]>0)
       {
-        #we have "an"
+        #we have an "anRn"
+        #create row for "an"
+        lowest <- as.numeric(TRTVtokens$Value[xref[1+m[[1]][m_i+1]]])
+        highest <- as.numeric(TRTVtokens$Value[xref[3+m[[1]][m_i+1]]])
         XVrow <- data.frame(STUDYID = NA, 
                             DOMAIN = "XV",
                             XVSEQ = seq,
@@ -572,16 +609,13 @@ makeXV <- function(TRTVtokens)
                             XVPARMCD = "TRTVP",
                             XVPARM = "Treatment Vehicle Property",
                             XVSPARM = TRTVtokens$Value[xref[0+m[[1]][m_i+1]]],
-                            XVVAL = TRTVtokens$Value[xref[1+m[[1]][m_i+1]]],
+                            XVVAL = (highest+lowest)/2,
                             XVVALU = NA,
                             XVVALNF = NA,
                             stringsAsFactors=FALSE)
         XVtable <- rbind(XVtable,XVrow)
         seq <-seq +1
-      }
-      if (m[[1]][m_i+2]>0)
-      {
-        #we have an "rn"
+        #create row for "Rn"
         XVrow <- data.frame(STUDYID = NA, 
                             DOMAIN = "XV",
                             XVSEQ = seq,
@@ -590,14 +624,73 @@ makeXV <- function(TRTVtokens)
                             XVPARMCD = "TRTVC",
                             XVPARM = "Treatment Vehicle Component",
                             XVSPARM = paste0(TRTVtokens$Value[xref[0+m[[1]][m_i+1]]]," Tolerance Range"),
-                            XVVAL = TRTVtokens$Value[xref[3+m[[1]][m_i+1]]],
+                            XVVAL = (highest-lowest)/2,
                             XVVALU = NA,
                             XVVALNF = NA,
                             stringsAsFactors=FALSE)
         XVtable <- rbind(XVtable,XVrow)
         seq <-seq +1
       }
-      m_i <-m_i +2
+      else 
+      {
+        if (m[[1]][m_i+2]>0)
+        {
+          #we have an "anrn"
+          #create row for "an"
+          XVrow <- data.frame(STUDYID = NA, 
+                              DOMAIN = "XV",
+                              XVSEQ = seq,
+                              XVGRPID = 1,
+                              XVSGRPID = component_i,
+                              XVPARMCD = "TRTVP",
+                              XVPARM = "Treatment Vehicle Property",
+                              XVSPARM = TRTVtokens$Value[xref[0+m[[1]][m_i+1]]],
+                              XVVAL = TRTVtokens$Value[xref[1+m[[1]][m_i+1]]],
+                              XVVALU = NA,
+                              XVVALNF = NA,
+                              stringsAsFactors=FALSE)
+          XVtable <- rbind(XVtable,XVrow)
+          seq <-seq +1
+          #create row for "rn"
+          XVrow <- data.frame(STUDYID = NA, 
+                              DOMAIN = "XV",
+                              XVSEQ = seq,
+                              XVGRPID = 1,
+                              XVSGRPID = component_i,
+                              XVPARMCD = "TRTVC",
+                              XVPARM = "Treatment Vehicle Component",
+                              XVSPARM = paste0(TRTVtokens$Value[xref[0+m[[1]][m_i+1]]]," Tolerance Range"),
+                              XVVAL = TRTVtokens$Value[xref[3+m[[1]][m_i+1]]],
+                              XVVALU = NA,
+                              XVVALNF = NA,
+                              stringsAsFactors=FALSE)
+          XVtable <- rbind(XVtable,XVrow)
+          seq <-seq +1
+        }
+        else 
+        {
+          if ((m[[1]][m_i+1]>0))
+          {
+            #we have "an" without "rn" or "Rn"
+            #create row for "an"
+            XVrow <- data.frame(STUDYID = NA, 
+                                DOMAIN = "XV",
+                                XVSEQ = seq,
+                                XVGRPID = 1,
+                                XVSGRPID = component_i,
+                                XVPARMCD = "TRTVP",
+                                XVPARM = "Treatment Vehicle Property",
+                                XVSPARM = TRTVtokens$Value[xref[0+m[[1]][m_i+1]]],
+                                XVVAL = TRTVtokens$Value[xref[1+m[[1]][m_i+1]]],
+                                XVVALU = NA,
+                                XVVALNF = NA,
+                                stringsAsFactors=FALSE)
+            XVtable <- rbind(XVtable,XVrow)
+            seq <-seq +1
+          }
+        }
+      }
+      m_i <-m_i +3
       attribute_i <- attribute_i+1
     }
   } else
@@ -625,7 +718,7 @@ while (tRow <= nrow(trtv))
 {
   print(paste0("Vehicle:",as.character(trtv[tRow, ])))
   p<-vehicleTokenize(as.character((trtv[tRow, ])))
-  p<-cleanTokens_i(cleanTokens_ur(p))
+  p<-cleanTokens_syn(cleanTokens_R(cleanTokens_ur(p)))
   #print(p$Category)
   category_noU <- str_replace_all(paste(p$Category,collapse=""),"U|i","")
   #print(grepl("^((nuc)|(c(nu)?))+(f((nuc)|(c(nu)?)))?(an(rn)?)*$",category_noU))
