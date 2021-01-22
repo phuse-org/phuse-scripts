@@ -28,3 +28,4 @@ Name (GitHub Handle) eMail
 ## Deliverables
 
 * Create an abbreviated TS dataset creation app just like the R Shiny app at: https://geotiger.shinyapps.io/07_genTS/
+* Please put the template for the white paper here
