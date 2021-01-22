@@ -14,6 +14,10 @@ To develop and evaluate potential standard scripts based on the Julia programmin
 
 Name (GitHub Handle) eMail
 * Chris Hurley (hurleyc) churley@mmsholdings.com
+* Jeff Mills (tszanalytics) jeffrey.mills@uc.edu
+* Melvin Munsaka (melvinmunsaka) melvin.s.munsaka@gmail.com
+* Hanming Tu (geotiger) htu@frontagelab.com
+* Patrick Hannon () patrick.hannon@mmsholdings.com
 * Chris Wege (Xingewei) chris.wege@bayer.com
 * David Wei (Xingewei) david.wei@bayer.com
 * Julia Dedic (juliadedic) julia.dedic@roche.com
