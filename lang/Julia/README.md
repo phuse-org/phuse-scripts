@@ -13,19 +13,20 @@ To develop and evaluate potential standard scripts based on the Julia programmin
 ## Participants
 
 Name (GitHub Handle) eMail
+* Peter Bonata (phbpt) peter.bonata@bayer.com
+* Richard Bryant (rbryant92) rbryant@mmsholdings.com
+* Julia Dedic (juliadedic) julia.dedic@roche.com
+* Patrick Hannon (MrStat) patrick.hannon@mmsholdings.com
 * Chris Hurley (hurleyc) churley@mmsholdings.com
 * Jeff Mills (tszanalytics) jeffrey.mills@uc.edu
 * Melvin Munsaka (melvinmunsaka) melvin.s.munsaka@gmail.com
 * Hanming Tu (geotiger) htu@frontagelab.com
-* Patrick Hannon () patrick.hannon@mmsholdings.com
 * Chris Wege (Xingewei) chris.wege@bayer.com
 * David Wei (Xingewei) david.wei@bayer.com
-* Julia Dedic (juliadedic) julia.dedic@roche.com
 * Marko Zivkovic (shoraz) marko@genesisrg.com
-* Peter Bonata (phbpt) peter.bonata@bayer.com
-* Richard Bryant (rbryant92) rbryant@mmsholdings.com
+
 
 ## Deliverables
 
 * Create an abbreviated TS dataset creation app just like the R Shiny app at: https://geotiger.shinyapps.io/07_genTS/
-* Please put the template for the white paper here
+* White Paper on Simulations Demonstration using Julia
