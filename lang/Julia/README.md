@@ -19,7 +19,7 @@ Name (GitHub Handle) eMail
 * Patrick Hannon (MrStat) patrick.hannon@mmsholdings.com
 * Chris Hurley (hurleyc) churley@mmsholdings.com
 * Jeff Mills (tszanalytics) jeffrey.mills@uc.edu
-* Melvin Munsaka (MelvinSMunsak) melvin.s.munsaka@gmail.com
+* Melvin Munsaka (MelvinSMunsaka) melvin.s.munsaka@gmail.com
 * Hanming Tu (geotiger) htu@frontagelab.com
 * Chris Wege (Xingewei) chris.wege@bayer.com
 * David Wei (Xingewei) david.wei@bayer.com
