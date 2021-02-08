@@ -1,3 +1,9 @@
+# Inputs:
+# origRule: verbatim text of rule or condition to convert to logical statement for R evaluation
+# splitterTables: list of characters to convert to interpretable logical operators
+
+# Output: text string that can be evaluated by R as a logical operation
+
 convertRule <- function(origRule,splitterTables = mySplitterTables) {
   newRule <- origRule
   newRule <- str_replace_all(newRule, fixed(' ^='), fixed(' ^= '))
