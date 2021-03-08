@@ -48,7 +48,7 @@ Signs <- data.frame('not.equals' = c(' ^= ', ' \\^= ', ' != '),
 row.names(Signs) <- c('grep', 'strsplit', 'paste')
 
 # Store conjunctions and signs
-mySplitterTables <- list('Conjunctions' = Conjunctions,'Signs' = Signs)
+splitterTables <- list('Conjunctions' = Conjunctions,'Signs' = Signs)
 
 # Source function for converting rules into logical statements
 source('convertRule.R')
@@ -231,7 +231,9 @@ for (Data_path in Data_paths) {
         origCondition <- Rule$Condition
         
         # Convert condition into logical operation
+        print(origCondition)
         newCondition <- convertRule(origCondition)
+        print(newCondition)
         
         # Store verbatim rule text
         origRule <- Rule$Rule

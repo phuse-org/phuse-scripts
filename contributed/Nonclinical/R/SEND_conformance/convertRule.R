@@ -1,48 +1,82 @@
 # Inputs:
 # origRule: verbatim text of rule or condition to convert to logical statement for R evaluation
-# splitterTables: list of characters to convert to interpretable logical operators
+# mySplitterTables: list of characters to convert to interpretable logical operators
+# myClasses: list of domains in each class
+# myDomain: current domain
 
 # Output: text string that can be evaluated by R as a logical operation
 
-convertRule <- function(origRule,splitterTables = mySplitterTables) {
+`%ni%` <- Negate('%in%')
+
+convertRule <- function(origRule,
+                        mySplitterTables = splitterTables,
+                        myClasses = Classes,
+                        myDomain = Domain) {
   newRule <- origRule
+  
+  # Add trailing spaces to ^= operator
   newRule <- str_replace_all(newRule, fixed(' ^='), fixed(' ^= '))
   newRule <- str_replace_all(newRule, fixed('^= '), fixed(' ^= '))
+  
+  # Make all spaces single spaces
   newRule <- gsub('\\s+', ' ', newRule)
-  ruleWords <- unlist(strsplit(origRule, ' '))
+  
+  # Remove parenthesis from rule
+  newRule <- str_replace_all(newRule, fixed('('), '')
+  newRule <- str_replace_all(newRule, fixed(')'), '')
+  
+  # Split rule into words
+  ruleWords <- unlist(strsplit(newRule, ' '))
+  
+  # Loop through words of rule
   for (word in ruleWords) {
+    # Check if word is still in rule
+    if (word %ni% unlist(strsplit(newRule, ' '))) {
+      next
+    }
+    
+    # Check if word is a [Domain].[Variable]
     if (length(grep('[A-Z][A-Z]\\.[A-Z][A-Z][A-Z]', word))) {
+      
+      # Split domain from variable
       wordSplit <- unlist(strsplit(word, '\\.'))
       newDomain <- wordSplit[1]
       newWord <- wordSplit[2]
-      newRule <- str_replace(newRule, word, paste0("Data[['", newDomain, "']][['", newWord, "']][i]"))
-    # } else if (length(grep('"', word, fixed = T)) > 0) {
-    #   newRule <- str_replace_all(newRule, fixed('“'), "'")
-    # } else if (length(grep('"', word, fixed = T)) > 0) {
-    #   newRule <- str_replace_all(newRule, fixed('”'), "'")
-    } else if (length(grep('(', word, fixed = T)) > 0) {
-      newRule <- str_replace_all(newRule, fixed('('), '')
-    } else if (length(grep(')', word, fixed = T)) > 0) {
-      newRule <- str_replace_all(newRule, fixed(')'), '')
-      newWord <- str_replace_all(word, fixed(')'), '')
-      if ((substr(newWord,1,2) %in% unlist(Classes))&(length(grep('[A-Z][A-Z][A-Z][A-Z]',substr(newWord,3,nchar(newWord)))) > 0)) {
-        newRule <- str_replace(newRule, newWord, paste0("Data[['", substr(newWord,1,2), "']][['", substr(newWord,3,nchar(newWord)), "']][i]"))
+      
+      # Re-write word as "Data[[Domain]][[Variable]][i]"
+      newRule <- str_replace_all(newRule, word, paste0("Data[['", newDomain, "']][['", newWord, "']][i]"))
+    
+    # Check if word is a variable with the domain as first two characters, e.g. MISTAT, and re-write as "Data[[Domain]][[Variable]][i]"
+    } else if ((substr(word, 1, 2) %in% unlist(myClasses))&(length(grep('[A-Z][A-Z][A-Z][A-Z]', substr(word, 3, nchar(word)))) > 0)) {
+      if (substr(word, 1, 2) %in% c(myClasses$TDM, myClasses$SPC)) {
+        newRule <- str_replace_all(newRule, word, paste0("Data[['", substr(word,1,2), "']][['", substr(word, 3, nchar(word)), "']][i]"))
+      } else {
+        newRule <- str_replace_all(newRule, word, paste0("Data[['", substr(word,1,2), "']][['", word, "']][i]"))
       }
-    } else if ((substr(word,1,2) %in% unlist(Classes))&(length(grep('[A-Z][A-Z][A-Z][A-Z]',substr(word,3,nchar(word)))) > 0)) {
-      newRule <- str_replace(newRule, word, paste0("Data[['", substr(word,1,2), "']][['", substr(word,3,nchar(word)), "']][i]"))
+      
+    # ELSE check if word is [Domain + extra characters].[Variable] and re-write as "Data[[Domain]][[Variable]][i]
+    } else if ((substr(word,1,2) %in% unlist(myClasses))&(length(grep('[A-Z][A-Z][A-Z][A-Z]',substr(word,3,nchar(word)))) > 0)) {
+      newRule <- str_replace_all(newRule, word, paste0("Data[['", substr(word,1,2), "']][['", substr(word,3,nchar(word)), "']][i]"))
+    
+    # ELSE check for -- and place variable name in format: "domainData[[Variable]][i]
     } else if (length(grep('--', word, fixed = T)) > 0) {
       newRule <- str_replace_all(newRule, word, paste0("domainData[['", word, "']][i]"))
+    
+    # ELSE skip if word is "DONE"
     } else if (length(grep('DONE', word)) > 0) {
       next
+    
+    # ELSE skip if word is "PROTOCOL"
     } else if (length(grep('PROTOCOL', word)) > 0) {
       next
+    
+    # ELSE convert any four letter ALL CAPS words into domainData[[XXXX]][i] format
     } else if (length(grep('[A-Z][A-Z][A-Z][A-Z]', word)) > 0) {
-      newRule <- str_replace_all(newRule, word, paste0("domainData[['", word, "']][i]"))
-      # } else if (length(grep('ARM', word)) > 0) {
-      #   newRule <- str_replace(newRule, word, paste0("domainData[['", word, "']][i]"))
+      newRule <- str_replace(newRule, word, paste0("domainData[['", word, "']][i]"))
     }
   }
   
+  # Convert any cases of XX.domainData to Data[[XX]]
   if (length(grep('[A-Z][A-Z]\\.domainData', newRule))) {
     newRuleWords <- unlist(strsplit(newRule, ' '))
     for (word in newRuleWords) {
@@ -50,14 +84,17 @@ convertRule <- function(origRule,splitterTables = mySplitterTables) {
         wordSplit <- unlist(strsplit(word, '\\.domainData'))
         newDomain <- wordSplit[1]
         newWord <- wordSplit[2]
-        newRule <- str_replace(newRule, fixed(word), paste0("Data[['", newDomain, "']]", newWord))
+        newRule <- str_replace_all(newRule, fixed(word), paste0("Data[['", newDomain, "']]", newWord))
       }
     }
   }
-    
-  Conjunctions <- splitterTables$Conjunctions
-  Signs <- splitterTables$Signs
   
+  # Get Conjunction and Sign Terms
+  Conjunctions <- mySplitterTables$Conjunctions
+  Signs <- mySplitterTables$Signs
+  
+  
+  # Convert conjunctions and signs from Conformance Rule syntax to R syntax
   for (conjunction in colnames(Conjunctions)) {
     if (length(grep(Conjunctions['grep',conjunction], newRule, ignore.case = T)) > 0) {
       for (sign in colnames(Signs)) {
@@ -110,6 +147,7 @@ convertRule <- function(origRule,splitterTables = mySplitterTables) {
     }
   }
   
+  # Convert Conformance Rule NULL syntax to R NULL syntax
   if (length(grep(' ^= null', newRule, fixed = T))>0) {
     newRule <- str_replace_all(newRule, fixed(' ^= null'), '')
     newRule <- paste0('(!is.null(', newRule, '))&(!is.na(', newRule, '))')
@@ -121,7 +159,8 @@ convertRule <- function(origRule,splitterTables = mySplitterTables) {
     newRule <- paste0('(is.null(', newRule, '))|(is.na(', newRule, '))')
   }
   
-  newRule <- str_replace_all(newRule, fixed('--'), Domain)
+  # Replace any remaining -- with current domain and ^ with ! and = with ==
+  newRule <- str_replace_all(newRule, fixed('--'), myDomain)
   newRule <- str_replace_all(newRule, fixed('^'), fixed('!'))
   newRule <- str_replace_all(newRule, fixed(' = '), fixed(' == '))
   
