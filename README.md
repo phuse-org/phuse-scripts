@@ -25,7 +25,7 @@ We maintain Task Lists (to-do lists) for both:
 
 ### Git and GitHub help
 
-* [Git e-book](http://www.git-scm.com/book/en/v2)
+* [Git e-book](http://www.git-scm.com/book/en/v2) - note the helpful [references, such as the Visual Git Cheat Sheet](http://www.git-scm.com/docs).
 * [GitHub for beginners](http://sixrevisions.com/resources/git-tutorials-beginners/)
 * [Learn: Code Academy quick video tutorial](http://www.youtube.com/watch?v=0fKg7e37bQE)
 * [Git Workflows - "Centralized" is a good starting point](http://www.atlassian.com/git/tutorials/comparing-workflows/centralized-workflow)
