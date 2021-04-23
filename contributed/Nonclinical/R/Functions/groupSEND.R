@@ -21,10 +21,10 @@ groupSEND <- function(dataset,targetDomain,dmFields=c('SEX','ARMCD','SETCD','USU
                       txParams=c('TRTDOS','TRTDOSU','TKDESC','GRPLBL','SPGRPCD')) {
   
   # Check to ensure that dataset contains all required domains
-  requiredDomains <- c('dm','ex','tx','pp','ta','se','ds')
+  requiredDomains <- c('dm','ex','tx','ta','ds') # alter the script to check for PP
   for (domain in requiredDomains) {
     if (domain %ni% names(dataset)) {
-      stop('SEND dataset does not contain required domains!')
+      stop(paste0('SEND dataset does not contain required domains: ', domain))
     }
   }
   
