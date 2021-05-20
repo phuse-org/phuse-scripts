@@ -21,7 +21,7 @@ Scripts below by default produce outputs based on a specific ADaM domain such as
  
 4. Evaluate if any formal document is required to specify that Review is complete.
  
-5. Only Release package once all scripts for Paper has been Reviewed.
+5. Only Release package once all scripts for Paper have been Reviewed.
 
 6. Inform Communication wing of group to Promote use of Scripts in conjunction with the White paper.
 
