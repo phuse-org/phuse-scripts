@@ -28,6 +28,8 @@ Scripts below by default produce outputs based on a specific ADaM domain such as
 
 #### WPCT Figures & Scripts, with Qualification details
 
+  * See also the [Index of Utility Macros](https://github.com/phuse-org/phuse-scripts/wiki/Utility-Macro-Index-(SAS)), including test plans & results, upon which these programs rely
+
 | Target | Specify | Implement | Example Outputs | Review | Release |
 |---|---|---|---|---|---|
 | **Fig. 7.1** [![Fig. 7.1](../images/wpct/target_07.01.png)](../images/wpct/target_07.01_full.png)<br/>Single study|[Final Specificaton](http://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/specification/WPCT_Fig_7.1_RequirementsSpecification.docx)|[R script](http://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/WPCT/WPCT-F.07.01.R)<br/> [SAS script](http://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/WPCT/WPCT-F.07.01.sas)|[from SAS](http://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/WPCT/outputs_sas/WPCT-F.07.01_Box_plot_DIABP_by_visit_for_timepoint_815.pdf)<br/>[from R](http://github.com/phuse-org/phuse-scripts/blob/master/whitepapers/WPCT/outputs_r/WPCT-F.07.01%20R%20Output%20Example.PNG)|Specification updated, and Script Reviewed| *Qualification Complete - Ready for Release*|
