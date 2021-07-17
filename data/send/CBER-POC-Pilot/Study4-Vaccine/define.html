@@ -1,0 +1,2478 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="Content-Script-Type" content="text/javascript">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title> Study RABBITV1, Data
+          Definitions</title>
+<script type="text/javascript">
+
+<!--
+/**
+ * With one argument, return the textContent or innerText of the element.
+ * With two arguments, set the textContent or innerText of element to value.
+ */
+function textContent(element, value) {
+  "use strict";
+  var rtn;
+  var content = element.textContent;  // Check if textContent is defined
+  if (value === undefined) { // No value passed, so return current text
+    if (content !== undefined) {
+      rtn = content;
+    } else {
+      rtn = element.innerText;
+    }
+    return rtn;
+  }
+  else { // A value was passed, so set text
+    if (content !== undefined) {
+      element.textContent = value;
+    } else {
+      element.innerText = value;
+    }
+  }
+}
+
+var ITEM  = '\u00A0';
+var OPEN  = '\u25BC';
+var CLOSE = '\u25BA';
+
+function toggle_submenu(e) {
+  "use strict";
+  if (textContent(e)===OPEN) {
+    textContent(e, CLOSE);
+  }
+  else {
+    textContent(e, OPEN);
+  }
+
+  var i;
+  for (i=0; i < e.parentNode.childNodes.length; i++) {
+    var c;
+    c=e.parentNode.childNodes[i];
+    if (c.tagName==='UL') {c.style.display=(c.style.display==='none') ? 'block' : 'none';}
+   }
+}
+
+function reset_menus() {
+"use strict";
+  var li;
+  var c;
+  var i;
+  var j;
+  var li_tags = document.getElementsByTagName('LI');
+  for (i=0; i < li_tags.length; i++) {
+    li=li_tags[i];
+    if ( li.className.match('hmenu-item') ){
+      for (j=0; j < li.childNodes.length; j++) {
+        c=li.childNodes[j];
+        if ( c.tagName === 'SPAN' && c.className.match('hmenu-bullet') ) {textContent(c, ITEM);}
+        }
+      }
+    if ( li.className.match('hmenu-submenu') ) {
+      for (j=0; j < li.childNodes.length; j++) {
+        c=li.childNodes[j];
+        if ( c.tagName === 'SPAN' && c.className.match('hmenu-bullet') ) {textContent(c, CLOSE);}
+        else if ( c.tagName === 'UL' ) { c.style.display = 'none'; }
+        }
+    }
+  }
+}
+//-->
+
+</script>
+<style type="text/css">
+  body{
+  background-color:#FFFFFF;
+  font-family:Verdana, Arial, Helvetica, sans-serif;        
+  font-size:62.5%;
+  margin:0;
+  padding:30px;        
+  }
+  
+  h1{
+  font-size:1.6em;
+  margin-left:0;
+  font-weight:bolder;
+  text-align:left;
+  color:#800000;
+  }
+  
+  ul{
+  margin-left:0px;
+  }
+  
+  a{
+  color:#0000FF;
+  text-decoration:underline;
+  }
+  a.visited{
+  color:#551A8B;
+  text-decoration:underline;
+  }
+  a:hover{
+  color:#FF9900;
+  text-decoration:underline;
+  }
+  a.tocItem{
+  color:#004A95;
+  text-decoration:none;
+  margin-top:2px;
+  font-size:1.4em;
+  }
+  a.tocItem.level2{
+  margin-left:15px;
+  }
+  
+  #menu{
+  position:fixed;
+  left:0px;
+  top:10px;
+  width:20%;
+  height:96%;
+  bottom:0px;
+  overflow:auto;
+  background-color:#FFFFFF;
+  color:#000000;
+  border:0px none black;
+  text-align:left;
+  white-space:nowrap;
+  }
+  
+  .hmenu li{
+  list-style:none;
+  line-height:200%;
+  padding-left:0;
+  }
+  .hmenu ul{
+  padding-left:14px;
+  margin-left:0;
+  }
+  .hmenu-item{
+  }
+  .hmenu-submenu{
+  }
+  .hmenu-bullet{
+  float:left;
+  width:16px;
+  color:#AAAAAA;
+  font-size:1.2em;
+  }
+  
+  #main{
+  position:absolute;
+  left:22%;
+  top:0px;
+  overflow:auto;
+  color:#000000;
+  background-color:#FFFFFF;
+  }
+  
+  #main .docinfo{
+  width:95%;
+  text-align:right;
+  }
+  
+  div.containerbox{
+  padding:0px;
+  margin:10px auto;
+  border:0px solid #999;
+  page-break-after:always;
+  }
+  
+  div.codelist{
+  page-break-after:avoid;
+  }
+  
+  table{
+  width:95%;
+  border-spacing:4px;
+  border:1px solid #000000;
+  background-color:#EEEEEE;
+  margin-top:5px;
+  border-collapse:collapse;
+  padding:5px;
+  empty-cells:show;
+  }
+  
+  table caption{
+  border:0px solid #999999;
+  left:20px;
+  font-size:1.6em;
+  font-weight:bolder;
+  color:#800000;
+  margin:10px auto;
+  text-align:left;
+  }
+  
+  table caption .xpt{
+  font-weight:normal;
+  }
+  
+  table tr{
+  border:1px solid #000000;
+  }
+  
+  table tr.header{
+  background-color:#6699CC;
+  color:#FFFFFF;
+  font-weight:bold;
+  }
+  
+  table th{
+  font-weight:bold;
+  vertical-align:top;
+  text-align:left;
+  padding:5px;
+  border:1px solid #000000;
+  font-size:1.2em;
+  }
+  
+  table td{
+  vertical-align:top;
+  padding:5px;
+  border:1px solid #000000;
+  font-size:1.2em;
+  line-height:150%;
+  }
+  
+  table th.codedvalue{
+  width:20%;
+  }
+  table th.length{
+  width:7%;
+  }
+  table td.datatype{
+  text-align:center;
+  }
+  table td.number{
+  text-align:right;
+  }
+  .tablerowodd{
+  background-color:#FFFFFF;
+  }
+  .tableroweven{
+  background-color:#E2E2E2;
+  }
+  
+  .linebreakcell{
+  vertical-align:top;
+  margin-top:3px;
+  margin-bottom:3px;
+  }
+  
+  .nci, .extended{
+  font-style:italic;
+  }
+  .super{
+  vertical-align:super;
+  }
+  .footnote{
+  font-size:1.2em;
+  }
+  
+  .standard{
+  font-size:1.6em;
+  font-weight:bolder;
+  text-align:left;
+  padding:15px;
+  margin-left:20px;
+  margin-top:40px;
+  margin-right:20px;
+  margin-bottom:20px;
+  color:#800000;
+  border:0px;
+  }
+  
+  .linktop{
+  font-size:1.2em;
+  margin-top:5px;
+  }
+  .documentinfo, .stylesheetinfo{
+  font-size:1.2em;
+ }
+  
+  .invisible{
+  display:none;
+  }
+  
+  span.error{
+  width:95%;
+  font-size:1.6em;
+  font-weight: bold;	
+  padding:5px;
+  color:#FF0000;
+  border-spacing:4px;
+  border:2px solid #FF0000;
+  }
+  td.error{
+  color:#FF0000;
+  }
+  
+  @media print{
+  
+  body, h1, table caption{
+  color:#000000;
+  }
+  
+  a:link,
+  a:visited{
+  background:transparent;
+  text-decoration:none;
+  color:#000000;
+  }
+  a.external:link:after,
+  #main a:visited:after{
+  content:" <" attr(href) "> ";
+  font-size:90%;
+  text-decoration:none;
+  font-weight:bold;
+  color:#808080;
+  }
+    
+  table{
+  border-width:2px;
+  }
+  
+  #menu,
+  .linktop, .stylesheetinfo{
+  display:none !important;
+  width:0px;
+  ;
+  }
+  #main{
+  left:0px;
+  }
+ 
+ }
+</style>
+</head>
+<body onload="reset_menus();">
+  
+    
+    
+<div id="menu">
+<a name="top" class="invisible" href="#main">Skip Navigation Link</a><span class="standard">SEND-IG 3.1</span>
+<ul class="hmenu">
+<li class="hmenu-submenu">
+<span class="hmenu-bullet" onclick="toggle_submenu(this);">+</span><a class="tocItem" href="#Tabulation_Datasets_Table">Tabulation Datasets</a>
+<ul>
+<li class="hmenu-item">
+<span class="hmenu-bullet">-</span><a class="tocItem" href="#IG.IG.TA">Trial Arms (TA)</a>
+</li>
+<li class="hmenu-item">
+<span class="hmenu-bullet">-</span><a class="tocItem" href="#IG.IG.TE">Trial Elements (TE)</a>
+</li>
+<li class="hmenu-item">
+<span class="hmenu-bullet">-</span><a class="tocItem" href="#IG.IG.TS">Trial Summary (TS)</a>
+</li>
+<li class="hmenu-item">
+<span class="hmenu-bullet">-</span><a class="tocItem" href="#IG.IG.TX">Trial Sets (TX)</a>
+</li>
+<li class="hmenu-item">
+<span class="hmenu-bullet">-</span><a class="tocItem" href="#IG.IG.CO">Comments (CO)</a>
+</li>
+<li class="hmenu-item">
+<span class="hmenu-bullet">-</span><a class="tocItem" href="#IG.IG.DM">Demographics (DM)</a>
+</li>
+<li class="hmenu-item">
+<span class="hmenu-bullet">-</span><a class="tocItem" href="#IG.IG.SE">Subject Elements (SE)</a>
+</li>
+<li class="hmenu-item">
+<span class="hmenu-bullet">-</span><a class="tocItem" href="#IG.IG.EX">Exposure (EX)</a>
+</li>
+<li class="hmenu-item">
+<span class="hmenu-bullet">-</span><a class="tocItem" href="#IG.IG.DS">Disposition (DS)</a>
+</li>
+<li class="hmenu-item">
+<span class="hmenu-bullet">-</span><a class="tocItem" href="#IG.IG.BG">Body Weight Gains (BG)</a>
+</li>
+<li class="hmenu-item">
+<span class="hmenu-bullet">-</span><a class="tocItem" href="#IG.IG.BW">Body Weights (BW)</a>
+</li>
+<li class="hmenu-item">
+<span class="hmenu-bullet">-</span><a class="tocItem" href="#IG.IG.CL">Clinical Observations (CL)</a>
+</li>
+<li class="hmenu-item">
+<span class="hmenu-bullet">-</span><a class="tocItem" href="#IG.IG.FW">Food and Water Consumption (FW)</a>
+</li>
+<li class="hmenu-item">
+<span class="hmenu-bullet">-</span><a class="tocItem" href="#IG.IG.LB">Laboratory (LB)</a>
+</li>
+<li class="hmenu-item">
+<span class="hmenu-bullet">-</span><a class="tocItem" href="#IG.IG.MA">Macroscopic Findings (MA)</a>
+</li>
+<li class="hmenu-item">
+<span class="hmenu-bullet">-</span><a class="tocItem" href="#IG.IG.MI">Microscopic Findings (MI)</a>
+</li>
+<li class="hmenu-item">
+<span class="hmenu-bullet">-</span><a class="tocItem" href="#IG.IG.OM">Organ Measurements (OM)</a>
+</li>
+<li class="hmenu-item">
+<span class="hmenu-bullet">-</span><a class="tocItem" href="#IG.IG.TF">Tumor Findings (TF)</a>
+</li>
+<li class="hmenu-item">
+<span class="hmenu-bullet">-</span><a class="tocItem" href="#IG.IG.VS">Vital Signs (VS)</a>
+</li>
+<li class="hmenu-item">
+<span class="hmenu-bullet">-</span><a class="tocItem" href="#IG.IG.POOLDEF">Pool Definition (POOLDEF)</a>
+</li>
+<li class="hmenu-item">
+<span class="hmenu-bullet">-</span><a class="tocItem" href="#IG.IG.RELREC">Related Records (RELREC)</a>
+</li>
+<li class="hmenu-item">
+<span class="hmenu-bullet">-</span><a class="tocItem" href="#IG.IG.SUPPCL">Supplemental Qualifiers for CL (SUPPCL)</a>
+</li>
+<li class="hmenu-item">
+<span class="hmenu-bullet">-</span><a class="tocItem" href="#IG.IG.SUPPLB">Supplemental Qualifiers for LB (SUPPLB)</a>
+</li>
+<li class="hmenu-item">
+<span class="hmenu-bullet">-</span><a class="tocItem" href="#IG.IG.SUPPMA">Supplemental Qualifiers for MA (SUPPMA)</a>
+</li>
+<li class="hmenu-item">
+<span class="hmenu-bullet">-</span><a class="tocItem" href="#IG.IG.SUPPMI">Supplemental Qualifiers for MI (SUPPMI)</a>
+</li>
+</ul>
+</li>
+<li class="hmenu-submenu">
+<span class="hmenu-bullet" onclick="toggle_submenu(this);">+</span><a class="tocItem" href="#valuemeta">Value Level Metadata</a>
+<ul>
+<li class="hmenu-item">
+<span class="hmenu-bullet">-</span><a class="tocItem" href="#VL.VL.MI.MISTRESC">MI [MISTRESC]</a>
+</li>
+<li class="hmenu-item">
+<span class="hmenu-bullet">-</span><a class="tocItem" href="#VL.VL.TS.TSVAL">TS [TSVAL]</a>
+</li>
+<li class="hmenu-item">
+<span class="hmenu-bullet">-</span><a class="tocItem" href="#VL.VL.TX.TXVAL">TX [TXVAL]</a>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div id="main">
+<div class="docinfo">
+<p class="documentinfo">Date of document generation: 2020-01-08T19:58:42</p>
+<p class="stylesheetinfo">Stylesheet version: 2013-04-24</p>
+<br>
+</div>
+<a id="Tabulation_Datasets_Table"></a>
+<h1 class="invisible">Tabulation Data Definition Tables</h1>
+<div class="containerbox" style="page-break-after: always;">
+<table summary="Data Definition Tables">
+<caption>Tabulation Datasets for Study RABBITV1 (SEND-IG 3.1)</caption>
+<tr class="header">
+<th scope="col">Dataset</th><th scope="col">Description</th><th scope="col">Class</th><th scope="col">Structure</th><th scope="col">Purpose</th><th scope="col">Keys</th><th scope="col">Location</th><th scope="col">Documentation</th>
+</tr>
+<tr id="IG.TA" class="tablerowodd">
+<td>TA</td><td><a href="#IG.IG.TA">Trial Arms</a></td><td>TRIAL DESIGN</td><td>One record per planned Element per Arm</td><td>Tabulation</td><td>STUDYID, ARMCD, TAETORD</td><td><a href="ta.xpt">ta.xpt</a></td><td></td>
+</tr>
+<tr id="IG.TE" class="tableroweven">
+<td>TE</td><td><a href="#IG.IG.TE">Trial Elements</a></td><td>TRIAL DESIGN</td><td>One record per planned Element</td><td>Tabulation</td><td>STUDYID, ETCD</td><td><a href="te.xpt">te.xpt</a></td><td></td>
+</tr>
+<tr id="IG.TS" class="tablerowodd">
+<td>TS</td><td><a href="#IG.IG.TS">Trial Summary</a></td><td>TRIAL DESIGN</td><td>One record per Trial Summary parameter value</td><td>Tabulation</td><td>STUDYID, TSPARMCD, TSSEQ</td><td><a href="ts.xpt">ts.xpt</a></td><td></td>
+</tr>
+<tr id="IG.TX" class="tableroweven">
+<td>TX</td><td><a href="#IG.IG.TX">Trial Sets</a></td><td>TRIAL DESIGN</td><td>One record per Trial Set parameter per Trial Set</td><td>Tabulation</td><td>STUDYID, SETCD, TXPARMCD</td><td><a href="tx.xpt">tx.xpt</a></td><td></td>
+</tr>
+<tr id="IG.CO" class="tablerowodd">
+<td>CO</td><td><a href="#IG.IG.CO">Comments</a></td><td>SPECIAL PURPOSE</td><td>One record per comment</td><td>Tabulation</td><td>STUDYID, COSEQ</td><td><a href="co.xpt">co.xpt</a></td><td></td>
+</tr>
+<tr id="IG.DM" class="tableroweven">
+<td>DM</td><td><a href="#IG.IG.DM">Demographics</a></td><td>SPECIAL PURPOSE</td><td>One record per subject</td><td>Tabulation</td><td>STUDYID, USUBJID</td><td><a href="dm.xpt">dm.xpt</a></td><td></td>
+</tr>
+<tr id="IG.SE" class="tablerowodd">
+<td>SE</td><td><a href="#IG.IG.SE">Subject Elements</a></td><td>SPECIAL PURPOSE</td><td>One record per element experienced per subject</td><td>Tabulation</td><td>STUDYID, USUBJID, ETCD, SESTDTC</td><td><a href="se.xpt">se.xpt</a></td><td></td>
+</tr>
+<tr id="IG.EX" class="tableroweven">
+<td>EX</td><td><a href="#IG.IG.EX">Exposure</a></td><td>INTERVENTIONS</td><td>One record per constant dosing interval per treatment per subject or pool</td><td>Tabulation</td><td>STUDYID, USUBJID, EXTRT, EXSTDTC</td><td><a href="ex.xpt">ex.xpt</a></td><td></td>
+</tr>
+<tr id="IG.DS" class="tablerowodd">
+<td>DS</td><td><a href="#IG.IG.DS">Disposition</a></td><td>EVENTS</td><td>One record per subject</td><td>Tabulation</td><td>STUDYID, USUBJID</td><td><a href="ds.xpt">ds.xpt</a></td><td></td>
+</tr>
+<tr id="IG.BG" class="tableroweven">
+<td>BG</td><td><a href="#IG.IG.BG">Body Weight Gains</a></td><td>FINDINGS</td><td>One record per test per interval per subject</td><td>Tabulation</td><td>STUDYID, USUBJID, BGTESTCD, BGDTC, BGENDTC</td><td><a href="bg.xpt">bg.xpt</a></td><td></td>
+</tr>
+<tr id="IG.BW" class="tablerowodd">
+<td>BW</td><td><a href="#IG.IG.BW">Body Weights</a></td><td>FINDINGS</td><td>One record per test per observation time per subject</td><td>Tabulation</td><td>STUDYID, USUBJID, BWTESTCD, BWDTC</td><td><a href="bw.xpt">bw.xpt</a></td><td></td>
+</tr>
+<tr id="IG.CL" class="tableroweven">
+<td>CL</td><td><a href="#IG.IG.CL">Clinical Observations</a></td><td>FINDINGS</td><td>One record per finding per observation time per subject or pool</td><td>Tabulation</td><td>STUDYID, USUBJID, CLTESTCD, CLCAT, CLORRES, CLLOC, CLDTC</td><td><a href="cl.xpt">cl.xpt</a></td><td></td>
+</tr>
+<tr id="IG.FW" class="tablerowodd">
+<td>FW</td><td><a href="#IG.IG.FW">Food and Water Consumption</a></td><td>FINDINGS</td><td>One record per test per interval per subject or pool</td><td>Tabulation</td><td>STUDYID, USUBJID, FWTESTCD, FWDTC, FWENDTC</td><td><a href="fw.xpt">fw.xpt</a></td><td></td>
+</tr>
+<tr id="IG.LB" class="tableroweven">
+<td>LB</td><td><a href="#IG.IG.LB">Laboratory</a></td><td>FINDINGS</td><td>One record per test per specimen per observation time per subject or pool</td><td>Tabulation</td><td>STUDYID, USUBJID, LBTESTCD, LBSPEC, LBDTC, LBTPTNUM</td><td><a href="lb.xpt">lb.xpt</a></td><td></td>
+</tr>
+<tr id="IG.MA" class="tablerowodd">
+<td>MA</td><td><a href="#IG.IG.MA">Macroscopic Findings</a></td><td>FINDINGS</td><td>One record per finding per specimen per subject</td><td>Tabulation</td><td>STUDYID, USUBJID, MATESTCD, MAORRES, MASPEC, MAANTREG, MALAT, MADIR</td><td><a href="ma.xpt">ma.xpt</a></td><td></td>
+</tr>
+<tr id="IG.MI" class="tableroweven">
+<td>MI</td><td><a href="#IG.IG.MI">Microscopic Findings</a></td><td>FINDINGS</td><td>One record per finding per specimen per subject</td><td>Tabulation</td><td>STUDYID, USUBJID, MITESTCD, MISTRESC, MISPEC, MIANTREG, MILAT, MIDIR</td><td><a href="mi.xpt">mi.xpt</a></td><td></td>
+</tr>
+<tr id="IG.OM" class="tablerowodd">
+<td>OM</td><td><a href="#IG.IG.OM">Organ Measurements</a></td><td>FINDINGS</td><td>One record per test per specimen per subject</td><td>Tabulation</td><td>STUDYID, USUBJID, OMTESTCD, OMSPEC, OMANTREG, OMLAT, OMDIR</td><td><a href="om.xpt">om.xpt</a></td><td></td>
+</tr>
+<tr id="IG.TF" class="tableroweven">
+<td>TF</td><td><a href="#IG.IG.TF">Tumor Findings</a></td><td>FINDINGS</td><td>One record per tumor per specimen per subject</td><td>Tabulation</td><td>STUDYID, USUBJID, TFTESTCD, TFORRES, TFSPEC, TFANTREG, TFLAT, TFDIR</td><td><a href="tf.xpt">tf.xpt</a></td><td></td>
+</tr>
+<tr id="IG.VS" class="tablerowodd">
+<td>VS</td><td><a href="#IG.IG.VS">Vital Signs</a></td><td>FINDINGS</td><td>One record per measurement per observation time per subject</td><td>Tabulation</td><td>STUDYID, USUBJID, VSTESTCD, VSDTC, VSTPT</td><td><a href="vs.xpt">vs.xpt</a></td><td></td>
+</tr>
+<tr id="IG.POOLDEF" class="tableroweven">
+<td>POOLDEF</td><td><a href="#IG.IG.POOLDEF">Pool Definition</a></td><td>RELATIONSHIP</td><td>One record per subject per pool</td><td>Tabulation</td><td>STUDYID, POOLID, USUBJID</td><td><a href="pooldef.xpt">pooldef.xpt</a></td><td></td>
+</tr>
+<tr id="IG.RELREC" class="tablerowodd">
+<td>RELREC</td><td><a href="#IG.IG.RELREC">Related Records</a></td><td>RELATIONSHIP</td><td>One record per related record, related group of records (e.g.,--GRPID), or related dataset</td><td>Tabulation</td><td>STUDYID, RDOMAIN, USUBJID, IDVAR, IDVARVAL, RELID</td><td><a href="relrec.xpt">relrec.xpt</a></td><td></td>
+</tr>
+<tr id="IG.SUPPCL" class="tableroweven">
+<td>SUPPCL</td><td><a href="#IG.IG.SUPPCL">Supplemental Qualifiers for CL</a></td><td>RELATIONSHIP</td><td>One record per supplemental qualifier per related parent domain record(s)</td><td>Tabulation</td><td>STUDYID, RDOMAIN, USUBJID, IDVAR, IDVARVAL, QNAM</td><td><a href="suppcl.xpt">suppcl.xpt</a></td><td></td>
+</tr>
+<tr id="IG.SUPPLB" class="tablerowodd">
+<td>SUPPLB</td><td><a href="#IG.IG.SUPPLB">Supplemental Qualifiers for LB</a></td><td>RELATIONSHIP</td><td>One record per supplemental qualifier per related parent domain record(s)</td><td>Tabulation</td><td>STUDYID, RDOMAIN, USUBJID, IDVAR, IDVARVAL, QNAM</td><td><a href="supplb.xpt">supplb.xpt</a></td><td></td>
+</tr>
+<tr id="IG.SUPPMA" class="tableroweven">
+<td>SUPPMA</td><td><a href="#IG.IG.SUPPMA">Supplemental Qualifiers for MA</a></td><td>RELATIONSHIP</td><td>One record per supplemental qualifier per related parent domain record(s)</td><td>Tabulation</td><td>STUDYID, RDOMAIN, USUBJID, IDVAR, IDVARVAL, QNAM</td><td><a href="suppma.xpt">suppma.xpt</a></td><td></td>
+</tr>
+<tr id="IG.SUPPMI" class="tablerowodd">
+<td>SUPPMI</td><td><a href="#IG.IG.SUPPMI">Supplemental Qualifiers for MI</a></td><td>RELATIONSHIP</td><td>One record per supplemental qualifier per related parent domain record(s)</td><td>Tabulation</td><td>STUDYID, RDOMAIN, USUBJID, IDVAR, IDVARVAL, QNAM</td><td><a href="suppmi.xpt">suppmi.xpt</a></td><td></td>
+</tr>
+</table>
+</div>
+<p class="linktop">Go to the <a href="#main">top</a> of the define.xml</p>
+<a id="IG.IG.TA"></a>
+<div class="containerbox" style="page-break-after: always;">
+<table summary="ItemGroup IG.IG.TA">
+<caption>Trial Arms (TA) <span class="xpt">[Location: <a href="ta.xpt">ta.xpt</a>]</span>
+</caption>
+<tr class="header">
+<th scope="col">Variable</th><th scope="col">Label</th><th scope="col">Key</th><th scope="col">Type</th><th scope="col" class="length">Length</th><th scope="col" abbr="Format">Controlled Terms or Format</th><th scope="col">Origin</th><th scope="col">Derivation/Comment</th>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.TA.IT.STUDYID"></a>STUDYID</td><td>Study Identifier</td><td class="number">1</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.TA.IT.TA.DOMAIN"></a>DOMAIN</td><td>Domain Abbreviation</td><td class="number"></td><td class="datatype">text</td><td class="number">2</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.TA.IT.TA.ARMCD"></a>ARMCD</td><td>Planned Arm Code</td><td class="number">2</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.TA.IT.TA.ARM"></a>ARM</td><td>Description of Planned Arm</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.TA.IT.TA.TAETORD"></a>TAETORD</td><td>Order of Element within Arm</td><td class="number">3</td><td class="datatype">integer</td><td class="number">50</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.TA.IT.TA.ETCD"></a>ETCD</td><td>Element Code</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.TA.IT.TA.ELEMENT"></a>ELEMENT</td><td>Description of Element</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.TA.IT.TA.TABRANCH"></a>TABRANCH</td><td>Branch</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.TA.IT.TA.TATRANS"></a>TATRANS</td><td>Transition Rule</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.TA.IT.TA.EPOCH"></a>EPOCH</td><td>Trial Epoch</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+</table>
+</div>
+<p class="linktop">Go to the <a href="#main">top</a> of the define.xml</p>
+<a id="IG.IG.TE"></a>
+<div class="containerbox" style="page-break-after: always;">
+<table summary="ItemGroup IG.IG.TE">
+<caption>Trial Elements (TE) <span class="xpt">[Location: <a href="te.xpt">te.xpt</a>]</span>
+</caption>
+<tr class="header">
+<th scope="col">Variable</th><th scope="col">Label</th><th scope="col">Key</th><th scope="col">Type</th><th scope="col" class="length">Length</th><th scope="col" abbr="Format">Controlled Terms or Format</th><th scope="col">Origin</th><th scope="col">Derivation/Comment</th>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.TE.IT.STUDYID"></a>STUDYID</td><td>Study Identifier</td><td class="number">1</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.TE.IT.TE.DOMAIN"></a>DOMAIN</td><td>Domain Abbreviation</td><td class="number"></td><td class="datatype">text</td><td class="number">2</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.TE.IT.TE.ETCD"></a>ETCD</td><td>Element Code</td><td class="number">2</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.TE.IT.TE.ELEMENT"></a>ELEMENT</td><td>Description of Element</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.TE.IT.TE.TESTRL"></a>TESTRL</td><td>Rule for Start of Element</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.TE.IT.TE.TEENRL"></a>TEENRL</td><td>Rule for End of Element</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.TE.IT.TE.TEDUR"></a>TEDUR</td><td>Planned Duration of Element</td><td class="number"></td><td class="datatype">durationDatetime</td><td class="number"></td><td>ISO8601</td><td></td><td></td>
+</tr>
+</table>
+</div>
+<p class="linktop">Go to the <a href="#main">top</a> of the define.xml</p>
+<a id="IG.IG.TS"></a>
+<div class="containerbox" style="page-break-after: always;">
+<table summary="ItemGroup IG.IG.TS">
+<caption>Trial Summary (TS) <span class="xpt">[Location: <a href="ts.xpt">ts.xpt</a>]</span>
+</caption>
+<tr class="header">
+<th scope="col">Variable</th><th scope="col">Label</th><th scope="col">Key</th><th scope="col">Type</th><th scope="col" class="length">Length</th><th scope="col" abbr="Format">Controlled Terms or Format</th><th scope="col">Origin</th><th scope="col">Derivation/Comment</th>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.TS.IT.STUDYID"></a>STUDYID</td><td>Study Identifier</td><td class="number">1</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.TS.IT.TS.DOMAIN"></a>DOMAIN</td><td>Domain Abbreviation</td><td class="number"></td><td class="datatype">text</td><td class="number">2</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.TS.IT.TS.TSSEQ"></a>TSSEQ</td><td>Sequence Number</td><td class="number">3</td><td class="datatype">integer</td><td class="number">50</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.TS.IT.TS.TSGRPID"></a>TSGRPID</td><td>Group Identifier</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.TS.IT.TS.TSPARMCD"></a>TSPARMCD</td><td>Trial Summary Parameter Short Name</td><td class="number">2</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.TS.IT.TS.TSPARM"></a>TSPARM</td><td>Trial Summary Parameter</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a id="IG.TS.IT.TS.TSVAL" href="#VL.VL.TS.TSVAL" title="link to VL.VL.TS.TSVAL">TSVAL</a></td><td>Parameter Value</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.TS.IT.TS.TSVALNF"></a>TSVALNF</td><td>Parameter Null Flavor</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+</table>
+</div>
+<p class="linktop">Go to the <a href="#main">top</a> of the define.xml</p>
+<a id="IG.IG.TX"></a>
+<div class="containerbox" style="page-break-after: always;">
+<table summary="ItemGroup IG.IG.TX">
+<caption>Trial Sets (TX) <span class="xpt">[Location: <a href="tx.xpt">tx.xpt</a>]</span>
+</caption>
+<tr class="header">
+<th scope="col">Variable</th><th scope="col">Label</th><th scope="col">Key</th><th scope="col">Type</th><th scope="col" class="length">Length</th><th scope="col" abbr="Format">Controlled Terms or Format</th><th scope="col">Origin</th><th scope="col">Derivation/Comment</th>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.TX.IT.STUDYID"></a>STUDYID</td><td>Study Identifier</td><td class="number">1</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.TX.IT.TX.DOMAIN"></a>DOMAIN</td><td>Domain Abbreviation</td><td class="number"></td><td class="datatype">text</td><td class="number">2</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.TX.IT.TX.SETCD"></a>SETCD</td><td>Set Code</td><td class="number">2</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.TX.IT.TX.SET"></a>SET</td><td>Set Description</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.TX.IT.TX.TXSEQ"></a>TXSEQ</td><td>Sequence Number</td><td class="number"></td><td class="datatype">integer</td><td class="number">50</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.TX.IT.TX.TXPARMCD"></a>TXPARMCD</td><td>Trial Set Parameter Short Name</td><td class="number">3</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.TX.IT.TX.TXPARM"></a>TXPARM</td><td>Trial Set Parameter</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a id="IG.TX.IT.TX.TXVAL" href="#VL.VL.TX.TXVAL" title="link to VL.VL.TX.TXVAL">TXVAL</a></td><td>Trial Set Parameter Value</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+</table>
+</div>
+<p class="linktop">Go to the <a href="#main">top</a> of the define.xml</p>
+<a id="IG.IG.CO"></a>
+<div class="containerbox" style="page-break-after: always;">
+<table summary="ItemGroup IG.IG.CO">
+<caption>Comments (CO) <span class="xpt">[Location: <a href="co.xpt">co.xpt</a>]</span>
+</caption>
+<tr class="header">
+<th scope="col">Variable</th><th scope="col">Label</th><th scope="col">Key</th><th scope="col">Type</th><th scope="col" class="length">Length</th><th scope="col" abbr="Format">Controlled Terms or Format</th><th scope="col">Origin</th><th scope="col">Derivation/Comment</th>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.CO.IT.STUDYID"></a>STUDYID</td><td>Study Identifier</td><td class="number">1</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.CO.IT.CO.DOMAIN"></a>DOMAIN</td><td>Domain Abbreviation</td><td class="number"></td><td class="datatype">text</td><td class="number">2</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.CO.IT.CO.RDOMAIN"></a>RDOMAIN</td><td>Related Domain Abbreviation</td><td class="number"></td><td class="datatype">text</td><td class="number">2</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.CO.IT.CO.USUBJID"></a>USUBJID</td><td>Unique Subject Identifier</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.CO.IT.CO.POOLID"></a>POOLID</td><td>Pool Identifier</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.CO.IT.CO.COSEQ"></a>COSEQ</td><td>Sequence Number</td><td class="number">2</td><td class="datatype">integer</td><td class="number">50</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.CO.IT.CO.IDVAR"></a>IDVAR</td><td>Identifying Variable</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.CO.IT.CO.IDVARVAL"></a>IDVARVAL</td><td>Identifying Variable Value</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.CO.IT.CO.COREF"></a>COREF</td><td>Comment Reference</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.CO.IT.CO.COVAL"></a>COVAL</td><td>Comment</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.CO.IT.CO.COEVAL"></a>COEVAL</td><td>Evaluator</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.CO.IT.CO.CODTC"></a>CODTC</td><td>Date/Time of Comment</td><td class="number"></td><td class="datatype">datetime</td><td class="number"></td><td>ISO8601</td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.CO.IT.CO.CODY"></a>CODY</td><td>Study Day of Comment</td><td class="number"></td><td class="datatype">integer</td><td class="number">50</td><td></td><td></td><td></td>
+</tr>
+</table>
+</div>
+<p class="linktop">Go to the <a href="#main">top</a> of the define.xml</p>
+<a id="IG.IG.DM"></a>
+<div class="containerbox" style="page-break-after: always;">
+<table summary="ItemGroup IG.IG.DM">
+<caption>Demographics (DM) <span class="xpt">[Location: <a href="dm.xpt">dm.xpt</a>]</span>
+</caption>
+<tr class="header">
+<th scope="col">Variable</th><th scope="col">Label</th><th scope="col">Key</th><th scope="col">Type</th><th scope="col" class="length">Length</th><th scope="col" abbr="Format">Controlled Terms or Format</th><th scope="col">Origin</th><th scope="col">Derivation/Comment</th>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.DM.IT.STUDYID"></a>STUDYID</td><td>Study Identifier</td><td class="number">1</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.DM.IT.DM.DOMAIN"></a>DOMAIN</td><td>Domain Abbreviation</td><td class="number"></td><td class="datatype">text</td><td class="number">2</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.DM.IT.DM.USUBJID"></a>USUBJID</td><td>Unique Subject Identifier</td><td class="number">2</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.DM.IT.DM.SUBJID"></a>SUBJID</td><td>Subject Identifier for the Study</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.DM.IT.DM.RFSTDTC"></a>RFSTDTC</td><td>Subject Reference Start Date/Time</td><td class="number"></td><td class="datatype">datetime</td><td class="number"></td><td>ISO8601</td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.DM.IT.DM.RFENDTC"></a>RFENDTC</td><td>Subject Reference End Date/Time</td><td class="number"></td><td class="datatype">datetime</td><td class="number"></td><td>ISO8601</td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.DM.IT.DM.RFXSTDTC"></a>RFXSTDTC</td><td>Date/Time of First Study Treatment</td><td class="number"></td><td class="datatype">datetime</td><td class="number"></td><td>ISO8601</td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.DM.IT.DM.RFXENDTC"></a>RFXENDTC</td><td>Date/Time of Last Study Treatment</td><td class="number"></td><td class="datatype">datetime</td><td class="number"></td><td>ISO8601</td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.DM.IT.DM.SITEID"></a>SITEID</td><td>Study Site Identifier</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.DM.IT.DM.BRTHDTC"></a>BRTHDTC</td><td>Date/Time of Birth</td><td class="number"></td><td class="datatype">datetime</td><td class="number"></td><td>ISO8601</td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.DM.IT.DM.AGE"></a>AGE</td><td>Age</td><td class="number"></td><td class="datatype">integer</td><td class="number">8</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.DM.IT.DM.AGETXT"></a>AGETXT</td><td>Age Range</td><td class="number"></td><td class="datatype">text</td><td class="number">20</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.DM.IT.DM.AGEU"></a>AGEU</td><td>Age Unit</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.DM.IT.DM.SEX"></a>SEX</td><td>Sex</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.DM.IT.DM.SPECIES"></a>SPECIES</td><td>Species</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.DM.IT.DM.STRAIN"></a>STRAIN</td><td>Strain/Substrain</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.DM.IT.DM.SBSTRAIN"></a>SBSTRAIN</td><td>Strain/Substrain Details</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.DM.IT.DM.ARMCD"></a>ARMCD</td><td>Planned Arm Code</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.DM.IT.DM.ARM"></a>ARM</td><td>Description of Planned Arm</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.DM.IT.DM.SETCD"></a>SETCD</td><td>Set Code</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+</table>
+</div>
+<p class="linktop">Go to the <a href="#main">top</a> of the define.xml</p>
+<a id="IG.IG.SE"></a>
+<div class="containerbox" style="page-break-after: always;">
+<table summary="ItemGroup IG.IG.SE">
+<caption>Subject Elements (SE) <span class="xpt">[Location: <a href="se.xpt">se.xpt</a>]</span>
+</caption>
+<tr class="header">
+<th scope="col">Variable</th><th scope="col">Label</th><th scope="col">Key</th><th scope="col">Type</th><th scope="col" class="length">Length</th><th scope="col" abbr="Format">Controlled Terms or Format</th><th scope="col">Origin</th><th scope="col">Derivation/Comment</th>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.SE.IT.STUDYID"></a>STUDYID</td><td>Study Identifier</td><td class="number">1</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.SE.IT.SE.DOMAIN"></a>DOMAIN</td><td>Domain Abbreviation</td><td class="number"></td><td class="datatype">text</td><td class="number">2</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.SE.IT.SE.USUBJID"></a>USUBJID</td><td>Unique Subject Identifier</td><td class="number">2</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.SE.IT.SE.SESEQ"></a>SESEQ</td><td>Sequence Number</td><td class="number"></td><td class="datatype">integer</td><td class="number">50</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.SE.IT.SE.ETCD"></a>ETCD</td><td>Element Code</td><td class="number">3</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.SE.IT.SE.ELEMENT"></a>ELEMENT</td><td>Description of Element</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.SE.IT.SE.SESTDTC"></a>SESTDTC</td><td>Start Date/Time of Element</td><td class="number">4</td><td class="datatype">datetime</td><td class="number"></td><td>ISO8601</td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.SE.IT.SE.SEENDTC"></a>SEENDTC</td><td>End Date/Time of Element</td><td class="number"></td><td class="datatype">datetime</td><td class="number"></td><td>ISO8601</td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.SE.IT.SE.SEUPDES"></a>SEUPDES</td><td>Description of Unplanned Element</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+</table>
+</div>
+<p class="linktop">Go to the <a href="#main">top</a> of the define.xml</p>
+<a id="IG.IG.EX"></a>
+<div class="containerbox" style="page-break-after: always;">
+<table summary="ItemGroup IG.IG.EX">
+<caption>Exposure (EX) <span class="xpt">[Location: <a href="ex.xpt">ex.xpt</a>]</span>
+</caption>
+<tr class="header">
+<th scope="col">Variable</th><th scope="col">Label</th><th scope="col">Key</th><th scope="col">Type</th><th scope="col" class="length">Length</th><th scope="col" abbr="Format">Controlled Terms or Format</th><th scope="col">Origin</th><th scope="col">Derivation/Comment</th>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.EX.IT.STUDYID"></a>STUDYID</td><td>Study Identifier</td><td class="number">1</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.EX.IT.EX.DOMAIN"></a>DOMAIN</td><td>Domain Abbreviation</td><td class="number"></td><td class="datatype">text</td><td class="number">2</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.EX.IT.EX.USUBJID"></a>USUBJID</td><td>Unique Subject Identifier</td><td class="number">2</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.EX.IT.EX.POOLID"></a>POOLID</td><td>Pool Identifier</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.EX.IT.EX.FOCID"></a>FOCID</td><td>Focus of Study-Specific Interest</td><td class="number"></td><td class="datatype">text</td><td class="number">50</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.EX.IT.EX.EXSEQ"></a>EXSEQ</td><td>Sequence Number</td><td class="number"></td><td class="datatype">integer</td><td class="number">50</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.EX.IT.EX.EXTRT"></a>EXTRT</td><td>Name of Actual Treatment</td><td class="number">3</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.EX.IT.EX.EXDOSE"></a>EXDOSE</td><td>Dose per Administration</td><td class="number"></td><td class="datatype">float</td><td class="number">10</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.EX.IT.EX.EXDOSTXT"></a>EXDOSTXT</td><td>Dose Description</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.EX.IT.EX.EXDOSU"></a>EXDOSU</td><td>Dose Units</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.EX.IT.EX.EXDOSFRM"></a>EXDOSFRM</td><td>Dose Form</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.EX.IT.EX.EXDOSFRQ"></a>EXDOSFRQ</td><td>Dosing Frequency Per Interval</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.EX.IT.EX.EXROUTE"></a>EXROUTE</td><td>Route of Administration</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.EX.IT.EX.EXLOT"></a>EXLOT</td><td>Lot Number</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.EX.IT.EX.EXLOC"></a>EXLOC</td><td>Location of Dose Administration</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.EX.IT.EX.EXMETHOD"></a>EXMETHOD</td><td>Method of Administration</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.EX.IT.EX.EXTRTV"></a>EXTRTV</td><td>Treatment Vehicle</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.EX.IT.EX.EXVAMT"></a>EXVAMT</td><td>Amount Administered</td><td class="number"></td><td class="datatype">float</td><td class="number">10</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.EX.IT.EX.EXVAMTU"></a>EXVAMTU</td><td>Amount Administered Units</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.EX.IT.EX.EXADJ"></a>EXADJ</td><td>Reason for Dose Adjustment</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.EX.IT.EX.EXSTDTC"></a>EXSTDTC</td><td>Start Date/Time of Treatment</td><td class="number">4</td><td class="datatype">datetime</td><td class="number"></td><td>ISO8601</td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.EX.IT.EX.EXENDTC"></a>EXENDTC</td><td>End Date/Time of Treatment</td><td class="number"></td><td class="datatype">datetime</td><td class="number"></td><td>ISO8601</td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.EX.IT.EX.EXSTDY"></a>EXSTDY</td><td>Study Day of Start of Treatment</td><td class="number"></td><td class="datatype">integer</td><td class="number">50</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.EX.IT.EX.EXENDY"></a>EXENDY</td><td>Study Day of End of Treatment</td><td class="number"></td><td class="datatype">integer</td><td class="number">50</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.EX.IT.EX.EXDUR"></a>EXDUR</td><td>Duration of Treatment</td><td class="number"></td><td class="datatype">durationDatetime</td><td class="number"></td><td>ISO8601</td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.EX.IT.EX.EXTPT"></a>EXTPT</td><td>Planned Time Point Name</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.EX.IT.EX.EXTPTNUM"></a>EXTPTNUM</td><td>Planned Time Point Number</td><td class="number"></td><td class="datatype">float</td><td class="number">10</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.EX.IT.EX.EXELTM"></a>EXELTM</td><td>Planned Elapsed Time from Time Point Ref</td><td class="number"></td><td class="datatype">durationDatetime</td><td class="number"></td><td>ISO8601</td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.EX.IT.EX.EXTPTREF"></a>EXTPTREF</td><td>Time Point Reference</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.EX.IT.EX.EXRFTDTC"></a>EXRFTDTC</td><td>Date/Time of Reference Time Point</td><td class="number"></td><td class="datatype">datetime</td><td class="number"></td><td>ISO8601</td><td></td><td></td>
+</tr>
+</table>
+</div>
+<p class="linktop">Go to the <a href="#main">top</a> of the define.xml</p>
+<a id="IG.IG.DS"></a>
+<div class="containerbox" style="page-break-after: always;">
+<table summary="ItemGroup IG.IG.DS">
+<caption>Disposition (DS) <span class="xpt">[Location: <a href="ds.xpt">ds.xpt</a>]</span>
+</caption>
+<tr class="header">
+<th scope="col">Variable</th><th scope="col">Label</th><th scope="col">Key</th><th scope="col">Type</th><th scope="col" class="length">Length</th><th scope="col" abbr="Format">Controlled Terms or Format</th><th scope="col">Origin</th><th scope="col">Derivation/Comment</th>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.DS.IT.STUDYID"></a>STUDYID</td><td>Study Identifier</td><td class="number">1</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.DS.IT.DS.DOMAIN"></a>DOMAIN</td><td>Domain Abbreviation</td><td class="number"></td><td class="datatype">text</td><td class="number">2</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.DS.IT.DS.USUBJID"></a>USUBJID</td><td>Unique Subject Identifier</td><td class="number">2</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.DS.IT.DS.DSSEQ"></a>DSSEQ</td><td>Sequence Number</td><td class="number"></td><td class="datatype">integer</td><td class="number">50</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.DS.IT.DS.DSTERM"></a>DSTERM</td><td>Reported Term for the Disposition Event</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.DS.IT.DS.DSDECOD"></a>DSDECOD</td><td>Standardized Disposition Term</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.DS.IT.DS.DSUSCHFL"></a>DSUSCHFL</td><td>Unscheduled Flag</td><td class="number"></td><td class="datatype">text</td><td class="number">1</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.DS.IT.DS.VISITDY"></a>VISITDY</td><td>Planned Study Day of Disposition</td><td class="number"></td><td class="datatype">integer</td><td class="number">50</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.DS.IT.DS.DSSTDTC"></a>DSSTDTC</td><td>Date/Time of Disposition</td><td class="number"></td><td class="datatype">datetime</td><td class="number"></td><td>ISO8601</td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.DS.IT.DS.DSSTDY"></a>DSSTDY</td><td>Study Day of Disposition</td><td class="number"></td><td class="datatype">integer</td><td class="number">50</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.DS.IT.DS.DSNOMDY"></a>DSNOMDY</td><td>Nominal Study Day for Tabulations</td><td class="number"></td><td class="datatype">integer</td><td class="number">50</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.DS.IT.DS.DSNOMLBL"></a>DSNOMLBL</td><td>Label for Nominal Study Day</td><td class="number"></td><td class="datatype">text</td><td class="number">50</td><td></td><td></td><td></td>
+</tr>
+</table>
+</div>
+<p class="linktop">Go to the <a href="#main">top</a> of the define.xml</p>
+<a id="IG.IG.BG"></a>
+<div class="containerbox" style="page-break-after: always;">
+<table summary="ItemGroup IG.IG.BG">
+<caption>Body Weight Gains (BG) <span class="xpt">[Location: <a href="bg.xpt">bg.xpt</a>]</span>
+</caption>
+<tr class="header">
+<th scope="col">Variable</th><th scope="col">Label</th><th scope="col">Key</th><th scope="col">Type</th><th scope="col" class="length">Length</th><th scope="col" abbr="Format">Controlled Terms or Format</th><th scope="col">Origin</th><th scope="col">Derivation/Comment</th>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.BG.IT.STUDYID"></a>STUDYID</td><td>Study Identifier</td><td class="number">1</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.BG.IT.BG.DOMAIN"></a>DOMAIN</td><td>Domain Abbreviation</td><td class="number"></td><td class="datatype">text</td><td class="number">2</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.BG.IT.BG.USUBJID"></a>USUBJID</td><td>Unique Subject Identifier</td><td class="number">2</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.BG.IT.BG.BGSEQ"></a>BGSEQ</td><td>Sequence Number</td><td class="number"></td><td class="datatype">integer</td><td class="number">50</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.BG.IT.BG.BGTESTCD"></a>BGTESTCD</td><td>Test Short Name</td><td class="number">3</td><td class="datatype">text</td><td class="number">8</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.BG.IT.BG.BGTEST"></a>BGTEST</td><td>Test Name</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.BG.IT.BG.BGORRES"></a>BGORRES</td><td>Result or Findings as Collected</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.BG.IT.BG.BGORRESU"></a>BGORRESU</td><td>Unit of the Original Result</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.BG.IT.BG.BGSTRESC"></a>BGSTRESC</td><td>Standardized Result in Character Format</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.BG.IT.BG.BGSTRESN"></a>BGSTRESN</td><td>Standardized Result in Numeric Format</td><td class="number"></td><td class="datatype">float</td><td class="number">10</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.BG.IT.BG.BGSTRESU"></a>BGSTRESU</td><td>Unit of the Standardized Result</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.BG.IT.BG.BGSTAT"></a>BGSTAT</td><td>Completion Status</td><td class="number"></td><td class="datatype">text</td><td class="number">8</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.BG.IT.BG.BGREASND"></a>BGREASND</td><td>Reason Not Done</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.BG.IT.BG.BGEXCLFL"></a>BGEXCLFL</td><td>Exclusion Flag</td><td class="number"></td><td class="datatype">text</td><td class="number">1</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.BG.IT.BG.BGREASEX"></a>BGREASEX</td><td>Reason for Exclusion</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.BG.IT.BG.BGUSCHFL"></a>BGUSCHFL</td><td>Unscheduled Flag</td><td class="number"></td><td class="datatype">text</td><td class="number">1</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.BG.IT.BG.BGDTC"></a>BGDTC</td><td>Date/Time Animal Weighed</td><td class="number">4</td><td class="datatype">datetime</td><td class="number"></td><td>ISO8601</td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.BG.IT.BG.BGENDTC"></a>BGENDTC</td><td>End Date/Time Animal Weighed</td><td class="number">5</td><td class="datatype">datetime</td><td class="number"></td><td>ISO8601</td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.BG.IT.BG.BGDY"></a>BGDY</td><td>Study Day of Start of Interval</td><td class="number"></td><td class="datatype">integer</td><td class="number">50</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.BG.IT.BG.BGENDY"></a>BGENDY</td><td>Study Day of End of Weight Interval</td><td class="number"></td><td class="datatype">integer</td><td class="number">50</td><td></td><td></td><td></td>
+</tr>
+</table>
+</div>
+<p class="linktop">Go to the <a href="#main">top</a> of the define.xml</p>
+<a id="IG.IG.BW"></a>
+<div class="containerbox" style="page-break-after: always;">
+<table summary="ItemGroup IG.IG.BW">
+<caption>Body Weights (BW) <span class="xpt">[Location: <a href="bw.xpt">bw.xpt</a>]</span>
+</caption>
+<tr class="header">
+<th scope="col">Variable</th><th scope="col">Label</th><th scope="col">Key</th><th scope="col">Type</th><th scope="col" class="length">Length</th><th scope="col" abbr="Format">Controlled Terms or Format</th><th scope="col">Origin</th><th scope="col">Derivation/Comment</th>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.BW.IT.STUDYID"></a>STUDYID</td><td>Study Identifier</td><td class="number">1</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.BW.IT.BW.DOMAIN"></a>DOMAIN</td><td>Domain Abbreviation</td><td class="number"></td><td class="datatype">text</td><td class="number">2</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.BW.IT.BW.USUBJID"></a>USUBJID</td><td>Unique Subject Identifier</td><td class="number">2</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.BW.IT.BW.BWSEQ"></a>BWSEQ</td><td>Sequence Number</td><td class="number"></td><td class="datatype">integer</td><td class="number">50</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.BW.IT.BW.BWTESTCD"></a>BWTESTCD</td><td>Test Short Name</td><td class="number">3</td><td class="datatype">text</td><td class="number">8</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.BW.IT.BW.BWTEST"></a>BWTEST</td><td>Test Name</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.BW.IT.BW.BWORRES"></a>BWORRES</td><td>Result or Findings as Collected</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.BW.IT.BW.BWORRESU"></a>BWORRESU</td><td>Unit of the Original Result</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.BW.IT.BW.BWSTRESC"></a>BWSTRESC</td><td>Standardized Result in Character Format</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.BW.IT.BW.BWSTRESN"></a>BWSTRESN</td><td>Standardized Result in Numeric Format</td><td class="number"></td><td class="datatype">float</td><td class="number">10</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.BW.IT.BW.BWSTRESU"></a>BWSTRESU</td><td>Unit of the Standardized Result</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.BW.IT.BW.BWSTAT"></a>BWSTAT</td><td>Completion Status</td><td class="number"></td><td class="datatype">text</td><td class="number">8</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.BW.IT.BW.BWREASND"></a>BWREASND</td><td>Reason Not Done</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.BW.IT.BW.BWBLFL"></a>BWBLFL</td><td>Baseline Flag</td><td class="number"></td><td class="datatype">text</td><td class="number">1</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.BW.IT.BW.BWFAST"></a>BWFAST</td><td>Fasting Status</td><td class="number"></td><td class="datatype">text</td><td class="number">1</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.BW.IT.BW.BWEXCLFL"></a>BWEXCLFL</td><td>Exclusion Flag</td><td class="number"></td><td class="datatype">text</td><td class="number">1</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.BW.IT.BW.BWREASEX"></a>BWREASEX</td><td>Reason for Exclusion</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.BW.IT.BW.BWUSCHFL"></a>BWUSCHFL</td><td>Unscheduled Flag</td><td class="number"></td><td class="datatype">text</td><td class="number">1</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.BW.IT.BW.VISITDY"></a>VISITDY</td><td>Planned Study Day of Collection</td><td class="number"></td><td class="datatype">integer</td><td class="number">50</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.BW.IT.BW.BWDTC"></a>BWDTC</td><td>Date/Time Animal Weighed</td><td class="number">4</td><td class="datatype">datetime</td><td class="number"></td><td>ISO8601</td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.BW.IT.BW.BWDY"></a>BWDY</td><td>Study Day Animal Weighed</td><td class="number"></td><td class="datatype">integer</td><td class="number">50</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.BW.IT.BW.BWNOMDY"></a>BWNOMDY</td><td>Nominal Study Day for Tabulations</td><td class="number"></td><td class="datatype">integer</td><td class="number">50</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.BW.IT.BW.BWNOMLBL"></a>BWNOMLBL</td><td>Label for Nominal Study Day</td><td class="number"></td><td class="datatype">text</td><td class="number">50</td><td></td><td></td><td></td>
+</tr>
+</table>
+</div>
+<p class="linktop">Go to the <a href="#main">top</a> of the define.xml</p>
+<a id="IG.IG.CL"></a>
+<div class="containerbox" style="page-break-after: always;">
+<table summary="ItemGroup IG.IG.CL">
+<caption>Clinical Observations (CL) <span class="xpt">[Location: <a href="cl.xpt">cl.xpt</a>]</span>
+</caption>
+<tr class="header">
+<th scope="col">Variable</th><th scope="col">Label</th><th scope="col">Key</th><th scope="col">Type</th><th scope="col" class="length">Length</th><th scope="col" abbr="Format">Controlled Terms or Format</th><th scope="col">Origin</th><th scope="col">Derivation/Comment</th>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.CL.IT.STUDYID"></a>STUDYID</td><td>Study Identifier</td><td class="number">1</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.CL.IT.CL.DOMAIN"></a>DOMAIN</td><td>Domain Abbreviation</td><td class="number"></td><td class="datatype">text</td><td class="number">2</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.CL.IT.CL.USUBJID"></a>USUBJID</td><td>Unique Subject Identifier</td><td class="number">2</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.CL.IT.CL.POOLID"></a>POOLID</td><td>Pool Identifier</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.CL.IT.CL.FOCID"></a>FOCID</td><td>Focus of Study-Specific Interest</td><td class="number"></td><td class="datatype">text</td><td class="number">50</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.CL.IT.CL.CLSEQ"></a>CLSEQ</td><td>Sequence Number</td><td class="number"></td><td class="datatype">integer</td><td class="number">50</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.CL.IT.CL.CLGRPID"></a>CLGRPID</td><td>Group Identifier</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.CL.IT.CL.CLSPID"></a>CLSPID</td><td>Mass Identifier</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.CL.IT.CL.CLTESTCD"></a>CLTESTCD</td><td>Test Short Name</td><td class="number">3</td><td class="datatype">text</td><td class="number">8</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.CL.IT.CL.CLTEST"></a>CLTEST</td><td>Test Name</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.CL.IT.CL.CLCAT"></a>CLCAT</td><td>Category for Clinical Observations</td><td class="number">4</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.CL.IT.CL.CLSCAT"></a>CLSCAT</td><td>Subcategory for Clinical Observations</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.CL.IT.CL.CLBODSYS"></a>CLBODSYS</td><td>Body System or Organ Class</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.CL.IT.CL.CLORRES"></a>CLORRES</td><td>Result or Findings as Collected</td><td class="number">5</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.CL.IT.CL.CLSTRESC"></a>CLSTRESC</td><td>Standardized Result in Character Format</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.CL.IT.CL.CLRESCAT"></a>CLRESCAT</td><td>Result Category</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.CL.IT.CL.CLSTAT"></a>CLSTAT</td><td>Completion Status</td><td class="number"></td><td class="datatype">text</td><td class="number">8</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.CL.IT.CL.CLREASND"></a>CLREASND</td><td>Reason Not Done</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.CL.IT.CL.CLLOC"></a>CLLOC</td><td>Location of a Finding</td><td class="number">6</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.CL.IT.CL.CLEVAL"></a>CLEVAL</td><td>Evaluator</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.CL.IT.CL.CLSEV"></a>CLSEV</td><td>Severity</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.CL.IT.CL.CLEXCLFL"></a>CLEXCLFL</td><td>Exclusion Flag</td><td class="number"></td><td class="datatype">text</td><td class="number">1</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.CL.IT.CL.CLREASEX"></a>CLREASEX</td><td>Reason for Exclusion</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.CL.IT.CL.CLUSCHFL"></a>CLUSCHFL</td><td>Unscheduled Flag</td><td class="number"></td><td class="datatype">text</td><td class="number">1</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.CL.IT.CL.VISITDY"></a>VISITDY</td><td>Planned Study Day of Collection</td><td class="number"></td><td class="datatype">integer</td><td class="number">50</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.CL.IT.CL.CLDTC"></a>CLDTC</td><td>Date/Time of Observation</td><td class="number">7</td><td class="datatype">datetime</td><td class="number"></td><td>ISO8601</td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.CL.IT.CL.CLENDTC"></a>CLENDTC</td><td>End Date/Time of Observation</td><td class="number"></td><td class="datatype">datetime</td><td class="number"></td><td>ISO8601</td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.CL.IT.CL.CLDY"></a>CLDY</td><td>Study Day of Observation</td><td class="number"></td><td class="datatype">integer</td><td class="number">50</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.CL.IT.CL.CLENDY"></a>CLENDY</td><td>Study Day of End of Observation</td><td class="number"></td><td class="datatype">integer</td><td class="number">50</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.CL.IT.CL.CLNOMDY"></a>CLNOMDY</td><td>Nominal Study Day for Tabulations</td><td class="number"></td><td class="datatype">integer</td><td class="number">50</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.CL.IT.CL.CLNOMLBL"></a>CLNOMLBL</td><td>Label for Nominal Study Day</td><td class="number"></td><td class="datatype">text</td><td class="number">50</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.CL.IT.CL.CLTPT"></a>CLTPT</td><td>Planned Time Point Name</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.CL.IT.CL.CLTPTNUM"></a>CLTPTNUM</td><td>Planned Time Point Number</td><td class="number"></td><td class="datatype">float</td><td class="number">10</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.CL.IT.CL.CLELTM"></a>CLELTM</td><td>Planned Elapsed Time from Time Point Ref</td><td class="number"></td><td class="datatype">durationDatetime</td><td class="number"></td><td>ISO8601</td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.CL.IT.CL.CLTPTREF"></a>CLTPTREF</td><td>Time Point Reference</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.CL.IT.CL.CLRFTDTC"></a>CLRFTDTC</td><td>Date/Time of Reference Time Point</td><td class="number"></td><td class="datatype">datetime</td><td class="number"></td><td>ISO8601</td><td></td><td></td>
+</tr>
+<tr>
+<td colspan="8">Related dataset: Supplemental Qualifiers for CL (<a href="#IG.IG.SUPPCL">SUPPCL)</a></td>
+</tr>
+</table>
+</div>
+<p class="linktop">Go to the <a href="#main">top</a> of the define.xml</p>
+<a id="IG.IG.FW"></a>
+<div class="containerbox" style="page-break-after: always;">
+<table summary="ItemGroup IG.IG.FW">
+<caption>Food and Water Consumption (FW) <span class="xpt">[Location: <a href="fw.xpt">fw.xpt</a>]</span>
+</caption>
+<tr class="header">
+<th scope="col">Variable</th><th scope="col">Label</th><th scope="col">Key</th><th scope="col">Type</th><th scope="col" class="length">Length</th><th scope="col" abbr="Format">Controlled Terms or Format</th><th scope="col">Origin</th><th scope="col">Derivation/Comment</th>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.FW.IT.STUDYID"></a>STUDYID</td><td>Study Identifier</td><td class="number">1</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.FW.IT.FW.DOMAIN"></a>DOMAIN</td><td>Domain Abbreviation</td><td class="number"></td><td class="datatype">text</td><td class="number">2</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.FW.IT.FW.USUBJID"></a>USUBJID</td><td>Unique Subject Identifier</td><td class="number">2</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.FW.IT.FW.POOLID"></a>POOLID</td><td>Pool Identifier</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.FW.IT.FW.FWSEQ"></a>FWSEQ</td><td>Sequence Number</td><td class="number"></td><td class="datatype">integer</td><td class="number">50</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.FW.IT.FW.FWGRPID"></a>FWGRPID</td><td>Group Identifier</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.FW.IT.FW.FWTESTCD"></a>FWTESTCD</td><td>Food/Water Consumption Short Name</td><td class="number">3</td><td class="datatype">text</td><td class="number">8</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.FW.IT.FW.FWTEST"></a>FWTEST</td><td>Food/Water Consumption Name</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.FW.IT.FW.FWORRES"></a>FWORRES</td><td>Result or Findings as Collected</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.FW.IT.FW.FWORRESU"></a>FWORRESU</td><td>Unit of the Original Result</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.FW.IT.FW.FWSTRESC"></a>FWSTRESC</td><td>Standardized Result in Character Format</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.FW.IT.FW.FWSTRESN"></a>FWSTRESN</td><td>Standardized Result in Numeric Format</td><td class="number"></td><td class="datatype">float</td><td class="number">10</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.FW.IT.FW.FWSTRESU"></a>FWSTRESU</td><td>Unit of the Standardized Result</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.FW.IT.FW.FWSTAT"></a>FWSTAT</td><td>Completion Status</td><td class="number"></td><td class="datatype">text</td><td class="number">8</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.FW.IT.FW.FWREASND"></a>FWREASND</td><td>Reason Not Done</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.FW.IT.FW.FWEXCLFL"></a>FWEXCLFL</td><td>Exclusion Flag</td><td class="number"></td><td class="datatype">text</td><td class="number">1</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.FW.IT.FW.FWREASEX"></a>FWREASEX</td><td>Reason for Exclusion</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.FW.IT.FW.FWDTC"></a>FWDTC</td><td>Start Date/Time of Observation</td><td class="number">4</td><td class="datatype">datetime</td><td class="number"></td><td>ISO8601</td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.FW.IT.FW.FWENDTC"></a>FWENDTC</td><td>End Date/Time of Observation</td><td class="number">5</td><td class="datatype">datetime</td><td class="number"></td><td>ISO8601</td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.FW.IT.FW.FWDY"></a>FWDY</td><td>Study Day of Start of Observation</td><td class="number"></td><td class="datatype">integer</td><td class="number">50</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.FW.IT.FW.FWENDY"></a>FWENDY</td><td>Study Day of End of Observation</td><td class="number"></td><td class="datatype">integer</td><td class="number">50</td><td></td><td></td><td></td>
+</tr>
+</table>
+</div>
+<p class="linktop">Go to the <a href="#main">top</a> of the define.xml</p>
+<a id="IG.IG.LB"></a>
+<div class="containerbox" style="page-break-after: always;">
+<table summary="ItemGroup IG.IG.LB">
+<caption>Laboratory (LB) <span class="xpt">[Location: <a href="lb.xpt">lb.xpt</a>]</span>
+</caption>
+<tr class="header">
+<th scope="col">Variable</th><th scope="col">Label</th><th scope="col">Key</th><th scope="col">Type</th><th scope="col" class="length">Length</th><th scope="col" abbr="Format">Controlled Terms or Format</th><th scope="col">Origin</th><th scope="col">Derivation/Comment</th>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.LB.IT.STUDYID"></a>STUDYID</td><td>Study Identifier</td><td class="number">1</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.LB.IT.LB.DOMAIN"></a>DOMAIN</td><td>Domain Abbreviation</td><td class="number"></td><td class="datatype">text</td><td class="number">2</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.LB.IT.LB.USUBJID"></a>USUBJID</td><td>Unique Subject Identifier</td><td class="number">2</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.LB.IT.LB.POOLID"></a>POOLID</td><td>Pool Identifier</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.LB.IT.LB.LBSEQ"></a>LBSEQ</td><td>Sequence Number</td><td class="number"></td><td class="datatype">integer</td><td class="number">50</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.LB.IT.LB.LBGRPID"></a>LBGRPID</td><td>Group Identifier</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.LB.IT.LB.LBREFID"></a>LBREFID</td><td>Specimen Identifier</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.LB.IT.LB.LBSPID"></a>LBSPID</td><td>Sponsor-Defined Identifier</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.LB.IT.LB.LBTESTCD"></a>LBTESTCD</td><td>Lab Test or Examination Short Name</td><td class="number">3</td><td class="datatype">text</td><td class="number">8</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.LB.IT.LB.LBTEST"></a>LBTEST</td><td>Lab Test or Examination Name</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.LB.IT.LB.LBCAT"></a>LBCAT</td><td>Category for Lab Test</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.LB.IT.LB.LBSCAT"></a>LBSCAT</td><td>Subcategory for Lab Test</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.LB.IT.LB.LBORRES"></a>LBORRES</td><td>Result or Findings as Collected</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.LB.IT.LB.LBORRESU"></a>LBORRESU</td><td>Unit of the Original Result</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.LB.IT.LB.LBORNRLO"></a>LBORNRLO</td><td>Reference Range Lower Limit-Orig Unit</td><td class="number"></td><td class="datatype">text</td><td class="number">10</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.LB.IT.LB.LBORNRHI"></a>LBORNRHI</td><td>Reference Range Upper Limit-Orig Unit</td><td class="number"></td><td class="datatype">text</td><td class="number">10</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.LB.IT.LB.LBSTRESC"></a>LBSTRESC</td><td>Standardized Result in Character Format</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.LB.IT.LB.LBSTRESN"></a>LBSTRESN</td><td>Standardized Result in Numeric Format</td><td class="number"></td><td class="datatype">float</td><td class="number">10</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.LB.IT.LB.LBSTRESU"></a>LBSTRESU</td><td>Unit of the Standardized Result</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.LB.IT.LB.LBSTNRLO"></a>LBSTNRLO</td><td>Reference Range Lower Limit-Std Unit</td><td class="number"></td><td class="datatype">float</td><td class="number">10</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.LB.IT.LB.LBSTNRHI"></a>LBSTNRHI</td><td>Reference Range Upper Limit-Std Unit</td><td class="number"></td><td class="datatype">float</td><td class="number">10</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.LB.IT.LB.LBSTNRC"></a>LBSTNRC</td><td>Reference Range for Char Rslt-Std Unit</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.LB.IT.LB.LBNRIND"></a>LBNRIND</td><td>Reference Range Indicator</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.LB.IT.LB.LBSTAT"></a>LBSTAT</td><td>Completion Status</td><td class="number"></td><td class="datatype">text</td><td class="number">8</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.LB.IT.LB.LBREASND"></a>LBREASND</td><td>Reason Not Done</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.LB.IT.LB.LBNAM"></a>LBNAM</td><td>Laboratory Name</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.LB.IT.LB.LBSPEC"></a>LBSPEC</td><td>Specimen Material Type</td><td class="number">4</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.LB.IT.LB.LBANTREG"></a>LBANTREG</td><td>Anatomical Region of Specimen</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.LB.IT.LB.LBSPCCND"></a>LBSPCCND</td><td>Specimen Condition</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.LB.IT.LB.LBSPCUFL"></a>LBSPCUFL</td><td>Specimen Usability for the Test</td><td class="number"></td><td class="datatype">text</td><td class="number">1</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.LB.IT.LB.LBLOC"></a>LBLOC</td><td>Specimen Collection Location</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.LB.IT.LB.LBLAT"></a>LBLAT</td><td>Specimen Laterality within Subject</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.LB.IT.LB.LBDIR"></a>LBDIR</td><td>Specimen Directionality within Subject</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.LB.IT.LB.LBPORTOT"></a>LBPORTOT</td><td>Portion or Totality</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.LB.IT.LB.LBMETHOD"></a>LBMETHOD</td><td>Method of Test or Examination</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.LB.IT.LB.LBBLFL"></a>LBBLFL</td><td>Baseline Flag</td><td class="number"></td><td class="datatype">text</td><td class="number">1</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.LB.IT.LB.LBFAST"></a>LBFAST</td><td>Fasting Status</td><td class="number"></td><td class="datatype">text</td><td class="number">1</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.LB.IT.LB.LBDRVFL"></a>LBDRVFL</td><td>Derived Flag</td><td class="number"></td><td class="datatype">text</td><td class="number">1</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.LB.IT.LB.LBTOX"></a>LBTOX</td><td>Toxicity</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.LB.IT.LB.LBTOXGR"></a>LBTOXGR</td><td>Standard Toxicity Grade</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.LB.IT.LB.LBEXCLFL"></a>LBEXCLFL</td><td>Exclusion Flag</td><td class="number"></td><td class="datatype">text</td><td class="number">1</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.LB.IT.LB.LBREASEX"></a>LBREASEX</td><td>Reason for Exclusion</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.LB.IT.LB.LBUSCHFL"></a>LBUSCHFL</td><td>Unscheduled Flag</td><td class="number"></td><td class="datatype">text</td><td class="number">1</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.LB.IT.LB.VISITDY"></a>VISITDY</td><td>Planned Study Day of Collection</td><td class="number"></td><td class="datatype">integer</td><td class="number">50</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.LB.IT.LB.LBDTC"></a>LBDTC</td><td>Date/Time of Specimen Collection</td><td class="number">5</td><td class="datatype">datetime</td><td class="number"></td><td>ISO8601</td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.LB.IT.LB.LBENDTC"></a>LBENDTC</td><td>End Date/Time of Specimen Collection</td><td class="number"></td><td class="datatype">datetime</td><td class="number"></td><td>ISO8601</td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.LB.IT.LB.LBDY"></a>LBDY</td><td>Study Day of Specimen Collection</td><td class="number"></td><td class="datatype">integer</td><td class="number">50</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.LB.IT.LB.LBENDY"></a>LBENDY</td><td>Study Day of End of Specimen Collection</td><td class="number"></td><td class="datatype">integer</td><td class="number">50</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.LB.IT.LB.LBNOMDY"></a>LBNOMDY</td><td>Nominal Study Day for Tabulations</td><td class="number"></td><td class="datatype">integer</td><td class="number">50</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.LB.IT.LB.LBNOMLBL"></a>LBNOMLBL</td><td>Label for Nominal Study Day</td><td class="number"></td><td class="datatype">text</td><td class="number">50</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.LB.IT.LB.LBTPT"></a>LBTPT</td><td>Planned Time Point Name</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.LB.IT.LB.LBTPTNUM"></a>LBTPTNUM</td><td>Planned Time Point Number</td><td class="number">6</td><td class="datatype">float</td><td class="number">10</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.LB.IT.LB.LBELTM"></a>LBELTM</td><td>Planned Elapsed Time from Time Point Ref</td><td class="number"></td><td class="datatype">durationDatetime</td><td class="number"></td><td>ISO8601</td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.LB.IT.LB.LBTPTREF"></a>LBTPTREF</td><td>Time Point Reference</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.LB.IT.LB.LBRFTDTC"></a>LBRFTDTC</td><td>Date/Time of Reference Time Point</td><td class="number"></td><td class="datatype">datetime</td><td class="number"></td><td>ISO8601</td><td></td><td></td>
+</tr>
+<tr>
+<td colspan="8">Related dataset: Supplemental Qualifiers for LB (<a href="#IG.IG.SUPPLB">SUPPLB)</a></td>
+</tr>
+</table>
+</div>
+<p class="linktop">Go to the <a href="#main">top</a> of the define.xml</p>
+<a id="IG.IG.MA"></a>
+<div class="containerbox" style="page-break-after: always;">
+<table summary="ItemGroup IG.IG.MA">
+<caption>Macroscopic Findings (MA) <span class="xpt">[Location: <a href="ma.xpt">ma.xpt</a>]</span>
+</caption>
+<tr class="header">
+<th scope="col">Variable</th><th scope="col">Label</th><th scope="col">Key</th><th scope="col">Type</th><th scope="col" class="length">Length</th><th scope="col" abbr="Format">Controlled Terms or Format</th><th scope="col">Origin</th><th scope="col">Derivation/Comment</th>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.MA.IT.STUDYID"></a>STUDYID</td><td>Study Identifier</td><td class="number">1</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.MA.IT.MA.DOMAIN"></a>DOMAIN</td><td>Domain Abbreviation</td><td class="number"></td><td class="datatype">text</td><td class="number">2</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.MA.IT.MA.USUBJID"></a>USUBJID</td><td>Unique Subject Identifier</td><td class="number">2</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.MA.IT.MA.FOCID"></a>FOCID</td><td>Focus of Study-Specific Interest</td><td class="number"></td><td class="datatype">text</td><td class="number">50</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.MA.IT.MA.MASEQ"></a>MASEQ</td><td>Sequence Number</td><td class="number"></td><td class="datatype">integer</td><td class="number">50</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.MA.IT.MA.MAGRPID"></a>MAGRPID</td><td>Group Identifier</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.MA.IT.MA.MAREFID"></a>MAREFID</td><td>Specimen Reference Identifier</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.MA.IT.MA.MASPID"></a>MASPID</td><td>Mass Identifier</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.MA.IT.MA.MATESTCD"></a>MATESTCD</td><td>Macroscopic Examination Short Name</td><td class="number">3</td><td class="datatype">text</td><td class="number">8</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.MA.IT.MA.MATEST"></a>MATEST</td><td>Macroscopic Examination Name</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.MA.IT.MA.MABODSYS"></a>MABODSYS</td><td>Body System or Organ Class</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.MA.IT.MA.MAORRES"></a>MAORRES</td><td>Result or Findings as Collected</td><td class="number">4</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.MA.IT.MA.MASTRESC"></a>MASTRESC</td><td>Standardized Result in Character Format</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.MA.IT.MA.MASTAT"></a>MASTAT</td><td>Completion Status</td><td class="number"></td><td class="datatype">text</td><td class="number">8</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.MA.IT.MA.MAREASND"></a>MAREASND</td><td>Reason Not Done</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.MA.IT.MA.MANAM"></a>MANAM</td><td>Laboratory Name</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.MA.IT.MA.MASPEC"></a>MASPEC</td><td>Specimen Material Type</td><td class="number">5</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.MA.IT.MA.MAANTREG"></a>MAANTREG</td><td>Anatomical Region of Specimen</td><td class="number">6</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.MA.IT.MA.MASPCCND"></a>MASPCCND</td><td>Specimen Condition</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.MA.IT.MA.MASPCUFL"></a>MASPCUFL</td><td>Specimen Usability for the Test</td><td class="number"></td><td class="datatype">text</td><td class="number">1</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.MA.IT.MA.MALAT"></a>MALAT</td><td>Specimen Laterality within Subject</td><td class="number">7</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.MA.IT.MA.MADIR"></a>MADIR</td><td>Specimen Directionality within Subject</td><td class="number">8</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.MA.IT.MA.MAPORTOT"></a>MAPORTOT</td><td>Portion or Totality</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.MA.IT.MA.MAEVAL"></a>MAEVAL</td><td>Evaluator</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.MA.IT.MA.MASEV"></a>MASEV</td><td>Severity</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.MA.IT.MA.MADTHREL"></a>MADTHREL</td><td>Relationship to Death</td><td class="number"></td><td class="datatype">text</td><td class="number">1</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.MA.IT.MA.MADTC"></a>MADTC</td><td>Date/Time</td><td class="number"></td><td class="datatype">datetime</td><td class="number"></td><td>ISO8601</td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.MA.IT.MA.MADY"></a>MADY</td><td>Study Day</td><td class="number"></td><td class="datatype">integer</td><td class="number">50</td><td></td><td></td><td></td>
+</tr>
+<tr>
+<td colspan="8">Related dataset: Supplemental Qualifiers for MA (<a href="#IG.IG.SUPPMA">SUPPMA)</a></td>
+</tr>
+</table>
+</div>
+<p class="linktop">Go to the <a href="#main">top</a> of the define.xml</p>
+<a id="IG.IG.MI"></a>
+<div class="containerbox" style="page-break-after: always;">
+<table summary="ItemGroup IG.IG.MI">
+<caption>Microscopic Findings (MI) <span class="xpt">[Location: <a href="mi.xpt">mi.xpt</a>]</span>
+</caption>
+<tr class="header">
+<th scope="col">Variable</th><th scope="col">Label</th><th scope="col">Key</th><th scope="col">Type</th><th scope="col" class="length">Length</th><th scope="col" abbr="Format">Controlled Terms or Format</th><th scope="col">Origin</th><th scope="col">Derivation/Comment</th>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.MI.IT.STUDYID"></a>STUDYID</td><td>Study Identifier</td><td class="number">1</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.MI.IT.MI.DOMAIN"></a>DOMAIN</td><td>Domain Abbreviation</td><td class="number"></td><td class="datatype">text</td><td class="number">2</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.MI.IT.MI.USUBJID"></a>USUBJID</td><td>Unique Subject Identifier</td><td class="number">2</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.MI.IT.MI.FOCID"></a>FOCID</td><td>Focus of Study-Specific Interest</td><td class="number"></td><td class="datatype">text</td><td class="number">50</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.MI.IT.MI.MISEQ"></a>MISEQ</td><td>Sequence Number</td><td class="number"></td><td class="datatype">integer</td><td class="number">50</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.MI.IT.MI.MIGRPID"></a>MIGRPID</td><td>Group Identifier</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.MI.IT.MI.MIREFID"></a>MIREFID</td><td>Specimen Reference Identifier</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.MI.IT.MI.MISPID"></a>MISPID</td><td>Mass Identifier</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.MI.IT.MI.MITESTCD"></a>MITESTCD</td><td>Microscopic Examination Short Name</td><td class="number">3</td><td class="datatype">text</td><td class="number">8</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.MI.IT.MI.MITEST"></a>MITEST</td><td>Microscopic Examination Name</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.MI.IT.MI.MIBODSYS"></a>MIBODSYS</td><td>Body System or Organ Class</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.MI.IT.MI.MIORRES"></a>MIORRES</td><td>Result or Findings as Collected</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a id="IG.MI.IT.MI.MISTRESC" href="#VL.VL.MI.MISTRESC" title="link to VL.VL.MI.MISTRESC">MISTRESC</a></td><td>Standardized Result in Character Format</td><td class="number">4</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.MI.IT.MI.MIRESCAT"></a>MIRESCAT</td><td>Result Category</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.MI.IT.MI.MICHRON"></a>MICHRON</td><td>Chronicity of Finding</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.MI.IT.MI.MIDISTR"></a>MIDISTR</td><td>Distribution Pattern of Finding</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.MI.IT.MI.MISTAT"></a>MISTAT</td><td>Completion Status</td><td class="number"></td><td class="datatype">text</td><td class="number">8</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.MI.IT.MI.MIREASND"></a>MIREASND</td><td>Reason Not Done</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.MI.IT.MI.MINAM"></a>MINAM</td><td>Laboratory Name</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.MI.IT.MI.MISPEC"></a>MISPEC</td><td>Specimen Material Type</td><td class="number">5</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.MI.IT.MI.MIANTREG"></a>MIANTREG</td><td>Anatomical Region of Specimen</td><td class="number">6</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.MI.IT.MI.MISPCCND"></a>MISPCCND</td><td>Specimen Condition</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.MI.IT.MI.MISPCUFL"></a>MISPCUFL</td><td>Specimen Usability for the Test</td><td class="number"></td><td class="datatype">text</td><td class="number">1</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.MI.IT.MI.MILAT"></a>MILAT</td><td>Specimen Laterality within Subject</td><td class="number">7</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.MI.IT.MI.MIDIR"></a>MIDIR</td><td>Specimen Directionality within Subject</td><td class="number">8</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.MI.IT.MI.MIMETHOD"></a>MIMETHOD</td><td>Method of Test or Examination</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.MI.IT.MI.MIEVAL"></a>MIEVAL</td><td>Evaluator</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.MI.IT.MI.MISEV"></a>MISEV</td><td>Severity</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.MI.IT.MI.MIDTHREL"></a>MIDTHREL</td><td>Relationship to Death</td><td class="number"></td><td class="datatype">text</td><td class="number">1</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.MI.IT.MI.MIDTC"></a>MIDTC</td><td>Date/Time</td><td class="number"></td><td class="datatype">datetime</td><td class="number"></td><td>ISO8601</td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.MI.IT.MI.MIDY"></a>MIDY</td><td>Study Day</td><td class="number"></td><td class="datatype">integer</td><td class="number">50</td><td></td><td></td><td></td>
+</tr>
+<tr>
+<td colspan="8">Related dataset: Supplemental Qualifiers for MI (<a href="#IG.IG.SUPPMI">SUPPMI)</a></td>
+</tr>
+</table>
+</div>
+<p class="linktop">Go to the <a href="#main">top</a> of the define.xml</p>
+<a id="IG.IG.OM"></a>
+<div class="containerbox" style="page-break-after: always;">
+<table summary="ItemGroup IG.IG.OM">
+<caption>Organ Measurements (OM) <span class="xpt">[Location: <a href="om.xpt">om.xpt</a>]</span>
+</caption>
+<tr class="header">
+<th scope="col">Variable</th><th scope="col">Label</th><th scope="col">Key</th><th scope="col">Type</th><th scope="col" class="length">Length</th><th scope="col" abbr="Format">Controlled Terms or Format</th><th scope="col">Origin</th><th scope="col">Derivation/Comment</th>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.OM.IT.STUDYID"></a>STUDYID</td><td>Study Identifier</td><td class="number">1</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.OM.IT.OM.DOMAIN"></a>DOMAIN</td><td>Domain Abbreviation</td><td class="number"></td><td class="datatype">text</td><td class="number">2</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.OM.IT.OM.USUBJID"></a>USUBJID</td><td>Unique Subject Identifier</td><td class="number">2</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.OM.IT.OM.OMSEQ"></a>OMSEQ</td><td>Sequence Number</td><td class="number"></td><td class="datatype">integer</td><td class="number">50</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.OM.IT.OM.OMTESTCD"></a>OMTESTCD</td><td>Test Short Name</td><td class="number">3</td><td class="datatype">text</td><td class="number">8</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.OM.IT.OM.OMTEST"></a>OMTEST</td><td>Test Name</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.OM.IT.OM.OMORRES"></a>OMORRES</td><td>Result or Findings as Collected</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.OM.IT.OM.OMORRESU"></a>OMORRESU</td><td>Unit of the Original Result</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.OM.IT.OM.OMSTRESC"></a>OMSTRESC</td><td>Standardized Result in Character Format</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.OM.IT.OM.OMSTRESN"></a>OMSTRESN</td><td>Standardized Result in Numeric Format</td><td class="number"></td><td class="datatype">float</td><td class="number">10</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.OM.IT.OM.OMSTRESU"></a>OMSTRESU</td><td>Unit of the Standardized Result</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.OM.IT.OM.OMSTAT"></a>OMSTAT</td><td>Completion Status</td><td class="number"></td><td class="datatype">text</td><td class="number">8</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.OM.IT.OM.OMREASND"></a>OMREASND</td><td>Reason Not Done</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.OM.IT.OM.OMSPEC"></a>OMSPEC</td><td>Specimen Material Type</td><td class="number">4</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.OM.IT.OM.OMANTREG"></a>OMANTREG</td><td>Anatomical Region of Specimen</td><td class="number">5</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.OM.IT.OM.OMSPCCND"></a>OMSPCCND</td><td>Specimen Condition</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.OM.IT.OM.OMSPCUFL"></a>OMSPCUFL</td><td>Specimen Usability for the Test</td><td class="number"></td><td class="datatype">text</td><td class="number">1</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.OM.IT.OM.OMLAT"></a>OMLAT</td><td>Specimen Laterality within Subject</td><td class="number">6</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.OM.IT.OM.OMDIR"></a>OMDIR</td><td>Specimen Directionality within Subject</td><td class="number">7</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.OM.IT.OM.OMPORTOT"></a>OMPORTOT</td><td>Portion or Totality</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.OM.IT.OM.OMEXCLFL"></a>OMEXCLFL</td><td>Exclusion Flag</td><td class="number"></td><td class="datatype">text</td><td class="number">1</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.OM.IT.OM.OMREASEX"></a>OMREASEX</td><td>Reason for Exclusion</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.OM.IT.OM.OMDTC"></a>OMDTC</td><td>Date/Time Organ Measured</td><td class="number"></td><td class="datatype">datetime</td><td class="number"></td><td>ISO8601</td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.OM.IT.OM.OMDY"></a>OMDY</td><td>Study Day of Measurement</td><td class="number"></td><td class="datatype">integer</td><td class="number">50</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.OM.IT.OM.OMNOMDY"></a>OMNOMDY</td><td>Nominal Study Day for Tabulations</td><td class="number"></td><td class="datatype">integer</td><td class="number">50</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.OM.IT.OM.OMNOMLBL"></a>OMNOMLBL</td><td>Label for Nominal Study Day</td><td class="number"></td><td class="datatype">text</td><td class="number">50</td><td></td><td></td><td></td>
+</tr>
+</table>
+</div>
+<p class="linktop">Go to the <a href="#main">top</a> of the define.xml</p>
+<a id="IG.IG.TF"></a>
+<div class="containerbox" style="page-break-after: always;">
+<table summary="ItemGroup IG.IG.TF">
+<caption>Tumor Findings (TF) <span class="xpt">[Location: <a href="tf.xpt">tf.xpt</a>]</span>
+</caption>
+<tr class="header">
+<th scope="col">Variable</th><th scope="col">Label</th><th scope="col">Key</th><th scope="col">Type</th><th scope="col" class="length">Length</th><th scope="col" abbr="Format">Controlled Terms or Format</th><th scope="col">Origin</th><th scope="col">Derivation/Comment</th>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.TF.IT.STUDYID"></a>STUDYID</td><td>Study Identifier</td><td class="number">1</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.TF.IT.TF.DOMAIN"></a>DOMAIN</td><td>Domain Abbreviation</td><td class="number"></td><td class="datatype">text</td><td class="number">2</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.TF.IT.TF.USUBJID"></a>USUBJID</td><td>Unique Subject Identifier</td><td class="number">2</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.TF.IT.TF.TFSEQ"></a>TFSEQ</td><td>Sequence Number</td><td class="number"></td><td class="datatype">integer</td><td class="number">50</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.TF.IT.TF.TFGRPID"></a>TFGRPID</td><td>Group Identifier</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.TF.IT.TF.TFREFID"></a>TFREFID</td><td>Specimen Identifier</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.TF.IT.TF.TFSPID"></a>TFSPID</td><td>Mass Identifier</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.TF.IT.TF.TFTESTCD"></a>TFTESTCD</td><td>Tumor Examination Short Name</td><td class="number">3</td><td class="datatype">text</td><td class="number">8</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.TF.IT.TF.TFTEST"></a>TFTEST</td><td>Tumor Examination Name</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.TF.IT.TF.TFORRES"></a>TFORRES</td><td>Result or Findings as Collected</td><td class="number">4</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.TF.IT.TF.TFSTRESC"></a>TFSTRESC</td><td>Standardized Result in Character Format</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.TF.IT.TF.TFRESCAT"></a>TFRESCAT</td><td>Tumor Malignancy Status</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.TF.IT.TF.TFNAM"></a>TFNAM</td><td>Laboratory Name</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.TF.IT.TF.TFSPEC"></a>TFSPEC</td><td>Specimen Material Type</td><td class="number">5</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.TF.IT.TF.TFANTREG"></a>TFANTREG</td><td>Anatomical Region of Specimen</td><td class="number">6</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.TF.IT.TF.TFSPCCND"></a>TFSPCCND</td><td>Specimen Condition</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.TF.IT.TF.TFLAT"></a>TFLAT</td><td>Specimen Laterality within Subject</td><td class="number">7</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.TF.IT.TF.TFDIR"></a>TFDIR</td><td>Specimen Directionality within Subject</td><td class="number">8</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.TF.IT.TF.TFMETHOD"></a>TFMETHOD</td><td>Method of Test or Examination</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.TF.IT.TF.TFEVAL"></a>TFEVAL</td><td>Evaluator</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.TF.IT.TF.TFDTHREL"></a>TFDTHREL</td><td>Relationship to Death</td><td class="number"></td><td class="datatype">text</td><td class="number">1</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.TF.IT.TF.TFDTC"></a>TFDTC</td><td>Date/Time</td><td class="number"></td><td class="datatype">datetime</td><td class="number"></td><td>ISO8601</td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.TF.IT.TF.TFDY"></a>TFDY</td><td>Study Day</td><td class="number"></td><td class="datatype">integer</td><td class="number">50</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.TF.IT.TF.TFDETECT"></a>TFDETECT</td><td>Time in Days to Detection of Tumor</td><td class="number"></td><td class="datatype">integer</td><td class="number">50</td><td></td><td></td><td></td>
+</tr>
+</table>
+</div>
+<p class="linktop">Go to the <a href="#main">top</a> of the define.xml</p>
+<a id="IG.IG.VS"></a>
+<div class="containerbox" style="page-break-after: always;">
+<table summary="ItemGroup IG.IG.VS">
+<caption>Vital Signs (VS) <span class="xpt">[Location: <a href="vs.xpt">vs.xpt</a>]</span>
+</caption>
+<tr class="header">
+<th scope="col">Variable</th><th scope="col">Label</th><th scope="col">Key</th><th scope="col">Type</th><th scope="col" class="length">Length</th><th scope="col" abbr="Format">Controlled Terms or Format</th><th scope="col">Origin</th><th scope="col">Derivation/Comment</th>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.VS.IT.STUDYID"></a>STUDYID</td><td>Study Identifier</td><td class="number">1</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.VS.IT.VS.DOMAIN"></a>DOMAIN</td><td>Domain Abbreviation</td><td class="number"></td><td class="datatype">text</td><td class="number">2</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.VS.IT.VS.USUBJID"></a>USUBJID</td><td>Unique Subject Identifier</td><td class="number">2</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.VS.IT.VS.VSSEQ"></a>VSSEQ</td><td>Sequence Number</td><td class="number"></td><td class="datatype">integer</td><td class="number">50</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.VS.IT.VS.VSGRPID"></a>VSGRPID</td><td>Group Identifier</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.VS.IT.VS.VSSPID"></a>VSSPID</td><td>Sponsor-Defined Identifier</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.VS.IT.VS.VSTESTCD"></a>VSTESTCD</td><td>Vital Signs Test Short Name</td><td class="number">3</td><td class="datatype">text</td><td class="number">8</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.VS.IT.VS.VSTEST"></a>VSTEST</td><td>Vital Signs Test Name</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.VS.IT.VS.VSCAT"></a>VSCAT</td><td>Category for Vital Signs</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.VS.IT.VS.VSSCAT"></a>VSSCAT</td><td>Subcategory for Vital Signs</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.VS.IT.VS.VSPOS"></a>VSPOS</td><td>Vital Signs Position of Subject</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.VS.IT.VS.VSORRES"></a>VSORRES</td><td>Result or Findings as Collected</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.VS.IT.VS.VSORRESU"></a>VSORRESU</td><td>Unit of the Original Result</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.VS.IT.VS.VSSTRESC"></a>VSSTRESC</td><td>Standardized Result in Character Format</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.VS.IT.VS.VSSTRESN"></a>VSSTRESN</td><td>Standardized Result in Numeric Format</td><td class="number"></td><td class="datatype">float</td><td class="number">10</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.VS.IT.VS.VSSTRESU"></a>VSSTRESU</td><td>Unit of the Standardized Result</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.VS.IT.VS.VSSTAT"></a>VSSTAT</td><td>Completion Status</td><td class="number"></td><td class="datatype">text</td><td class="number">8</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.VS.IT.VS.VSREASND"></a>VSREASND</td><td>Reason Not Done</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.VS.IT.VS.VSLOC"></a>VSLOC</td><td>Location of Vital Signs Measurement</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.VS.IT.VS.VSCSTATE"></a>VSCSTATE</td><td>Consciousness State</td><td class="number"></td><td class="datatype">text</td><td class="number">8</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.VS.IT.VS.VSBLFL"></a>VSBLFL</td><td>Baseline Flag</td><td class="number"></td><td class="datatype">text</td><td class="number">1</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.VS.IT.VS.VSDRVFL"></a>VSDRVFL</td><td>Derived Flag</td><td class="number"></td><td class="datatype">text</td><td class="number">1</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.VS.IT.VS.VSEXCLFL"></a>VSEXCLFL</td><td>Exclusion Flag</td><td class="number"></td><td class="datatype">text</td><td class="number">1</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.VS.IT.VS.VSREASEX"></a>VSREASEX</td><td>Reason for Exclusion</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.VS.IT.VS.VSUSCHFL"></a>VSUSCHFL</td><td>Unscheduled Flag</td><td class="number"></td><td class="datatype">text</td><td class="number">1</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.VS.IT.VS.VISITDY"></a>VISITDY</td><td>Planned Study Day of Collection</td><td class="number"></td><td class="datatype">integer</td><td class="number">50</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.VS.IT.VS.VSDTC"></a>VSDTC</td><td>Date/Time of Measurement</td><td class="number">4</td><td class="datatype">datetime</td><td class="number"></td><td>ISO8601</td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.VS.IT.VS.VSENDTC"></a>VSENDTC</td><td>End Date/Time of Measurement</td><td class="number"></td><td class="datatype">datetime</td><td class="number"></td><td>ISO8601</td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.VS.IT.VS.VSDY"></a>VSDY</td><td>Study Day of Vital Signs Measurement</td><td class="number"></td><td class="datatype">integer</td><td class="number">50</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.VS.IT.VS.VSENDY"></a>VSENDY</td><td>Study Day of End of Measurement</td><td class="number"></td><td class="datatype">integer</td><td class="number">50</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.VS.IT.VS.VSNOMDY"></a>VSNOMDY</td><td>Nominal Study Day for Tabulations</td><td class="number"></td><td class="datatype">integer</td><td class="number">50</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.VS.IT.VS.VSNOMLBL"></a>VSNOMLBL</td><td>Label for Nominal Study Day</td><td class="number"></td><td class="datatype">text</td><td class="number">50</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.VS.IT.VS.VSTPT"></a>VSTPT</td><td>Planned Time Point Name</td><td class="number">5</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.VS.IT.VS.VSTPTNUM"></a>VSTPTNUM</td><td>Planned Time Point Number</td><td class="number"></td><td class="datatype">float</td><td class="number">10</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.VS.IT.VS.VSELTM"></a>VSELTM</td><td>Planned Elapsed Time from Time Point Ref</td><td class="number"></td><td class="datatype">durationDatetime</td><td class="number"></td><td>ISO8601</td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.VS.IT.VS.VSTPTREF"></a>VSTPTREF</td><td>Time Point Reference</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.VS.IT.VS.VSRFTDTC"></a>VSRFTDTC</td><td>Date/Time of Time Point Reference</td><td class="number"></td><td class="datatype">datetime</td><td class="number"></td><td>ISO8601</td><td></td><td></td>
+</tr>
+</table>
+</div>
+<p class="linktop">Go to the <a href="#main">top</a> of the define.xml</p>
+<a id="IG.IG.POOLDEF"></a>
+<div class="containerbox" style="page-break-after: always;">
+<table summary="ItemGroup IG.IG.POOLDEF">
+<caption>Pool Definition (POOLDEF) <span class="xpt">[Location: <a href="pooldef.xpt">pooldef.xpt</a>]</span>
+</caption>
+<tr class="header">
+<th scope="col">Variable</th><th scope="col">Label</th><th scope="col">Key</th><th scope="col">Type</th><th scope="col" class="length">Length</th><th scope="col" abbr="Format">Controlled Terms or Format</th><th scope="col">Origin</th><th scope="col">Derivation/Comment</th>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.POOLDEF.IT.STUDYID"></a>STUDYID</td><td>Study Identifier</td><td class="number">1</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.POOLDEF.IT.POOLDEF.POOLID"></a>POOLID</td><td>Pool Identifier</td><td class="number">2</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.POOLDEF.IT.POOLDEF.USUBJID"></a>USUBJID</td><td>Unique Subject Identifier</td><td class="number">3</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+</table>
+</div>
+<p class="linktop">Go to the <a href="#main">top</a> of the define.xml</p>
+<a id="IG.IG.RELREC"></a>
+<div class="containerbox" style="page-break-after: always;">
+<table summary="ItemGroup IG.IG.RELREC">
+<caption>Related Records (RELREC) <span class="xpt">[Location: <a href="relrec.xpt">relrec.xpt</a>]</span>
+</caption>
+<tr class="header">
+<th scope="col">Variable</th><th scope="col">Label</th><th scope="col">Key</th><th scope="col">Type</th><th scope="col" class="length">Length</th><th scope="col" abbr="Format">Controlled Terms or Format</th><th scope="col">Origin</th><th scope="col">Derivation/Comment</th>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.RELREC.IT.STUDYID"></a>STUDYID</td><td>Study Identifier</td><td class="number">1</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.RELREC.IT.RELREC.RDOMAIN"></a>RDOMAIN</td><td>Related Domain Abbreviation</td><td class="number">2</td><td class="datatype">text</td><td class="number">2</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.RELREC.IT.RELREC.USUBJID"></a>USUBJID</td><td>Unique Subject Identifier</td><td class="number">3</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.RELREC.IT.RELREC.POOLID"></a>POOLID</td><td>Pool Identifier</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.RELREC.IT.RELREC.IDVAR"></a>IDVAR</td><td>Identifying Variable</td><td class="number">4</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.RELREC.IT.RELREC.IDVARVAL"></a>IDVARVAL</td><td>Identifying Variable Value</td><td class="number">5</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.RELREC.IT.RELREC.RELTYPE"></a>RELTYPE</td><td>Relationship Type</td><td class="number"></td><td class="datatype">text</td><td class="number">4</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.RELREC.IT.RELREC.RELID"></a>RELID</td><td>Relationship Identifier</td><td class="number">6</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+</table>
+</div>
+<p class="linktop">Go to the <a href="#main">top</a> of the define.xml</p>
+<a id="IG.IG.SUPPCL"></a>
+<div class="containerbox" style="page-break-after: always;">
+<table summary="ItemGroup IG.IG.SUPPCL">
+<caption>Supplemental Qualifiers for CL (SUPPCL) <span class="xpt">[Location: <a href="suppcl.xpt">suppcl.xpt</a>]</span>
+</caption>
+<tr class="header">
+<th scope="col">Variable</th><th scope="col">Label</th><th scope="col">Key</th><th scope="col">Type</th><th scope="col" class="length">Length</th><th scope="col" abbr="Format">Controlled Terms or Format</th><th scope="col">Origin</th><th scope="col">Derivation/Comment</th>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.SUPPCL.IT.STUDYID"></a>STUDYID</td><td>Study Identifier</td><td class="number">1</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.SUPPCL.IT.SUPPCL.RDOMAIN"></a>RDOMAIN</td><td>Related Domain Abbreviation</td><td class="number">2</td><td class="datatype">text</td><td class="number">2</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.SUPPCL.IT.SUPPCL.USUBJID"></a>USUBJID</td><td>Unique Subject Identifier</td><td class="number">3</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.SUPPCL.IT.SUPPCL.POOLID"></a>POOLID</td><td>Pool Identifier</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.SUPPCL.IT.SUPPCL.IDVAR"></a>IDVAR</td><td>Identifying Variable</td><td class="number">4</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.SUPPCL.IT.SUPPCL.IDVARVAL"></a>IDVARVAL</td><td>Identifying Variable Value</td><td class="number">5</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.SUPPCL.IT.SUPPCL.QNAM"></a>QNAM</td><td>Qualifier Variable Name</td><td class="number">6</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.SUPPCL.IT.SUPPCL.QLABEL"></a>QLABEL</td><td>Qualifier Variable Label</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.SUPPCL.IT.SUPPCL.QVAL"></a>QVAL</td><td>Data Value</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.SUPPCL.IT.SUPPCL.QORIG"></a>QORIG</td><td>Origin</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.SUPPCL.IT.SUPPCL.QEVAL"></a>QEVAL</td><td>Evaluator</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr>
+<td colspan="8">Related dataset: Clinical Observations (<a href="#IG.IG.CL">CL)
+                </a></td>
+</tr>
+</table>
+</div>
+<p class="linktop">Go to the <a href="#main">top</a> of the define.xml</p>
+<a id="IG.IG.SUPPLB"></a>
+<div class="containerbox" style="page-break-after: always;">
+<table summary="ItemGroup IG.IG.SUPPLB">
+<caption>Supplemental Qualifiers for LB (SUPPLB) <span class="xpt">[Location: <a href="supplb.xpt">supplb.xpt</a>]</span>
+</caption>
+<tr class="header">
+<th scope="col">Variable</th><th scope="col">Label</th><th scope="col">Key</th><th scope="col">Type</th><th scope="col" class="length">Length</th><th scope="col" abbr="Format">Controlled Terms or Format</th><th scope="col">Origin</th><th scope="col">Derivation/Comment</th>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.SUPPLB.IT.STUDYID"></a>STUDYID</td><td>Study Identifier</td><td class="number">1</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.SUPPLB.IT.SUPPLB.RDOMAIN"></a>RDOMAIN</td><td>Related Domain Abbreviation</td><td class="number">2</td><td class="datatype">text</td><td class="number">2</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.SUPPLB.IT.SUPPLB.USUBJID"></a>USUBJID</td><td>Unique Subject Identifier</td><td class="number">3</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.SUPPLB.IT.SUPPLB.POOLID"></a>POOLID</td><td>Pool Identifier</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.SUPPLB.IT.SUPPLB.IDVAR"></a>IDVAR</td><td>Identifying Variable</td><td class="number">4</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.SUPPLB.IT.SUPPLB.IDVARVAL"></a>IDVARVAL</td><td>Identifying Variable Value</td><td class="number">5</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.SUPPLB.IT.SUPPLB.QNAM"></a>QNAM</td><td>Qualifier Variable Name</td><td class="number">6</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.SUPPLB.IT.SUPPLB.QLABEL"></a>QLABEL</td><td>Qualifier Variable Label</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.SUPPLB.IT.SUPPLB.QVAL"></a>QVAL</td><td>Data Value</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.SUPPLB.IT.SUPPLB.QORIG"></a>QORIG</td><td>Origin</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.SUPPLB.IT.SUPPLB.QEVAL"></a>QEVAL</td><td>Evaluator</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr>
+<td colspan="8">Related dataset: Laboratory (<a href="#IG.IG.LB">LB)
+                </a></td>
+</tr>
+</table>
+</div>
+<p class="linktop">Go to the <a href="#main">top</a> of the define.xml</p>
+<a id="IG.IG.SUPPMA"></a>
+<div class="containerbox" style="page-break-after: always;">
+<table summary="ItemGroup IG.IG.SUPPMA">
+<caption>Supplemental Qualifiers for MA (SUPPMA) <span class="xpt">[Location: <a href="suppma.xpt">suppma.xpt</a>]</span>
+</caption>
+<tr class="header">
+<th scope="col">Variable</th><th scope="col">Label</th><th scope="col">Key</th><th scope="col">Type</th><th scope="col" class="length">Length</th><th scope="col" abbr="Format">Controlled Terms or Format</th><th scope="col">Origin</th><th scope="col">Derivation/Comment</th>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.SUPPMA.IT.STUDYID"></a>STUDYID</td><td>Study Identifier</td><td class="number">1</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.SUPPMA.IT.SUPPMA.RDOMAIN"></a>RDOMAIN</td><td>Related Domain Abbreviation</td><td class="number">2</td><td class="datatype">text</td><td class="number">2</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.SUPPMA.IT.SUPPMA.USUBJID"></a>USUBJID</td><td>Unique Subject Identifier</td><td class="number">3</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.SUPPMA.IT.SUPPMA.POOLID"></a>POOLID</td><td>Pool Identifier</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.SUPPMA.IT.SUPPMA.IDVAR"></a>IDVAR</td><td>Identifying Variable</td><td class="number">4</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.SUPPMA.IT.SUPPMA.IDVARVAL"></a>IDVARVAL</td><td>Identifying Variable Value</td><td class="number">5</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.SUPPMA.IT.SUPPMA.QNAM"></a>QNAM</td><td>Qualifier Variable Name</td><td class="number">6</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.SUPPMA.IT.SUPPMA.QLABEL"></a>QLABEL</td><td>Qualifier Variable Label</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.SUPPMA.IT.SUPPMA.QVAL"></a>QVAL</td><td>Data Value</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.SUPPMA.IT.SUPPMA.QORIG"></a>QORIG</td><td>Origin</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.SUPPMA.IT.SUPPMA.QEVAL"></a>QEVAL</td><td>Evaluator</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr>
+<td colspan="8">Related dataset: Macroscopic Findings (<a href="#IG.IG.MA">MA)
+                </a></td>
+</tr>
+</table>
+</div>
+<p class="linktop">Go to the <a href="#main">top</a> of the define.xml</p>
+<a id="IG.IG.SUPPMI"></a>
+<div class="containerbox" style="page-break-after: always;">
+<table summary="ItemGroup IG.IG.SUPPMI">
+<caption>Supplemental Qualifiers for MI (SUPPMI) <span class="xpt">[Location: <a href="suppmi.xpt">suppmi.xpt</a>]</span>
+</caption>
+<tr class="header">
+<th scope="col">Variable</th><th scope="col">Label</th><th scope="col">Key</th><th scope="col">Type</th><th scope="col" class="length">Length</th><th scope="col" abbr="Format">Controlled Terms or Format</th><th scope="col">Origin</th><th scope="col">Derivation/Comment</th>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.SUPPMI.IT.STUDYID"></a>STUDYID</td><td>Study Identifier</td><td class="number">1</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.SUPPMI.IT.SUPPMI.RDOMAIN"></a>RDOMAIN</td><td>Related Domain Abbreviation</td><td class="number">2</td><td class="datatype">text</td><td class="number">2</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.SUPPMI.IT.SUPPMI.USUBJID"></a>USUBJID</td><td>Unique Subject Identifier</td><td class="number">3</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.SUPPMI.IT.SUPPMI.POOLID"></a>POOLID</td><td>Pool Identifier</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.SUPPMI.IT.SUPPMI.IDVAR"></a>IDVAR</td><td>Identifying Variable</td><td class="number">4</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.SUPPMI.IT.SUPPMI.IDVARVAL"></a>IDVARVAL</td><td>Identifying Variable Value</td><td class="number">5</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.SUPPMI.IT.SUPPMI.QNAM"></a>QNAM</td><td>Qualifier Variable Name</td><td class="number">6</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.SUPPMI.IT.SUPPMI.QLABEL"></a>QLABEL</td><td>Qualifier Variable Label</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.SUPPMI.IT.SUPPMI.QVAL"></a>QVAL</td><td>Data Value</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td><a name="IG.SUPPMI.IT.SUPPMI.QORIG"></a>QORIG</td><td>Origin</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td><a name="IG.SUPPMI.IT.SUPPMI.QEVAL"></a>QEVAL</td><td>Evaluator</td><td class="number"></td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr>
+<td colspan="8">Related dataset: Microscopic Findings (<a href="#IG.IG.MI">MI)
+                </a></td>
+</tr>
+</table>
+</div>
+<p class="linktop">Go to the <a href="#main">top</a> of the define.xml</p>
+<a name="valuemeta"></a>
+<div class="containerbox" style="page-break-after: always;">
+<h1>Value Level Metadata</h1>
+<div class="containerbox" id="VL.VL.MI.MISTRESC">
+<table summary="ValueList / ParameterList">
+<caption> Value Level Metadata - MI [MISTRESC]</caption>
+<tr class="header">
+<th scope="col">Variable</th><th scope="col">Where</th><th scope="col">Type</th><th scope="col" abbr="Length" class="length">Length / Display Format</th><th scope="col" abbr="Format">Controlled Terms or Format</th><th scope="col">Origin</th><th scope="col">Derivation/Comment</th>
+</tr>
+<tr class="tablerowodd">
+<td>MISTRESC</td><td><a href="#IG.MI.IT.MI.MIRESCAT" title="link to IG.MI.IT.MI.MIRESCAT">MIRESCAT</a> EQ NON-NEOPLASTIC<br>
+</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td>MISTRESC</td><td><a href="#IG.MI.IT.MI.MIRESCAT" title="link to IG.MI.IT.MI.MIRESCAT">MIRESCAT</a> IN ( <p class="linebreakcell"> "BENIGN" , </p>
+<p class="linebreakcell"> "MALIGNANT" , </p>
+<p class="linebreakcell"> "METASTATIC" </p> ) <br>
+</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+</table>
+</div>
+<br>
+<div class="containerbox" id="VL.VL.TS.TSVAL">
+<table summary="ValueList / ParameterList">
+<caption> Value Level Metadata - TS [TSVAL]</caption>
+<tr class="header">
+<th scope="col">Variable</th><th scope="col">Where</th><th scope="col">Type</th><th scope="col" abbr="Length" class="length">Length / Display Format</th><th scope="col" abbr="Format">Controlled Terms or Format</th><th scope="col">Origin</th><th scope="col">Derivation/Comment</th>
+</tr>
+<tr class="tablerowodd">
+<td>TSVAL</td><td><a href="#IG.TS.IT.TS.TSPARMCD" title="link to IG.TS.IT.TS.TSPARMCD">TSPARMCD</a> EQ AGEU<br>
+</td><td class="datatype">text</td><td class="number">6</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td>TSVAL</td><td><a href="#IG.TS.IT.TS.TSPARMCD" title="link to IG.TS.IT.TS.TSPARMCD">TSPARMCD</a> EQ SDESIGN<br>
+</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td>TSVAL</td><td><a href="#IG.TS.IT.TS.TSPARMCD" title="link to IG.TS.IT.TS.TSPARMCD">TSPARMCD</a> EQ ROUTE<br>
+</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td>TSVAL</td><td><a href="#IG.TS.IT.TS.TSPARMCD" title="link to IG.TS.IT.TS.TSPARMCD">TSPARMCD</a> EQ SNDIGVER<br>
+</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td>TSVAL</td><td><a href="#IG.TS.IT.TS.TSPARMCD" title="link to IG.TS.IT.TS.TSPARMCD">TSPARMCD</a> EQ SPECIES<br>
+</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td>TSVAL</td><td><a href="#IG.TS.IT.TS.TSPARMCD" title="link to IG.TS.IT.TS.TSPARMCD">TSPARMCD</a> EQ STCAT<br>
+</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td>TSVAL</td><td><a href="#IG.TS.IT.TS.TSPARMCD" title="link to IG.TS.IT.TS.TSPARMCD">TSPARMCD</a> EQ STRAIN<br>
+</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td>TSVAL</td><td><a href="#IG.TS.IT.TS.TSPARMCD" title="link to IG.TS.IT.TS.TSPARMCD">TSPARMCD</a> EQ SSTYP<br>
+</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td>TSVAL</td><td><a href="#IG.TS.IT.TS.TSPARMCD" title="link to IG.TS.IT.TS.TSPARMCD">TSPARMCD</a> EQ TFCNTRY<br>
+</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td>TSVAL</td><td><a href="#IG.TS.IT.TS.TSPARMCD" title="link to IG.TS.IT.TS.TSPARMCD">TSPARMCD</a> EQ ENVTEMPU<br>
+</td><td class="datatype">text</td><td class="number">1</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td>TSVAL</td><td><a href="#IG.TS.IT.TS.TSPARMCD" title="link to IG.TS.IT.TS.TSPARMCD">TSPARMCD</a> EQ HUMIDTU<br>
+</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td>TSVAL</td><td><a href="#IG.TS.IT.TS.TSPARMCD" title="link to IG.TS.IT.TS.TSPARMCD">TSPARMCD</a> EQ MTHTRM<br>
+</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td>TSVAL</td><td><a href="#IG.TS.IT.TS.TSPARMCD" title="link to IG.TS.IT.TS.TSPARMCD">TSPARMCD</a> EQ SRANDOM<br>
+</td><td class="datatype">text</td><td class="number">1</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td>TSVAL</td><td><a href="#IG.TS.IT.TS.TSPARMCD" title="link to IG.TS.IT.TS.TSPARMCD">TSPARMCD</a> EQ SEXPOP<br>
+</td><td class="datatype">text</td><td class="number">4</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td>TSVAL</td><td><a href="#IG.TS.IT.TS.TSPARMCD" title="link to IG.TS.IT.TS.TSPARMCD">TSPARMCD</a> EQ TSCNTRY<br>
+</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td>TSVAL</td><td><a href="#IG.TS.IT.TS.TSPARMCD" title="link to IG.TS.IT.TS.TSPARMCD">TSPARMCD</a> EQ DOSDUR<br>
+</td><td class="datatype">durationDatetime</td><td class="number"></td><td>ISO8601</td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td>TSVAL</td><td><a href="#IG.TS.IT.TS.TSPARMCD" title="link to IG.TS.IT.TS.TSPARMCD">TSPARMCD</a> EQ EXPENDTC<br>
+</td><td class="datatype">date</td><td class="number"></td><td>ISO8601</td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td>TSVAL</td><td><a href="#IG.TS.IT.TS.TSPARMCD" title="link to IG.TS.IT.TS.TSPARMCD">TSPARMCD</a> EQ EXPSTDTC<br>
+</td><td class="datatype">date</td><td class="number"></td><td>ISO8601</td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td>TSVAL</td><td><a href="#IG.TS.IT.TS.TSPARMCD" title="link to IG.TS.IT.TS.TSPARMCD">TSPARMCD</a> EQ STSTDTC<br>
+</td><td class="datatype">date</td><td class="number"></td><td>ISO8601</td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td>TSVAL</td><td><a href="#IG.TS.IT.TS.TSPARMCD" title="link to IG.TS.IT.TS.TSPARMCD">TSPARMCD</a> EQ TRMSAC<br>
+</td><td class="datatype">durationDatetime</td><td class="number"></td><td>ISO8601</td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td>TSVAL</td><td><a href="#IG.TS.IT.TS.TSPARMCD" title="link to IG.TS.IT.TS.TSPARMCD">TSPARMCD</a> EQ DOSENDTC<br>
+</td><td class="datatype">datetime</td><td class="number"></td><td>ISO8601</td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td>TSVAL</td><td><a href="#IG.TS.IT.TS.TSPARMCD" title="link to IG.TS.IT.TS.TSPARMCD">TSPARMCD</a> EQ DOSSTDTC<br>
+</td><td class="datatype">datetime</td><td class="number"></td><td>ISO8601</td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td>TSVAL</td><td><a href="#IG.TS.IT.TS.TSPARMCD" title="link to IG.TS.IT.TS.TSPARMCD">TSPARMCD</a> EQ INTSAC<br>
+</td><td class="datatype">durationDatetime</td><td class="number"></td><td>ISO8601</td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td>TSVAL</td><td><a href="#IG.TS.IT.TS.TSPARMCD" title="link to IG.TS.IT.TS.TSPARMCD">TSPARMCD</a> EQ SLENGTH<br>
+</td><td class="datatype">durationDatetime</td><td class="number"></td><td>ISO8601</td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td>TSVAL</td><td><a href="#IG.TS.IT.TS.TSPARMCD" title="link to IG.TS.IT.TS.TSPARMCD">TSPARMCD</a> EQ RECSAC<br>
+</td><td class="datatype">durationDatetime</td><td class="number"></td><td>ISO8601</td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td>TSVAL</td><td><a href="#IG.TS.IT.TS.TSPARMCD" title="link to IG.TS.IT.TS.TSPARMCD">TSPARMCD</a> EQ STENDTC<br>
+</td><td class="datatype">date</td><td class="number"></td><td>ISO8601</td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td>TSVAL</td><td><a href="#IG.TS.IT.TS.TSPARMCD" title="link to IG.TS.IT.TS.TSPARMCD">TSPARMCD</a> EQ GLPFL<br>
+</td><td class="datatype">text</td><td class="number">1</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td>TSVAL</td><td><a href="#IG.TS.IT.TS.TSPARMCD" title="link to IG.TS.IT.TS.TSPARMCD">TSPARMCD</a> EQ INTERIM<br>
+</td><td class="datatype">text</td><td class="number">1</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td>TSVAL</td><td><a href="#IG.TS.IT.TS.TSPARMCD" title="link to IG.TS.IT.TS.TSPARMCD">TSPARMCD</a> EQ AGE<br>
+</td><td class="datatype">integer</td><td class="number"></td><td></td><td></td><td></td>
+</tr>
+</table>
+</div>
+<br>
+<div class="containerbox" id="VL.VL.TX.TXVAL">
+<table summary="ValueList / ParameterList">
+<caption> Value Level Metadata - TX [TXVAL]</caption>
+<tr class="header">
+<th scope="col">Variable</th><th scope="col">Where</th><th scope="col">Type</th><th scope="col" abbr="Length" class="length">Length / Display Format</th><th scope="col" abbr="Format">Controlled Terms or Format</th><th scope="col">Origin</th><th scope="col">Derivation/Comment</th>
+</tr>
+<tr class="tablerowodd">
+<td>TXVAL</td><td><a href="#IG.TX.IT.TX.TXPARMCD" title="link to IG.TX.IT.TX.TXPARMCD">TXPARMCD</a> EQ ENVTEMPU<br>
+</td><td class="datatype">text</td><td class="number">1</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td>TXVAL</td><td><a href="#IG.TX.IT.TX.TXPARMCD" title="link to IG.TX.IT.TX.TXPARMCD">TXPARMCD</a> EQ MTHTRM<br>
+</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td>TXVAL</td><td><a href="#IG.TX.IT.TX.TXPARMCD" title="link to IG.TX.IT.TX.TXPARMCD">TXPARMCD</a> EQ SPECIES<br>
+</td><td class="datatype">text</td><td class="number">4</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td>TXVAL</td><td><a href="#IG.TX.IT.TX.TXPARMCD" title="link to IG.TX.IT.TX.TXPARMCD">TXPARMCD</a> EQ STRAIN<br>
+</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td>TXVAL</td><td><a href="#IG.TX.IT.TX.TXPARMCD" title="link to IG.TX.IT.TX.TXPARMCD">TXPARMCD</a> EQ SEXPOP<br>
+</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td>TXVAL</td><td><a href="#IG.TX.IT.TX.TXPARMCD" title="link to IG.TX.IT.TX.TXPARMCD">TXPARMCD</a> EQ HUMIDTU<br>
+</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td>TXVAL</td><td><a href="#IG.TX.IT.TX.TXPARMCD" title="link to IG.TX.IT.TX.TXPARMCD">TXPARMCD</a> EQ DOSENDTC<br>
+</td><td class="datatype">datetime</td><td class="number"></td><td>ISO8601</td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td>TXVAL</td><td><a href="#IG.TX.IT.TX.TXPARMCD" title="link to IG.TX.IT.TX.TXPARMCD">TXPARMCD</a> EQ DOSSTDTC<br>
+</td><td class="datatype">datetime</td><td class="number"></td><td>ISO8601</td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td>TXVAL</td><td><a href="#IG.TX.IT.TX.TXPARMCD" title="link to IG.TX.IT.TX.TXPARMCD">TXPARMCD</a> EQ TRTDOSU<br>
+</td><td class="datatype">text</td><td class="number">200</td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td>TXVAL</td><td><a href="#IG.TX.IT.TX.TXPARMCD" title="link to IG.TX.IT.TX.TXPARMCD">TXPARMCD</a> EQ PLANFSUB<br>
+</td><td class="datatype">integer</td><td class="number"></td><td></td><td></td><td></td>
+</tr>
+<tr class="tablerowodd">
+<td>TXVAL</td><td><a href="#IG.TX.IT.TX.TXPARMCD" title="link to IG.TX.IT.TX.TXPARMCD">TXPARMCD</a> EQ PLANMSUB<br>
+</td><td class="datatype">integer</td><td class="number"></td><td></td><td></td><td></td>
+</tr>
+<tr class="tableroweven">
+<td>TXVAL</td><td><a href="#IG.TX.IT.TX.TXPARMCD" title="link to IG.TX.IT.TX.TXPARMCD">TXPARMCD</a> EQ SPLANSUB<br>
+</td><td class="datatype">integer</td><td class="number"></td><td></td><td></td><td></td>
+</tr>
+</table>
+</div>
+<br>
+</div>
+<p class="linktop">Go to the <a href="#main">top</a> of the define.xml</p>
+</div>
+  
+
+</body>
+</html>
