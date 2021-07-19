@@ -35,7 +35,7 @@ variable_labels=HeaderA[[domain_name]]$label #This is a list of the variable lab
 variable_types=HeaderA[[domain_name]]$type #This is a list of the variable types like "character" "character" "numeric" "character" ...
 variable_names=HeaderA[[domain_name]]$name #This is a list of the variable names (up to 8 characters each)
 # Ready to write the results
-f2 <- sub("\\.xpt","\\.txt",f)
+f2 <- sub("\\.xpt","\\.txt",f, ignore.case = TRUE)
 myOutFile <- file(paste(c(p,f2),collapse="/"),"w")
 writeLines(domain_name,myOutFile)
 writeLines(domain_label,myOutFile)
