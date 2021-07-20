@@ -1,0 +1,3329 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?xml-stylesheet type='text/xsl' href='define2-0-0.xsl'?>
+<ODM xmlns="http://www.cdisc.org/ns/odm/v1.3" xmlns:def="http://www.cdisc.org/ns/def/v2.0" xmlns:xlink="http://www.w3.org/1999/xlink" AsOfDateTime="2020-01-08T19:58:42" CreationDateTime="2020-01-08T19:58:42" FileOID="pointcross.xbiom.com/RABBITV1" FileType="Snapshot" ODMVersion="1.3.2" SourceSystem="Xbiom NonClinical" SourceSystemVersion="3.2.1.000">
+  <Study OID="RABBITV1">
+    <GlobalVariables>
+      <StudyName>RABBITV1</StudyName>
+      <StudyDescription>Repeated dose toxicity study by intramuscular administration of vaccine in rabbits</StudyDescription>
+      <ProtocolName>RABBITV1</ProtocolName>
+    </GlobalVariables>
+    <MetaDataVersion Description="Repeated dose toxicity study by intramuscular administration of vaccine in rabbits" Name="RABBITV1" OID="RABBITV1" def:DefineVersion="2.0.0" def:StandardName="SEND-IG" def:StandardVersion="3.1">
+      <def:ValueListDef OID="VL.MI.MISTRESC">
+        <ItemRef ItemOID="IT.MI.MISTRESC.MISTRESC.1977" Mandatory="Yes" OrderNumber="1">
+          <def:WhereClauseRef WhereClauseOID="WC.1977"/>
+        </ItemRef>
+        <ItemRef ItemOID="IT.MI.MISTRESC.MISTRESC.1978" Mandatory="Yes" OrderNumber="2">
+          <def:WhereClauseRef WhereClauseOID="WC.1978"/>
+        </ItemRef>
+      </def:ValueListDef>
+      <def:ValueListDef OID="VL.TS.TSVAL">
+        <ItemRef ItemOID="IT.TS.TSVAL.AGEU.1979" Mandatory="Yes" OrderNumber="1">
+          <def:WhereClauseRef WhereClauseOID="WC.1979"/>
+        </ItemRef>
+        <ItemRef ItemOID="IT.TS.TSVAL.SDESIGN.1980" Mandatory="Yes" OrderNumber="2">
+          <def:WhereClauseRef WhereClauseOID="WC.1980"/>
+        </ItemRef>
+        <ItemRef ItemOID="IT.TS.TSVAL.ROUTE.1981" Mandatory="Yes" OrderNumber="3">
+          <def:WhereClauseRef WhereClauseOID="WC.1981"/>
+        </ItemRef>
+        <ItemRef ItemOID="IT.TS.TSVAL.SNDIGVER.1982" Mandatory="Yes" OrderNumber="4">
+          <def:WhereClauseRef WhereClauseOID="WC.1982"/>
+        </ItemRef>
+        <ItemRef ItemOID="IT.TS.TSVAL.SPECIES.1983" Mandatory="Yes" OrderNumber="5">
+          <def:WhereClauseRef WhereClauseOID="WC.1983"/>
+        </ItemRef>
+        <ItemRef ItemOID="IT.TS.TSVAL.STCAT.1984" Mandatory="Yes" OrderNumber="6">
+          <def:WhereClauseRef WhereClauseOID="WC.1984"/>
+        </ItemRef>
+        <ItemRef ItemOID="IT.TS.TSVAL.STRAIN.1985" Mandatory="Yes" OrderNumber="7">
+          <def:WhereClauseRef WhereClauseOID="WC.1985"/>
+        </ItemRef>
+        <ItemRef ItemOID="IT.TS.TSVAL.SSTYP.1986" Mandatory="Yes" OrderNumber="8">
+          <def:WhereClauseRef WhereClauseOID="WC.1986"/>
+        </ItemRef>
+        <ItemRef ItemOID="IT.TS.TSVAL.TFCNTRY.1987" Mandatory="Yes" OrderNumber="9">
+          <def:WhereClauseRef WhereClauseOID="WC.1987"/>
+        </ItemRef>
+        <ItemRef ItemOID="IT.TS.TSVAL.ENVTEMPU.1988" Mandatory="Yes" OrderNumber="10">
+          <def:WhereClauseRef WhereClauseOID="WC.1988"/>
+        </ItemRef>
+        <ItemRef ItemOID="IT.TS.TSVAL.HUMIDTU.1989" Mandatory="Yes" OrderNumber="11">
+          <def:WhereClauseRef WhereClauseOID="WC.1989"/>
+        </ItemRef>
+        <ItemRef ItemOID="IT.TS.TSVAL.MTHTRM.1990" Mandatory="Yes" OrderNumber="12">
+          <def:WhereClauseRef WhereClauseOID="WC.1990"/>
+        </ItemRef>
+        <ItemRef ItemOID="IT.TS.TSVAL.SRANDOM.1991" Mandatory="Yes" OrderNumber="13">
+          <def:WhereClauseRef WhereClauseOID="WC.1991"/>
+        </ItemRef>
+        <ItemRef ItemOID="IT.TS.TSVAL.SEXPOP.1992" Mandatory="Yes" OrderNumber="14">
+          <def:WhereClauseRef WhereClauseOID="WC.1992"/>
+        </ItemRef>
+        <ItemRef ItemOID="IT.TS.TSVAL.TSCNTRY.1993" Mandatory="Yes" OrderNumber="15">
+          <def:WhereClauseRef WhereClauseOID="WC.1993"/>
+        </ItemRef>
+        <ItemRef ItemOID="IT.TS.TSVAL.DOSDUR.1994" Mandatory="Yes" OrderNumber="16">
+          <def:WhereClauseRef WhereClauseOID="WC.1994"/>
+        </ItemRef>
+        <ItemRef ItemOID="IT.TS.TSVAL.EXPENDTC.1995" Mandatory="Yes" OrderNumber="17">
+          <def:WhereClauseRef WhereClauseOID="WC.1995"/>
+        </ItemRef>
+        <ItemRef ItemOID="IT.TS.TSVAL.EXPSTDTC.1996" Mandatory="Yes" OrderNumber="18">
+          <def:WhereClauseRef WhereClauseOID="WC.1996"/>
+        </ItemRef>
+        <ItemRef ItemOID="IT.TS.TSVAL.STSTDTC.1997" Mandatory="Yes" OrderNumber="19">
+          <def:WhereClauseRef WhereClauseOID="WC.1997"/>
+        </ItemRef>
+        <ItemRef ItemOID="IT.TS.TSVAL.TRMSAC.1998" Mandatory="Yes" OrderNumber="20">
+          <def:WhereClauseRef WhereClauseOID="WC.1998"/>
+        </ItemRef>
+        <ItemRef ItemOID="IT.TS.TSVAL.DOSENDTC.1999" Mandatory="Yes" OrderNumber="21">
+          <def:WhereClauseRef WhereClauseOID="WC.1999"/>
+        </ItemRef>
+        <ItemRef ItemOID="IT.TS.TSVAL.DOSSTDTC.2000" Mandatory="Yes" OrderNumber="22">
+          <def:WhereClauseRef WhereClauseOID="WC.2000"/>
+        </ItemRef>
+        <ItemRef ItemOID="IT.TS.TSVAL.INTSAC.2001" Mandatory="Yes" OrderNumber="23">
+          <def:WhereClauseRef WhereClauseOID="WC.2001"/>
+        </ItemRef>
+        <ItemRef ItemOID="IT.TS.TSVAL.SLENGTH.2002" Mandatory="Yes" OrderNumber="24">
+          <def:WhereClauseRef WhereClauseOID="WC.2002"/>
+        </ItemRef>
+        <ItemRef ItemOID="IT.TS.TSVAL.RECSAC.2003" Mandatory="Yes" OrderNumber="25">
+          <def:WhereClauseRef WhereClauseOID="WC.2003"/>
+        </ItemRef>
+        <ItemRef ItemOID="IT.TS.TSVAL.STENDTC.2004" Mandatory="Yes" OrderNumber="26">
+          <def:WhereClauseRef WhereClauseOID="WC.2004"/>
+        </ItemRef>
+        <ItemRef ItemOID="IT.TS.TSVAL.GLPFL.2005" Mandatory="Yes" OrderNumber="27">
+          <def:WhereClauseRef WhereClauseOID="WC.2005"/>
+        </ItemRef>
+        <ItemRef ItemOID="IT.TS.TSVAL.INTERIM.2006" Mandatory="Yes" OrderNumber="28">
+          <def:WhereClauseRef WhereClauseOID="WC.2006"/>
+        </ItemRef>
+        <ItemRef ItemOID="IT.TS.TSVAL.AGE.2007" Mandatory="Yes" OrderNumber="29">
+          <def:WhereClauseRef WhereClauseOID="WC.2007"/>
+        </ItemRef>
+      </def:ValueListDef>
+      <def:ValueListDef OID="VL.TX.TXVAL">
+        <ItemRef ItemOID="IT.TX.TXVAL.ENVTEMPU.2008" Mandatory="Yes" OrderNumber="1">
+          <def:WhereClauseRef WhereClauseOID="WC.2008"/>
+        </ItemRef>
+        <ItemRef ItemOID="IT.TX.TXVAL.MTHTRM.2009" Mandatory="Yes" OrderNumber="2">
+          <def:WhereClauseRef WhereClauseOID="WC.2009"/>
+        </ItemRef>
+        <ItemRef ItemOID="IT.TX.TXVAL.SPECIES.2010" Mandatory="Yes" OrderNumber="3">
+          <def:WhereClauseRef WhereClauseOID="WC.2010"/>
+        </ItemRef>
+        <ItemRef ItemOID="IT.TX.TXVAL.STRAIN.2011" Mandatory="Yes" OrderNumber="4">
+          <def:WhereClauseRef WhereClauseOID="WC.2011"/>
+        </ItemRef>
+        <ItemRef ItemOID="IT.TX.TXVAL.SEXPOP.2012" Mandatory="Yes" OrderNumber="5">
+          <def:WhereClauseRef WhereClauseOID="WC.2012"/>
+        </ItemRef>
+        <ItemRef ItemOID="IT.TX.TXVAL.HUMIDTU.2013" Mandatory="Yes" OrderNumber="6">
+          <def:WhereClauseRef WhereClauseOID="WC.2013"/>
+        </ItemRef>
+        <ItemRef ItemOID="IT.TX.TXVAL.DOSENDTC.2014" Mandatory="Yes" OrderNumber="7">
+          <def:WhereClauseRef WhereClauseOID="WC.2014"/>
+        </ItemRef>
+        <ItemRef ItemOID="IT.TX.TXVAL.DOSSTDTC.2015" Mandatory="Yes" OrderNumber="8">
+          <def:WhereClauseRef WhereClauseOID="WC.2015"/>
+        </ItemRef>
+        <ItemRef ItemOID="IT.TX.TXVAL.TRTDOSU.2016" Mandatory="Yes" OrderNumber="9">
+          <def:WhereClauseRef WhereClauseOID="WC.2016"/>
+        </ItemRef>
+        <ItemRef ItemOID="IT.TX.TXVAL.PLANFSUB.2017" Mandatory="Yes" OrderNumber="10">
+          <def:WhereClauseRef WhereClauseOID="WC.2017"/>
+        </ItemRef>
+        <ItemRef ItemOID="IT.TX.TXVAL.PLANMSUB.2018" Mandatory="Yes" OrderNumber="11">
+          <def:WhereClauseRef WhereClauseOID="WC.2018"/>
+        </ItemRef>
+        <ItemRef ItemOID="IT.TX.TXVAL.SPLANSUB.2019" Mandatory="Yes" OrderNumber="12">
+          <def:WhereClauseRef WhereClauseOID="WC.2019"/>
+        </ItemRef>
+      </def:ValueListDef>
+      <def:WhereClauseDef OID="WC.1977">
+        <RangeCheck Comparator="EQ" SoftHard="Soft" def:ItemOID="IT.MI.MIRESCAT">
+          <CheckValue>NON-NEOPLASTIC</CheckValue>
+        </RangeCheck>
+      </def:WhereClauseDef>
+      <def:WhereClauseDef OID="WC.1978">
+        <RangeCheck Comparator="IN" SoftHard="Soft" def:ItemOID="IT.MI.MIRESCAT">
+          <CheckValue>BENIGN</CheckValue>
+          <CheckValue>MALIGNANT</CheckValue>
+          <CheckValue>METASTATIC</CheckValue>
+        </RangeCheck>
+      </def:WhereClauseDef>
+      <def:WhereClauseDef OID="WC.1979">
+        <RangeCheck Comparator="EQ" SoftHard="Soft" def:ItemOID="IT.TS.TSPARMCD">
+          <CheckValue>AGEU</CheckValue>
+        </RangeCheck>
+      </def:WhereClauseDef>
+      <def:WhereClauseDef OID="WC.1980">
+        <RangeCheck Comparator="EQ" SoftHard="Soft" def:ItemOID="IT.TS.TSPARMCD">
+          <CheckValue>SDESIGN</CheckValue>
+        </RangeCheck>
+      </def:WhereClauseDef>
+      <def:WhereClauseDef OID="WC.1981">
+        <RangeCheck Comparator="EQ" SoftHard="Soft" def:ItemOID="IT.TS.TSPARMCD">
+          <CheckValue>ROUTE</CheckValue>
+        </RangeCheck>
+      </def:WhereClauseDef>
+      <def:WhereClauseDef OID="WC.1982">
+        <RangeCheck Comparator="EQ" SoftHard="Soft" def:ItemOID="IT.TS.TSPARMCD">
+          <CheckValue>SNDIGVER</CheckValue>
+        </RangeCheck>
+      </def:WhereClauseDef>
+      <def:WhereClauseDef OID="WC.1983">
+        <RangeCheck Comparator="EQ" SoftHard="Soft" def:ItemOID="IT.TS.TSPARMCD">
+          <CheckValue>SPECIES</CheckValue>
+        </RangeCheck>
+      </def:WhereClauseDef>
+      <def:WhereClauseDef OID="WC.1984">
+        <RangeCheck Comparator="EQ" SoftHard="Soft" def:ItemOID="IT.TS.TSPARMCD">
+          <CheckValue>STCAT</CheckValue>
+        </RangeCheck>
+      </def:WhereClauseDef>
+      <def:WhereClauseDef OID="WC.1985">
+        <RangeCheck Comparator="EQ" SoftHard="Soft" def:ItemOID="IT.TS.TSPARMCD">
+          <CheckValue>STRAIN</CheckValue>
+        </RangeCheck>
+      </def:WhereClauseDef>
+      <def:WhereClauseDef OID="WC.1986">
+        <RangeCheck Comparator="EQ" SoftHard="Soft" def:ItemOID="IT.TS.TSPARMCD">
+          <CheckValue>SSTYP</CheckValue>
+        </RangeCheck>
+      </def:WhereClauseDef>
+      <def:WhereClauseDef OID="WC.1987">
+        <RangeCheck Comparator="EQ" SoftHard="Soft" def:ItemOID="IT.TS.TSPARMCD">
+          <CheckValue>TFCNTRY</CheckValue>
+        </RangeCheck>
+      </def:WhereClauseDef>
+      <def:WhereClauseDef OID="WC.1988">
+        <RangeCheck Comparator="EQ" SoftHard="Soft" def:ItemOID="IT.TS.TSPARMCD">
+          <CheckValue>ENVTEMPU</CheckValue>
+        </RangeCheck>
+      </def:WhereClauseDef>
+      <def:WhereClauseDef OID="WC.1989">
+        <RangeCheck Comparator="EQ" SoftHard="Soft" def:ItemOID="IT.TS.TSPARMCD">
+          <CheckValue>HUMIDTU</CheckValue>
+        </RangeCheck>
+      </def:WhereClauseDef>
+      <def:WhereClauseDef OID="WC.1990">
+        <RangeCheck Comparator="EQ" SoftHard="Soft" def:ItemOID="IT.TS.TSPARMCD">
+          <CheckValue>MTHTRM</CheckValue>
+        </RangeCheck>
+      </def:WhereClauseDef>
+      <def:WhereClauseDef OID="WC.1991">
+        <RangeCheck Comparator="EQ" SoftHard="Soft" def:ItemOID="IT.TS.TSPARMCD">
+          <CheckValue>SRANDOM</CheckValue>
+        </RangeCheck>
+      </def:WhereClauseDef>
+      <def:WhereClauseDef OID="WC.1992">
+        <RangeCheck Comparator="EQ" SoftHard="Soft" def:ItemOID="IT.TS.TSPARMCD">
+          <CheckValue>SEXPOP</CheckValue>
+        </RangeCheck>
+      </def:WhereClauseDef>
+      <def:WhereClauseDef OID="WC.1993">
+        <RangeCheck Comparator="EQ" SoftHard="Soft" def:ItemOID="IT.TS.TSPARMCD">
+          <CheckValue>TSCNTRY</CheckValue>
+        </RangeCheck>
+      </def:WhereClauseDef>
+      <def:WhereClauseDef OID="WC.1994">
+        <RangeCheck Comparator="EQ" SoftHard="Soft" def:ItemOID="IT.TS.TSPARMCD">
+          <CheckValue>DOSDUR</CheckValue>
+        </RangeCheck>
+      </def:WhereClauseDef>
+      <def:WhereClauseDef OID="WC.1995">
+        <RangeCheck Comparator="EQ" SoftHard="Soft" def:ItemOID="IT.TS.TSPARMCD">
+          <CheckValue>EXPENDTC</CheckValue>
+        </RangeCheck>
+      </def:WhereClauseDef>
+      <def:WhereClauseDef OID="WC.1996">
+        <RangeCheck Comparator="EQ" SoftHard="Soft" def:ItemOID="IT.TS.TSPARMCD">
+          <CheckValue>EXPSTDTC</CheckValue>
+        </RangeCheck>
+      </def:WhereClauseDef>
+      <def:WhereClauseDef OID="WC.1997">
+        <RangeCheck Comparator="EQ" SoftHard="Soft" def:ItemOID="IT.TS.TSPARMCD">
+          <CheckValue>STSTDTC</CheckValue>
+        </RangeCheck>
+      </def:WhereClauseDef>
+      <def:WhereClauseDef OID="WC.1998">
+        <RangeCheck Comparator="EQ" SoftHard="Soft" def:ItemOID="IT.TS.TSPARMCD">
+          <CheckValue>TRMSAC</CheckValue>
+        </RangeCheck>
+      </def:WhereClauseDef>
+      <def:WhereClauseDef OID="WC.1999">
+        <RangeCheck Comparator="EQ" SoftHard="Soft" def:ItemOID="IT.TS.TSPARMCD">
+          <CheckValue>DOSENDTC</CheckValue>
+        </RangeCheck>
+      </def:WhereClauseDef>
+      <def:WhereClauseDef OID="WC.2000">
+        <RangeCheck Comparator="EQ" SoftHard="Soft" def:ItemOID="IT.TS.TSPARMCD">
+          <CheckValue>DOSSTDTC</CheckValue>
+        </RangeCheck>
+      </def:WhereClauseDef>
+      <def:WhereClauseDef OID="WC.2001">
+        <RangeCheck Comparator="EQ" SoftHard="Soft" def:ItemOID="IT.TS.TSPARMCD">
+          <CheckValue>INTSAC</CheckValue>
+        </RangeCheck>
+      </def:WhereClauseDef>
+      <def:WhereClauseDef OID="WC.2002">
+        <RangeCheck Comparator="EQ" SoftHard="Soft" def:ItemOID="IT.TS.TSPARMCD">
+          <CheckValue>SLENGTH</CheckValue>
+        </RangeCheck>
+      </def:WhereClauseDef>
+      <def:WhereClauseDef OID="WC.2003">
+        <RangeCheck Comparator="EQ" SoftHard="Soft" def:ItemOID="IT.TS.TSPARMCD">
+          <CheckValue>RECSAC</CheckValue>
+        </RangeCheck>
+      </def:WhereClauseDef>
+      <def:WhereClauseDef OID="WC.2004">
+        <RangeCheck Comparator="EQ" SoftHard="Soft" def:ItemOID="IT.TS.TSPARMCD">
+          <CheckValue>STENDTC</CheckValue>
+        </RangeCheck>
+      </def:WhereClauseDef>
+      <def:WhereClauseDef OID="WC.2005">
+        <RangeCheck Comparator="EQ" SoftHard="Soft" def:ItemOID="IT.TS.TSPARMCD">
+          <CheckValue>GLPFL</CheckValue>
+        </RangeCheck>
+      </def:WhereClauseDef>
+      <def:WhereClauseDef OID="WC.2006">
+        <RangeCheck Comparator="EQ" SoftHard="Soft" def:ItemOID="IT.TS.TSPARMCD">
+          <CheckValue>INTERIM</CheckValue>
+        </RangeCheck>
+      </def:WhereClauseDef>
+      <def:WhereClauseDef OID="WC.2007">
+        <RangeCheck Comparator="EQ" SoftHard="Soft" def:ItemOID="IT.TS.TSPARMCD">
+          <CheckValue>AGE</CheckValue>
+        </RangeCheck>
+      </def:WhereClauseDef>
+      <def:WhereClauseDef OID="WC.2008">
+        <RangeCheck Comparator="EQ" SoftHard="Soft" def:ItemOID="IT.TX.TXPARMCD">
+          <CheckValue>ENVTEMPU</CheckValue>
+        </RangeCheck>
+      </def:WhereClauseDef>
+      <def:WhereClauseDef OID="WC.2009">
+        <RangeCheck Comparator="EQ" SoftHard="Soft" def:ItemOID="IT.TX.TXPARMCD">
+          <CheckValue>MTHTRM</CheckValue>
+        </RangeCheck>
+      </def:WhereClauseDef>
+      <def:WhereClauseDef OID="WC.2010">
+        <RangeCheck Comparator="EQ" SoftHard="Soft" def:ItemOID="IT.TX.TXPARMCD">
+          <CheckValue>SPECIES</CheckValue>
+        </RangeCheck>
+      </def:WhereClauseDef>
+      <def:WhereClauseDef OID="WC.2011">
+        <RangeCheck Comparator="EQ" SoftHard="Soft" def:ItemOID="IT.TX.TXPARMCD">
+          <CheckValue>STRAIN</CheckValue>
+        </RangeCheck>
+      </def:WhereClauseDef>
+      <def:WhereClauseDef OID="WC.2012">
+        <RangeCheck Comparator="EQ" SoftHard="Soft" def:ItemOID="IT.TX.TXPARMCD">
+          <CheckValue>SEXPOP</CheckValue>
+        </RangeCheck>
+      </def:WhereClauseDef>
+      <def:WhereClauseDef OID="WC.2013">
+        <RangeCheck Comparator="EQ" SoftHard="Soft" def:ItemOID="IT.TX.TXPARMCD">
+          <CheckValue>HUMIDTU</CheckValue>
+        </RangeCheck>
+      </def:WhereClauseDef>
+      <def:WhereClauseDef OID="WC.2014">
+        <RangeCheck Comparator="EQ" SoftHard="Soft" def:ItemOID="IT.TX.TXPARMCD">
+          <CheckValue>DOSENDTC</CheckValue>
+        </RangeCheck>
+      </def:WhereClauseDef>
+      <def:WhereClauseDef OID="WC.2015">
+        <RangeCheck Comparator="EQ" SoftHard="Soft" def:ItemOID="IT.TX.TXPARMCD">
+          <CheckValue>DOSSTDTC</CheckValue>
+        </RangeCheck>
+      </def:WhereClauseDef>
+      <def:WhereClauseDef OID="WC.2016">
+        <RangeCheck Comparator="EQ" SoftHard="Soft" def:ItemOID="IT.TX.TXPARMCD">
+          <CheckValue>TRTDOSU</CheckValue>
+        </RangeCheck>
+      </def:WhereClauseDef>
+      <def:WhereClauseDef OID="WC.2017">
+        <RangeCheck Comparator="EQ" SoftHard="Soft" def:ItemOID="IT.TX.TXPARMCD">
+          <CheckValue>PLANFSUB</CheckValue>
+        </RangeCheck>
+      </def:WhereClauseDef>
+      <def:WhereClauseDef OID="WC.2018">
+        <RangeCheck Comparator="EQ" SoftHard="Soft" def:ItemOID="IT.TX.TXPARMCD">
+          <CheckValue>PLANMSUB</CheckValue>
+        </RangeCheck>
+      </def:WhereClauseDef>
+      <def:WhereClauseDef OID="WC.2019">
+        <RangeCheck Comparator="EQ" SoftHard="Soft" def:ItemOID="IT.TX.TXPARMCD">
+          <CheckValue>SPLANSUB</CheckValue>
+        </RangeCheck>
+      </def:WhereClauseDef>
+      <ItemGroupDef Domain="TA" IsReferenceData="Yes" Name="TA" OID="IG.TA" Purpose="Tabulation" Repeating="No" SASDatasetName="TA" def:ArchiveLocationID="LF.TA" def:Class="TRIAL DESIGN" def:Structure="One record per planned Element per Arm">
+        <Description>
+          <TranslatedText xml:lang="en">Trial Arms</TranslatedText>
+        </Description>
+        <ItemRef ItemOID="IT.STUDYID" KeySequence="1" Mandatory="Yes" OrderNumber="1"/>
+        <ItemRef ItemOID="IT.TA.DOMAIN" Mandatory="Yes" OrderNumber="2"/>
+        <ItemRef ItemOID="IT.TA.ARMCD" KeySequence="2" Mandatory="Yes" OrderNumber="3"/>
+        <ItemRef ItemOID="IT.TA.ARM" Mandatory="Yes" OrderNumber="4"/>
+        <ItemRef ItemOID="IT.TA.TAETORD" KeySequence="3" Mandatory="Yes" OrderNumber="5"/>
+        <ItemRef ItemOID="IT.TA.ETCD" Mandatory="Yes" OrderNumber="6"/>
+        <ItemRef ItemOID="IT.TA.ELEMENT" Mandatory="Yes" OrderNumber="7"/>
+        <ItemRef ItemOID="IT.TA.TABRANCH" Mandatory="Yes" OrderNumber="8"/>
+        <ItemRef ItemOID="IT.TA.TATRANS" Mandatory="Yes" OrderNumber="9"/>
+        <ItemRef ItemOID="IT.TA.EPOCH" Mandatory="Yes" OrderNumber="10"/>
+        <def:leaf ID="LF.TA" xlink:href="ta.xpt">
+          <def:title>ta.xpt</def:title>
+        </def:leaf>
+      </ItemGroupDef>
+      <ItemGroupDef Domain="TE" IsReferenceData="Yes" Name="TE" OID="IG.TE" Purpose="Tabulation" Repeating="No" SASDatasetName="TE" def:ArchiveLocationID="LF.TE" def:Class="TRIAL DESIGN" def:Structure="One record per planned Element">
+        <Description>
+          <TranslatedText xml:lang="en">Trial Elements</TranslatedText>
+        </Description>
+        <ItemRef ItemOID="IT.STUDYID" KeySequence="1" Mandatory="Yes" OrderNumber="1"/>
+        <ItemRef ItemOID="IT.TE.DOMAIN" Mandatory="Yes" OrderNumber="2"/>
+        <ItemRef ItemOID="IT.TE.ETCD" KeySequence="2" Mandatory="Yes" OrderNumber="3"/>
+        <ItemRef ItemOID="IT.TE.ELEMENT" Mandatory="Yes" OrderNumber="4"/>
+        <ItemRef ItemOID="IT.TE.TESTRL" Mandatory="Yes" OrderNumber="5"/>
+        <ItemRef ItemOID="IT.TE.TEENRL" Mandatory="Yes" OrderNumber="6"/>
+        <ItemRef ItemOID="IT.TE.TEDUR" Mandatory="Yes" OrderNumber="7"/>
+        <def:leaf ID="LF.TE" xlink:href="te.xpt">
+          <def:title>te.xpt</def:title>
+        </def:leaf>
+      </ItemGroupDef>
+      <ItemGroupDef Domain="TS" IsReferenceData="Yes" Name="TS" OID="IG.TS" Purpose="Tabulation" Repeating="No" SASDatasetName="TS" def:ArchiveLocationID="LF.TS" def:Class="TRIAL DESIGN" def:Structure="One record per Trial Summary parameter value">
+        <Description>
+          <TranslatedText xml:lang="en">Trial Summary</TranslatedText>
+        </Description>
+        <ItemRef ItemOID="IT.STUDYID" KeySequence="1" Mandatory="Yes" OrderNumber="1"/>
+        <ItemRef ItemOID="IT.TS.DOMAIN" Mandatory="Yes" OrderNumber="2"/>
+        <ItemRef ItemOID="IT.TS.TSSEQ" KeySequence="3" Mandatory="Yes" OrderNumber="3"/>
+        <ItemRef ItemOID="IT.TS.TSGRPID" Mandatory="Yes" OrderNumber="4"/>
+        <ItemRef ItemOID="IT.TS.TSPARMCD" KeySequence="2" Mandatory="Yes" OrderNumber="5"/>
+        <ItemRef ItemOID="IT.TS.TSPARM" Mandatory="Yes" OrderNumber="6"/>
+        <ItemRef ItemOID="IT.TS.TSVAL" Mandatory="Yes" OrderNumber="7"/>
+        <ItemRef ItemOID="IT.TS.TSVALNF" Mandatory="Yes" OrderNumber="8"/>
+        <def:leaf ID="LF.TS" xlink:href="ts.xpt">
+          <def:title>ts.xpt</def:title>
+        </def:leaf>
+      </ItemGroupDef>
+      <ItemGroupDef Domain="TX" IsReferenceData="Yes" Name="TX" OID="IG.TX" Purpose="Tabulation" Repeating="No" SASDatasetName="TX" def:ArchiveLocationID="LF.TX" def:Class="TRIAL DESIGN" def:Structure="One record per Trial Set parameter per Trial Set">
+        <Description>
+          <TranslatedText xml:lang="en">Trial Sets</TranslatedText>
+        </Description>
+        <ItemRef ItemOID="IT.STUDYID" KeySequence="1" Mandatory="Yes" OrderNumber="1"/>
+        <ItemRef ItemOID="IT.TX.DOMAIN" Mandatory="Yes" OrderNumber="2"/>
+        <ItemRef ItemOID="IT.TX.SETCD" KeySequence="2" Mandatory="Yes" OrderNumber="3"/>
+        <ItemRef ItemOID="IT.TX.SET" Mandatory="Yes" OrderNumber="4"/>
+        <ItemRef ItemOID="IT.TX.TXSEQ" Mandatory="Yes" OrderNumber="5"/>
+        <ItemRef ItemOID="IT.TX.TXPARMCD" KeySequence="3" Mandatory="Yes" OrderNumber="6"/>
+        <ItemRef ItemOID="IT.TX.TXPARM" Mandatory="Yes" OrderNumber="7"/>
+        <ItemRef ItemOID="IT.TX.TXVAL" Mandatory="Yes" OrderNumber="8"/>
+        <def:leaf ID="LF.TX" xlink:href="tx.xpt">
+          <def:title>tx.xpt</def:title>
+        </def:leaf>
+      </ItemGroupDef>
+      <ItemGroupDef Domain="CO" IsReferenceData="No" Name="CO" OID="IG.CO" Purpose="Tabulation" Repeating="Yes" SASDatasetName="CO" def:ArchiveLocationID="LF.CO" def:Class="SPECIAL PURPOSE" def:Structure="One record per comment">
+        <Description>
+          <TranslatedText xml:lang="en">Comments</TranslatedText>
+        </Description>
+        <ItemRef ItemOID="IT.STUDYID" KeySequence="1" Mandatory="Yes" OrderNumber="1"/>
+        <ItemRef ItemOID="IT.CO.DOMAIN" Mandatory="Yes" OrderNumber="2"/>
+        <ItemRef ItemOID="IT.CO.RDOMAIN" Mandatory="Yes" OrderNumber="3"/>
+        <ItemRef ItemOID="IT.CO.USUBJID" Mandatory="Yes" OrderNumber="4"/>
+        <ItemRef ItemOID="IT.CO.POOLID" Mandatory="Yes" OrderNumber="5"/>
+        <ItemRef ItemOID="IT.CO.COSEQ" KeySequence="2" Mandatory="Yes" OrderNumber="6"/>
+        <ItemRef ItemOID="IT.CO.IDVAR" Mandatory="Yes" OrderNumber="7"/>
+        <ItemRef ItemOID="IT.CO.IDVARVAL" Mandatory="Yes" OrderNumber="8"/>
+        <ItemRef ItemOID="IT.CO.COREF" Mandatory="Yes" OrderNumber="9"/>
+        <ItemRef ItemOID="IT.CO.COVAL" Mandatory="Yes" OrderNumber="10"/>
+        <ItemRef ItemOID="IT.CO.COEVAL" Mandatory="Yes" OrderNumber="11"/>
+        <ItemRef ItemOID="IT.CO.CODTC" Mandatory="Yes" OrderNumber="12"/>
+        <ItemRef ItemOID="IT.CO.CODY" Mandatory="Yes" OrderNumber="13"/>
+        <def:leaf ID="LF.CO" xlink:href="co.xpt">
+          <def:title>co.xpt</def:title>
+        </def:leaf>
+      </ItemGroupDef>
+      <ItemGroupDef Domain="DM" IsReferenceData="No" Name="DM" OID="IG.DM" Purpose="Tabulation" Repeating="No" SASDatasetName="DM" def:ArchiveLocationID="LF.DM" def:Class="SPECIAL PURPOSE" def:Structure="One record per subject">
+        <Description>
+          <TranslatedText xml:lang="en">Demographics</TranslatedText>
+        </Description>
+        <ItemRef ItemOID="IT.STUDYID" KeySequence="1" Mandatory="Yes" OrderNumber="1"/>
+        <ItemRef ItemOID="IT.DM.DOMAIN" Mandatory="Yes" OrderNumber="2"/>
+        <ItemRef ItemOID="IT.DM.USUBJID" KeySequence="2" Mandatory="Yes" OrderNumber="3"/>
+        <ItemRef ItemOID="IT.DM.SUBJID" Mandatory="Yes" OrderNumber="4"/>
+        <ItemRef ItemOID="IT.DM.RFSTDTC" Mandatory="Yes" OrderNumber="5"/>
+        <ItemRef ItemOID="IT.DM.RFENDTC" Mandatory="Yes" OrderNumber="6"/>
+        <ItemRef ItemOID="IT.DM.RFXSTDTC" Mandatory="Yes" OrderNumber="7"/>
+        <ItemRef ItemOID="IT.DM.RFXENDTC" Mandatory="Yes" OrderNumber="8"/>
+        <ItemRef ItemOID="IT.DM.SITEID" Mandatory="Yes" OrderNumber="9"/>
+        <ItemRef ItemOID="IT.DM.BRTHDTC" Mandatory="Yes" OrderNumber="10"/>
+        <ItemRef ItemOID="IT.DM.AGE" Mandatory="Yes" OrderNumber="11"/>
+        <ItemRef ItemOID="IT.DM.AGETXT" Mandatory="Yes" OrderNumber="12"/>
+        <ItemRef ItemOID="IT.DM.AGEU" Mandatory="Yes" OrderNumber="13"/>
+        <ItemRef ItemOID="IT.DM.SEX" Mandatory="Yes" OrderNumber="14"/>
+        <ItemRef ItemOID="IT.DM.SPECIES" Mandatory="Yes" OrderNumber="15"/>
+        <ItemRef ItemOID="IT.DM.STRAIN" Mandatory="Yes" OrderNumber="16"/>
+        <ItemRef ItemOID="IT.DM.SBSTRAIN" Mandatory="Yes" OrderNumber="17"/>
+        <ItemRef ItemOID="IT.DM.ARMCD" Mandatory="Yes" OrderNumber="18"/>
+        <ItemRef ItemOID="IT.DM.ARM" Mandatory="Yes" OrderNumber="19"/>
+        <ItemRef ItemOID="IT.DM.SETCD" Mandatory="Yes" OrderNumber="20"/>
+        <def:leaf ID="LF.DM" xlink:href="dm.xpt">
+          <def:title>dm.xpt</def:title>
+        </def:leaf>
+      </ItemGroupDef>
+      <ItemGroupDef Domain="SE" IsReferenceData="No" Name="SE" OID="IG.SE" Purpose="Tabulation" Repeating="Yes" SASDatasetName="SE" def:ArchiveLocationID="LF.SE" def:Class="SPECIAL PURPOSE" def:Structure="One record per element experienced per subject">
+        <Description>
+          <TranslatedText xml:lang="en">Subject Elements</TranslatedText>
+        </Description>
+        <ItemRef ItemOID="IT.STUDYID" KeySequence="1" Mandatory="Yes" OrderNumber="1"/>
+        <ItemRef ItemOID="IT.SE.DOMAIN" Mandatory="Yes" OrderNumber="2"/>
+        <ItemRef ItemOID="IT.SE.USUBJID" KeySequence="2" Mandatory="Yes" OrderNumber="3"/>
+        <ItemRef ItemOID="IT.SE.SESEQ" Mandatory="Yes" OrderNumber="4"/>
+        <ItemRef ItemOID="IT.SE.ETCD" KeySequence="3" Mandatory="Yes" OrderNumber="5"/>
+        <ItemRef ItemOID="IT.SE.ELEMENT" Mandatory="Yes" OrderNumber="6"/>
+        <ItemRef ItemOID="IT.SE.SESTDTC" KeySequence="4" Mandatory="Yes" OrderNumber="7"/>
+        <ItemRef ItemOID="IT.SE.SEENDTC" Mandatory="Yes" OrderNumber="8"/>
+        <ItemRef ItemOID="IT.SE.SEUPDES" Mandatory="Yes" OrderNumber="9"/>
+        <def:leaf ID="LF.SE" xlink:href="se.xpt">
+          <def:title>se.xpt</def:title>
+        </def:leaf>
+      </ItemGroupDef>
+      <ItemGroupDef Domain="EX" IsReferenceData="No" Name="EX" OID="IG.EX" Purpose="Tabulation" Repeating="Yes" SASDatasetName="EX" def:ArchiveLocationID="LF.EX" def:Class="INTERVENTIONS" def:Structure="One record per constant dosing interval per treatment per subject or pool">
+        <Description>
+          <TranslatedText xml:lang="en">Exposure</TranslatedText>
+        </Description>
+        <ItemRef ItemOID="IT.STUDYID" KeySequence="1" Mandatory="Yes" OrderNumber="1"/>
+        <ItemRef ItemOID="IT.EX.DOMAIN" Mandatory="Yes" OrderNumber="2"/>
+        <ItemRef ItemOID="IT.EX.USUBJID" KeySequence="2" Mandatory="Yes" OrderNumber="3"/>
+        <ItemRef ItemOID="IT.EX.POOLID" Mandatory="Yes" OrderNumber="4"/>
+        <ItemRef ItemOID="IT.EX.FOCID" Mandatory="Yes" OrderNumber="5"/>
+        <ItemRef ItemOID="IT.EX.EXSEQ" Mandatory="Yes" OrderNumber="6"/>
+        <ItemRef ItemOID="IT.EX.EXTRT" KeySequence="3" Mandatory="Yes" OrderNumber="7"/>
+        <ItemRef ItemOID="IT.EX.EXDOSE" Mandatory="Yes" OrderNumber="8"/>
+        <ItemRef ItemOID="IT.EX.EXDOSTXT" Mandatory="Yes" OrderNumber="9"/>
+        <ItemRef ItemOID="IT.EX.EXDOSU" Mandatory="Yes" OrderNumber="10"/>
+        <ItemRef ItemOID="IT.EX.EXDOSFRM" Mandatory="Yes" OrderNumber="11"/>
+        <ItemRef ItemOID="IT.EX.EXDOSFRQ" Mandatory="Yes" OrderNumber="12"/>
+        <ItemRef ItemOID="IT.EX.EXROUTE" Mandatory="Yes" OrderNumber="13"/>
+        <ItemRef ItemOID="IT.EX.EXLOT" Mandatory="Yes" OrderNumber="14"/>
+        <ItemRef ItemOID="IT.EX.EXLOC" Mandatory="Yes" OrderNumber="15"/>
+        <ItemRef ItemOID="IT.EX.EXMETHOD" Mandatory="Yes" OrderNumber="16"/>
+        <ItemRef ItemOID="IT.EX.EXTRTV" Mandatory="Yes" OrderNumber="17"/>
+        <ItemRef ItemOID="IT.EX.EXVAMT" Mandatory="Yes" OrderNumber="18"/>
+        <ItemRef ItemOID="IT.EX.EXVAMTU" Mandatory="Yes" OrderNumber="19"/>
+        <ItemRef ItemOID="IT.EX.EXADJ" Mandatory="Yes" OrderNumber="20"/>
+        <ItemRef ItemOID="IT.EX.EXSTDTC" KeySequence="4" Mandatory="Yes" OrderNumber="21"/>
+        <ItemRef ItemOID="IT.EX.EXENDTC" Mandatory="Yes" OrderNumber="22"/>
+        <ItemRef ItemOID="IT.EX.EXSTDY" Mandatory="Yes" OrderNumber="23"/>
+        <ItemRef ItemOID="IT.EX.EXENDY" Mandatory="Yes" OrderNumber="24"/>
+        <ItemRef ItemOID="IT.EX.EXDUR" Mandatory="Yes" OrderNumber="25"/>
+        <ItemRef ItemOID="IT.EX.EXTPT" Mandatory="Yes" OrderNumber="26"/>
+        <ItemRef ItemOID="IT.EX.EXTPTNUM" Mandatory="Yes" OrderNumber="27"/>
+        <ItemRef ItemOID="IT.EX.EXELTM" Mandatory="Yes" OrderNumber="28"/>
+        <ItemRef ItemOID="IT.EX.EXTPTREF" Mandatory="Yes" OrderNumber="29"/>
+        <ItemRef ItemOID="IT.EX.EXRFTDTC" Mandatory="Yes" OrderNumber="30"/>
+        <def:leaf ID="LF.EX" xlink:href="ex.xpt">
+          <def:title>ex.xpt</def:title>
+        </def:leaf>
+      </ItemGroupDef>
+      <ItemGroupDef Domain="DS" IsReferenceData="No" Name="DS" OID="IG.DS" Purpose="Tabulation" Repeating="No" SASDatasetName="DS" def:ArchiveLocationID="LF.DS" def:Class="EVENTS" def:Structure="One record per subject">
+        <Description>
+          <TranslatedText xml:lang="en">Disposition</TranslatedText>
+        </Description>
+        <ItemRef ItemOID="IT.STUDYID" KeySequence="1" Mandatory="Yes" OrderNumber="1"/>
+        <ItemRef ItemOID="IT.DS.DOMAIN" Mandatory="Yes" OrderNumber="2"/>
+        <ItemRef ItemOID="IT.DS.USUBJID" KeySequence="2" Mandatory="Yes" OrderNumber="3"/>
+        <ItemRef ItemOID="IT.DS.DSSEQ" Mandatory="Yes" OrderNumber="4"/>
+        <ItemRef ItemOID="IT.DS.DSTERM" Mandatory="Yes" OrderNumber="5"/>
+        <ItemRef ItemOID="IT.DS.DSDECOD" Mandatory="Yes" OrderNumber="6"/>
+        <ItemRef ItemOID="IT.DS.DSUSCHFL" Mandatory="Yes" OrderNumber="7"/>
+        <ItemRef ItemOID="IT.DS.VISITDY" Mandatory="Yes" OrderNumber="8"/>
+        <ItemRef ItemOID="IT.DS.DSSTDTC" Mandatory="Yes" OrderNumber="9"/>
+        <ItemRef ItemOID="IT.DS.DSSTDY" Mandatory="Yes" OrderNumber="10"/>
+        <ItemRef ItemOID="IT.DS.DSNOMDY" Mandatory="Yes" OrderNumber="11"/>
+        <ItemRef ItemOID="IT.DS.DSNOMLBL" Mandatory="Yes" OrderNumber="12"/>
+        <def:leaf ID="LF.DS" xlink:href="ds.xpt">
+          <def:title>ds.xpt</def:title>
+        </def:leaf>
+      </ItemGroupDef>
+      <ItemGroupDef Domain="BG" IsReferenceData="No" Name="BG" OID="IG.BG" Purpose="Tabulation" Repeating="Yes" SASDatasetName="BG" def:ArchiveLocationID="LF.BG" def:Class="FINDINGS" def:Structure="One record per test per interval per subject">
+        <Description>
+          <TranslatedText xml:lang="en">Body Weight Gains</TranslatedText>
+        </Description>
+        <ItemRef ItemOID="IT.STUDYID" KeySequence="1" Mandatory="Yes" OrderNumber="1"/>
+        <ItemRef ItemOID="IT.BG.DOMAIN" Mandatory="Yes" OrderNumber="2"/>
+        <ItemRef ItemOID="IT.BG.USUBJID" KeySequence="2" Mandatory="Yes" OrderNumber="3"/>
+        <ItemRef ItemOID="IT.BG.BGSEQ" Mandatory="Yes" OrderNumber="4"/>
+        <ItemRef ItemOID="IT.BG.BGTESTCD" KeySequence="3" Mandatory="Yes" OrderNumber="5"/>
+        <ItemRef ItemOID="IT.BG.BGTEST" Mandatory="Yes" OrderNumber="6"/>
+        <ItemRef ItemOID="IT.BG.BGORRES" Mandatory="Yes" OrderNumber="7"/>
+        <ItemRef ItemOID="IT.BG.BGORRESU" Mandatory="Yes" OrderNumber="8"/>
+        <ItemRef ItemOID="IT.BG.BGSTRESC" Mandatory="Yes" OrderNumber="9"/>
+        <ItemRef ItemOID="IT.BG.BGSTRESN" Mandatory="Yes" OrderNumber="10"/>
+        <ItemRef ItemOID="IT.BG.BGSTRESU" Mandatory="Yes" OrderNumber="11"/>
+        <ItemRef ItemOID="IT.BG.BGSTAT" Mandatory="Yes" OrderNumber="12"/>
+        <ItemRef ItemOID="IT.BG.BGREASND" Mandatory="Yes" OrderNumber="13"/>
+        <ItemRef ItemOID="IT.BG.BGEXCLFL" Mandatory="Yes" OrderNumber="14"/>
+        <ItemRef ItemOID="IT.BG.BGREASEX" Mandatory="Yes" OrderNumber="15"/>
+        <ItemRef ItemOID="IT.BG.BGUSCHFL" Mandatory="Yes" OrderNumber="16"/>
+        <ItemRef ItemOID="IT.BG.BGDTC" KeySequence="4" Mandatory="Yes" OrderNumber="17"/>
+        <ItemRef ItemOID="IT.BG.BGENDTC" KeySequence="5" Mandatory="Yes" OrderNumber="18"/>
+        <ItemRef ItemOID="IT.BG.BGDY" Mandatory="Yes" OrderNumber="19"/>
+        <ItemRef ItemOID="IT.BG.BGENDY" Mandatory="Yes" OrderNumber="20"/>
+        <def:leaf ID="LF.BG" xlink:href="bg.xpt">
+          <def:title>bg.xpt</def:title>
+        </def:leaf>
+      </ItemGroupDef>
+      <ItemGroupDef Domain="BW" IsReferenceData="No" Name="BW" OID="IG.BW" Purpose="Tabulation" Repeating="Yes" SASDatasetName="BW" def:ArchiveLocationID="LF.BW" def:Class="FINDINGS" def:Structure="One record per test per observation time per subject">
+        <Description>
+          <TranslatedText xml:lang="en">Body Weights</TranslatedText>
+        </Description>
+        <ItemRef ItemOID="IT.STUDYID" KeySequence="1" Mandatory="Yes" OrderNumber="1"/>
+        <ItemRef ItemOID="IT.BW.DOMAIN" Mandatory="Yes" OrderNumber="2"/>
+        <ItemRef ItemOID="IT.BW.USUBJID" KeySequence="2" Mandatory="Yes" OrderNumber="3"/>
+        <ItemRef ItemOID="IT.BW.BWSEQ" Mandatory="Yes" OrderNumber="4"/>
+        <ItemRef ItemOID="IT.BW.BWTESTCD" KeySequence="3" Mandatory="Yes" OrderNumber="5"/>
+        <ItemRef ItemOID="IT.BW.BWTEST" Mandatory="Yes" OrderNumber="6"/>
+        <ItemRef ItemOID="IT.BW.BWORRES" Mandatory="Yes" OrderNumber="7"/>
+        <ItemRef ItemOID="IT.BW.BWORRESU" Mandatory="Yes" OrderNumber="8"/>
+        <ItemRef ItemOID="IT.BW.BWSTRESC" Mandatory="Yes" OrderNumber="9"/>
+        <ItemRef ItemOID="IT.BW.BWSTRESN" Mandatory="Yes" OrderNumber="10"/>
+        <ItemRef ItemOID="IT.BW.BWSTRESU" Mandatory="Yes" OrderNumber="11"/>
+        <ItemRef ItemOID="IT.BW.BWSTAT" Mandatory="Yes" OrderNumber="12"/>
+        <ItemRef ItemOID="IT.BW.BWREASND" Mandatory="Yes" OrderNumber="13"/>
+        <ItemRef ItemOID="IT.BW.BWBLFL" Mandatory="Yes" OrderNumber="14"/>
+        <ItemRef ItemOID="IT.BW.BWFAST" Mandatory="Yes" OrderNumber="15"/>
+        <ItemRef ItemOID="IT.BW.BWEXCLFL" Mandatory="Yes" OrderNumber="16"/>
+        <ItemRef ItemOID="IT.BW.BWREASEX" Mandatory="Yes" OrderNumber="17"/>
+        <ItemRef ItemOID="IT.BW.BWUSCHFL" Mandatory="Yes" OrderNumber="18"/>
+        <ItemRef ItemOID="IT.BW.VISITDY" Mandatory="Yes" OrderNumber="19"/>
+        <ItemRef ItemOID="IT.BW.BWDTC" KeySequence="4" Mandatory="Yes" OrderNumber="20"/>
+        <ItemRef ItemOID="IT.BW.BWDY" Mandatory="Yes" OrderNumber="21"/>
+        <ItemRef ItemOID="IT.BW.BWNOMDY" Mandatory="Yes" OrderNumber="22"/>
+        <ItemRef ItemOID="IT.BW.BWNOMLBL" Mandatory="Yes" OrderNumber="23"/>
+        <def:leaf ID="LF.BW" xlink:href="bw.xpt">
+          <def:title>bw.xpt</def:title>
+        </def:leaf>
+      </ItemGroupDef>
+      <ItemGroupDef Domain="CL" IsReferenceData="No" Name="CL" OID="IG.CL" Purpose="Tabulation" Repeating="Yes" SASDatasetName="CL" def:ArchiveLocationID="LF.CL" def:Class="FINDINGS" def:Structure="One record per finding per observation time per subject or pool">
+        <Description>
+          <TranslatedText xml:lang="en">Clinical Observations</TranslatedText>
+        </Description>
+        <ItemRef ItemOID="IT.STUDYID" KeySequence="1" Mandatory="Yes" OrderNumber="1"/>
+        <ItemRef ItemOID="IT.CL.DOMAIN" Mandatory="Yes" OrderNumber="2"/>
+        <ItemRef ItemOID="IT.CL.USUBJID" KeySequence="2" Mandatory="Yes" OrderNumber="3"/>
+        <ItemRef ItemOID="IT.CL.POOLID" Mandatory="Yes" OrderNumber="4"/>
+        <ItemRef ItemOID="IT.CL.FOCID" Mandatory="Yes" OrderNumber="5"/>
+        <ItemRef ItemOID="IT.CL.CLSEQ" Mandatory="Yes" OrderNumber="6"/>
+        <ItemRef ItemOID="IT.CL.CLGRPID" Mandatory="Yes" OrderNumber="7"/>
+        <ItemRef ItemOID="IT.CL.CLSPID" Mandatory="Yes" OrderNumber="8"/>
+        <ItemRef ItemOID="IT.CL.CLTESTCD" KeySequence="3" Mandatory="Yes" OrderNumber="9"/>
+        <ItemRef ItemOID="IT.CL.CLTEST" Mandatory="Yes" OrderNumber="10"/>
+        <ItemRef ItemOID="IT.CL.CLCAT" KeySequence="4" Mandatory="Yes" OrderNumber="11"/>
+        <ItemRef ItemOID="IT.CL.CLSCAT" Mandatory="Yes" OrderNumber="12"/>
+        <ItemRef ItemOID="IT.CL.CLBODSYS" Mandatory="Yes" OrderNumber="13"/>
+        <ItemRef ItemOID="IT.CL.CLORRES" KeySequence="5" Mandatory="Yes" OrderNumber="14"/>
+        <ItemRef ItemOID="IT.CL.CLSTRESC" Mandatory="Yes" OrderNumber="15"/>
+        <ItemRef ItemOID="IT.CL.CLRESCAT" Mandatory="Yes" OrderNumber="16"/>
+        <ItemRef ItemOID="IT.CL.CLSTAT" Mandatory="Yes" OrderNumber="17"/>
+        <ItemRef ItemOID="IT.CL.CLREASND" Mandatory="Yes" OrderNumber="18"/>
+        <ItemRef ItemOID="IT.CL.CLLOC" KeySequence="6" Mandatory="Yes" OrderNumber="19"/>
+        <ItemRef ItemOID="IT.CL.CLEVAL" Mandatory="Yes" OrderNumber="20"/>
+        <ItemRef ItemOID="IT.CL.CLSEV" Mandatory="Yes" OrderNumber="21"/>
+        <ItemRef ItemOID="IT.CL.CLEXCLFL" Mandatory="Yes" OrderNumber="22"/>
+        <ItemRef ItemOID="IT.CL.CLREASEX" Mandatory="Yes" OrderNumber="23"/>
+        <ItemRef ItemOID="IT.CL.CLUSCHFL" Mandatory="Yes" OrderNumber="24"/>
+        <ItemRef ItemOID="IT.CL.VISITDY" Mandatory="Yes" OrderNumber="25"/>
+        <ItemRef ItemOID="IT.CL.CLDTC" KeySequence="7" Mandatory="Yes" OrderNumber="26"/>
+        <ItemRef ItemOID="IT.CL.CLENDTC" Mandatory="Yes" OrderNumber="27"/>
+        <ItemRef ItemOID="IT.CL.CLDY" Mandatory="Yes" OrderNumber="28"/>
+        <ItemRef ItemOID="IT.CL.CLENDY" Mandatory="Yes" OrderNumber="29"/>
+        <ItemRef ItemOID="IT.CL.CLNOMDY" Mandatory="Yes" OrderNumber="30"/>
+        <ItemRef ItemOID="IT.CL.CLNOMLBL" Mandatory="Yes" OrderNumber="31"/>
+        <ItemRef ItemOID="IT.CL.CLTPT" Mandatory="Yes" OrderNumber="32"/>
+        <ItemRef ItemOID="IT.CL.CLTPTNUM" Mandatory="Yes" OrderNumber="33"/>
+        <ItemRef ItemOID="IT.CL.CLELTM" Mandatory="Yes" OrderNumber="34"/>
+        <ItemRef ItemOID="IT.CL.CLTPTREF" Mandatory="Yes" OrderNumber="35"/>
+        <ItemRef ItemOID="IT.CL.CLRFTDTC" Mandatory="Yes" OrderNumber="36"/>
+        <def:leaf ID="LF.CL" xlink:href="cl.xpt">
+          <def:title>cl.xpt</def:title>
+        </def:leaf>
+      </ItemGroupDef>
+      <ItemGroupDef Domain="FW" IsReferenceData="No" Name="FW" OID="IG.FW" Purpose="Tabulation" Repeating="Yes" SASDatasetName="FW" def:ArchiveLocationID="LF.FW" def:Class="FINDINGS" def:Structure="One record per test per interval per subject or pool">
+        <Description>
+          <TranslatedText xml:lang="en">Food and Water Consumption</TranslatedText>
+        </Description>
+        <ItemRef ItemOID="IT.STUDYID" KeySequence="1" Mandatory="Yes" OrderNumber="1"/>
+        <ItemRef ItemOID="IT.FW.DOMAIN" Mandatory="Yes" OrderNumber="2"/>
+        <ItemRef ItemOID="IT.FW.USUBJID" KeySequence="2" Mandatory="Yes" OrderNumber="3"/>
+        <ItemRef ItemOID="IT.FW.POOLID" Mandatory="Yes" OrderNumber="4"/>
+        <ItemRef ItemOID="IT.FW.FWSEQ" Mandatory="Yes" OrderNumber="5"/>
+        <ItemRef ItemOID="IT.FW.FWGRPID" Mandatory="Yes" OrderNumber="6"/>
+        <ItemRef ItemOID="IT.FW.FWTESTCD" KeySequence="3" Mandatory="Yes" OrderNumber="7"/>
+        <ItemRef ItemOID="IT.FW.FWTEST" Mandatory="Yes" OrderNumber="8"/>
+        <ItemRef ItemOID="IT.FW.FWORRES" Mandatory="Yes" OrderNumber="9"/>
+        <ItemRef ItemOID="IT.FW.FWORRESU" Mandatory="Yes" OrderNumber="10"/>
+        <ItemRef ItemOID="IT.FW.FWSTRESC" Mandatory="Yes" OrderNumber="11"/>
+        <ItemRef ItemOID="IT.FW.FWSTRESN" Mandatory="Yes" OrderNumber="12"/>
+        <ItemRef ItemOID="IT.FW.FWSTRESU" Mandatory="Yes" OrderNumber="13"/>
+        <ItemRef ItemOID="IT.FW.FWSTAT" Mandatory="Yes" OrderNumber="14"/>
+        <ItemRef ItemOID="IT.FW.FWREASND" Mandatory="Yes" OrderNumber="15"/>
+        <ItemRef ItemOID="IT.FW.FWEXCLFL" Mandatory="Yes" OrderNumber="16"/>
+        <ItemRef ItemOID="IT.FW.FWREASEX" Mandatory="Yes" OrderNumber="17"/>
+        <ItemRef ItemOID="IT.FW.FWDTC" KeySequence="4" Mandatory="Yes" OrderNumber="18"/>
+        <ItemRef ItemOID="IT.FW.FWENDTC" KeySequence="5" Mandatory="Yes" OrderNumber="19"/>
+        <ItemRef ItemOID="IT.FW.FWDY" Mandatory="Yes" OrderNumber="20"/>
+        <ItemRef ItemOID="IT.FW.FWENDY" Mandatory="Yes" OrderNumber="21"/>
+        <def:leaf ID="LF.FW" xlink:href="fw.xpt">
+          <def:title>fw.xpt</def:title>
+        </def:leaf>
+      </ItemGroupDef>
+      <ItemGroupDef Domain="LB" IsReferenceData="No" Name="LB" OID="IG.LB" Purpose="Tabulation" Repeating="Yes" SASDatasetName="LB" def:ArchiveLocationID="LF.LB" def:Class="FINDINGS" def:Structure="One record per test per specimen per observation time per subject or pool">
+        <Description>
+          <TranslatedText xml:lang="en">Laboratory</TranslatedText>
+        </Description>
+        <ItemRef ItemOID="IT.STUDYID" KeySequence="1" Mandatory="Yes" OrderNumber="1"/>
+        <ItemRef ItemOID="IT.LB.DOMAIN" Mandatory="Yes" OrderNumber="2"/>
+        <ItemRef ItemOID="IT.LB.USUBJID" KeySequence="2" Mandatory="Yes" OrderNumber="3"/>
+        <ItemRef ItemOID="IT.LB.POOLID" Mandatory="Yes" OrderNumber="4"/>
+        <ItemRef ItemOID="IT.LB.LBSEQ" Mandatory="Yes" OrderNumber="5"/>
+        <ItemRef ItemOID="IT.LB.LBGRPID" Mandatory="Yes" OrderNumber="6"/>
+        <ItemRef ItemOID="IT.LB.LBREFID" Mandatory="Yes" OrderNumber="7"/>
+        <ItemRef ItemOID="IT.LB.LBSPID" Mandatory="Yes" OrderNumber="8"/>
+        <ItemRef ItemOID="IT.LB.LBTESTCD" KeySequence="3" Mandatory="Yes" OrderNumber="9"/>
+        <ItemRef ItemOID="IT.LB.LBTEST" Mandatory="Yes" OrderNumber="10"/>
+        <ItemRef ItemOID="IT.LB.LBCAT" Mandatory="Yes" OrderNumber="11"/>
+        <ItemRef ItemOID="IT.LB.LBSCAT" Mandatory="Yes" OrderNumber="12"/>
+        <ItemRef ItemOID="IT.LB.LBORRES" Mandatory="Yes" OrderNumber="13"/>
+        <ItemRef ItemOID="IT.LB.LBORRESU" Mandatory="Yes" OrderNumber="14"/>
+        <ItemRef ItemOID="IT.LB.LBORNRLO" Mandatory="Yes" OrderNumber="15"/>
+        <ItemRef ItemOID="IT.LB.LBORNRHI" Mandatory="Yes" OrderNumber="16"/>
+        <ItemRef ItemOID="IT.LB.LBSTRESC" Mandatory="Yes" OrderNumber="17"/>
+        <ItemRef ItemOID="IT.LB.LBSTRESN" Mandatory="Yes" OrderNumber="18"/>
+        <ItemRef ItemOID="IT.LB.LBSTRESU" Mandatory="Yes" OrderNumber="19"/>
+        <ItemRef ItemOID="IT.LB.LBSTNRLO" Mandatory="Yes" OrderNumber="20"/>
+        <ItemRef ItemOID="IT.LB.LBSTNRHI" Mandatory="Yes" OrderNumber="21"/>
+        <ItemRef ItemOID="IT.LB.LBSTNRC" Mandatory="Yes" OrderNumber="22"/>
+        <ItemRef ItemOID="IT.LB.LBNRIND" Mandatory="Yes" OrderNumber="23"/>
+        <ItemRef ItemOID="IT.LB.LBSTAT" Mandatory="Yes" OrderNumber="24"/>
+        <ItemRef ItemOID="IT.LB.LBREASND" Mandatory="Yes" OrderNumber="25"/>
+        <ItemRef ItemOID="IT.LB.LBNAM" Mandatory="Yes" OrderNumber="26"/>
+        <ItemRef ItemOID="IT.LB.LBSPEC" KeySequence="4" Mandatory="Yes" OrderNumber="27"/>
+        <ItemRef ItemOID="IT.LB.LBANTREG" Mandatory="Yes" OrderNumber="28"/>
+        <ItemRef ItemOID="IT.LB.LBSPCCND" Mandatory="Yes" OrderNumber="29"/>
+        <ItemRef ItemOID="IT.LB.LBSPCUFL" Mandatory="Yes" OrderNumber="30"/>
+        <ItemRef ItemOID="IT.LB.LBLOC" Mandatory="Yes" OrderNumber="31"/>
+        <ItemRef ItemOID="IT.LB.LBLAT" Mandatory="Yes" OrderNumber="32"/>
+        <ItemRef ItemOID="IT.LB.LBDIR" Mandatory="Yes" OrderNumber="33"/>
+        <ItemRef ItemOID="IT.LB.LBPORTOT" Mandatory="Yes" OrderNumber="34"/>
+        <ItemRef ItemOID="IT.LB.LBMETHOD" Mandatory="Yes" OrderNumber="35"/>
+        <ItemRef ItemOID="IT.LB.LBBLFL" Mandatory="Yes" OrderNumber="36"/>
+        <ItemRef ItemOID="IT.LB.LBFAST" Mandatory="Yes" OrderNumber="37"/>
+        <ItemRef ItemOID="IT.LB.LBDRVFL" Mandatory="Yes" OrderNumber="38"/>
+        <ItemRef ItemOID="IT.LB.LBTOX" Mandatory="Yes" OrderNumber="39"/>
+        <ItemRef ItemOID="IT.LB.LBTOXGR" Mandatory="Yes" OrderNumber="40"/>
+        <ItemRef ItemOID="IT.LB.LBEXCLFL" Mandatory="Yes" OrderNumber="41"/>
+        <ItemRef ItemOID="IT.LB.LBREASEX" Mandatory="Yes" OrderNumber="42"/>
+        <ItemRef ItemOID="IT.LB.LBUSCHFL" Mandatory="Yes" OrderNumber="43"/>
+        <ItemRef ItemOID="IT.LB.VISITDY" Mandatory="Yes" OrderNumber="44"/>
+        <ItemRef ItemOID="IT.LB.LBDTC" KeySequence="5" Mandatory="Yes" OrderNumber="45"/>
+        <ItemRef ItemOID="IT.LB.LBENDTC" Mandatory="Yes" OrderNumber="46"/>
+        <ItemRef ItemOID="IT.LB.LBDY" Mandatory="Yes" OrderNumber="47"/>
+        <ItemRef ItemOID="IT.LB.LBENDY" Mandatory="Yes" OrderNumber="48"/>
+        <ItemRef ItemOID="IT.LB.LBNOMDY" Mandatory="Yes" OrderNumber="49"/>
+        <ItemRef ItemOID="IT.LB.LBNOMLBL" Mandatory="Yes" OrderNumber="50"/>
+        <ItemRef ItemOID="IT.LB.LBTPT" Mandatory="Yes" OrderNumber="51"/>
+        <ItemRef ItemOID="IT.LB.LBTPTNUM" KeySequence="6" Mandatory="Yes" OrderNumber="52"/>
+        <ItemRef ItemOID="IT.LB.LBELTM" Mandatory="Yes" OrderNumber="53"/>
+        <ItemRef ItemOID="IT.LB.LBTPTREF" Mandatory="Yes" OrderNumber="54"/>
+        <ItemRef ItemOID="IT.LB.LBRFTDTC" Mandatory="Yes" OrderNumber="55"/>
+        <def:leaf ID="LF.LB" xlink:href="lb.xpt">
+          <def:title>lb.xpt</def:title>
+        </def:leaf>
+      </ItemGroupDef>
+      <ItemGroupDef Domain="MA" IsReferenceData="No" Name="MA" OID="IG.MA" Purpose="Tabulation" Repeating="Yes" SASDatasetName="MA" def:ArchiveLocationID="LF.MA" def:Class="FINDINGS" def:Structure="One record per finding per specimen per subject">
+        <Description>
+          <TranslatedText xml:lang="en">Macroscopic Findings</TranslatedText>
+        </Description>
+        <ItemRef ItemOID="IT.STUDYID" KeySequence="1" Mandatory="Yes" OrderNumber="1"/>
+        <ItemRef ItemOID="IT.MA.DOMAIN" Mandatory="Yes" OrderNumber="2"/>
+        <ItemRef ItemOID="IT.MA.USUBJID" KeySequence="2" Mandatory="Yes" OrderNumber="3"/>
+        <ItemRef ItemOID="IT.MA.FOCID" Mandatory="Yes" OrderNumber="4"/>
+        <ItemRef ItemOID="IT.MA.MASEQ" Mandatory="Yes" OrderNumber="5"/>
+        <ItemRef ItemOID="IT.MA.MAGRPID" Mandatory="Yes" OrderNumber="6"/>
+        <ItemRef ItemOID="IT.MA.MAREFID" Mandatory="Yes" OrderNumber="7"/>
+        <ItemRef ItemOID="IT.MA.MASPID" Mandatory="Yes" OrderNumber="8"/>
+        <ItemRef ItemOID="IT.MA.MATESTCD" KeySequence="3" Mandatory="Yes" OrderNumber="9"/>
+        <ItemRef ItemOID="IT.MA.MATEST" Mandatory="Yes" OrderNumber="10"/>
+        <ItemRef ItemOID="IT.MA.MABODSYS" Mandatory="Yes" OrderNumber="11"/>
+        <ItemRef ItemOID="IT.MA.MAORRES" KeySequence="4" Mandatory="Yes" OrderNumber="12"/>
+        <ItemRef ItemOID="IT.MA.MASTRESC" Mandatory="Yes" OrderNumber="13"/>
+        <ItemRef ItemOID="IT.MA.MASTAT" Mandatory="Yes" OrderNumber="14"/>
+        <ItemRef ItemOID="IT.MA.MAREASND" Mandatory="Yes" OrderNumber="15"/>
+        <ItemRef ItemOID="IT.MA.MANAM" Mandatory="Yes" OrderNumber="16"/>
+        <ItemRef ItemOID="IT.MA.MASPEC" KeySequence="5" Mandatory="Yes" OrderNumber="17"/>
+        <ItemRef ItemOID="IT.MA.MAANTREG" KeySequence="6" Mandatory="Yes" OrderNumber="18"/>
+        <ItemRef ItemOID="IT.MA.MASPCCND" Mandatory="Yes" OrderNumber="19"/>
+        <ItemRef ItemOID="IT.MA.MASPCUFL" Mandatory="Yes" OrderNumber="20"/>
+        <ItemRef ItemOID="IT.MA.MALAT" KeySequence="7" Mandatory="Yes" OrderNumber="21"/>
+        <ItemRef ItemOID="IT.MA.MADIR" KeySequence="8" Mandatory="Yes" OrderNumber="22"/>
+        <ItemRef ItemOID="IT.MA.MAPORTOT" Mandatory="Yes" OrderNumber="23"/>
+        <ItemRef ItemOID="IT.MA.MAEVAL" Mandatory="Yes" OrderNumber="24"/>
+        <ItemRef ItemOID="IT.MA.MASEV" Mandatory="Yes" OrderNumber="25"/>
+        <ItemRef ItemOID="IT.MA.MADTHREL" Mandatory="Yes" OrderNumber="26"/>
+        <ItemRef ItemOID="IT.MA.MADTC" Mandatory="Yes" OrderNumber="27"/>
+        <ItemRef ItemOID="IT.MA.MADY" Mandatory="Yes" OrderNumber="28"/>
+        <def:leaf ID="LF.MA" xlink:href="ma.xpt">
+          <def:title>ma.xpt</def:title>
+        </def:leaf>
+      </ItemGroupDef>
+      <ItemGroupDef Domain="MI" IsReferenceData="No" Name="MI" OID="IG.MI" Purpose="Tabulation" Repeating="Yes" SASDatasetName="MI" def:ArchiveLocationID="LF.MI" def:Class="FINDINGS" def:Structure="One record per finding per specimen per subject">
+        <Description>
+          <TranslatedText xml:lang="en">Microscopic Findings</TranslatedText>
+        </Description>
+        <ItemRef ItemOID="IT.STUDYID" KeySequence="1" Mandatory="Yes" OrderNumber="1"/>
+        <ItemRef ItemOID="IT.MI.DOMAIN" Mandatory="Yes" OrderNumber="2"/>
+        <ItemRef ItemOID="IT.MI.USUBJID" KeySequence="2" Mandatory="Yes" OrderNumber="3"/>
+        <ItemRef ItemOID="IT.MI.FOCID" Mandatory="Yes" OrderNumber="4"/>
+        <ItemRef ItemOID="IT.MI.MISEQ" Mandatory="Yes" OrderNumber="5"/>
+        <ItemRef ItemOID="IT.MI.MIGRPID" Mandatory="Yes" OrderNumber="6"/>
+        <ItemRef ItemOID="IT.MI.MIREFID" Mandatory="Yes" OrderNumber="7"/>
+        <ItemRef ItemOID="IT.MI.MISPID" Mandatory="Yes" OrderNumber="8"/>
+        <ItemRef ItemOID="IT.MI.MITESTCD" KeySequence="3" Mandatory="Yes" OrderNumber="9"/>
+        <ItemRef ItemOID="IT.MI.MITEST" Mandatory="Yes" OrderNumber="10"/>
+        <ItemRef ItemOID="IT.MI.MIBODSYS" Mandatory="Yes" OrderNumber="11"/>
+        <ItemRef ItemOID="IT.MI.MIORRES" Mandatory="Yes" OrderNumber="12"/>
+        <ItemRef ItemOID="IT.MI.MISTRESC" KeySequence="4" Mandatory="Yes" OrderNumber="13"/>
+        <ItemRef ItemOID="IT.MI.MIRESCAT" Mandatory="Yes" OrderNumber="14"/>
+        <ItemRef ItemOID="IT.MI.MICHRON" Mandatory="Yes" OrderNumber="15"/>
+        <ItemRef ItemOID="IT.MI.MIDISTR" Mandatory="Yes" OrderNumber="16"/>
+        <ItemRef ItemOID="IT.MI.MISTAT" Mandatory="Yes" OrderNumber="17"/>
+        <ItemRef ItemOID="IT.MI.MIREASND" Mandatory="Yes" OrderNumber="18"/>
+        <ItemRef ItemOID="IT.MI.MINAM" Mandatory="Yes" OrderNumber="19"/>
+        <ItemRef ItemOID="IT.MI.MISPEC" KeySequence="5" Mandatory="Yes" OrderNumber="20"/>
+        <ItemRef ItemOID="IT.MI.MIANTREG" KeySequence="6" Mandatory="Yes" OrderNumber="21"/>
+        <ItemRef ItemOID="IT.MI.MISPCCND" Mandatory="Yes" OrderNumber="22"/>
+        <ItemRef ItemOID="IT.MI.MISPCUFL" Mandatory="Yes" OrderNumber="23"/>
+        <ItemRef ItemOID="IT.MI.MILAT" KeySequence="7" Mandatory="Yes" OrderNumber="24"/>
+        <ItemRef ItemOID="IT.MI.MIDIR" KeySequence="8" Mandatory="Yes" OrderNumber="25"/>
+        <ItemRef ItemOID="IT.MI.MIMETHOD" Mandatory="Yes" OrderNumber="26"/>
+        <ItemRef ItemOID="IT.MI.MIEVAL" Mandatory="Yes" OrderNumber="27"/>
+        <ItemRef ItemOID="IT.MI.MISEV" Mandatory="Yes" OrderNumber="28"/>
+        <ItemRef ItemOID="IT.MI.MIDTHREL" Mandatory="Yes" OrderNumber="29"/>
+        <ItemRef ItemOID="IT.MI.MIDTC" Mandatory="Yes" OrderNumber="30"/>
+        <ItemRef ItemOID="IT.MI.MIDY" Mandatory="Yes" OrderNumber="31"/>
+        <def:leaf ID="LF.MI" xlink:href="mi.xpt">
+          <def:title>mi.xpt</def:title>
+        </def:leaf>
+      </ItemGroupDef>
+      <ItemGroupDef Domain="OM" IsReferenceData="No" Name="OM" OID="IG.OM" Purpose="Tabulation" Repeating="Yes" SASDatasetName="OM" def:ArchiveLocationID="LF.OM" def:Class="FINDINGS" def:Structure="One record per test per specimen per subject">
+        <Description>
+          <TranslatedText xml:lang="en">Organ Measurements</TranslatedText>
+        </Description>
+        <ItemRef ItemOID="IT.STUDYID" KeySequence="1" Mandatory="Yes" OrderNumber="1"/>
+        <ItemRef ItemOID="IT.OM.DOMAIN" Mandatory="Yes" OrderNumber="2"/>
+        <ItemRef ItemOID="IT.OM.USUBJID" KeySequence="2" Mandatory="Yes" OrderNumber="3"/>
+        <ItemRef ItemOID="IT.OM.OMSEQ" Mandatory="Yes" OrderNumber="4"/>
+        <ItemRef ItemOID="IT.OM.OMTESTCD" KeySequence="3" Mandatory="Yes" OrderNumber="5"/>
+        <ItemRef ItemOID="IT.OM.OMTEST" Mandatory="Yes" OrderNumber="6"/>
+        <ItemRef ItemOID="IT.OM.OMORRES" Mandatory="Yes" OrderNumber="7"/>
+        <ItemRef ItemOID="IT.OM.OMORRESU" Mandatory="Yes" OrderNumber="8"/>
+        <ItemRef ItemOID="IT.OM.OMSTRESC" Mandatory="Yes" OrderNumber="9"/>
+        <ItemRef ItemOID="IT.OM.OMSTRESN" Mandatory="Yes" OrderNumber="10"/>
+        <ItemRef ItemOID="IT.OM.OMSTRESU" Mandatory="Yes" OrderNumber="11"/>
+        <ItemRef ItemOID="IT.OM.OMSTAT" Mandatory="Yes" OrderNumber="12"/>
+        <ItemRef ItemOID="IT.OM.OMREASND" Mandatory="Yes" OrderNumber="13"/>
+        <ItemRef ItemOID="IT.OM.OMSPEC" KeySequence="4" Mandatory="Yes" OrderNumber="14"/>
+        <ItemRef ItemOID="IT.OM.OMANTREG" KeySequence="5" Mandatory="Yes" OrderNumber="15"/>
+        <ItemRef ItemOID="IT.OM.OMSPCCND" Mandatory="Yes" OrderNumber="16"/>
+        <ItemRef ItemOID="IT.OM.OMSPCUFL" Mandatory="Yes" OrderNumber="17"/>
+        <ItemRef ItemOID="IT.OM.OMLAT" KeySequence="6" Mandatory="Yes" OrderNumber="18"/>
+        <ItemRef ItemOID="IT.OM.OMDIR" KeySequence="7" Mandatory="Yes" OrderNumber="19"/>
+        <ItemRef ItemOID="IT.OM.OMPORTOT" Mandatory="Yes" OrderNumber="20"/>
+        <ItemRef ItemOID="IT.OM.OMEXCLFL" Mandatory="Yes" OrderNumber="21"/>
+        <ItemRef ItemOID="IT.OM.OMREASEX" Mandatory="Yes" OrderNumber="22"/>
+        <ItemRef ItemOID="IT.OM.OMDTC" Mandatory="Yes" OrderNumber="23"/>
+        <ItemRef ItemOID="IT.OM.OMDY" Mandatory="Yes" OrderNumber="24"/>
+        <ItemRef ItemOID="IT.OM.OMNOMDY" Mandatory="Yes" OrderNumber="25"/>
+        <ItemRef ItemOID="IT.OM.OMNOMLBL" Mandatory="Yes" OrderNumber="26"/>
+        <def:leaf ID="LF.OM" xlink:href="om.xpt">
+          <def:title>om.xpt</def:title>
+        </def:leaf>
+      </ItemGroupDef>
+      <ItemGroupDef Domain="TF" IsReferenceData="No" Name="TF" OID="IG.TF" Purpose="Tabulation" Repeating="Yes" SASDatasetName="TF" def:ArchiveLocationID="LF.TF" def:Class="FINDINGS" def:Structure="One record per tumor per specimen per subject">
+        <Description>
+          <TranslatedText xml:lang="en">Tumor Findings</TranslatedText>
+        </Description>
+        <ItemRef ItemOID="IT.STUDYID" KeySequence="1" Mandatory="Yes" OrderNumber="1"/>
+        <ItemRef ItemOID="IT.TF.DOMAIN" Mandatory="Yes" OrderNumber="2"/>
+        <ItemRef ItemOID="IT.TF.USUBJID" KeySequence="2" Mandatory="Yes" OrderNumber="3"/>
+        <ItemRef ItemOID="IT.TF.TFSEQ" Mandatory="Yes" OrderNumber="4"/>
+        <ItemRef ItemOID="IT.TF.TFGRPID" Mandatory="Yes" OrderNumber="5"/>
+        <ItemRef ItemOID="IT.TF.TFREFID" Mandatory="Yes" OrderNumber="6"/>
+        <ItemRef ItemOID="IT.TF.TFSPID" Mandatory="Yes" OrderNumber="7"/>
+        <ItemRef ItemOID="IT.TF.TFTESTCD" KeySequence="3" Mandatory="Yes" OrderNumber="8"/>
+        <ItemRef ItemOID="IT.TF.TFTEST" Mandatory="Yes" OrderNumber="9"/>
+        <ItemRef ItemOID="IT.TF.TFORRES" KeySequence="4" Mandatory="Yes" OrderNumber="10"/>
+        <ItemRef ItemOID="IT.TF.TFSTRESC" Mandatory="Yes" OrderNumber="11"/>
+        <ItemRef ItemOID="IT.TF.TFRESCAT" Mandatory="Yes" OrderNumber="12"/>
+        <ItemRef ItemOID="IT.TF.TFNAM" Mandatory="Yes" OrderNumber="13"/>
+        <ItemRef ItemOID="IT.TF.TFSPEC" KeySequence="5" Mandatory="Yes" OrderNumber="14"/>
+        <ItemRef ItemOID="IT.TF.TFANTREG" KeySequence="6" Mandatory="Yes" OrderNumber="15"/>
+        <ItemRef ItemOID="IT.TF.TFSPCCND" Mandatory="Yes" OrderNumber="16"/>
+        <ItemRef ItemOID="IT.TF.TFLAT" KeySequence="7" Mandatory="Yes" OrderNumber="17"/>
+        <ItemRef ItemOID="IT.TF.TFDIR" KeySequence="8" Mandatory="Yes" OrderNumber="18"/>
+        <ItemRef ItemOID="IT.TF.TFMETHOD" Mandatory="Yes" OrderNumber="19"/>
+        <ItemRef ItemOID="IT.TF.TFEVAL" Mandatory="Yes" OrderNumber="20"/>
+        <ItemRef ItemOID="IT.TF.TFDTHREL" Mandatory="Yes" OrderNumber="21"/>
+        <ItemRef ItemOID="IT.TF.TFDTC" Mandatory="Yes" OrderNumber="22"/>
+        <ItemRef ItemOID="IT.TF.TFDY" Mandatory="Yes" OrderNumber="23"/>
+        <ItemRef ItemOID="IT.TF.TFDETECT" Mandatory="Yes" OrderNumber="24"/>
+        <def:leaf ID="LF.TF" xlink:href="tf.xpt">
+          <def:title>tf.xpt</def:title>
+        </def:leaf>
+      </ItemGroupDef>
+      <ItemGroupDef Domain="VS" IsReferenceData="No" Name="VS" OID="IG.VS" Purpose="Tabulation" Repeating="Yes" SASDatasetName="VS" def:ArchiveLocationID="LF.VS" def:Class="FINDINGS" def:Structure="One record per measurement per observation time per subject">
+        <Description>
+          <TranslatedText xml:lang="en">Vital Signs</TranslatedText>
+        </Description>
+        <ItemRef ItemOID="IT.STUDYID" KeySequence="1" Mandatory="Yes" OrderNumber="1"/>
+        <ItemRef ItemOID="IT.VS.DOMAIN" Mandatory="Yes" OrderNumber="2"/>
+        <ItemRef ItemOID="IT.VS.USUBJID" KeySequence="2" Mandatory="Yes" OrderNumber="3"/>
+        <ItemRef ItemOID="IT.VS.VSSEQ" Mandatory="Yes" OrderNumber="4"/>
+        <ItemRef ItemOID="IT.VS.VSGRPID" Mandatory="Yes" OrderNumber="5"/>
+        <ItemRef ItemOID="IT.VS.VSSPID" Mandatory="Yes" OrderNumber="6"/>
+        <ItemRef ItemOID="IT.VS.VSTESTCD" KeySequence="3" Mandatory="Yes" OrderNumber="7"/>
+        <ItemRef ItemOID="IT.VS.VSTEST" Mandatory="Yes" OrderNumber="8"/>
+        <ItemRef ItemOID="IT.VS.VSCAT" Mandatory="Yes" OrderNumber="9"/>
+        <ItemRef ItemOID="IT.VS.VSSCAT" Mandatory="Yes" OrderNumber="10"/>
+        <ItemRef ItemOID="IT.VS.VSPOS" Mandatory="Yes" OrderNumber="11"/>
+        <ItemRef ItemOID="IT.VS.VSORRES" Mandatory="Yes" OrderNumber="12"/>
+        <ItemRef ItemOID="IT.VS.VSORRESU" Mandatory="Yes" OrderNumber="13"/>
+        <ItemRef ItemOID="IT.VS.VSSTRESC" Mandatory="Yes" OrderNumber="14"/>
+        <ItemRef ItemOID="IT.VS.VSSTRESN" Mandatory="Yes" OrderNumber="15"/>
+        <ItemRef ItemOID="IT.VS.VSSTRESU" Mandatory="Yes" OrderNumber="16"/>
+        <ItemRef ItemOID="IT.VS.VSSTAT" Mandatory="Yes" OrderNumber="17"/>
+        <ItemRef ItemOID="IT.VS.VSREASND" Mandatory="Yes" OrderNumber="18"/>
+        <ItemRef ItemOID="IT.VS.VSLOC" Mandatory="Yes" OrderNumber="19"/>
+        <ItemRef ItemOID="IT.VS.VSCSTATE" Mandatory="Yes" OrderNumber="20"/>
+        <ItemRef ItemOID="IT.VS.VSBLFL" Mandatory="Yes" OrderNumber="21"/>
+        <ItemRef ItemOID="IT.VS.VSDRVFL" Mandatory="Yes" OrderNumber="22"/>
+        <ItemRef ItemOID="IT.VS.VSEXCLFL" Mandatory="Yes" OrderNumber="23"/>
+        <ItemRef ItemOID="IT.VS.VSREASEX" Mandatory="Yes" OrderNumber="24"/>
+        <ItemRef ItemOID="IT.VS.VSUSCHFL" Mandatory="Yes" OrderNumber="25"/>
+        <ItemRef ItemOID="IT.VS.VISITDY" Mandatory="Yes" OrderNumber="26"/>
+        <ItemRef ItemOID="IT.VS.VSDTC" KeySequence="4" Mandatory="Yes" OrderNumber="27"/>
+        <ItemRef ItemOID="IT.VS.VSENDTC" Mandatory="Yes" OrderNumber="28"/>
+        <ItemRef ItemOID="IT.VS.VSDY" Mandatory="Yes" OrderNumber="29"/>
+        <ItemRef ItemOID="IT.VS.VSENDY" Mandatory="Yes" OrderNumber="30"/>
+        <ItemRef ItemOID="IT.VS.VSNOMDY" Mandatory="Yes" OrderNumber="31"/>
+        <ItemRef ItemOID="IT.VS.VSNOMLBL" Mandatory="Yes" OrderNumber="32"/>
+        <ItemRef ItemOID="IT.VS.VSTPT" KeySequence="5" Mandatory="Yes" OrderNumber="33"/>
+        <ItemRef ItemOID="IT.VS.VSTPTNUM" Mandatory="Yes" OrderNumber="34"/>
+        <ItemRef ItemOID="IT.VS.VSELTM" Mandatory="Yes" OrderNumber="35"/>
+        <ItemRef ItemOID="IT.VS.VSTPTREF" Mandatory="Yes" OrderNumber="36"/>
+        <ItemRef ItemOID="IT.VS.VSRFTDTC" Mandatory="Yes" OrderNumber="37"/>
+        <def:leaf ID="LF.VS" xlink:href="vs.xpt">
+          <def:title>vs.xpt</def:title>
+        </def:leaf>
+      </ItemGroupDef>
+      <ItemGroupDef Domain="POOLDEF" IsReferenceData="No" Name="POOLDEF" OID="IG.POOLDEF" Purpose="Tabulation" Repeating="Yes" SASDatasetName="POOLDEF" def:ArchiveLocationID="LF.POOLDEF" def:Class="RELATIONSHIP" def:Structure="One record per subject per pool">
+        <Description>
+          <TranslatedText xml:lang="en">Pool Definition</TranslatedText>
+        </Description>
+        <ItemRef ItemOID="IT.STUDYID" KeySequence="1" Mandatory="Yes" OrderNumber="1"/>
+        <ItemRef ItemOID="IT.POOLDEF.POOLID" KeySequence="2" Mandatory="Yes" OrderNumber="2"/>
+        <ItemRef ItemOID="IT.POOLDEF.USUBJID" KeySequence="3" Mandatory="Yes" OrderNumber="3"/>
+        <def:leaf ID="LF.POOLDEF" xlink:href="pooldef.xpt">
+          <def:title>pooldef.xpt</def:title>
+        </def:leaf>
+      </ItemGroupDef>
+      <ItemGroupDef Domain="RELREC" IsReferenceData="No" Name="RELREC" OID="IG.RELREC" Purpose="Tabulation" Repeating="Yes" SASDatasetName="RELREC" def:ArchiveLocationID="LF.RELREC" def:Class="RELATIONSHIP" def:Structure="One record per related record, related group of records (e.g.,--GRPID), or related dataset">
+        <Description>
+          <TranslatedText xml:lang="en">Related Records</TranslatedText>
+        </Description>
+        <ItemRef ItemOID="IT.STUDYID" KeySequence="1" Mandatory="Yes" OrderNumber="1"/>
+        <ItemRef ItemOID="IT.RELREC.RDOMAIN" KeySequence="2" Mandatory="Yes" OrderNumber="2"/>
+        <ItemRef ItemOID="IT.RELREC.USUBJID" KeySequence="3" Mandatory="Yes" OrderNumber="3"/>
+        <ItemRef ItemOID="IT.RELREC.POOLID" Mandatory="Yes" OrderNumber="4"/>
+        <ItemRef ItemOID="IT.RELREC.IDVAR" KeySequence="4" Mandatory="Yes" OrderNumber="5"/>
+        <ItemRef ItemOID="IT.RELREC.IDVARVAL" KeySequence="5" Mandatory="Yes" OrderNumber="6"/>
+        <ItemRef ItemOID="IT.RELREC.RELTYPE" Mandatory="Yes" OrderNumber="7"/>
+        <ItemRef ItemOID="IT.RELREC.RELID" KeySequence="6" Mandatory="Yes" OrderNumber="8"/>
+        <def:leaf ID="LF.RELREC" xlink:href="relrec.xpt">
+          <def:title>relrec.xpt</def:title>
+        </def:leaf>
+      </ItemGroupDef>
+      <ItemGroupDef Domain="SUPPCL" IsReferenceData="No" Name="SUPPCL" OID="IG.SUPPCL" Purpose="Tabulation" Repeating="Yes" SASDatasetName="SUPPCL" def:ArchiveLocationID="LF.SUPPCL" def:Class="RELATIONSHIP" def:Structure="One record per supplemental qualifier per related parent domain record(s)">
+        <Description>
+          <TranslatedText xml:lang="en">Supplemental Qualifiers for CL</TranslatedText>
+        </Description>
+        <ItemRef ItemOID="IT.STUDYID" KeySequence="1" Mandatory="Yes" OrderNumber="1"/>
+        <ItemRef ItemOID="IT.SUPPCL.RDOMAIN" KeySequence="2" Mandatory="Yes" OrderNumber="2"/>
+        <ItemRef ItemOID="IT.SUPPCL.USUBJID" KeySequence="3" Mandatory="Yes" OrderNumber="3"/>
+        <ItemRef ItemOID="IT.SUPPCL.POOLID" Mandatory="Yes" OrderNumber="4"/>
+        <ItemRef ItemOID="IT.SUPPCL.IDVAR" KeySequence="4" Mandatory="Yes" OrderNumber="5"/>
+        <ItemRef ItemOID="IT.SUPPCL.IDVARVAL" KeySequence="5" Mandatory="Yes" OrderNumber="6"/>
+        <ItemRef ItemOID="IT.SUPPCL.QNAM" KeySequence="6" Mandatory="Yes" OrderNumber="7"/>
+        <ItemRef ItemOID="IT.SUPPCL.QLABEL" Mandatory="Yes" OrderNumber="8"/>
+        <ItemRef ItemOID="IT.SUPPCL.QVAL" Mandatory="Yes" OrderNumber="9"/>
+        <ItemRef ItemOID="IT.SUPPCL.QORIG" Mandatory="Yes" OrderNumber="10"/>
+        <ItemRef ItemOID="IT.SUPPCL.QEVAL" Mandatory="Yes" OrderNumber="11"/>
+        <def:leaf ID="LF.SUPPCL" xlink:href="suppcl.xpt">
+          <def:title>suppcl.xpt</def:title>
+        </def:leaf>
+      </ItemGroupDef>
+      <ItemGroupDef Domain="SUPPLB" IsReferenceData="No" Name="SUPPLB" OID="IG.SUPPLB" Purpose="Tabulation" Repeating="Yes" SASDatasetName="SUPPLB" def:ArchiveLocationID="LF.SUPPLB" def:Class="RELATIONSHIP" def:Structure="One record per supplemental qualifier per related parent domain record(s)">
+        <Description>
+          <TranslatedText xml:lang="en">Supplemental Qualifiers for LB</TranslatedText>
+        </Description>
+        <ItemRef ItemOID="IT.STUDYID" KeySequence="1" Mandatory="Yes" OrderNumber="1"/>
+        <ItemRef ItemOID="IT.SUPPLB.RDOMAIN" KeySequence="2" Mandatory="Yes" OrderNumber="2"/>
+        <ItemRef ItemOID="IT.SUPPLB.USUBJID" KeySequence="3" Mandatory="Yes" OrderNumber="3"/>
+        <ItemRef ItemOID="IT.SUPPLB.POOLID" Mandatory="Yes" OrderNumber="4"/>
+        <ItemRef ItemOID="IT.SUPPLB.IDVAR" KeySequence="4" Mandatory="Yes" OrderNumber="5"/>
+        <ItemRef ItemOID="IT.SUPPLB.IDVARVAL" KeySequence="5" Mandatory="Yes" OrderNumber="6"/>
+        <ItemRef ItemOID="IT.SUPPLB.QNAM" KeySequence="6" Mandatory="Yes" OrderNumber="7"/>
+        <ItemRef ItemOID="IT.SUPPLB.QLABEL" Mandatory="Yes" OrderNumber="8"/>
+        <ItemRef ItemOID="IT.SUPPLB.QVAL" Mandatory="Yes" OrderNumber="9"/>
+        <ItemRef ItemOID="IT.SUPPLB.QORIG" Mandatory="Yes" OrderNumber="10"/>
+        <ItemRef ItemOID="IT.SUPPLB.QEVAL" Mandatory="Yes" OrderNumber="11"/>
+        <def:leaf ID="LF.SUPPLB" xlink:href="supplb.xpt">
+          <def:title>supplb.xpt</def:title>
+        </def:leaf>
+      </ItemGroupDef>
+      <ItemGroupDef Domain="SUPPMA" IsReferenceData="No" Name="SUPPMA" OID="IG.SUPPMA" Purpose="Tabulation" Repeating="Yes" SASDatasetName="SUPPMA" def:ArchiveLocationID="LF.SUPPMA" def:Class="RELATIONSHIP" def:Structure="One record per supplemental qualifier per related parent domain record(s)">
+        <Description>
+          <TranslatedText xml:lang="en">Supplemental Qualifiers for MA</TranslatedText>
+        </Description>
+        <ItemRef ItemOID="IT.STUDYID" KeySequence="1" Mandatory="Yes" OrderNumber="1"/>
+        <ItemRef ItemOID="IT.SUPPMA.RDOMAIN" KeySequence="2" Mandatory="Yes" OrderNumber="2"/>
+        <ItemRef ItemOID="IT.SUPPMA.USUBJID" KeySequence="3" Mandatory="Yes" OrderNumber="3"/>
+        <ItemRef ItemOID="IT.SUPPMA.POOLID" Mandatory="Yes" OrderNumber="4"/>
+        <ItemRef ItemOID="IT.SUPPMA.IDVAR" KeySequence="4" Mandatory="Yes" OrderNumber="5"/>
+        <ItemRef ItemOID="IT.SUPPMA.IDVARVAL" KeySequence="5" Mandatory="Yes" OrderNumber="6"/>
+        <ItemRef ItemOID="IT.SUPPMA.QNAM" KeySequence="6" Mandatory="Yes" OrderNumber="7"/>
+        <ItemRef ItemOID="IT.SUPPMA.QLABEL" Mandatory="Yes" OrderNumber="8"/>
+        <ItemRef ItemOID="IT.SUPPMA.QVAL" Mandatory="Yes" OrderNumber="9"/>
+        <ItemRef ItemOID="IT.SUPPMA.QORIG" Mandatory="Yes" OrderNumber="10"/>
+        <ItemRef ItemOID="IT.SUPPMA.QEVAL" Mandatory="Yes" OrderNumber="11"/>
+        <def:leaf ID="LF.SUPPMA" xlink:href="suppma.xpt">
+          <def:title>suppma.xpt</def:title>
+        </def:leaf>
+      </ItemGroupDef>
+      <ItemGroupDef Domain="SUPPMI" IsReferenceData="No" Name="SUPPMI" OID="IG.SUPPMI" Purpose="Tabulation" Repeating="Yes" SASDatasetName="SUPPMI" def:ArchiveLocationID="LF.SUPPMI" def:Class="RELATIONSHIP" def:Structure="One record per supplemental qualifier per related parent domain record(s)">
+        <Description>
+          <TranslatedText xml:lang="en">Supplemental Qualifiers for MI</TranslatedText>
+        </Description>
+        <ItemRef ItemOID="IT.STUDYID" KeySequence="1" Mandatory="Yes" OrderNumber="1"/>
+        <ItemRef ItemOID="IT.SUPPMI.RDOMAIN" KeySequence="2" Mandatory="Yes" OrderNumber="2"/>
+        <ItemRef ItemOID="IT.SUPPMI.USUBJID" KeySequence="3" Mandatory="Yes" OrderNumber="3"/>
+        <ItemRef ItemOID="IT.SUPPMI.POOLID" Mandatory="Yes" OrderNumber="4"/>
+        <ItemRef ItemOID="IT.SUPPMI.IDVAR" KeySequence="4" Mandatory="Yes" OrderNumber="5"/>
+        <ItemRef ItemOID="IT.SUPPMI.IDVARVAL" KeySequence="5" Mandatory="Yes" OrderNumber="6"/>
+        <ItemRef ItemOID="IT.SUPPMI.QNAM" KeySequence="6" Mandatory="Yes" OrderNumber="7"/>
+        <ItemRef ItemOID="IT.SUPPMI.QLABEL" Mandatory="Yes" OrderNumber="8"/>
+        <ItemRef ItemOID="IT.SUPPMI.QVAL" Mandatory="Yes" OrderNumber="9"/>
+        <ItemRef ItemOID="IT.SUPPMI.QORIG" Mandatory="Yes" OrderNumber="10"/>
+        <ItemRef ItemOID="IT.SUPPMI.QEVAL" Mandatory="Yes" OrderNumber="11"/>
+        <def:leaf ID="LF.SUPPMI" xlink:href="suppmi.xpt">
+          <def:title>suppmi.xpt</def:title>
+        </def:leaf>
+      </ItemGroupDef>
+      <ItemDef DataType="text" Length="200" Name="STUDYID" OID="IT.STUDYID" SASFieldName="STUDYID">
+        <Description>
+          <TranslatedText xml:lang="en">Study Identifier</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="2" Name="DOMAIN" OID="IT.TA.DOMAIN" SASFieldName="DOMAIN">
+        <Description>
+          <TranslatedText xml:lang="en">Domain Abbreviation</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="ARMCD" OID="IT.TA.ARMCD" SASFieldName="ARMCD">
+        <Description>
+          <TranslatedText xml:lang="en">Planned Arm Code</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="ARM" OID="IT.TA.ARM" SASFieldName="ARM">
+        <Description>
+          <TranslatedText xml:lang="en">Description of Planned Arm</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="integer" Length="50" Name="TAETORD" OID="IT.TA.TAETORD" SASFieldName="TAETORD">
+        <Description>
+          <TranslatedText xml:lang="en">Order of Element within Arm</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="ETCD" OID="IT.TA.ETCD" SASFieldName="ETCD">
+        <Description>
+          <TranslatedText xml:lang="en">Element Code</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="ELEMENT" OID="IT.TA.ELEMENT" SASFieldName="ELEMENT">
+        <Description>
+          <TranslatedText xml:lang="en">Description of Element</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="TABRANCH" OID="IT.TA.TABRANCH" SASFieldName="TABRANCH">
+        <Description>
+          <TranslatedText xml:lang="en">Branch</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="TATRANS" OID="IT.TA.TATRANS" SASFieldName="TATRANS">
+        <Description>
+          <TranslatedText xml:lang="en">Transition Rule</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="EPOCH" OID="IT.TA.EPOCH" SASFieldName="EPOCH">
+        <Description>
+          <TranslatedText xml:lang="en">Trial Epoch</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="2" Name="DOMAIN" OID="IT.TE.DOMAIN" SASFieldName="DOMAIN">
+        <Description>
+          <TranslatedText xml:lang="en">Domain Abbreviation</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="ETCD" OID="IT.TE.ETCD" SASFieldName="ETCD">
+        <Description>
+          <TranslatedText xml:lang="en">Element Code</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="ELEMENT" OID="IT.TE.ELEMENT" SASFieldName="ELEMENT">
+        <Description>
+          <TranslatedText xml:lang="en">Description of Element</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="TESTRL" OID="IT.TE.TESTRL" SASFieldName="TESTRL">
+        <Description>
+          <TranslatedText xml:lang="en">Rule for Start of Element</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="TEENRL" OID="IT.TE.TEENRL" SASFieldName="TEENRL">
+        <Description>
+          <TranslatedText xml:lang="en">Rule for End of Element</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="durationDatetime" Name="TEDUR" OID="IT.TE.TEDUR" SASFieldName="TEDUR">
+        <Description>
+          <TranslatedText xml:lang="en">Planned Duration of Element</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="2" Name="DOMAIN" OID="IT.TS.DOMAIN" SASFieldName="DOMAIN">
+        <Description>
+          <TranslatedText xml:lang="en">Domain Abbreviation</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="integer" Length="50" Name="TSSEQ" OID="IT.TS.TSSEQ" SASFieldName="TSSEQ">
+        <Description>
+          <TranslatedText xml:lang="en">Sequence Number</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="TSGRPID" OID="IT.TS.TSGRPID" SASFieldName="TSGRPID">
+        <Description>
+          <TranslatedText xml:lang="en">Group Identifier</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="TSPARMCD" OID="IT.TS.TSPARMCD" SASFieldName="TSPARMCD">
+        <Description>
+          <TranslatedText xml:lang="en">Trial Summary Parameter Short Name</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="TSPARM" OID="IT.TS.TSPARM" SASFieldName="TSPARM">
+        <Description>
+          <TranslatedText xml:lang="en">Trial Summary Parameter</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="TSVAL" OID="IT.TS.TSVAL" SASFieldName="TSVAL">
+        <Description>
+          <TranslatedText xml:lang="en">Parameter Value</TranslatedText>
+        </Description>
+        <def:ValueListRef ValueListOID="VL.TS.TSVAL"/>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="TSVALNF" OID="IT.TS.TSVALNF" SASFieldName="TSVALNF">
+        <Description>
+          <TranslatedText xml:lang="en">Parameter Null Flavor</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="2" Name="DOMAIN" OID="IT.TX.DOMAIN" SASFieldName="DOMAIN">
+        <Description>
+          <TranslatedText xml:lang="en">Domain Abbreviation</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="SETCD" OID="IT.TX.SETCD" SASFieldName="SETCD">
+        <Description>
+          <TranslatedText xml:lang="en">Set Code</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="SET" OID="IT.TX.SET" SASFieldName="SET">
+        <Description>
+          <TranslatedText xml:lang="en">Set Description</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="integer" Length="50" Name="TXSEQ" OID="IT.TX.TXSEQ" SASFieldName="TXSEQ">
+        <Description>
+          <TranslatedText xml:lang="en">Sequence Number</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="TXPARMCD" OID="IT.TX.TXPARMCD" SASFieldName="TXPARMCD">
+        <Description>
+          <TranslatedText xml:lang="en">Trial Set Parameter Short Name</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="TXPARM" OID="IT.TX.TXPARM" SASFieldName="TXPARM">
+        <Description>
+          <TranslatedText xml:lang="en">Trial Set Parameter</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="TXVAL" OID="IT.TX.TXVAL" SASFieldName="TXVAL">
+        <Description>
+          <TranslatedText xml:lang="en">Trial Set Parameter Value</TranslatedText>
+        </Description>
+        <def:ValueListRef ValueListOID="VL.TX.TXVAL"/>
+      </ItemDef>
+      <ItemDef DataType="text" Length="2" Name="DOMAIN" OID="IT.CO.DOMAIN" SASFieldName="DOMAIN">
+        <Description>
+          <TranslatedText xml:lang="en">Domain Abbreviation</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="2" Name="RDOMAIN" OID="IT.CO.RDOMAIN" SASFieldName="RDOMAIN">
+        <Description>
+          <TranslatedText xml:lang="en">Related Domain Abbreviation</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="USUBJID" OID="IT.CO.USUBJID" SASFieldName="USUBJID">
+        <Description>
+          <TranslatedText xml:lang="en">Unique Subject Identifier</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="POOLID" OID="IT.CO.POOLID" SASFieldName="POOLID">
+        <Description>
+          <TranslatedText xml:lang="en">Pool Identifier</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="integer" Length="50" Name="COSEQ" OID="IT.CO.COSEQ" SASFieldName="COSEQ">
+        <Description>
+          <TranslatedText xml:lang="en">Sequence Number</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="IDVAR" OID="IT.CO.IDVAR" SASFieldName="IDVAR">
+        <Description>
+          <TranslatedText xml:lang="en">Identifying Variable</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="IDVARVAL" OID="IT.CO.IDVARVAL" SASFieldName="IDVARVAL">
+        <Description>
+          <TranslatedText xml:lang="en">Identifying Variable Value</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="COREF" OID="IT.CO.COREF" SASFieldName="COREF">
+        <Description>
+          <TranslatedText xml:lang="en">Comment Reference</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="COVAL" OID="IT.CO.COVAL" SASFieldName="COVAL">
+        <Description>
+          <TranslatedText xml:lang="en">Comment</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="COEVAL" OID="IT.CO.COEVAL" SASFieldName="COEVAL">
+        <Description>
+          <TranslatedText xml:lang="en">Evaluator</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="datetime" Name="CODTC" OID="IT.CO.CODTC" SASFieldName="CODTC">
+        <Description>
+          <TranslatedText xml:lang="en">Date/Time of Comment</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="integer" Length="50" Name="CODY" OID="IT.CO.CODY" SASFieldName="CODY">
+        <Description>
+          <TranslatedText xml:lang="en">Study Day of Comment</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="2" Name="DOMAIN" OID="IT.DM.DOMAIN" SASFieldName="DOMAIN">
+        <Description>
+          <TranslatedText xml:lang="en">Domain Abbreviation</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="USUBJID" OID="IT.DM.USUBJID" SASFieldName="USUBJID">
+        <Description>
+          <TranslatedText xml:lang="en">Unique Subject Identifier</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="SUBJID" OID="IT.DM.SUBJID" SASFieldName="SUBJID">
+        <Description>
+          <TranslatedText xml:lang="en">Subject Identifier for the Study</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="datetime" Name="RFSTDTC" OID="IT.DM.RFSTDTC" SASFieldName="RFSTDTC">
+        <Description>
+          <TranslatedText xml:lang="en">Subject Reference Start Date/Time</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="datetime" Name="RFENDTC" OID="IT.DM.RFENDTC" SASFieldName="RFENDTC">
+        <Description>
+          <TranslatedText xml:lang="en">Subject Reference End Date/Time</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="datetime" Name="RFXSTDTC" OID="IT.DM.RFXSTDTC" SASFieldName="RFXSTDTC">
+        <Description>
+          <TranslatedText xml:lang="en">Date/Time of First Study Treatment</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="datetime" Name="RFXENDTC" OID="IT.DM.RFXENDTC" SASFieldName="RFXENDTC">
+        <Description>
+          <TranslatedText xml:lang="en">Date/Time of Last Study Treatment</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="SITEID" OID="IT.DM.SITEID" SASFieldName="SITEID">
+        <Description>
+          <TranslatedText xml:lang="en">Study Site Identifier</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="datetime" Name="BRTHDTC" OID="IT.DM.BRTHDTC" SASFieldName="BRTHDTC">
+        <Description>
+          <TranslatedText xml:lang="en">Date/Time of Birth</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="integer" Length="8" Name="AGE" OID="IT.DM.AGE" SASFieldName="AGE">
+        <Description>
+          <TranslatedText xml:lang="en">Age</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="20" Name="AGETXT" OID="IT.DM.AGETXT" SASFieldName="AGETXT">
+        <Description>
+          <TranslatedText xml:lang="en">Age Range</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="AGEU" OID="IT.DM.AGEU" SASFieldName="AGEU">
+        <Description>
+          <TranslatedText xml:lang="en">Age Unit</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="SEX" OID="IT.DM.SEX" SASFieldName="SEX">
+        <Description>
+          <TranslatedText xml:lang="en">Sex</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="SPECIES" OID="IT.DM.SPECIES" SASFieldName="SPECIES">
+        <Description>
+          <TranslatedText xml:lang="en">Species</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="STRAIN" OID="IT.DM.STRAIN" SASFieldName="STRAIN">
+        <Description>
+          <TranslatedText xml:lang="en">Strain/Substrain</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="SBSTRAIN" OID="IT.DM.SBSTRAIN" SASFieldName="SBSTRAIN">
+        <Description>
+          <TranslatedText xml:lang="en">Strain/Substrain Details</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="ARMCD" OID="IT.DM.ARMCD" SASFieldName="ARMCD">
+        <Description>
+          <TranslatedText xml:lang="en">Planned Arm Code</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="ARM" OID="IT.DM.ARM" SASFieldName="ARM">
+        <Description>
+          <TranslatedText xml:lang="en">Description of Planned Arm</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="SETCD" OID="IT.DM.SETCD" SASFieldName="SETCD">
+        <Description>
+          <TranslatedText xml:lang="en">Set Code</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="2" Name="DOMAIN" OID="IT.SE.DOMAIN" SASFieldName="DOMAIN">
+        <Description>
+          <TranslatedText xml:lang="en">Domain Abbreviation</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="USUBJID" OID="IT.SE.USUBJID" SASFieldName="USUBJID">
+        <Description>
+          <TranslatedText xml:lang="en">Unique Subject Identifier</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="integer" Length="50" Name="SESEQ" OID="IT.SE.SESEQ" SASFieldName="SESEQ">
+        <Description>
+          <TranslatedText xml:lang="en">Sequence Number</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="ETCD" OID="IT.SE.ETCD" SASFieldName="ETCD">
+        <Description>
+          <TranslatedText xml:lang="en">Element Code</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="ELEMENT" OID="IT.SE.ELEMENT" SASFieldName="ELEMENT">
+        <Description>
+          <TranslatedText xml:lang="en">Description of Element</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="datetime" Name="SESTDTC" OID="IT.SE.SESTDTC" SASFieldName="SESTDTC">
+        <Description>
+          <TranslatedText xml:lang="en">Start Date/Time of Element</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="datetime" Name="SEENDTC" OID="IT.SE.SEENDTC" SASFieldName="SEENDTC">
+        <Description>
+          <TranslatedText xml:lang="en">End Date/Time of Element</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="SEUPDES" OID="IT.SE.SEUPDES" SASFieldName="SEUPDES">
+        <Description>
+          <TranslatedText xml:lang="en">Description of Unplanned Element</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="2" Name="DOMAIN" OID="IT.EX.DOMAIN" SASFieldName="DOMAIN">
+        <Description>
+          <TranslatedText xml:lang="en">Domain Abbreviation</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="USUBJID" OID="IT.EX.USUBJID" SASFieldName="USUBJID">
+        <Description>
+          <TranslatedText xml:lang="en">Unique Subject Identifier</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="POOLID" OID="IT.EX.POOLID" SASFieldName="POOLID">
+        <Description>
+          <TranslatedText xml:lang="en">Pool Identifier</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="50" Name="FOCID" OID="IT.EX.FOCID" SASFieldName="FOCID">
+        <Description>
+          <TranslatedText xml:lang="en">Focus of Study-Specific Interest</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="integer" Length="50" Name="EXSEQ" OID="IT.EX.EXSEQ" SASFieldName="EXSEQ">
+        <Description>
+          <TranslatedText xml:lang="en">Sequence Number</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="EXTRT" OID="IT.EX.EXTRT" SASFieldName="EXTRT">
+        <Description>
+          <TranslatedText xml:lang="en">Name of Actual Treatment</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="float" Length="10" Name="EXDOSE" OID="IT.EX.EXDOSE" SASFieldName="EXDOSE" SignificantDigits="3">
+        <Description>
+          <TranslatedText xml:lang="en">Dose per Administration</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="EXDOSTXT" OID="IT.EX.EXDOSTXT" SASFieldName="EXDOSTXT">
+        <Description>
+          <TranslatedText xml:lang="en">Dose Description</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="EXDOSU" OID="IT.EX.EXDOSU" SASFieldName="EXDOSU">
+        <Description>
+          <TranslatedText xml:lang="en">Dose Units</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="EXDOSFRM" OID="IT.EX.EXDOSFRM" SASFieldName="EXDOSFRM">
+        <Description>
+          <TranslatedText xml:lang="en">Dose Form</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="EXDOSFRQ" OID="IT.EX.EXDOSFRQ" SASFieldName="EXDOSFRQ">
+        <Description>
+          <TranslatedText xml:lang="en">Dosing Frequency Per Interval</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="EXROUTE" OID="IT.EX.EXROUTE" SASFieldName="EXROUTE">
+        <Description>
+          <TranslatedText xml:lang="en">Route of Administration</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="EXLOT" OID="IT.EX.EXLOT" SASFieldName="EXLOT">
+        <Description>
+          <TranslatedText xml:lang="en">Lot Number</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="EXLOC" OID="IT.EX.EXLOC" SASFieldName="EXLOC">
+        <Description>
+          <TranslatedText xml:lang="en">Location of Dose Administration</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="EXMETHOD" OID="IT.EX.EXMETHOD" SASFieldName="EXMETHOD">
+        <Description>
+          <TranslatedText xml:lang="en">Method of Administration</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="EXTRTV" OID="IT.EX.EXTRTV" SASFieldName="EXTRTV">
+        <Description>
+          <TranslatedText xml:lang="en">Treatment Vehicle</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="float" Length="10" Name="EXVAMT" OID="IT.EX.EXVAMT" SASFieldName="EXVAMT" SignificantDigits="3">
+        <Description>
+          <TranslatedText xml:lang="en">Amount Administered</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="EXVAMTU" OID="IT.EX.EXVAMTU" SASFieldName="EXVAMTU">
+        <Description>
+          <TranslatedText xml:lang="en">Amount Administered Units</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="EXADJ" OID="IT.EX.EXADJ" SASFieldName="EXADJ">
+        <Description>
+          <TranslatedText xml:lang="en">Reason for Dose Adjustment</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="datetime" Name="EXSTDTC" OID="IT.EX.EXSTDTC" SASFieldName="EXSTDTC">
+        <Description>
+          <TranslatedText xml:lang="en">Start Date/Time of Treatment</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="datetime" Name="EXENDTC" OID="IT.EX.EXENDTC" SASFieldName="EXENDTC">
+        <Description>
+          <TranslatedText xml:lang="en">End Date/Time of Treatment</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="integer" Length="50" Name="EXSTDY" OID="IT.EX.EXSTDY" SASFieldName="EXSTDY">
+        <Description>
+          <TranslatedText xml:lang="en">Study Day of Start of Treatment</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="integer" Length="50" Name="EXENDY" OID="IT.EX.EXENDY" SASFieldName="EXENDY">
+        <Description>
+          <TranslatedText xml:lang="en">Study Day of End of Treatment</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="durationDatetime" Name="EXDUR" OID="IT.EX.EXDUR" SASFieldName="EXDUR">
+        <Description>
+          <TranslatedText xml:lang="en">Duration of Treatment</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="EXTPT" OID="IT.EX.EXTPT" SASFieldName="EXTPT">
+        <Description>
+          <TranslatedText xml:lang="en">Planned Time Point Name</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="float" Length="10" Name="EXTPTNUM" OID="IT.EX.EXTPTNUM" SASFieldName="EXTPTNUM" SignificantDigits="3">
+        <Description>
+          <TranslatedText xml:lang="en">Planned Time Point Number</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="durationDatetime" Name="EXELTM" OID="IT.EX.EXELTM" SASFieldName="EXELTM">
+        <Description>
+          <TranslatedText xml:lang="en">Planned Elapsed Time from Time Point Ref</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="EXTPTREF" OID="IT.EX.EXTPTREF" SASFieldName="EXTPTREF">
+        <Description>
+          <TranslatedText xml:lang="en">Time Point Reference</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="datetime" Name="EXRFTDTC" OID="IT.EX.EXRFTDTC" SASFieldName="EXRFTDTC">
+        <Description>
+          <TranslatedText xml:lang="en">Date/Time of Reference Time Point</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="2" Name="DOMAIN" OID="IT.DS.DOMAIN" SASFieldName="DOMAIN">
+        <Description>
+          <TranslatedText xml:lang="en">Domain Abbreviation</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="USUBJID" OID="IT.DS.USUBJID" SASFieldName="USUBJID">
+        <Description>
+          <TranslatedText xml:lang="en">Unique Subject Identifier</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="integer" Length="50" Name="DSSEQ" OID="IT.DS.DSSEQ" SASFieldName="DSSEQ">
+        <Description>
+          <TranslatedText xml:lang="en">Sequence Number</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="DSTERM" OID="IT.DS.DSTERM" SASFieldName="DSTERM">
+        <Description>
+          <TranslatedText xml:lang="en">Reported Term for the Disposition Event</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="DSDECOD" OID="IT.DS.DSDECOD" SASFieldName="DSDECOD">
+        <Description>
+          <TranslatedText xml:lang="en">Standardized Disposition Term</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="1" Name="DSUSCHFL" OID="IT.DS.DSUSCHFL" SASFieldName="DSUSCHFL">
+        <Description>
+          <TranslatedText xml:lang="en">Unscheduled Flag</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="integer" Length="50" Name="VISITDY" OID="IT.DS.VISITDY" SASFieldName="VISITDY">
+        <Description>
+          <TranslatedText xml:lang="en">Planned Study Day of Disposition</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="datetime" Name="DSSTDTC" OID="IT.DS.DSSTDTC" SASFieldName="DSSTDTC">
+        <Description>
+          <TranslatedText xml:lang="en">Date/Time of Disposition</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="integer" Length="50" Name="DSSTDY" OID="IT.DS.DSSTDY" SASFieldName="DSSTDY">
+        <Description>
+          <TranslatedText xml:lang="en">Study Day of Disposition</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="integer" Length="50" Name="DSNOMDY" OID="IT.DS.DSNOMDY" SASFieldName="DSNOMDY">
+        <Description>
+          <TranslatedText xml:lang="en">Nominal Study Day for Tabulations</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="50" Name="DSNOMLBL" OID="IT.DS.DSNOMLBL" SASFieldName="DSNOMLBL">
+        <Description>
+          <TranslatedText xml:lang="en">Label for Nominal Study Day</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="2" Name="DOMAIN" OID="IT.BG.DOMAIN" SASFieldName="DOMAIN">
+        <Description>
+          <TranslatedText xml:lang="en">Domain Abbreviation</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="USUBJID" OID="IT.BG.USUBJID" SASFieldName="USUBJID">
+        <Description>
+          <TranslatedText xml:lang="en">Unique Subject Identifier</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="integer" Length="50" Name="BGSEQ" OID="IT.BG.BGSEQ" SASFieldName="BGSEQ">
+        <Description>
+          <TranslatedText xml:lang="en">Sequence Number</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="8" Name="BGTESTCD" OID="IT.BG.BGTESTCD" SASFieldName="BGTESTCD">
+        <Description>
+          <TranslatedText xml:lang="en">Test Short Name</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="BGTEST" OID="IT.BG.BGTEST" SASFieldName="BGTEST">
+        <Description>
+          <TranslatedText xml:lang="en">Test Name</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="BGORRES" OID="IT.BG.BGORRES" SASFieldName="BGORRES">
+        <Description>
+          <TranslatedText xml:lang="en">Result or Findings as Collected</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="BGORRESU" OID="IT.BG.BGORRESU" SASFieldName="BGORRESU">
+        <Description>
+          <TranslatedText xml:lang="en">Unit of the Original Result</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="BGSTRESC" OID="IT.BG.BGSTRESC" SASFieldName="BGSTRESC">
+        <Description>
+          <TranslatedText xml:lang="en">Standardized Result in Character Format</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="float" Length="10" Name="BGSTRESN" OID="IT.BG.BGSTRESN" SASFieldName="BGSTRESN" SignificantDigits="3">
+        <Description>
+          <TranslatedText xml:lang="en">Standardized Result in Numeric Format</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="BGSTRESU" OID="IT.BG.BGSTRESU" SASFieldName="BGSTRESU">
+        <Description>
+          <TranslatedText xml:lang="en">Unit of the Standardized Result</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="8" Name="BGSTAT" OID="IT.BG.BGSTAT" SASFieldName="BGSTAT">
+        <Description>
+          <TranslatedText xml:lang="en">Completion Status</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="BGREASND" OID="IT.BG.BGREASND" SASFieldName="BGREASND">
+        <Description>
+          <TranslatedText xml:lang="en">Reason Not Done</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="1" Name="BGEXCLFL" OID="IT.BG.BGEXCLFL" SASFieldName="BGEXCLFL">
+        <Description>
+          <TranslatedText xml:lang="en">Exclusion Flag</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="BGREASEX" OID="IT.BG.BGREASEX" SASFieldName="BGREASEX">
+        <Description>
+          <TranslatedText xml:lang="en">Reason for Exclusion</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="1" Name="BGUSCHFL" OID="IT.BG.BGUSCHFL" SASFieldName="BGUSCHFL">
+        <Description>
+          <TranslatedText xml:lang="en">Unscheduled Flag</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="datetime" Name="BGDTC" OID="IT.BG.BGDTC" SASFieldName="BGDTC">
+        <Description>
+          <TranslatedText xml:lang="en">Date/Time Animal Weighed</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="datetime" Name="BGENDTC" OID="IT.BG.BGENDTC" SASFieldName="BGENDTC">
+        <Description>
+          <TranslatedText xml:lang="en">End Date/Time Animal Weighed</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="integer" Length="50" Name="BGDY" OID="IT.BG.BGDY" SASFieldName="BGDY">
+        <Description>
+          <TranslatedText xml:lang="en">Study Day of Start of Interval</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="integer" Length="50" Name="BGENDY" OID="IT.BG.BGENDY" SASFieldName="BGENDY">
+        <Description>
+          <TranslatedText xml:lang="en">Study Day of End of Weight Interval</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="2" Name="DOMAIN" OID="IT.BW.DOMAIN" SASFieldName="DOMAIN">
+        <Description>
+          <TranslatedText xml:lang="en">Domain Abbreviation</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="USUBJID" OID="IT.BW.USUBJID" SASFieldName="USUBJID">
+        <Description>
+          <TranslatedText xml:lang="en">Unique Subject Identifier</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="integer" Length="50" Name="BWSEQ" OID="IT.BW.BWSEQ" SASFieldName="BWSEQ">
+        <Description>
+          <TranslatedText xml:lang="en">Sequence Number</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="8" Name="BWTESTCD" OID="IT.BW.BWTESTCD" SASFieldName="BWTESTCD">
+        <Description>
+          <TranslatedText xml:lang="en">Test Short Name</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="BWTEST" OID="IT.BW.BWTEST" SASFieldName="BWTEST">
+        <Description>
+          <TranslatedText xml:lang="en">Test Name</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="BWORRES" OID="IT.BW.BWORRES" SASFieldName="BWORRES">
+        <Description>
+          <TranslatedText xml:lang="en">Result or Findings as Collected</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="BWORRESU" OID="IT.BW.BWORRESU" SASFieldName="BWORRESU">
+        <Description>
+          <TranslatedText xml:lang="en">Unit of the Original Result</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="BWSTRESC" OID="IT.BW.BWSTRESC" SASFieldName="BWSTRESC">
+        <Description>
+          <TranslatedText xml:lang="en">Standardized Result in Character Format</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="float" Length="10" Name="BWSTRESN" OID="IT.BW.BWSTRESN" SASFieldName="BWSTRESN" SignificantDigits="3">
+        <Description>
+          <TranslatedText xml:lang="en">Standardized Result in Numeric Format</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="BWSTRESU" OID="IT.BW.BWSTRESU" SASFieldName="BWSTRESU">
+        <Description>
+          <TranslatedText xml:lang="en">Unit of the Standardized Result</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="8" Name="BWSTAT" OID="IT.BW.BWSTAT" SASFieldName="BWSTAT">
+        <Description>
+          <TranslatedText xml:lang="en">Completion Status</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="BWREASND" OID="IT.BW.BWREASND" SASFieldName="BWREASND">
+        <Description>
+          <TranslatedText xml:lang="en">Reason Not Done</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="1" Name="BWBLFL" OID="IT.BW.BWBLFL" SASFieldName="BWBLFL">
+        <Description>
+          <TranslatedText xml:lang="en">Baseline Flag</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="1" Name="BWFAST" OID="IT.BW.BWFAST" SASFieldName="BWFAST">
+        <Description>
+          <TranslatedText xml:lang="en">Fasting Status</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="1" Name="BWEXCLFL" OID="IT.BW.BWEXCLFL" SASFieldName="BWEXCLFL">
+        <Description>
+          <TranslatedText xml:lang="en">Exclusion Flag</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="BWREASEX" OID="IT.BW.BWREASEX" SASFieldName="BWREASEX">
+        <Description>
+          <TranslatedText xml:lang="en">Reason for Exclusion</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="1" Name="BWUSCHFL" OID="IT.BW.BWUSCHFL" SASFieldName="BWUSCHFL">
+        <Description>
+          <TranslatedText xml:lang="en">Unscheduled Flag</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="integer" Length="50" Name="VISITDY" OID="IT.BW.VISITDY" SASFieldName="VISITDY">
+        <Description>
+          <TranslatedText xml:lang="en">Planned Study Day of Collection</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="datetime" Name="BWDTC" OID="IT.BW.BWDTC" SASFieldName="BWDTC">
+        <Description>
+          <TranslatedText xml:lang="en">Date/Time Animal Weighed</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="integer" Length="50" Name="BWDY" OID="IT.BW.BWDY" SASFieldName="BWDY">
+        <Description>
+          <TranslatedText xml:lang="en">Study Day Animal Weighed</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="integer" Length="50" Name="BWNOMDY" OID="IT.BW.BWNOMDY" SASFieldName="BWNOMDY">
+        <Description>
+          <TranslatedText xml:lang="en">Nominal Study Day for Tabulations</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="50" Name="BWNOMLBL" OID="IT.BW.BWNOMLBL" SASFieldName="BWNOMLBL">
+        <Description>
+          <TranslatedText xml:lang="en">Label for Nominal Study Day</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="2" Name="DOMAIN" OID="IT.CL.DOMAIN" SASFieldName="DOMAIN">
+        <Description>
+          <TranslatedText xml:lang="en">Domain Abbreviation</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="USUBJID" OID="IT.CL.USUBJID" SASFieldName="USUBJID">
+        <Description>
+          <TranslatedText xml:lang="en">Unique Subject Identifier</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="POOLID" OID="IT.CL.POOLID" SASFieldName="POOLID">
+        <Description>
+          <TranslatedText xml:lang="en">Pool Identifier</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="50" Name="FOCID" OID="IT.CL.FOCID" SASFieldName="FOCID">
+        <Description>
+          <TranslatedText xml:lang="en">Focus of Study-Specific Interest</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="integer" Length="50" Name="CLSEQ" OID="IT.CL.CLSEQ" SASFieldName="CLSEQ">
+        <Description>
+          <TranslatedText xml:lang="en">Sequence Number</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="CLGRPID" OID="IT.CL.CLGRPID" SASFieldName="CLGRPID">
+        <Description>
+          <TranslatedText xml:lang="en">Group Identifier</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="CLSPID" OID="IT.CL.CLSPID" SASFieldName="CLSPID">
+        <Description>
+          <TranslatedText xml:lang="en">Mass Identifier</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="8" Name="CLTESTCD" OID="IT.CL.CLTESTCD" SASFieldName="CLTESTCD">
+        <Description>
+          <TranslatedText xml:lang="en">Test Short Name</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="CLTEST" OID="IT.CL.CLTEST" SASFieldName="CLTEST">
+        <Description>
+          <TranslatedText xml:lang="en">Test Name</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="CLCAT" OID="IT.CL.CLCAT" SASFieldName="CLCAT">
+        <Description>
+          <TranslatedText xml:lang="en">Category for Clinical Observations</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="CLSCAT" OID="IT.CL.CLSCAT" SASFieldName="CLSCAT">
+        <Description>
+          <TranslatedText xml:lang="en">Subcategory for Clinical Observations</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="CLBODSYS" OID="IT.CL.CLBODSYS" SASFieldName="CLBODSYS">
+        <Description>
+          <TranslatedText xml:lang="en">Body System or Organ Class</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="CLORRES" OID="IT.CL.CLORRES" SASFieldName="CLORRES">
+        <Description>
+          <TranslatedText xml:lang="en">Result or Findings as Collected</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="CLSTRESC" OID="IT.CL.CLSTRESC" SASFieldName="CLSTRESC">
+        <Description>
+          <TranslatedText xml:lang="en">Standardized Result in Character Format</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="CLRESCAT" OID="IT.CL.CLRESCAT" SASFieldName="CLRESCAT">
+        <Description>
+          <TranslatedText xml:lang="en">Result Category</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="8" Name="CLSTAT" OID="IT.CL.CLSTAT" SASFieldName="CLSTAT">
+        <Description>
+          <TranslatedText xml:lang="en">Completion Status</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="CLREASND" OID="IT.CL.CLREASND" SASFieldName="CLREASND">
+        <Description>
+          <TranslatedText xml:lang="en">Reason Not Done</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="CLLOC" OID="IT.CL.CLLOC" SASFieldName="CLLOC">
+        <Description>
+          <TranslatedText xml:lang="en">Location of a Finding</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="CLEVAL" OID="IT.CL.CLEVAL" SASFieldName="CLEVAL">
+        <Description>
+          <TranslatedText xml:lang="en">Evaluator</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="CLSEV" OID="IT.CL.CLSEV" SASFieldName="CLSEV">
+        <Description>
+          <TranslatedText xml:lang="en">Severity</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="1" Name="CLEXCLFL" OID="IT.CL.CLEXCLFL" SASFieldName="CLEXCLFL">
+        <Description>
+          <TranslatedText xml:lang="en">Exclusion Flag</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="CLREASEX" OID="IT.CL.CLREASEX" SASFieldName="CLREASEX">
+        <Description>
+          <TranslatedText xml:lang="en">Reason for Exclusion</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="1" Name="CLUSCHFL" OID="IT.CL.CLUSCHFL" SASFieldName="CLUSCHFL">
+        <Description>
+          <TranslatedText xml:lang="en">Unscheduled Flag</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="integer" Length="50" Name="VISITDY" OID="IT.CL.VISITDY" SASFieldName="VISITDY">
+        <Description>
+          <TranslatedText xml:lang="en">Planned Study Day of Collection</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="datetime" Name="CLDTC" OID="IT.CL.CLDTC" SASFieldName="CLDTC">
+        <Description>
+          <TranslatedText xml:lang="en">Date/Time of Observation</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="datetime" Name="CLENDTC" OID="IT.CL.CLENDTC" SASFieldName="CLENDTC">
+        <Description>
+          <TranslatedText xml:lang="en">End Date/Time of Observation</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="integer" Length="50" Name="CLDY" OID="IT.CL.CLDY" SASFieldName="CLDY">
+        <Description>
+          <TranslatedText xml:lang="en">Study Day of Observation</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="integer" Length="50" Name="CLENDY" OID="IT.CL.CLENDY" SASFieldName="CLENDY">
+        <Description>
+          <TranslatedText xml:lang="en">Study Day of End of Observation</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="integer" Length="50" Name="CLNOMDY" OID="IT.CL.CLNOMDY" SASFieldName="CLNOMDY">
+        <Description>
+          <TranslatedText xml:lang="en">Nominal Study Day for Tabulations</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="50" Name="CLNOMLBL" OID="IT.CL.CLNOMLBL" SASFieldName="CLNOMLBL">
+        <Description>
+          <TranslatedText xml:lang="en">Label for Nominal Study Day</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="CLTPT" OID="IT.CL.CLTPT" SASFieldName="CLTPT">
+        <Description>
+          <TranslatedText xml:lang="en">Planned Time Point Name</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="float" Length="10" Name="CLTPTNUM" OID="IT.CL.CLTPTNUM" SASFieldName="CLTPTNUM" SignificantDigits="3">
+        <Description>
+          <TranslatedText xml:lang="en">Planned Time Point Number</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="durationDatetime" Name="CLELTM" OID="IT.CL.CLELTM" SASFieldName="CLELTM">
+        <Description>
+          <TranslatedText xml:lang="en">Planned Elapsed Time from Time Point Ref</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="CLTPTREF" OID="IT.CL.CLTPTREF" SASFieldName="CLTPTREF">
+        <Description>
+          <TranslatedText xml:lang="en">Time Point Reference</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="datetime" Name="CLRFTDTC" OID="IT.CL.CLRFTDTC" SASFieldName="CLRFTDTC">
+        <Description>
+          <TranslatedText xml:lang="en">Date/Time of Reference Time Point</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="2" Name="DOMAIN" OID="IT.FW.DOMAIN" SASFieldName="DOMAIN">
+        <Description>
+          <TranslatedText xml:lang="en">Domain Abbreviation</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="USUBJID" OID="IT.FW.USUBJID" SASFieldName="USUBJID">
+        <Description>
+          <TranslatedText xml:lang="en">Unique Subject Identifier</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="POOLID" OID="IT.FW.POOLID" SASFieldName="POOLID">
+        <Description>
+          <TranslatedText xml:lang="en">Pool Identifier</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="integer" Length="50" Name="FWSEQ" OID="IT.FW.FWSEQ" SASFieldName="FWSEQ">
+        <Description>
+          <TranslatedText xml:lang="en">Sequence Number</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="FWGRPID" OID="IT.FW.FWGRPID" SASFieldName="FWGRPID">
+        <Description>
+          <TranslatedText xml:lang="en">Group Identifier</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="8" Name="FWTESTCD" OID="IT.FW.FWTESTCD" SASFieldName="FWTESTCD">
+        <Description>
+          <TranslatedText xml:lang="en">Food/Water Consumption Short Name</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="FWTEST" OID="IT.FW.FWTEST" SASFieldName="FWTEST">
+        <Description>
+          <TranslatedText xml:lang="en">Food/Water Consumption Name</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="FWORRES" OID="IT.FW.FWORRES" SASFieldName="FWORRES">
+        <Description>
+          <TranslatedText xml:lang="en">Result or Findings as Collected</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="FWORRESU" OID="IT.FW.FWORRESU" SASFieldName="FWORRESU">
+        <Description>
+          <TranslatedText xml:lang="en">Unit of the Original Result</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="FWSTRESC" OID="IT.FW.FWSTRESC" SASFieldName="FWSTRESC">
+        <Description>
+          <TranslatedText xml:lang="en">Standardized Result in Character Format</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="float" Length="10" Name="FWSTRESN" OID="IT.FW.FWSTRESN" SASFieldName="FWSTRESN" SignificantDigits="3">
+        <Description>
+          <TranslatedText xml:lang="en">Standardized Result in Numeric Format</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="FWSTRESU" OID="IT.FW.FWSTRESU" SASFieldName="FWSTRESU">
+        <Description>
+          <TranslatedText xml:lang="en">Unit of the Standardized Result</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="8" Name="FWSTAT" OID="IT.FW.FWSTAT" SASFieldName="FWSTAT">
+        <Description>
+          <TranslatedText xml:lang="en">Completion Status</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="FWREASND" OID="IT.FW.FWREASND" SASFieldName="FWREASND">
+        <Description>
+          <TranslatedText xml:lang="en">Reason Not Done</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="1" Name="FWEXCLFL" OID="IT.FW.FWEXCLFL" SASFieldName="FWEXCLFL">
+        <Description>
+          <TranslatedText xml:lang="en">Exclusion Flag</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="FWREASEX" OID="IT.FW.FWREASEX" SASFieldName="FWREASEX">
+        <Description>
+          <TranslatedText xml:lang="en">Reason for Exclusion</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="datetime" Name="FWDTC" OID="IT.FW.FWDTC" SASFieldName="FWDTC">
+        <Description>
+          <TranslatedText xml:lang="en">Start Date/Time of Observation</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="datetime" Name="FWENDTC" OID="IT.FW.FWENDTC" SASFieldName="FWENDTC">
+        <Description>
+          <TranslatedText xml:lang="en">End Date/Time of Observation</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="integer" Length="50" Name="FWDY" OID="IT.FW.FWDY" SASFieldName="FWDY">
+        <Description>
+          <TranslatedText xml:lang="en">Study Day of Start of Observation</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="integer" Length="50" Name="FWENDY" OID="IT.FW.FWENDY" SASFieldName="FWENDY">
+        <Description>
+          <TranslatedText xml:lang="en">Study Day of End of Observation</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="2" Name="DOMAIN" OID="IT.LB.DOMAIN" SASFieldName="DOMAIN">
+        <Description>
+          <TranslatedText xml:lang="en">Domain Abbreviation</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="USUBJID" OID="IT.LB.USUBJID" SASFieldName="USUBJID">
+        <Description>
+          <TranslatedText xml:lang="en">Unique Subject Identifier</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="POOLID" OID="IT.LB.POOLID" SASFieldName="POOLID">
+        <Description>
+          <TranslatedText xml:lang="en">Pool Identifier</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="integer" Length="50" Name="LBSEQ" OID="IT.LB.LBSEQ" SASFieldName="LBSEQ">
+        <Description>
+          <TranslatedText xml:lang="en">Sequence Number</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="LBGRPID" OID="IT.LB.LBGRPID" SASFieldName="LBGRPID">
+        <Description>
+          <TranslatedText xml:lang="en">Group Identifier</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="LBREFID" OID="IT.LB.LBREFID" SASFieldName="LBREFID">
+        <Description>
+          <TranslatedText xml:lang="en">Specimen Identifier</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="LBSPID" OID="IT.LB.LBSPID" SASFieldName="LBSPID">
+        <Description>
+          <TranslatedText xml:lang="en">Sponsor-Defined Identifier</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="8" Name="LBTESTCD" OID="IT.LB.LBTESTCD" SASFieldName="LBTESTCD">
+        <Description>
+          <TranslatedText xml:lang="en">Lab Test or Examination Short Name</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="LBTEST" OID="IT.LB.LBTEST" SASFieldName="LBTEST">
+        <Description>
+          <TranslatedText xml:lang="en">Lab Test or Examination Name</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="LBCAT" OID="IT.LB.LBCAT" SASFieldName="LBCAT">
+        <Description>
+          <TranslatedText xml:lang="en">Category for Lab Test</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="LBSCAT" OID="IT.LB.LBSCAT" SASFieldName="LBSCAT">
+        <Description>
+          <TranslatedText xml:lang="en">Subcategory for Lab Test</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="LBORRES" OID="IT.LB.LBORRES" SASFieldName="LBORRES">
+        <Description>
+          <TranslatedText xml:lang="en">Result or Findings as Collected</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="LBORRESU" OID="IT.LB.LBORRESU" SASFieldName="LBORRESU">
+        <Description>
+          <TranslatedText xml:lang="en">Unit of the Original Result</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="10" Name="LBORNRLO" OID="IT.LB.LBORNRLO" SASFieldName="LBORNRLO">
+        <Description>
+          <TranslatedText xml:lang="en">Reference Range Lower Limit-Orig Unit</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="10" Name="LBORNRHI" OID="IT.LB.LBORNRHI" SASFieldName="LBORNRHI">
+        <Description>
+          <TranslatedText xml:lang="en">Reference Range Upper Limit-Orig Unit</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="LBSTRESC" OID="IT.LB.LBSTRESC" SASFieldName="LBSTRESC">
+        <Description>
+          <TranslatedText xml:lang="en">Standardized Result in Character Format</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="float" Length="10" Name="LBSTRESN" OID="IT.LB.LBSTRESN" SASFieldName="LBSTRESN" SignificantDigits="3">
+        <Description>
+          <TranslatedText xml:lang="en">Standardized Result in Numeric Format</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="LBSTRESU" OID="IT.LB.LBSTRESU" SASFieldName="LBSTRESU">
+        <Description>
+          <TranslatedText xml:lang="en">Unit of the Standardized Result</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="float" Length="10" Name="LBSTNRLO" OID="IT.LB.LBSTNRLO" SASFieldName="LBSTNRLO" SignificantDigits="3">
+        <Description>
+          <TranslatedText xml:lang="en">Reference Range Lower Limit-Std Unit</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="float" Length="10" Name="LBSTNRHI" OID="IT.LB.LBSTNRHI" SASFieldName="LBSTNRHI" SignificantDigits="3">
+        <Description>
+          <TranslatedText xml:lang="en">Reference Range Upper Limit-Std Unit</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="LBSTNRC" OID="IT.LB.LBSTNRC" SASFieldName="LBSTNRC">
+        <Description>
+          <TranslatedText xml:lang="en">Reference Range for Char Rslt-Std Unit</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="LBNRIND" OID="IT.LB.LBNRIND" SASFieldName="LBNRIND">
+        <Description>
+          <TranslatedText xml:lang="en">Reference Range Indicator</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="8" Name="LBSTAT" OID="IT.LB.LBSTAT" SASFieldName="LBSTAT">
+        <Description>
+          <TranslatedText xml:lang="en">Completion Status</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="LBREASND" OID="IT.LB.LBREASND" SASFieldName="LBREASND">
+        <Description>
+          <TranslatedText xml:lang="en">Reason Not Done</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="LBNAM" OID="IT.LB.LBNAM" SASFieldName="LBNAM">
+        <Description>
+          <TranslatedText xml:lang="en">Laboratory Name</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="LBSPEC" OID="IT.LB.LBSPEC" SASFieldName="LBSPEC">
+        <Description>
+          <TranslatedText xml:lang="en">Specimen Material Type</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="LBANTREG" OID="IT.LB.LBANTREG" SASFieldName="LBANTREG">
+        <Description>
+          <TranslatedText xml:lang="en">Anatomical Region of Specimen</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="LBSPCCND" OID="IT.LB.LBSPCCND" SASFieldName="LBSPCCND">
+        <Description>
+          <TranslatedText xml:lang="en">Specimen Condition</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="1" Name="LBSPCUFL" OID="IT.LB.LBSPCUFL" SASFieldName="LBSPCUFL">
+        <Description>
+          <TranslatedText xml:lang="en">Specimen Usability for the Test</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="LBLOC" OID="IT.LB.LBLOC" SASFieldName="LBLOC">
+        <Description>
+          <TranslatedText xml:lang="en">Specimen Collection Location</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="LBLAT" OID="IT.LB.LBLAT" SASFieldName="LBLAT">
+        <Description>
+          <TranslatedText xml:lang="en">Specimen Laterality within Subject</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="LBDIR" OID="IT.LB.LBDIR" SASFieldName="LBDIR">
+        <Description>
+          <TranslatedText xml:lang="en">Specimen Directionality within Subject</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="LBPORTOT" OID="IT.LB.LBPORTOT" SASFieldName="LBPORTOT">
+        <Description>
+          <TranslatedText xml:lang="en">Portion or Totality</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="LBMETHOD" OID="IT.LB.LBMETHOD" SASFieldName="LBMETHOD">
+        <Description>
+          <TranslatedText xml:lang="en">Method of Test or Examination</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="1" Name="LBBLFL" OID="IT.LB.LBBLFL" SASFieldName="LBBLFL">
+        <Description>
+          <TranslatedText xml:lang="en">Baseline Flag</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="1" Name="LBFAST" OID="IT.LB.LBFAST" SASFieldName="LBFAST">
+        <Description>
+          <TranslatedText xml:lang="en">Fasting Status</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="1" Name="LBDRVFL" OID="IT.LB.LBDRVFL" SASFieldName="LBDRVFL">
+        <Description>
+          <TranslatedText xml:lang="en">Derived Flag</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="LBTOX" OID="IT.LB.LBTOX" SASFieldName="LBTOX">
+        <Description>
+          <TranslatedText xml:lang="en">Toxicity</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="LBTOXGR" OID="IT.LB.LBTOXGR" SASFieldName="LBTOXGR">
+        <Description>
+          <TranslatedText xml:lang="en">Standard Toxicity Grade</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="1" Name="LBEXCLFL" OID="IT.LB.LBEXCLFL" SASFieldName="LBEXCLFL">
+        <Description>
+          <TranslatedText xml:lang="en">Exclusion Flag</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="LBREASEX" OID="IT.LB.LBREASEX" SASFieldName="LBREASEX">
+        <Description>
+          <TranslatedText xml:lang="en">Reason for Exclusion</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="1" Name="LBUSCHFL" OID="IT.LB.LBUSCHFL" SASFieldName="LBUSCHFL">
+        <Description>
+          <TranslatedText xml:lang="en">Unscheduled Flag</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="integer" Length="50" Name="VISITDY" OID="IT.LB.VISITDY" SASFieldName="VISITDY">
+        <Description>
+          <TranslatedText xml:lang="en">Planned Study Day of Collection</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="datetime" Name="LBDTC" OID="IT.LB.LBDTC" SASFieldName="LBDTC">
+        <Description>
+          <TranslatedText xml:lang="en">Date/Time of Specimen Collection</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="datetime" Name="LBENDTC" OID="IT.LB.LBENDTC" SASFieldName="LBENDTC">
+        <Description>
+          <TranslatedText xml:lang="en">End Date/Time of Specimen Collection</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="integer" Length="50" Name="LBDY" OID="IT.LB.LBDY" SASFieldName="LBDY">
+        <Description>
+          <TranslatedText xml:lang="en">Study Day of Specimen Collection</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="integer" Length="50" Name="LBENDY" OID="IT.LB.LBENDY" SASFieldName="LBENDY">
+        <Description>
+          <TranslatedText xml:lang="en">Study Day of End of Specimen Collection</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="integer" Length="50" Name="LBNOMDY" OID="IT.LB.LBNOMDY" SASFieldName="LBNOMDY">
+        <Description>
+          <TranslatedText xml:lang="en">Nominal Study Day for Tabulations</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="50" Name="LBNOMLBL" OID="IT.LB.LBNOMLBL" SASFieldName="LBNOMLBL">
+        <Description>
+          <TranslatedText xml:lang="en">Label for Nominal Study Day</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="LBTPT" OID="IT.LB.LBTPT" SASFieldName="LBTPT">
+        <Description>
+          <TranslatedText xml:lang="en">Planned Time Point Name</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="float" Length="10" Name="LBTPTNUM" OID="IT.LB.LBTPTNUM" SASFieldName="LBTPTNUM" SignificantDigits="3">
+        <Description>
+          <TranslatedText xml:lang="en">Planned Time Point Number</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="durationDatetime" Name="LBELTM" OID="IT.LB.LBELTM" SASFieldName="LBELTM">
+        <Description>
+          <TranslatedText xml:lang="en">Planned Elapsed Time from Time Point Ref</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="LBTPTREF" OID="IT.LB.LBTPTREF" SASFieldName="LBTPTREF">
+        <Description>
+          <TranslatedText xml:lang="en">Time Point Reference</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="datetime" Name="LBRFTDTC" OID="IT.LB.LBRFTDTC" SASFieldName="LBRFTDTC">
+        <Description>
+          <TranslatedText xml:lang="en">Date/Time of Reference Time Point</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="2" Name="DOMAIN" OID="IT.MA.DOMAIN" SASFieldName="DOMAIN">
+        <Description>
+          <TranslatedText xml:lang="en">Domain Abbreviation</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="USUBJID" OID="IT.MA.USUBJID" SASFieldName="USUBJID">
+        <Description>
+          <TranslatedText xml:lang="en">Unique Subject Identifier</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="50" Name="FOCID" OID="IT.MA.FOCID" SASFieldName="FOCID">
+        <Description>
+          <TranslatedText xml:lang="en">Focus of Study-Specific Interest</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="integer" Length="50" Name="MASEQ" OID="IT.MA.MASEQ" SASFieldName="MASEQ">
+        <Description>
+          <TranslatedText xml:lang="en">Sequence Number</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="MAGRPID" OID="IT.MA.MAGRPID" SASFieldName="MAGRPID">
+        <Description>
+          <TranslatedText xml:lang="en">Group Identifier</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="MAREFID" OID="IT.MA.MAREFID" SASFieldName="MAREFID">
+        <Description>
+          <TranslatedText xml:lang="en">Specimen Reference Identifier</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="MASPID" OID="IT.MA.MASPID" SASFieldName="MASPID">
+        <Description>
+          <TranslatedText xml:lang="en">Mass Identifier</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="8" Name="MATESTCD" OID="IT.MA.MATESTCD" SASFieldName="MATESTCD">
+        <Description>
+          <TranslatedText xml:lang="en">Macroscopic Examination Short Name</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="MATEST" OID="IT.MA.MATEST" SASFieldName="MATEST">
+        <Description>
+          <TranslatedText xml:lang="en">Macroscopic Examination Name</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="MABODSYS" OID="IT.MA.MABODSYS" SASFieldName="MABODSYS">
+        <Description>
+          <TranslatedText xml:lang="en">Body System or Organ Class</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="MAORRES" OID="IT.MA.MAORRES" SASFieldName="MAORRES">
+        <Description>
+          <TranslatedText xml:lang="en">Result or Findings as Collected</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="MASTRESC" OID="IT.MA.MASTRESC" SASFieldName="MASTRESC">
+        <Description>
+          <TranslatedText xml:lang="en">Standardized Result in Character Format</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="8" Name="MASTAT" OID="IT.MA.MASTAT" SASFieldName="MASTAT">
+        <Description>
+          <TranslatedText xml:lang="en">Completion Status</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="MAREASND" OID="IT.MA.MAREASND" SASFieldName="MAREASND">
+        <Description>
+          <TranslatedText xml:lang="en">Reason Not Done</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="MANAM" OID="IT.MA.MANAM" SASFieldName="MANAM">
+        <Description>
+          <TranslatedText xml:lang="en">Laboratory Name</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="MASPEC" OID="IT.MA.MASPEC" SASFieldName="MASPEC">
+        <Description>
+          <TranslatedText xml:lang="en">Specimen Material Type</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="MAANTREG" OID="IT.MA.MAANTREG" SASFieldName="MAANTREG">
+        <Description>
+          <TranslatedText xml:lang="en">Anatomical Region of Specimen</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="MASPCCND" OID="IT.MA.MASPCCND" SASFieldName="MASPCCND">
+        <Description>
+          <TranslatedText xml:lang="en">Specimen Condition</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="1" Name="MASPCUFL" OID="IT.MA.MASPCUFL" SASFieldName="MASPCUFL">
+        <Description>
+          <TranslatedText xml:lang="en">Specimen Usability for the Test</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="MALAT" OID="IT.MA.MALAT" SASFieldName="MALAT">
+        <Description>
+          <TranslatedText xml:lang="en">Specimen Laterality within Subject</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="MADIR" OID="IT.MA.MADIR" SASFieldName="MADIR">
+        <Description>
+          <TranslatedText xml:lang="en">Specimen Directionality within Subject</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="MAPORTOT" OID="IT.MA.MAPORTOT" SASFieldName="MAPORTOT">
+        <Description>
+          <TranslatedText xml:lang="en">Portion or Totality</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="MAEVAL" OID="IT.MA.MAEVAL" SASFieldName="MAEVAL">
+        <Description>
+          <TranslatedText xml:lang="en">Evaluator</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="MASEV" OID="IT.MA.MASEV" SASFieldName="MASEV">
+        <Description>
+          <TranslatedText xml:lang="en">Severity</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="1" Name="MADTHREL" OID="IT.MA.MADTHREL" SASFieldName="MADTHREL">
+        <Description>
+          <TranslatedText xml:lang="en">Relationship to Death</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="datetime" Name="MADTC" OID="IT.MA.MADTC" SASFieldName="MADTC">
+        <Description>
+          <TranslatedText xml:lang="en">Date/Time</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="integer" Length="50" Name="MADY" OID="IT.MA.MADY" SASFieldName="MADY">
+        <Description>
+          <TranslatedText xml:lang="en">Study Day</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="2" Name="DOMAIN" OID="IT.MI.DOMAIN" SASFieldName="DOMAIN">
+        <Description>
+          <TranslatedText xml:lang="en">Domain Abbreviation</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="USUBJID" OID="IT.MI.USUBJID" SASFieldName="USUBJID">
+        <Description>
+          <TranslatedText xml:lang="en">Unique Subject Identifier</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="50" Name="FOCID" OID="IT.MI.FOCID" SASFieldName="FOCID">
+        <Description>
+          <TranslatedText xml:lang="en">Focus of Study-Specific Interest</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="integer" Length="50" Name="MISEQ" OID="IT.MI.MISEQ" SASFieldName="MISEQ">
+        <Description>
+          <TranslatedText xml:lang="en">Sequence Number</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="MIGRPID" OID="IT.MI.MIGRPID" SASFieldName="MIGRPID">
+        <Description>
+          <TranslatedText xml:lang="en">Group Identifier</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="MIREFID" OID="IT.MI.MIREFID" SASFieldName="MIREFID">
+        <Description>
+          <TranslatedText xml:lang="en">Specimen Reference Identifier</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="MISPID" OID="IT.MI.MISPID" SASFieldName="MISPID">
+        <Description>
+          <TranslatedText xml:lang="en">Mass Identifier</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="8" Name="MITESTCD" OID="IT.MI.MITESTCD" SASFieldName="MITESTCD">
+        <Description>
+          <TranslatedText xml:lang="en">Microscopic Examination Short Name</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="MITEST" OID="IT.MI.MITEST" SASFieldName="MITEST">
+        <Description>
+          <TranslatedText xml:lang="en">Microscopic Examination Name</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="MIBODSYS" OID="IT.MI.MIBODSYS" SASFieldName="MIBODSYS">
+        <Description>
+          <TranslatedText xml:lang="en">Body System or Organ Class</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="MIORRES" OID="IT.MI.MIORRES" SASFieldName="MIORRES">
+        <Description>
+          <TranslatedText xml:lang="en">Result or Findings as Collected</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="MISTRESC" OID="IT.MI.MISTRESC" SASFieldName="MISTRESC">
+        <Description>
+          <TranslatedText xml:lang="en">Standardized Result in Character Format</TranslatedText>
+        </Description>
+        <def:ValueListRef ValueListOID="VL.MI.MISTRESC"/>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="MIRESCAT" OID="IT.MI.MIRESCAT" SASFieldName="MIRESCAT">
+        <Description>
+          <TranslatedText xml:lang="en">Result Category</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="MICHRON" OID="IT.MI.MICHRON" SASFieldName="MICHRON">
+        <Description>
+          <TranslatedText xml:lang="en">Chronicity of Finding</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="MIDISTR" OID="IT.MI.MIDISTR" SASFieldName="MIDISTR">
+        <Description>
+          <TranslatedText xml:lang="en">Distribution Pattern of Finding</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="8" Name="MISTAT" OID="IT.MI.MISTAT" SASFieldName="MISTAT">
+        <Description>
+          <TranslatedText xml:lang="en">Completion Status</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="MIREASND" OID="IT.MI.MIREASND" SASFieldName="MIREASND">
+        <Description>
+          <TranslatedText xml:lang="en">Reason Not Done</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="MINAM" OID="IT.MI.MINAM" SASFieldName="MINAM">
+        <Description>
+          <TranslatedText xml:lang="en">Laboratory Name</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="MISPEC" OID="IT.MI.MISPEC" SASFieldName="MISPEC">
+        <Description>
+          <TranslatedText xml:lang="en">Specimen Material Type</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="MIANTREG" OID="IT.MI.MIANTREG" SASFieldName="MIANTREG">
+        <Description>
+          <TranslatedText xml:lang="en">Anatomical Region of Specimen</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="MISPCCND" OID="IT.MI.MISPCCND" SASFieldName="MISPCCND">
+        <Description>
+          <TranslatedText xml:lang="en">Specimen Condition</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="1" Name="MISPCUFL" OID="IT.MI.MISPCUFL" SASFieldName="MISPCUFL">
+        <Description>
+          <TranslatedText xml:lang="en">Specimen Usability for the Test</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="MILAT" OID="IT.MI.MILAT" SASFieldName="MILAT">
+        <Description>
+          <TranslatedText xml:lang="en">Specimen Laterality within Subject</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="MIDIR" OID="IT.MI.MIDIR" SASFieldName="MIDIR">
+        <Description>
+          <TranslatedText xml:lang="en">Specimen Directionality within Subject</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="MIMETHOD" OID="IT.MI.MIMETHOD" SASFieldName="MIMETHOD">
+        <Description>
+          <TranslatedText xml:lang="en">Method of Test or Examination</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="MIEVAL" OID="IT.MI.MIEVAL" SASFieldName="MIEVAL">
+        <Description>
+          <TranslatedText xml:lang="en">Evaluator</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="MISEV" OID="IT.MI.MISEV" SASFieldName="MISEV">
+        <Description>
+          <TranslatedText xml:lang="en">Severity</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="1" Name="MIDTHREL" OID="IT.MI.MIDTHREL" SASFieldName="MIDTHREL">
+        <Description>
+          <TranslatedText xml:lang="en">Relationship to Death</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="datetime" Name="MIDTC" OID="IT.MI.MIDTC" SASFieldName="MIDTC">
+        <Description>
+          <TranslatedText xml:lang="en">Date/Time</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="integer" Length="50" Name="MIDY" OID="IT.MI.MIDY" SASFieldName="MIDY">
+        <Description>
+          <TranslatedText xml:lang="en">Study Day</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="2" Name="DOMAIN" OID="IT.OM.DOMAIN" SASFieldName="DOMAIN">
+        <Description>
+          <TranslatedText xml:lang="en">Domain Abbreviation</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="USUBJID" OID="IT.OM.USUBJID" SASFieldName="USUBJID">
+        <Description>
+          <TranslatedText xml:lang="en">Unique Subject Identifier</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="integer" Length="50" Name="OMSEQ" OID="IT.OM.OMSEQ" SASFieldName="OMSEQ">
+        <Description>
+          <TranslatedText xml:lang="en">Sequence Number</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="8" Name="OMTESTCD" OID="IT.OM.OMTESTCD" SASFieldName="OMTESTCD">
+        <Description>
+          <TranslatedText xml:lang="en">Test Short Name</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="OMTEST" OID="IT.OM.OMTEST" SASFieldName="OMTEST">
+        <Description>
+          <TranslatedText xml:lang="en">Test Name</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="OMORRES" OID="IT.OM.OMORRES" SASFieldName="OMORRES">
+        <Description>
+          <TranslatedText xml:lang="en">Result or Findings as Collected</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="OMORRESU" OID="IT.OM.OMORRESU" SASFieldName="OMORRESU">
+        <Description>
+          <TranslatedText xml:lang="en">Unit of the Original Result</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="OMSTRESC" OID="IT.OM.OMSTRESC" SASFieldName="OMSTRESC">
+        <Description>
+          <TranslatedText xml:lang="en">Standardized Result in Character Format</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="float" Length="10" Name="OMSTRESN" OID="IT.OM.OMSTRESN" SASFieldName="OMSTRESN" SignificantDigits="3">
+        <Description>
+          <TranslatedText xml:lang="en">Standardized Result in Numeric Format</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="OMSTRESU" OID="IT.OM.OMSTRESU" SASFieldName="OMSTRESU">
+        <Description>
+          <TranslatedText xml:lang="en">Unit of the Standardized Result</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="8" Name="OMSTAT" OID="IT.OM.OMSTAT" SASFieldName="OMSTAT">
+        <Description>
+          <TranslatedText xml:lang="en">Completion Status</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="OMREASND" OID="IT.OM.OMREASND" SASFieldName="OMREASND">
+        <Description>
+          <TranslatedText xml:lang="en">Reason Not Done</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="OMSPEC" OID="IT.OM.OMSPEC" SASFieldName="OMSPEC">
+        <Description>
+          <TranslatedText xml:lang="en">Specimen Material Type</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="OMANTREG" OID="IT.OM.OMANTREG" SASFieldName="OMANTREG">
+        <Description>
+          <TranslatedText xml:lang="en">Anatomical Region of Specimen</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="OMSPCCND" OID="IT.OM.OMSPCCND" SASFieldName="OMSPCCND">
+        <Description>
+          <TranslatedText xml:lang="en">Specimen Condition</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="1" Name="OMSPCUFL" OID="IT.OM.OMSPCUFL" SASFieldName="OMSPCUFL">
+        <Description>
+          <TranslatedText xml:lang="en">Specimen Usability for the Test</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="OMLAT" OID="IT.OM.OMLAT" SASFieldName="OMLAT">
+        <Description>
+          <TranslatedText xml:lang="en">Specimen Laterality within Subject</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="OMDIR" OID="IT.OM.OMDIR" SASFieldName="OMDIR">
+        <Description>
+          <TranslatedText xml:lang="en">Specimen Directionality within Subject</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="OMPORTOT" OID="IT.OM.OMPORTOT" SASFieldName="OMPORTOT">
+        <Description>
+          <TranslatedText xml:lang="en">Portion or Totality</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="1" Name="OMEXCLFL" OID="IT.OM.OMEXCLFL" SASFieldName="OMEXCLFL">
+        <Description>
+          <TranslatedText xml:lang="en">Exclusion Flag</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="OMREASEX" OID="IT.OM.OMREASEX" SASFieldName="OMREASEX">
+        <Description>
+          <TranslatedText xml:lang="en">Reason for Exclusion</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="datetime" Name="OMDTC" OID="IT.OM.OMDTC" SASFieldName="OMDTC">
+        <Description>
+          <TranslatedText xml:lang="en">Date/Time Organ Measured</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="integer" Length="50" Name="OMDY" OID="IT.OM.OMDY" SASFieldName="OMDY">
+        <Description>
+          <TranslatedText xml:lang="en">Study Day of Measurement</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="integer" Length="50" Name="OMNOMDY" OID="IT.OM.OMNOMDY" SASFieldName="OMNOMDY">
+        <Description>
+          <TranslatedText xml:lang="en">Nominal Study Day for Tabulations</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="50" Name="OMNOMLBL" OID="IT.OM.OMNOMLBL" SASFieldName="OMNOMLBL">
+        <Description>
+          <TranslatedText xml:lang="en">Label for Nominal Study Day</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="2" Name="DOMAIN" OID="IT.TF.DOMAIN" SASFieldName="DOMAIN">
+        <Description>
+          <TranslatedText xml:lang="en">Domain Abbreviation</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="USUBJID" OID="IT.TF.USUBJID" SASFieldName="USUBJID">
+        <Description>
+          <TranslatedText xml:lang="en">Unique Subject Identifier</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="integer" Length="50" Name="TFSEQ" OID="IT.TF.TFSEQ" SASFieldName="TFSEQ">
+        <Description>
+          <TranslatedText xml:lang="en">Sequence Number</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="TFGRPID" OID="IT.TF.TFGRPID" SASFieldName="TFGRPID">
+        <Description>
+          <TranslatedText xml:lang="en">Group Identifier</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="TFREFID" OID="IT.TF.TFREFID" SASFieldName="TFREFID">
+        <Description>
+          <TranslatedText xml:lang="en">Specimen Identifier</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="TFSPID" OID="IT.TF.TFSPID" SASFieldName="TFSPID">
+        <Description>
+          <TranslatedText xml:lang="en">Mass Identifier</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="8" Name="TFTESTCD" OID="IT.TF.TFTESTCD" SASFieldName="TFTESTCD">
+        <Description>
+          <TranslatedText xml:lang="en">Tumor Examination Short Name</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="TFTEST" OID="IT.TF.TFTEST" SASFieldName="TFTEST">
+        <Description>
+          <TranslatedText xml:lang="en">Tumor Examination Name</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="TFORRES" OID="IT.TF.TFORRES" SASFieldName="TFORRES">
+        <Description>
+          <TranslatedText xml:lang="en">Result or Findings as Collected</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="TFSTRESC" OID="IT.TF.TFSTRESC" SASFieldName="TFSTRESC">
+        <Description>
+          <TranslatedText xml:lang="en">Standardized Result in Character Format</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="TFRESCAT" OID="IT.TF.TFRESCAT" SASFieldName="TFRESCAT">
+        <Description>
+          <TranslatedText xml:lang="en">Tumor Malignancy Status</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="TFNAM" OID="IT.TF.TFNAM" SASFieldName="TFNAM">
+        <Description>
+          <TranslatedText xml:lang="en">Laboratory Name</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="TFSPEC" OID="IT.TF.TFSPEC" SASFieldName="TFSPEC">
+        <Description>
+          <TranslatedText xml:lang="en">Specimen Material Type</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="TFANTREG" OID="IT.TF.TFANTREG" SASFieldName="TFANTREG">
+        <Description>
+          <TranslatedText xml:lang="en">Anatomical Region of Specimen</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="TFSPCCND" OID="IT.TF.TFSPCCND" SASFieldName="TFSPCCND">
+        <Description>
+          <TranslatedText xml:lang="en">Specimen Condition</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="TFLAT" OID="IT.TF.TFLAT" SASFieldName="TFLAT">
+        <Description>
+          <TranslatedText xml:lang="en">Specimen Laterality within Subject</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="TFDIR" OID="IT.TF.TFDIR" SASFieldName="TFDIR">
+        <Description>
+          <TranslatedText xml:lang="en">Specimen Directionality within Subject</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="TFMETHOD" OID="IT.TF.TFMETHOD" SASFieldName="TFMETHOD">
+        <Description>
+          <TranslatedText xml:lang="en">Method of Test or Examination</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="TFEVAL" OID="IT.TF.TFEVAL" SASFieldName="TFEVAL">
+        <Description>
+          <TranslatedText xml:lang="en">Evaluator</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="1" Name="TFDTHREL" OID="IT.TF.TFDTHREL" SASFieldName="TFDTHREL">
+        <Description>
+          <TranslatedText xml:lang="en">Relationship to Death</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="datetime" Name="TFDTC" OID="IT.TF.TFDTC" SASFieldName="TFDTC">
+        <Description>
+          <TranslatedText xml:lang="en">Date/Time</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="integer" Length="50" Name="TFDY" OID="IT.TF.TFDY" SASFieldName="TFDY">
+        <Description>
+          <TranslatedText xml:lang="en">Study Day</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="integer" Length="50" Name="TFDETECT" OID="IT.TF.TFDETECT" SASFieldName="TFDETECT">
+        <Description>
+          <TranslatedText xml:lang="en">Time in Days to Detection of Tumor</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="2" Name="DOMAIN" OID="IT.VS.DOMAIN" SASFieldName="DOMAIN">
+        <Description>
+          <TranslatedText xml:lang="en">Domain Abbreviation</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="USUBJID" OID="IT.VS.USUBJID" SASFieldName="USUBJID">
+        <Description>
+          <TranslatedText xml:lang="en">Unique Subject Identifier</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="integer" Length="50" Name="VSSEQ" OID="IT.VS.VSSEQ" SASFieldName="VSSEQ">
+        <Description>
+          <TranslatedText xml:lang="en">Sequence Number</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="VSGRPID" OID="IT.VS.VSGRPID" SASFieldName="VSGRPID">
+        <Description>
+          <TranslatedText xml:lang="en">Group Identifier</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="VSSPID" OID="IT.VS.VSSPID" SASFieldName="VSSPID">
+        <Description>
+          <TranslatedText xml:lang="en">Sponsor-Defined Identifier</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="8" Name="VSTESTCD" OID="IT.VS.VSTESTCD" SASFieldName="VSTESTCD">
+        <Description>
+          <TranslatedText xml:lang="en">Vital Signs Test Short Name</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="VSTEST" OID="IT.VS.VSTEST" SASFieldName="VSTEST">
+        <Description>
+          <TranslatedText xml:lang="en">Vital Signs Test Name</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="VSCAT" OID="IT.VS.VSCAT" SASFieldName="VSCAT">
+        <Description>
+          <TranslatedText xml:lang="en">Category for Vital Signs</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="VSSCAT" OID="IT.VS.VSSCAT" SASFieldName="VSSCAT">
+        <Description>
+          <TranslatedText xml:lang="en">Subcategory for Vital Signs</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="VSPOS" OID="IT.VS.VSPOS" SASFieldName="VSPOS">
+        <Description>
+          <TranslatedText xml:lang="en">Vital Signs Position of Subject</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="VSORRES" OID="IT.VS.VSORRES" SASFieldName="VSORRES">
+        <Description>
+          <TranslatedText xml:lang="en">Result or Findings as Collected</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="VSORRESU" OID="IT.VS.VSORRESU" SASFieldName="VSORRESU">
+        <Description>
+          <TranslatedText xml:lang="en">Unit of the Original Result</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="VSSTRESC" OID="IT.VS.VSSTRESC" SASFieldName="VSSTRESC">
+        <Description>
+          <TranslatedText xml:lang="en">Standardized Result in Character Format</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="float" Length="10" Name="VSSTRESN" OID="IT.VS.VSSTRESN" SASFieldName="VSSTRESN" SignificantDigits="3">
+        <Description>
+          <TranslatedText xml:lang="en">Standardized Result in Numeric Format</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="VSSTRESU" OID="IT.VS.VSSTRESU" SASFieldName="VSSTRESU">
+        <Description>
+          <TranslatedText xml:lang="en">Unit of the Standardized Result</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="8" Name="VSSTAT" OID="IT.VS.VSSTAT" SASFieldName="VSSTAT">
+        <Description>
+          <TranslatedText xml:lang="en">Completion Status</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="VSREASND" OID="IT.VS.VSREASND" SASFieldName="VSREASND">
+        <Description>
+          <TranslatedText xml:lang="en">Reason Not Done</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="VSLOC" OID="IT.VS.VSLOC" SASFieldName="VSLOC">
+        <Description>
+          <TranslatedText xml:lang="en">Location of Vital Signs Measurement</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="8" Name="VSCSTATE" OID="IT.VS.VSCSTATE" SASFieldName="VSCSTATE">
+        <Description>
+          <TranslatedText xml:lang="en">Consciousness State</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="1" Name="VSBLFL" OID="IT.VS.VSBLFL" SASFieldName="VSBLFL">
+        <Description>
+          <TranslatedText xml:lang="en">Baseline Flag</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="1" Name="VSDRVFL" OID="IT.VS.VSDRVFL" SASFieldName="VSDRVFL">
+        <Description>
+          <TranslatedText xml:lang="en">Derived Flag</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="1" Name="VSEXCLFL" OID="IT.VS.VSEXCLFL" SASFieldName="VSEXCLFL">
+        <Description>
+          <TranslatedText xml:lang="en">Exclusion Flag</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="VSREASEX" OID="IT.VS.VSREASEX" SASFieldName="VSREASEX">
+        <Description>
+          <TranslatedText xml:lang="en">Reason for Exclusion</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="1" Name="VSUSCHFL" OID="IT.VS.VSUSCHFL" SASFieldName="VSUSCHFL">
+        <Description>
+          <TranslatedText xml:lang="en">Unscheduled Flag</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="integer" Length="50" Name="VISITDY" OID="IT.VS.VISITDY" SASFieldName="VISITDY">
+        <Description>
+          <TranslatedText xml:lang="en">Planned Study Day of Collection</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="datetime" Name="VSDTC" OID="IT.VS.VSDTC" SASFieldName="VSDTC">
+        <Description>
+          <TranslatedText xml:lang="en">Date/Time of Measurement</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="datetime" Name="VSENDTC" OID="IT.VS.VSENDTC" SASFieldName="VSENDTC">
+        <Description>
+          <TranslatedText xml:lang="en">End Date/Time of Measurement</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="integer" Length="50" Name="VSDY" OID="IT.VS.VSDY" SASFieldName="VSDY">
+        <Description>
+          <TranslatedText xml:lang="en">Study Day of Vital Signs Measurement</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="integer" Length="50" Name="VSENDY" OID="IT.VS.VSENDY" SASFieldName="VSENDY">
+        <Description>
+          <TranslatedText xml:lang="en">Study Day of End of Measurement</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="integer" Length="50" Name="VSNOMDY" OID="IT.VS.VSNOMDY" SASFieldName="VSNOMDY">
+        <Description>
+          <TranslatedText xml:lang="en">Nominal Study Day for Tabulations</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="50" Name="VSNOMLBL" OID="IT.VS.VSNOMLBL" SASFieldName="VSNOMLBL">
+        <Description>
+          <TranslatedText xml:lang="en">Label for Nominal Study Day</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="VSTPT" OID="IT.VS.VSTPT" SASFieldName="VSTPT">
+        <Description>
+          <TranslatedText xml:lang="en">Planned Time Point Name</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="float" Length="10" Name="VSTPTNUM" OID="IT.VS.VSTPTNUM" SASFieldName="VSTPTNUM" SignificantDigits="3">
+        <Description>
+          <TranslatedText xml:lang="en">Planned Time Point Number</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="durationDatetime" Name="VSELTM" OID="IT.VS.VSELTM" SASFieldName="VSELTM">
+        <Description>
+          <TranslatedText xml:lang="en">Planned Elapsed Time from Time Point Ref</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="VSTPTREF" OID="IT.VS.VSTPTREF" SASFieldName="VSTPTREF">
+        <Description>
+          <TranslatedText xml:lang="en">Time Point Reference</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="datetime" Name="VSRFTDTC" OID="IT.VS.VSRFTDTC" SASFieldName="VSRFTDTC">
+        <Description>
+          <TranslatedText xml:lang="en">Date/Time of Time Point Reference</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="POOLID" OID="IT.POOLDEF.POOLID" SASFieldName="POOLID">
+        <Description>
+          <TranslatedText xml:lang="en">Pool Identifier</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="USUBJID" OID="IT.POOLDEF.USUBJID" SASFieldName="USUBJID">
+        <Description>
+          <TranslatedText xml:lang="en">Unique Subject Identifier</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="2" Name="RDOMAIN" OID="IT.RELREC.RDOMAIN" SASFieldName="RDOMAIN">
+        <Description>
+          <TranslatedText xml:lang="en">Related Domain Abbreviation</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="USUBJID" OID="IT.RELREC.USUBJID" SASFieldName="USUBJID">
+        <Description>
+          <TranslatedText xml:lang="en">Unique Subject Identifier</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="POOLID" OID="IT.RELREC.POOLID" SASFieldName="POOLID">
+        <Description>
+          <TranslatedText xml:lang="en">Pool Identifier</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="IDVAR" OID="IT.RELREC.IDVAR" SASFieldName="IDVAR">
+        <Description>
+          <TranslatedText xml:lang="en">Identifying Variable</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="IDVARVAL" OID="IT.RELREC.IDVARVAL" SASFieldName="IDVARVAL">
+        <Description>
+          <TranslatedText xml:lang="en">Identifying Variable Value</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="4" Name="RELTYPE" OID="IT.RELREC.RELTYPE" SASFieldName="RELTYPE">
+        <Description>
+          <TranslatedText xml:lang="en">Relationship Type</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="RELID" OID="IT.RELREC.RELID" SASFieldName="RELID">
+        <Description>
+          <TranslatedText xml:lang="en">Relationship Identifier</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="2" Name="RDOMAIN" OID="IT.SUPPCL.RDOMAIN" SASFieldName="RDOMAIN">
+        <Description>
+          <TranslatedText xml:lang="en">Related Domain Abbreviation</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="USUBJID" OID="IT.SUPPCL.USUBJID" SASFieldName="USUBJID">
+        <Description>
+          <TranslatedText xml:lang="en">Unique Subject Identifier</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="POOLID" OID="IT.SUPPCL.POOLID" SASFieldName="POOLID">
+        <Description>
+          <TranslatedText xml:lang="en">Pool Identifier</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="IDVAR" OID="IT.SUPPCL.IDVAR" SASFieldName="IDVAR">
+        <Description>
+          <TranslatedText xml:lang="en">Identifying Variable</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="IDVARVAL" OID="IT.SUPPCL.IDVARVAL" SASFieldName="IDVARVAL">
+        <Description>
+          <TranslatedText xml:lang="en">Identifying Variable Value</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="QNAM" OID="IT.SUPPCL.QNAM" SASFieldName="QNAM">
+        <Description>
+          <TranslatedText xml:lang="en">Qualifier Variable Name</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="QLABEL" OID="IT.SUPPCL.QLABEL" SASFieldName="QLABEL">
+        <Description>
+          <TranslatedText xml:lang="en">Qualifier Variable Label</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="QVAL" OID="IT.SUPPCL.QVAL" SASFieldName="QVAL">
+        <Description>
+          <TranslatedText xml:lang="en">Data Value</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="QORIG" OID="IT.SUPPCL.QORIG" SASFieldName="QORIG">
+        <Description>
+          <TranslatedText xml:lang="en">Origin</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="QEVAL" OID="IT.SUPPCL.QEVAL" SASFieldName="QEVAL">
+        <Description>
+          <TranslatedText xml:lang="en">Evaluator</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="2" Name="RDOMAIN" OID="IT.SUPPLB.RDOMAIN" SASFieldName="RDOMAIN">
+        <Description>
+          <TranslatedText xml:lang="en">Related Domain Abbreviation</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="USUBJID" OID="IT.SUPPLB.USUBJID" SASFieldName="USUBJID">
+        <Description>
+          <TranslatedText xml:lang="en">Unique Subject Identifier</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="POOLID" OID="IT.SUPPLB.POOLID" SASFieldName="POOLID">
+        <Description>
+          <TranslatedText xml:lang="en">Pool Identifier</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="IDVAR" OID="IT.SUPPLB.IDVAR" SASFieldName="IDVAR">
+        <Description>
+          <TranslatedText xml:lang="en">Identifying Variable</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="IDVARVAL" OID="IT.SUPPLB.IDVARVAL" SASFieldName="IDVARVAL">
+        <Description>
+          <TranslatedText xml:lang="en">Identifying Variable Value</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="QNAM" OID="IT.SUPPLB.QNAM" SASFieldName="QNAM">
+        <Description>
+          <TranslatedText xml:lang="en">Qualifier Variable Name</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="QLABEL" OID="IT.SUPPLB.QLABEL" SASFieldName="QLABEL">
+        <Description>
+          <TranslatedText xml:lang="en">Qualifier Variable Label</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="QVAL" OID="IT.SUPPLB.QVAL" SASFieldName="QVAL">
+        <Description>
+          <TranslatedText xml:lang="en">Data Value</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="QORIG" OID="IT.SUPPLB.QORIG" SASFieldName="QORIG">
+        <Description>
+          <TranslatedText xml:lang="en">Origin</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="QEVAL" OID="IT.SUPPLB.QEVAL" SASFieldName="QEVAL">
+        <Description>
+          <TranslatedText xml:lang="en">Evaluator</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="2" Name="RDOMAIN" OID="IT.SUPPMA.RDOMAIN" SASFieldName="RDOMAIN">
+        <Description>
+          <TranslatedText xml:lang="en">Related Domain Abbreviation</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="USUBJID" OID="IT.SUPPMA.USUBJID" SASFieldName="USUBJID">
+        <Description>
+          <TranslatedText xml:lang="en">Unique Subject Identifier</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="POOLID" OID="IT.SUPPMA.POOLID" SASFieldName="POOLID">
+        <Description>
+          <TranslatedText xml:lang="en">Pool Identifier</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="IDVAR" OID="IT.SUPPMA.IDVAR" SASFieldName="IDVAR">
+        <Description>
+          <TranslatedText xml:lang="en">Identifying Variable</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="IDVARVAL" OID="IT.SUPPMA.IDVARVAL" SASFieldName="IDVARVAL">
+        <Description>
+          <TranslatedText xml:lang="en">Identifying Variable Value</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="QNAM" OID="IT.SUPPMA.QNAM" SASFieldName="QNAM">
+        <Description>
+          <TranslatedText xml:lang="en">Qualifier Variable Name</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="QLABEL" OID="IT.SUPPMA.QLABEL" SASFieldName="QLABEL">
+        <Description>
+          <TranslatedText xml:lang="en">Qualifier Variable Label</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="QVAL" OID="IT.SUPPMA.QVAL" SASFieldName="QVAL">
+        <Description>
+          <TranslatedText xml:lang="en">Data Value</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="QORIG" OID="IT.SUPPMA.QORIG" SASFieldName="QORIG">
+        <Description>
+          <TranslatedText xml:lang="en">Origin</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="QEVAL" OID="IT.SUPPMA.QEVAL" SASFieldName="QEVAL">
+        <Description>
+          <TranslatedText xml:lang="en">Evaluator</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="2" Name="RDOMAIN" OID="IT.SUPPMI.RDOMAIN" SASFieldName="RDOMAIN">
+        <Description>
+          <TranslatedText xml:lang="en">Related Domain Abbreviation</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="USUBJID" OID="IT.SUPPMI.USUBJID" SASFieldName="USUBJID">
+        <Description>
+          <TranslatedText xml:lang="en">Unique Subject Identifier</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="POOLID" OID="IT.SUPPMI.POOLID" SASFieldName="POOLID">
+        <Description>
+          <TranslatedText xml:lang="en">Pool Identifier</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="IDVAR" OID="IT.SUPPMI.IDVAR" SASFieldName="IDVAR">
+        <Description>
+          <TranslatedText xml:lang="en">Identifying Variable</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="IDVARVAL" OID="IT.SUPPMI.IDVARVAL" SASFieldName="IDVARVAL">
+        <Description>
+          <TranslatedText xml:lang="en">Identifying Variable Value</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="QNAM" OID="IT.SUPPMI.QNAM" SASFieldName="QNAM">
+        <Description>
+          <TranslatedText xml:lang="en">Qualifier Variable Name</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="QLABEL" OID="IT.SUPPMI.QLABEL" SASFieldName="QLABEL">
+        <Description>
+          <TranslatedText xml:lang="en">Qualifier Variable Label</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="QVAL" OID="IT.SUPPMI.QVAL" SASFieldName="QVAL">
+        <Description>
+          <TranslatedText xml:lang="en">Data Value</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="QORIG" OID="IT.SUPPMI.QORIG" SASFieldName="QORIG">
+        <Description>
+          <TranslatedText xml:lang="en">Origin</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="QEVAL" OID="IT.SUPPMI.QEVAL" SASFieldName="QEVAL">
+        <Description>
+          <TranslatedText xml:lang="en">Evaluator</TranslatedText>
+        </Description>
+      </ItemDef>
+      <ItemDef DataType="text" Length="200" Name="MISTRESC" OID="IT.MI.MISTRESC.MISTRESC.1977" SASFieldName="MISTRESC"/>
+      <ItemDef DataType="text" Length="200" Name="MISTRESC" OID="IT.MI.MISTRESC.MISTRESC.1978" SASFieldName="MISTRESC"/>
+      <ItemDef DataType="text" Length="6" Name="AGEU" OID="IT.TS.TSVAL.AGEU.1979" SASFieldName="AGEU"/>
+      <ItemDef DataType="text" Length="200" Name="SDESIGN" OID="IT.TS.TSVAL.SDESIGN.1980" SASFieldName="SDESIGN"/>
+      <ItemDef DataType="text" Length="200" Name="ROUTE" OID="IT.TS.TSVAL.ROUTE.1981" SASFieldName="ROUTE"/>
+      <ItemDef DataType="text" Length="200" Name="SNDIGVER" OID="IT.TS.TSVAL.SNDIGVER.1982" SASFieldName="SNDIGVER"/>
+      <ItemDef DataType="text" Length="200" Name="SPECIES" OID="IT.TS.TSVAL.SPECIES.1983" SASFieldName="SPECIES"/>
+      <ItemDef DataType="text" Length="200" Name="STCAT" OID="IT.TS.TSVAL.STCAT.1984" SASFieldName="STCAT"/>
+      <ItemDef DataType="text" Length="200" Name="STRAIN" OID="IT.TS.TSVAL.STRAIN.1985" SASFieldName="STRAIN"/>
+      <ItemDef DataType="text" Length="200" Name="SSTYP" OID="IT.TS.TSVAL.SSTYP.1986" SASFieldName="SSTYP"/>
+      <ItemDef DataType="text" Length="200" Name="TFCNTRY" OID="IT.TS.TSVAL.TFCNTRY.1987" SASFieldName="TFCNTRY"/>
+      <ItemDef DataType="text" Length="1" Name="ENVTEMPU" OID="IT.TS.TSVAL.ENVTEMPU.1988" SASFieldName="ENVTEMPU"/>
+      <ItemDef DataType="text" Length="200" Name="HUMIDTU" OID="IT.TS.TSVAL.HUMIDTU.1989" SASFieldName="HUMIDTU"/>
+      <ItemDef DataType="text" Length="200" Name="MTHTRM" OID="IT.TS.TSVAL.MTHTRM.1990" SASFieldName="MTHTRM"/>
+      <ItemDef DataType="text" Length="1" Name="SRANDOM" OID="IT.TS.TSVAL.SRANDOM.1991" SASFieldName="SRANDOM"/>
+      <ItemDef DataType="text" Length="4" Name="SEXPOP" OID="IT.TS.TSVAL.SEXPOP.1992" SASFieldName="SEXPOP"/>
+      <ItemDef DataType="text" Length="200" Name="TSCNTRY" OID="IT.TS.TSVAL.TSCNTRY.1993" SASFieldName="TSCNTRY"/>
+      <ItemDef DataType="durationDatetime" Name="DOSDUR" OID="IT.TS.TSVAL.DOSDUR.1994" SASFieldName="DOSDUR"/>
+      <ItemDef DataType="date" Name="EXPENDTC" OID="IT.TS.TSVAL.EXPENDTC.1995" SASFieldName="EXPENDTC"/>
+      <ItemDef DataType="date" Name="EXPSTDTC" OID="IT.TS.TSVAL.EXPSTDTC.1996" SASFieldName="EXPSTDTC"/>
+      <ItemDef DataType="date" Name="STSTDTC" OID="IT.TS.TSVAL.STSTDTC.1997" SASFieldName="STSTDTC"/>
+      <ItemDef DataType="durationDatetime" Name="TRMSAC" OID="IT.TS.TSVAL.TRMSAC.1998" SASFieldName="TRMSAC"/>
+      <ItemDef DataType="datetime" Name="DOSENDTC" OID="IT.TS.TSVAL.DOSENDTC.1999" SASFieldName="DOSENDTC"/>
+      <ItemDef DataType="datetime" Name="DOSSTDTC" OID="IT.TS.TSVAL.DOSSTDTC.2000" SASFieldName="DOSSTDTC"/>
+      <ItemDef DataType="durationDatetime" Name="INTSAC" OID="IT.TS.TSVAL.INTSAC.2001" SASFieldName="INTSAC"/>
+      <ItemDef DataType="durationDatetime" Name="SLENGTH" OID="IT.TS.TSVAL.SLENGTH.2002" SASFieldName="SLENGTH"/>
+      <ItemDef DataType="durationDatetime" Name="RECSAC" OID="IT.TS.TSVAL.RECSAC.2003" SASFieldName="RECSAC"/>
+      <ItemDef DataType="date" Name="STENDTC" OID="IT.TS.TSVAL.STENDTC.2004" SASFieldName="STENDTC"/>
+      <ItemDef DataType="text" Length="1" Name="GLPFL" OID="IT.TS.TSVAL.GLPFL.2005" SASFieldName="GLPFL"/>
+      <ItemDef DataType="text" Length="1" Name="INTERIM" OID="IT.TS.TSVAL.INTERIM.2006" SASFieldName="INTERIM"/>
+      <ItemDef DataType="integer" Name="AGE" OID="IT.TS.TSVAL.AGE.2007" SASFieldName="AGE"/>
+      <ItemDef DataType="text" Length="1" Name="ENVTEMPU" OID="IT.TX.TXVAL.ENVTEMPU.2008" SASFieldName="ENVTEMPU"/>
+      <ItemDef DataType="text" Length="200" Name="MTHTRM" OID="IT.TX.TXVAL.MTHTRM.2009" SASFieldName="MTHTRM"/>
+      <ItemDef DataType="text" Length="4" Name="SPECIES" OID="IT.TX.TXVAL.SPECIES.2010" SASFieldName="SPECIES"/>
+      <ItemDef DataType="text" Length="200" Name="STRAIN" OID="IT.TX.TXVAL.STRAIN.2011" SASFieldName="STRAIN"/>
+      <ItemDef DataType="text" Length="200" Name="SEXPOP" OID="IT.TX.TXVAL.SEXPOP.2012" SASFieldName="SEXPOP"/>
+      <ItemDef DataType="text" Length="200" Name="HUMIDTU" OID="IT.TX.TXVAL.HUMIDTU.2013" SASFieldName="HUMIDTU"/>
+      <ItemDef DataType="datetime" Name="DOSENDTC" OID="IT.TX.TXVAL.DOSENDTC.2014" SASFieldName="DOSENDTC"/>
+      <ItemDef DataType="datetime" Name="DOSSTDTC" OID="IT.TX.TXVAL.DOSSTDTC.2015" SASFieldName="DOSSTDTC"/>
+      <ItemDef DataType="text" Length="200" Name="TRTDOSU" OID="IT.TX.TXVAL.TRTDOSU.2016" SASFieldName="TRTDOSU"/>
+      <ItemDef DataType="integer" Name="PLANFSUB" OID="IT.TX.TXVAL.PLANFSUB.2017" SASFieldName="PLANFSUB"/>
+      <ItemDef DataType="integer" Name="PLANMSUB" OID="IT.TX.TXVAL.PLANMSUB.2018" SASFieldName="PLANMSUB"/>
+      <ItemDef DataType="integer" Name="SPLANSUB" OID="IT.TX.TXVAL.SPLANSUB.2019" SASFieldName="SPLANSUB"/>
+    </MetaDataVersion>
+  </Study>
+</ODM>
