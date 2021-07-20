@@ -1,0 +1,263 @@
+ body{
+  background-color:#FFFFFF;
+  font-family:Verdana, Arial, Helvetica, sans-serif;        
+  font-size:62.5%;
+  margin:0;
+  padding:30px;        
+  }
+  
+  h1{
+  font-size:1.6em;
+  margin-left:0;
+  font-weight:bolder;
+  text-align:left;
+  color:#800000;
+  }
+  
+  ul{
+  margin-left:0px;
+  }
+  
+  a{
+  color:#0000FF;
+  text-decoration:underline;
+  }
+  a.visited{
+  color:#551A8B;
+  text-decoration:underline;
+  }
+  a:hover{
+  color:#FF9900;
+  text-decoration:underline;
+  }
+  a.tocItem{
+  color:#004A95;
+  text-decoration:none;
+  margin-top:2px;
+  font-size:1.4em;
+  }
+  a.tocItem.level2{
+  margin-left:15px;
+  }
+  
+  #menu{
+  position:fixed;
+  left:0px;
+  top:10px;
+  width:20%;
+  height:96%;
+  bottom:0px;
+  overflow:auto;
+  background-color:#FFFFFF;
+  color:#000000;
+  border:0px none black;
+  text-align:left;
+  white-space:nowrap;
+  }
+  
+  .hmenu li{
+  list-style:none;
+  line-height:200%;
+  padding-left:0;
+  }
+  .hmenu ul{
+  padding-left:14px;
+  margin-left:0;
+  }
+  .hmenu-item{
+  }
+  .hmenu-submenu{
+  }
+  .hmenu-bullet{
+  float:left;
+  width:16px;
+  color:#AAAAAA;
+  font-size:1.2em;
+  }
+  
+  #main{
+  position:absolute;
+  left:22%;
+  top:0px;
+  overflow:auto;
+  color:#000000;
+  background-color:#FFFFFF;
+  }
+  
+  #main .docinfo{
+  width:95%;
+  text-align:right;
+  }
+  
+  div.containerbox{
+  padding:0px;
+  margin:10px auto;
+  border:0px solid #999;
+  page-break-after:always;
+  }
+  
+  div.codelist{
+  page-break-after:avoid;
+  }
+  
+  table{
+  width:95%;
+  border-spacing:4px;
+  border:1px solid #000000;
+  background-color:#EEEEEE;
+  margin-top:5px;
+  border-collapse:collapse;
+  padding:5px;
+  empty-cells:show;
+  }
+  
+  table caption{
+  border:0px solid #999999;
+  left:20px;
+  font-size:1.6em;
+  font-weight:bolder;
+  color:#800000;
+  margin:10px auto;
+  text-align:left;
+  }
+  
+  table caption .xpt{
+  font-weight:normal;
+  }
+  
+  table tr{
+  border:1px solid #000000;
+  }
+  
+  table tr.header{
+  background-color:#6699CC;
+  color:#FFFFFF;
+  font-weight:bold;
+  }
+  
+  table th{
+  font-weight:bold;
+  vertical-align:top;
+  text-align:left;
+  padding:5px;
+  border:1px solid #000000;
+  font-size:1.2em;
+  }
+  
+  table td{
+  vertical-align:top;
+  padding:5px;
+  border:1px solid #000000;
+  font-size:1.2em;
+  line-height:150%;
+  }
+  
+  table th.codedvalue{
+  width:20%;
+  }
+  table th.length{
+  width:7%;
+  }
+  table td.datatype{
+  text-align:center;
+  }
+  table td.number{
+  text-align:right;
+  }
+  .tablerowodd{
+  background-color:#FFFFFF;
+  }
+  .tableroweven{
+  background-color:#E2E2E2;
+  }
+  
+  .linebreakcell{
+  vertical-align:top;
+  margin-top:3px;
+  margin-bottom:3px;
+  }
+  
+  .nci, .extended{
+  font-style:italic;
+  }
+  .super{
+  vertical-align:super;
+  }
+  .footnote{
+  font-size:1.2em;
+  }
+  
+  .standard{
+  font-size:1.6em;
+  font-weight:bolder;
+  text-align:left;
+  padding:15px;
+  margin-left:20px;
+  margin-top:40px;
+  margin-right:20px;
+  margin-bottom:20px;
+  color:#800000;
+  border:0px;
+  }
+  
+  .linktop{
+  font-size:1.2em;
+  margin-top:5px;
+  }
+  .documentinfo, .stylesheetinfo{
+  font-size:1.2em;
+ }
+  
+  .invisible{
+  display:none;
+  }
+  
+  span.error{
+  width:95%;
+  font-size:1.6em;
+  font-weight: bold;	
+  padding:5px;
+  color:#FF0000;
+  border-spacing:4px;
+  border:2px solid #FF0000;
+  }
+  td.error{
+  color:#FF0000;
+  }
+  
+  @media print{
+  
+  body, h1, table caption{
+  color:#000000;
+  }
+  
+  a:link,
+  a:visited{
+  background:transparent;
+  text-decoration:none;
+  color:#000000;
+  }
+  a.external:link:after,
+  #main a:visited:after{
+  content:" &lt;" attr(href) "&gt; ";
+  font-size:90%;
+  text-decoration:none;
+  font-weight:bold;
+  color:#808080;
+  }
+    
+  table{
+  border-width:2px;
+  }
+  
+  #menu,
+  .linktop, .stylesheetinfo{
+  display:none !important;
+  width:0px;
+  ;
+  }
+  #main{
+  left:0px;
+  }
+ 
+ }
