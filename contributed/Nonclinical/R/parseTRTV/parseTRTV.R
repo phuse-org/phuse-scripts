@@ -7,6 +7,19 @@
 # Change log: 
 # Programmer/date     Description
 # -----------------   ------------------------------------------------------------
+#ww/16-Aug-2020     Applied below updates
+# 
+# 1. Pre-processed the vehicle string, replace the unicode ± with +/-
+# 2. Pre-processed the vehicle string, replace "to" in the attribute string with a DASH, e.g. "PH 3 to 5" to "PH 3 - 5"
+# 3. After parsing, Removed the component(s) after the attribute, attribute will be the last.
+# 4. Corrected the index values used in the vector when adding rows to XVtable for the attributes (an(r|(R)n)?) 
+# 5. When checking whether a string is a number: if the string starts with a number, get the number and ignore the non-numeric part. 
+#    E.g. "pH 6.0, Sterile Filtered", the ", Sterile Filtered" part will be ignored and number 6.0 will be returned.
+# 6. cleanTokens_R function added logic to check if f component exists before R. Only ignore R if f components exists. 
+#    if no f component exists before R, no action. This is to support the parse of vehicle as below:
+#    "0.2% HPMC, 0.01% Acetic Acid, pH 3.6"
+# 7. Sink the parse result to a file called trtv-parse.txt.
+# -----------------   ------------------------------------------------------------
 # wph/24-Dec-2020     Initial posting to GitHub
 #
 # -------------------------------------------------------------------------------
@@ -114,16 +127,21 @@ vehicleTokenize <-function(string,firstRow=1)
       row <- row+1
     }
   }
-  # if no matches in the tokens table were found, see if the string is a number
+  # if no matches in the tokens table were found, see if the string starts with a number
   if (!matchFound)
   {
-    if(grepl("^\\s*[+-]{0,1}[0-9]*\\.{0,1}[0-9]+\\s*$",string))
-    { #if the string is a number, we found a match
-      matchFound = TRUE;
+    #ww When check whether a string is a number: if the string starts with a number, get the number and ignore the non-numeric part. 
+    #E.g. "pH 6.0, Sterile Filtered", the ", Sterile Filtered" part will be ignored and number 6.0 will be returned.
+    num_regx = "^\\s*[+-]{0,1}[0-9]*\\.{0,1}[0-9]+\\s*"
+    numn1 <- regexpr(num_regx,string,FALSE)
+    if (numn1 > 0 ){
+      numn2 <-  attr(numn1,"match.length") +numn1 -1
+      numstr <- substr(string, numn1, numn2)
+      matchFound <-  TRUE;
       tokens2 <- data.frame(Source = string, 
                             Category = "n",
                             CTCode = NA,
-                            Value = string,
+                            Value = numstr,
                             stringsAsFactors=FALSE)
       return(tokens2)
     }
@@ -310,8 +328,20 @@ cleanTokens_syn <-function(TRTVtokens)
 cleanTokens_R <-function(TRTVtokens)
 { # ignore R  before f.  Call this after cleanTokens_rn(). If you decide to change this to process R before f, also change the behaviour in the cleanTokens_ru() function.
   f_found <-FALSE
+  #ww check if f exists, replace will occur only if f exists
+  f_exist <-  FALSE;
   i <- 1
-  while (i <= nrow(TRTVtokens))
+  while ( !f_exist && i <= nrow(TRTVtokens))
+  {
+    if( ("f" == TRTVtokens$Category[i] ) ){
+      f_exist <- TRUE;
+     }
+      
+    i <- i + 1
+  }
+  
+  i <- 1
+  while (f_exist && i <= nrow(TRTVtokens))
   {
     if( ("f" == TRTVtokens$Category[i] ))
     {
@@ -327,7 +357,12 @@ cleanTokens_R <-function(TRTVtokens)
       {
         #we found an R before an "f"
         #   ignor the R now and ignore the number before and
-        TRTVtokens$Category[i] <- "i"  
+        TRTVtokens$Category[i] <- "i"
+        #if the n is right after the R and before an "f", ignore it also
+        if ("n" == TRTVtokens$Category[i+1] )
+        {
+          TRTVtokens$Category[i+1] <- "i"
+        }
       }
     }
     i <- i+1
@@ -363,13 +398,20 @@ makeXV <- function(TRTVtokens)
   # Each attribute has
   #   an attribute name
   #   an attribute value
-  #   optionally an atribute tolerance range
+  #   optionally an attribute tolerance range
   attribute_regx <-paste("(an(rn|(R)n)?)",sep="")
   # We will later put these regular expressions together to describe the treatment vehicle text string.
   
   #Put the categories together into a single string and delete the tokens that are Unknown and those that should be ignored.
   category_noU <- str_replace_all(paste(p$Category,collapse=""),"U|i","") 
   
+  #ww remove the component after the attribute, attribute is the last group.
+  a1 <- regexpr(attribute_regx,category_noU,ignore.case=TRUE)
+  if (a1 > 0 ){
+    a1Stop <- attr(a1,"match.length") +a1 -1
+    category_noU <- substr(category_noU,1,a1Stop)
+    print(paste0("category_noU  = ",category_noU))
+  }
   #The first row of our output data frame is the full text string.  Since this function doesn't receive the original text
   #string, it is recreated using the TRTVtokens$Source.
   XVtable <- data.frame(STUDYID = NA, 
@@ -386,7 +428,7 @@ makeXV <- function(TRTVtokens)
                         stringsAsFactors=FALSE)
   
   # Before continuing, let's make sure we have a string we can understand
-  # I expct one or more components
+  # I expect one or more components
   # optionally one diluent
   # optionally one or more attributes
   if (TRUE == grepl(paste0("^",component_regx,"+(",diluent_regx,")?(",attribute_regx,")*$",sep=""),category_noU))
@@ -394,7 +436,7 @@ makeXV <- function(TRTVtokens)
     # The regular expression we just used includes repetitions of component_regx and attribute_regx. Let's determine the number of repetitions of each.
     # We will use this to create a regular expression with the correct number of repetitions, because we can then get an index telling us the start of each group.
     #
-    # To determine the number of repetitions of component_regx, let's extract from category_nuU the portion before the the diluent_regx or attribute_regx
+    # To determine the number of repetitions of component_regx, let's extract from category_noU the portion before the the diluent_regx or attribute_regx
     if (grepl(paste("(",diluent_regx,")|(",attribute_regx,")",sep=""),category_noU))
     {
       m <- regexec(paste("(",diluent_regx,")|(",attribute_regx,")",sep=""),category_noU) # m is assigned the character position of each match in category_nuU and 0 for parts that have no match.
@@ -465,7 +507,7 @@ makeXV <- function(TRTVtokens)
     #
     component_i <- 1  #start the loop with the first component
     m_i <- 1 #start processing from the beginning element of m[[1]][]
-    seq <- 2 #The vlue of the next row's XVSEQ
+    seq <- 2 #The value of the next row's XVSEQ
     while (component_i <= component_reps)
     {
       if (m[[1]][m_i+2] > 0)
@@ -589,13 +631,18 @@ makeXV <- function(TRTVtokens)
       #print(XVtable)
       m_i <-m_i +4
       
+    } 
+    ## If no diluent component, still need to move the index for the next group.
+    else{
+      m_i <-m_i + 5
     }
     
     #Add rows to XVtable for the attributes (an(r|(R)n)?)
     attribute_i <- 1
     while (attribute_i <= attribute_reps)
     {
-      if (m[[1]][m_i+3]>0)
+      ##ww Corrected indexes from if (m[[1]][m_i+3]>0)
+      if (m[[1]][m_i+4]>0)
       {
         #we have an "anRn"
         #create row for "an"
@@ -633,7 +680,8 @@ makeXV <- function(TRTVtokens)
       }
       else 
       {
-        if (m[[1]][m_i+2]>0)
+        #ww Corrected indexes from if (m[[1]][m_i+2]>0)
+        if (m[[1]][m_i+3]>0)
         {
           #we have an "anrn"
           #create row for "an"
@@ -669,7 +717,8 @@ makeXV <- function(TRTVtokens)
         }
         else 
         {
-          if ((m[[1]][m_i+1]>0))
+          #ww Corrected indexes from if ((m[[1]][m_i+1]>0))
+          if ((m[[1]][m_i+2]>0))
           {
             #we have "an" without "rn" or "Rn"
             #create row for "an"
@@ -704,11 +753,12 @@ makeXV <- function(TRTVtokens)
 #
 
 
-pathBase = "C:\\003\\TRTV-parse\\"
-
+#pathBase = "C:\\003\\TRTV-parse\\"
+pathBase = "C:\\Project\\src\\R\\TRTV\\"
+resultFile <- paste0(pathBase,"trtv-parse.txt") 
+sink(file = resultFile)
 # read the table of Treatment Vehicles that need to be parsed.  Each line is a copy of the TRTV parameer from ts.xpt in a SEND package
 trtv <- read.table(paste0(pathBase,"trtv"),sep="|");
-
 #read the table of component names that are already sorted from longest text string to shortest text string.
 tokens <- read.table(paste0(pathBase,"tokens.csv"),sep=",", header = TRUE,stringsAsFactors=FALSE);
 
@@ -716,16 +766,41 @@ tRow <- 1
 nSuccess <- 0
 while (tRow <= nrow(trtv))
 {
-  print(paste0("Vehicle:",as.character(trtv[tRow, ])))
-  p<-vehicleTokenize(as.character((trtv[tRow, ])))
+  ##ww Pre-process the vehicle string
+  ## 1. Replace the unicode ± with +/-
+  ## 2. Replace to in the attribute string with ad DASH, e.g. "PH 3 to 5" to "PH 3 - 5"
+ 
+  trtvOrg = trtv[tRow, ]
+  Encoding(trtvOrg)<-"UTF-8"
+  print(paste0("Vehicle:",as.character(trtvOrg)))
+  ##ww replace the ± with +/-
+  trtvNew = str_replace_all(trtvOrg,"±","+/-")
+  
+  ##ww Replace "to" in the attribute string with a DASH
+  ph_regx <- "[p|P][h|H](\\s)*[0-9]+(\\.[0-9]+)?(\\s)*[t|T][o|O]"
+  
+  phn1 <- regexpr(ph_regx,trtvNew,FALSE)
+  if (phn1 > 0 ){
+    phn2 = attr(phn1,"match.length") +phn1 -1
+    ## Original attribute string
+    phs1 = substr(trtvNew, phn1, phn2)
+    ## Replace "to" with a DASH
+    phs2 = paste0(substr(trtvNew, phn1, phn2-2), "-")
+    ## The new vehicle string
+    trtvNew <- str_replace_all(trtvNew,ph_regx,phs2)
+  }
+  #print(paste0("Vehicle after replace:",as.character(trtvNew)))
+  p<-vehicleTokenize(as.character((trtvNew)))
+
   p<-cleanTokens_syn(cleanTokens_R(cleanTokens_ur(p)))
-  #print(p$Category)
+  print(p$Category)
   category_noU <- str_replace_all(paste(p$Category,collapse=""),"U|i","")
   #print(grepl("^((nuc)|(c(nu)?))+(f((nuc)|(c(nu)?)))?(an(rn)?)*$",category_noU))
   t<-makeXV(p)
   if (is.null(ncol(t)))
   {
     print(p)
+    print(paste0("Vehicle Parse failed:",as.character(trtvNew)))
   }
   else
   {
@@ -736,3 +811,6 @@ while (tRow <= nrow(trtv))
   tRow <-tRow+1
 }
 print(paste0("We eavluated ",nrow(trtv)," treatment vehicle descriptions and created XV tables for ",nSuccess," of them = ",100*nSuccess/nrow(trtv),"%"))
+# revert sink back to console
+sink(type = "message")
+sink()
