@@ -7,7 +7,19 @@
 # Change log: 
 # Programmer/date     Description
 # -----------------   ------------------------------------------------------------
-#ww/16-Aug-2020     Applied below updates
+#ww/16-Oct-2021     Applied below update
+# 
+# 1. Added support for parsing components and component concentration, 
+#    e.g.35% w/w of 200 mM Tris(hydroxymethyl) aminomethane buffer,
+# 2. Remove the manual seq variable, use the nrow(XVTable) to set the sequence of each row.
+#
+#ww/12-Sep-2021     Applied below update
+# 
+# 1. Added support for parsing components with two sets of number and units, 
+#    e.g.35% w/w of 200 mM Tris(hydroxymethyl) aminomethane buffer,
+# 2. Create parseTRTV function so the script can be used by RShinny App.
+
+#ww/16-Aug-2021     Applied below updates
 # 
 # 1. Pre-processed the vehicle string, replace the unicode ± with +/-
 # 2. Pre-processed the vehicle string, replace "to" in the attribute string with a DASH, e.g. "PH 3 to 5" to "PH 3 - 5"
@@ -39,15 +51,15 @@
 #                  makeXV         -  to create the XV table by analyzing the 
 #                                    tokenized TRTV with extensive use of regular
 #                                    expressions.
+#                  parseTRTV      -  to parse one line of the TRTV. This is to be used by RShinny app.
 #                 
-#                 
-# Input         : All input files are expected to be in the folder specified by pathBase
+# Input         : All input files are expected to be in the working directory
 #                 trtv       - a text file with the text from TRTV in submissions with one value per line.
 #                 tokens.csv - a table of meaningful string segments that are expected in 
 #                              TRTV with their category and standardized values. This program
 #                              assumes that this file is already correctly sorted.
 #
-# Output        : The output is displayed on the console.
+# Output        : The output is written to a set of xvnn.csv files.
 #
 # Parameters    : none. 
 #
@@ -82,7 +94,7 @@
 
 library(tidyverse);
 
-vehicleTokenize <-function(string,firstRow=1)
+vehicleTokenize <-function(string,tokens,firstRow=1)
 {
   # "string" is a TRTV text string,  this function returns a table of vehicle component tokens.
   # This is accomplished by recursively calling this function. Looking in the "tokens" table
@@ -160,12 +172,12 @@ vehicleTokenize <-function(string,firstRow=1)
     else
     {
       #print(paste0("getting ready to parse into tokens1:", substr(string,1,pos-1)))
-      tokens1 <- vehicleTokenize(substr(string,1,pos-1),row+1)
+      tokens1 <- vehicleTokenize(substr(string,1,pos-1),tokens, row+1)
     }
     if (nchar(string)>posStop)
     {
       #print(paste0("getting ready to parse into tokens3:", substr(string,posStop+1,nchar(string))))
-      tokens3 <- vehicleTokenize(substr(string,posStop+1,nchar(string)),row+1)
+      tokens3 <- vehicleTokenize(substr(string,posStop+1,nchar(string)),tokens, row+1)
     }
     else
     {
@@ -368,10 +380,114 @@ cleanTokens_R <-function(TRTVtokens)
     i <- i+1
   }
   return(TRTVtokens)
-}  
-
-
-makeXV <- function(TRTVtokens)
+} 
+# help function to support the creation of XV table for component, component can be in two formats:
+# ((nu){1,2}c), which can be nunuc, nunuc
+# or 
+# (c(nu){0,2})), which can be cnunu, cnu, c.
+makeXVComp <- function(TRTVtokens, xref, component_i, m, m_i, XVtable){
+ 
+  mlen = attr(m[[1]],"match.length")
+  
+  if (m[[1]][m_i+2] > 0)
+  {       
+    # we have nunuc (match length =5) or nuc (match length = 3) depending on length of the match
+    ind = m[[1]][m_i+2];
+    mlength = mlen[m_i+2];
+    if (mlength == 5 || mlength == 3){
+      
+      value = TRTVtokens$Value[xref[0+ind]]    #Since we have nunuc, 0 tokens from here is n
+      valueU = TRTVtokens$Value[xref[1+ind]]   #Since we have nunuc, 1 token  from here is u
+      valueC = if (mlength == 5) TRTVtokens$Value[xref[2+ind]] else NA   #if match lenght is 5, nunuc, 2 tokens from here is n
+      valueCU = if (mlength == 5) TRTVtokens$Value[xref[3+ind]] else NA   #if match lenght is 5, nunuc, 3 token  from here is u
+      if (!is.na(valueU) && !grepl("%", valueU)){
+        valueC <- value
+        valueCU <- valueU
+        value <- NA
+        valueU <- NA
+      } 
+      ##Treatment Vehicle Component row
+      XVrow <- data.frame(STUDYID = NA, 
+                DOMAIN = "XV",
+                XVSEQ = nrow(XVtable) + 1,
+                XVGRPID = 1,
+                XVSGRPID = component_i,
+                XVPARMCD = "TRTVC",
+                XVPARM = "Treatment Vehicle Component",
+                XVSPARM =  TRTVtokens$Value[xref[mlength - 1 +ind]],  #nunuc, 4 tokens from here is c; nuc, 2 tokens from her is c.
+                XVVAL = value,
+                XVVALU = valueU,
+                XVVALNF = if (is.na(value)) "QS" else NA,
+                stringsAsFactors=FALSE)
+      XVtable <- rbind(XVtable,XVrow)
+      ##Treatment Vehicle Component Concentration row
+      if (!is.na(valueC)){
+        XVrow <- data.frame(STUDYID = NA, 
+               DOMAIN = "XV",
+               XVSEQ = nrow(XVtable) + 1,
+               XVGRPID = 1,
+               XVSGRPID = component_i,
+               XVPARMCD = "TRTVCC",
+               XVPARM = "Treatment Vehicle Component Concentration",
+               XVSPARM =  TRTVtokens$Value[xref[mlength - 1 +ind]],  #nunuc, 4 tokens from here is c; nuc, 2 tokens from her is c.
+               XVVAL = valueC,
+               XVVALU = valueCU,
+               XVVALNF = NA,
+               stringsAsFactors=FALSE)
+        XVtable <- rbind(XVtable,XVrow)
+      }
+    }
+  }
+  else if ((m[[1]][m_i+4]>0))
+  {
+    # we have cnunu (match length = 5) or cnu (match length = 3) or c (match length = 1) depending on length of the match
+    ind = m[[1]][m_i+4];
+    mlength = mlen[m_i+4];
+    if (mlength == 5 || mlength == 3 || mlength ==1){
+      value = if (mlength >=3 ) TRTVtokens$Value[xref[1+ind]] else NA    #Since we have cnunu or cnu, 1 tokens from here is n
+      valueU = if (mlength >= 3) TRTVtokens$Value[xref[2+ind]] else NA   #Since we have cnunu or cnu, 2 tokens from here is u
+      valueC = if (mlength == 5) TRTVtokens$Value[xref[3+ind]] else NA   #Since we have cnunu, 3 tokens from here is u  
+      valueCU = if (mlength == 5)TRTVtokens$Value[xref[4+ind]] else NA  #Since we have cnunu, 4 tokens from here is u
+      if (!is.na(valueU) && !grepl("%", valueU)){
+        valueC <- value
+        valueCU <- valueU
+        value <- NA
+        valueU <- NA
+      } 
+      XVrow <- data.frame(STUDYID = NA, 
+                DOMAIN = "XV",
+                XVSEQ = nrow(XVtable) + 1,
+                XVGRPID = 1,
+                XVSGRPID = component_i,
+                XVPARMCD = "TRTVC",
+                XVPARM = "Treatment Vehicle Component",
+                XVSPARM = TRTVtokens$Value[xref[0+ind]],  #Since we have cnunu, 0 tokens from here is c
+                XVVAL = value,
+                XVVALU = valueU,
+                XVVALNF = if (is.na(value)) "QS" else NA,
+                stringsAsFactors=FALSE)
+      XVtable <- rbind(XVtable,XVrow)
+      ##Treatment Vehicle Component Concentration row
+      if (!is.na(valueC)){
+        XVrow <- data.frame(STUDYID = NA, 
+          DOMAIN = "XV",
+          XVSEQ = nrow(XVtable) + 1,
+          XVGRPID = 1,
+          XVSGRPID = component_i,
+          XVPARMCD = "TRTVCC",
+          XVPARM = "Treatment Vehicle Component Concentration",
+          XVSPARM = TRTVtokens$Value[xref[0+ind]],  #Since we have cnunu, 0 tokens from here is c
+          XVVAL = valueC,
+          XVVALU = valueCU,
+          XVVALNF = NA,
+          stringsAsFactors=FALSE)
+        XVtable <- rbind(XVtable,XVrow)
+      }
+    } 
+  }
+  return(XVtable)
+}
+makeXV <- function(TRTVtokens, category_noU)
 {
   # For best results, please apply the cleaning functions to TRTVtokens before calling this function.
   #
@@ -384,13 +500,14 @@ makeXV <- function(TRTVtokens)
   # each component is either
   #     an amount and unit of measure (nu) followed by 
   #     a component name (c)
-  component_regx <- "(nuc)"
+  #component_regx <- "(nuc)"
+  component_regx <- "((nu){1,2}c)"
   # or
   #     a component name (c) followed by 
-  #     an optional amount and unit of measure (au)?
+  #     an optional amount and unit of measure (nu)?
   #
-  component_regx <- paste("(",component_regx,"|","(c(nu)?))",sep="")
-
+  #component_regx <- paste("(",component_regx,"|","(c(nu)?))",sep="")
+  component_regx <- paste("(",component_regx,"|","(c(nu){0,2}))",sep="")
   # Each dilluent has 1 component preceded by an "f" category token.
   #
   diluent_regx <- paste("f",component_regx,sep="")
@@ -403,14 +520,14 @@ makeXV <- function(TRTVtokens)
   # We will later put these regular expressions together to describe the treatment vehicle text string.
   
   #Put the categories together into a single string and delete the tokens that are Unknown and those that should be ignored.
-  category_noU <- str_replace_all(paste(p$Category,collapse=""),"U|i","") 
+  #category_noU <- str_replace_all(paste(p$Category,collapse=""),"U|i","") 
   
   #ww remove the component after the attribute, attribute is the last group.
   a1 <- regexpr(attribute_regx,category_noU,ignore.case=TRUE)
   if (a1 > 0 ){
     a1Stop <- attr(a1,"match.length") +a1 -1
     category_noU <- substr(category_noU,1,a1Stop)
-    print(paste0("category_noU  = ",category_noU))
+    #print(paste0("category_noU  = ",category_noU))
   }
   #The first row of our output data frame is the full text string.  Since this function doesn't receive the original text
   #string, it is recreated using the TRTVtokens$Source.
@@ -479,8 +596,7 @@ makeXV <- function(TRTVtokens)
     
     # store the charactor positions of each "(" in m[[1]][1]
     m <- regexec(trtv_regx,category_noU)
-    #print(m)
-    
+     
     # create xref to convert from character positions in m to rows in TRTVtokens.  We only need this because we deleted the U and i categories.
     xref <- c()
     i <-1
@@ -499,142 +615,34 @@ makeXV <- function(TRTVtokens)
       j <- j+1 
     }
 
-    # Create the XVtable start by adding rows for the components ((nuc)|(c(nu)?))
-    # item 2 will have nuc
-    # item 3 will have cnu
+    # Create the XVtable start by adding rows for the components  "(((nu){1,2}c)|(c(nu){0,2}))"
+    # item 2 will have nunuc or nuc depends on the matching length
+    # item 3 will have nunuc or nuc depends on the matching length
     # item 4 will have nu
+    # item 5 will have cnunu or c depends on the matching length.
+    # item 6 will have nu
     # if any part is missing, the value in m will be zero.
     #
     component_i <- 1  #start the loop with the first component
     m_i <- 1 #start processing from the beginning element of m[[1]][]
-    seq <- 2 #The value of the next row's XVSEQ
     while (component_i <= component_reps)
     {
-      if (m[[1]][m_i+2] > 0)
-      {
-        # we have nuc
-        XVrow <- data.frame(STUDYID = NA, 
-                            DOMAIN = "XV",
-                            XVSEQ = seq,
-                            XVGRPID = 1,
-                            XVSGRPID = component_i,
-                            XVPARMCD = "TRTVC",
-                            XVPARM = "Treatment Vehicle Component",
-                            XVSPARM = TRTVtokens$Value[xref[2+m[[1]][m_i+2]]],  #Since we have nuc, 2 tokens from here is c
-                            XVVAL = TRTVtokens$Value[xref[0+m[[1]][m_i+2]]],    #Since we have nuc, 0 tokens from here is n
-                            XVVALU = TRTVtokens$Value[xref[1+m[[1]][m_i+2]]],   #Since we have nuc, 1 token  from here is u
-                            XVVALNF = NA,
-                            stringsAsFactors=FALSE)
-        XVtable <- rbind(XVtable,XVrow)
-        seq <-seq +1
-      }
-      if ((m[[1]][m_i+3]>0)&&(m[[1]][m_i+4]>0))
-      {
-        # we have cnu
-        XVrow <- data.frame(STUDYID = NA, 
-                            DOMAIN = "XV",
-                            XVSEQ = seq,
-                            XVGRPID = 1,
-                            XVSGRPID = component_i,
-                            XVPARMCD = "TRTVC",
-                            XVPARM = "Treatment Vehicle Component",
-                            XVSPARM = TRTVtokens$Value[xref[0+m[[1]][m_i+3]]],  #Since we have cnu, 0 tokens from here is c
-                            XVVAL = TRTVtokens$Value[xref[1+m[[1]][m_i+3]]],    #Since we have cnu, 1 tokens from here is n
-                            XVVALU = TRTVtokens$Value[xref[2+m[[1]][m_i+3]]],   #Since we have cnu, 2 tokens from here is u
-                            XVVALNF = NA,
-                            stringsAsFactors=FALSE)
-        XVtable <- rbind(XVtable,XVrow)
-        seq <-seq +1
-      }
-      if ((m[[1]][m_i+3]>0)&&(m[[1]][m_i+4]==0))
-      {
-        # we have c
-        XVrow <- data.frame(STUDYID = NA, 
-                            DOMAIN = "XV",
-                            XVSEQ = seq,
-                            XVGRPID = 1,
-                            XVSGRPID = component_i,
-                            XVPARMCD = "TRTVC",
-                            XVPARM = "Treatment Vehicle Component",
-                            XVSPARM = TRTVtokens$Value[xref[0+m[[1]][m_i+3]]],  #Since we have c, 0 tokens from here is c
-                            XVVAL = NA,
-                            XVVALU = NA,
-                            XVVALNF = NA,
-                            stringsAsFactors=FALSE)
-        XVtable <- rbind(XVtable,XVrow)
-        seq <-seq +1
-      }
-      #print(XVtable)
-      m_i <-m_i +4 #There are 4 items in m for each component.
+      XVtable = makeXVComp(TRTVtokens,xref, component_i, m, m_i, XVtable)
+      m_i <-m_i +5 #There are 5 items in m for each component.
       component_i <- component_i +1
     }
     
     #Add rows to XVtable for diluent f((nuc)|(c(nu)?))
     if (m[[1]][m_i+1] >0)
     {
-      #We havea diluent.  The code for a component above is copied here. I should have created a function.
+      #We have a diluent.  The code for a component above is copied here. I should have created a function.
       m_i <- m_i +1
-      if (m[[1]][m_i+2] > 0)
-      {
-        # we have nuc
-        XVrow <- data.frame(STUDYID = NA, 
-                            DOMAIN = "XV",
-                            XVSEQ = seq,
-                            XVGRPID = 1,
-                            XVSGRPID = component_i,
-                            XVPARMCD = "TRTVC",
-                            XVPARM = "Treatment Vehicle Component",
-                            XVSPARM = TRTVtokens$Value[xref[2+m[[1]][m_i+2]]],
-                            XVVAL = TRTVtokens$Value[xref[0+m[[1]][m_i+2]]],
-                            XVVALU = TRTVtokens$Value[xref[1+m[[1]][m_i+2]]],
-                            XVVALNF = NA,
-                            stringsAsFactors=FALSE)
-        XVtable <- rbind(XVtable,XVrow)
-        seq <-seq +1
-      }
-      if ((m[[1]][m_i+3]>0)&&(m[[1]][m_i+4]>0))
-      {
-        # we have cnu
-        XVrow <- data.frame(STUDYID = NA, 
-                            DOMAIN = "XV",
-                            XVSEQ = seq,
-                            XVGRPID = 1,
-                            XVSGRPID = component_i,
-                            XVPARMCD = "TRTVC",
-                            XVPARM = "Treatment Vehicle Component",
-                            XVSPARM = TRTVtokens$Value[xref[0+m[[1]][m_i+3]]],
-                            XVVAL = TRTVtokens$Value[xref[1+m[[1]][m_i+3]]],
-                            XVVALU = TRTVtokens$Value[xref[2+m[[1]][m_i+3]]],
-                            XVVALNF = NA,
-                            stringsAsFactors=FALSE)
-        XVtable <- rbind(XVtable,XVrow)
-        seq <-seq +1
-      }
-      if ((m[[1]][m_i+3]>0)&&(m[[1]][m_i+4]==0))
-      {
-        # we have c
-        XVrow <- data.frame(STUDYID = NA, 
-                            DOMAIN = "XV",
-                            XVSEQ = seq,
-                            XVGRPID = 1,
-                            XVSGRPID = component_i,
-                            XVPARMCD = "TRTVC",
-                            XVPARM = "Treatment Vehicle Component",
-                            XVSPARM = TRTVtokens$Value[xref[0+m[[1]][m_i+3]]],
-                            XVVAL = NA,
-                            XVVALU = NA,
-                            XVVALNF = "QS",
-                            stringsAsFactors=FALSE)
-        XVtable <- rbind(XVtable,XVrow)
-        seq <-seq +1
-      }
-      #print(XVtable)
-      m_i <-m_i +4
-      
+      XVtable = makeXVComp(TRTVtokens,xref, component_i, m, m_i, XVtable)
+      m_i <-m_i +5
     } 
     ## If no diluent component, still need to move the index for the next group.
     else{
-      m_i <-m_i + 5
+      m_i <-m_i + 6
     }
     
     #Add rows to XVtable for the attributes (an(r|(R)n)?)
@@ -650,7 +658,7 @@ makeXV <- function(TRTVtokens)
         highest <- as.numeric(TRTVtokens$Value[xref[3+m[[1]][m_i+1]]])
         XVrow <- data.frame(STUDYID = NA, 
                             DOMAIN = "XV",
-                            XVSEQ = seq,
+                            XVSEQ = nrow(XVtable) + 1,
                             XVGRPID = 1,
                             XVSGRPID = component_i,
                             XVPARMCD = "TRTVP",
@@ -661,11 +669,10 @@ makeXV <- function(TRTVtokens)
                             XVVALNF = NA,
                             stringsAsFactors=FALSE)
         XVtable <- rbind(XVtable,XVrow)
-        seq <-seq +1
         #create row for "Rn"
         XVrow <- data.frame(STUDYID = NA, 
                             DOMAIN = "XV",
-                            XVSEQ = seq,
+                            XVSEQ = nrow(XVtable) + 1,
                             XVGRPID = 1,
                             XVSGRPID = component_i,
                             XVPARMCD = "TRTVC",
@@ -676,7 +683,6 @@ makeXV <- function(TRTVtokens)
                             XVVALNF = NA,
                             stringsAsFactors=FALSE)
         XVtable <- rbind(XVtable,XVrow)
-        seq <-seq +1
       }
       else 
       {
@@ -687,7 +693,7 @@ makeXV <- function(TRTVtokens)
           #create row for "an"
           XVrow <- data.frame(STUDYID = NA, 
                               DOMAIN = "XV",
-                              XVSEQ = seq,
+                              XVSEQ = nrow(XVtable) + 1,
                               XVGRPID = 1,
                               XVSGRPID = component_i,
                               XVPARMCD = "TRTVP",
@@ -698,11 +704,10 @@ makeXV <- function(TRTVtokens)
                               XVVALNF = NA,
                               stringsAsFactors=FALSE)
           XVtable <- rbind(XVtable,XVrow)
-          seq <-seq +1
           #create row for "rn"
           XVrow <- data.frame(STUDYID = NA, 
                               DOMAIN = "XV",
-                              XVSEQ = seq,
+                              XVSEQ = nrow(XVtable) + 1,
                               XVGRPID = 1,
                               XVSGRPID = component_i,
                               XVPARMCD = "TRTVC",
@@ -713,7 +718,6 @@ makeXV <- function(TRTVtokens)
                               XVVALNF = NA,
                               stringsAsFactors=FALSE)
           XVtable <- rbind(XVtable,XVrow)
-          seq <-seq +1
         }
         else 
         {
@@ -724,7 +728,7 @@ makeXV <- function(TRTVtokens)
             #create row for "an"
             XVrow <- data.frame(STUDYID = NA, 
                                 DOMAIN = "XV",
-                                XVSEQ = seq,
+                                XVSEQ = nrow(XVtable) + 1,
                                 XVGRPID = 1,
                                 XVSGRPID = component_i,
                                 XVPARMCD = "TRTVP",
@@ -735,7 +739,6 @@ makeXV <- function(TRTVtokens)
                                 XVVALNF = NA,
                                 stringsAsFactors=FALSE)
             XVtable <- rbind(XVtable,XVrow)
-            seq <-seq +1
           }
         }
       }
@@ -748,34 +751,15 @@ makeXV <- function(TRTVtokens)
   }
   return(XVtable)
 }
-
-#####################################################################################################33
-#
-
-
-#pathBase = "C:\\003\\TRTV-parse\\"
-pathBase = "C:\\Project\\src\\R\\TRTV\\"
-resultFile <- paste0(pathBase,"trtv-parse.txt") 
-sink(file = resultFile)
-# read the table of Treatment Vehicles that need to be parsed.  Each line is a copy of the TRTV parameer from ts.xpt in a SEND package
-trtv <- read.table(paste0(pathBase,"trtv"),sep="|");
-#read the table of component names that are already sorted from longest text string to shortest text string.
-tokens <- read.table(paste0(pathBase,"tokens.csv"),sep=",", header = TRUE,stringsAsFactors=FALSE);
-
-tRow <- 1
-nSuccess <- 0
-while (tRow <= nrow(trtv))
-{
-  ##ww Pre-process the vehicle string
-  ## 1. Replace the unicode ± with +/-
-  ## 2. Replace to in the attribute string with ad DASH, e.g. "PH 3 to 5" to "PH 3 - 5"
- 
-  trtvOrg = trtv[tRow, ]
+# trtv is the source vehicle string
+# takens contains all the token records.
+ParseTRTV <- function(trtv, tokens){
+  trtvOrg = trtv
   Encoding(trtvOrg)<-"UTF-8"
-  print(paste0("Vehicle:",as.character(trtvOrg)))
+  #print(paste0("Vehicle:",as.character(trtvOrg)))
   ##ww replace the ± with +/-
-  trtvNew = str_replace_all(trtvOrg,"±","+/-")
-  
+  #trtvNew = str_replace_all(trtvOrg,"±","+/-")
+  trtvNew = str_replace_all(trtvOrg,"\u00B1","+/-")
   ##ww Replace "to" in the attribute string with a DASH
   ph_regx <- "[p|P][h|H](\\s)*[0-9]+(\\.[0-9]+)?(\\s)*[t|T][o|O]"
   
@@ -789,25 +773,51 @@ while (tRow <= nrow(trtv))
     ## The new vehicle string
     trtvNew <- str_replace_all(trtvNew,ph_regx,phs2)
   }
-  #print(paste0("Vehicle after replace:",as.character(trtvNew)))
-  p<-vehicleTokenize(as.character((trtvNew)))
-
+  print(paste0("Vehicle to be parsed:",as.character(trtvNew)))
+  p<-vehicleTokenize(as.character((trtvNew)), tokens)
+  
   p<-cleanTokens_syn(cleanTokens_R(cleanTokens_ur(p)))
   print(p$Category)
   category_noU <- str_replace_all(paste(p$Category,collapse=""),"U|i","")
+  print(paste0("category_noU  = ",category_noU))
   #print(grepl("^((nuc)|(c(nu)?))+(f((nuc)|(c(nu)?)))?(an(rn)?)*$",category_noU))
-  t<-makeXV(p)
+  t<-makeXV(p,category_noU)
   if (is.null(ncol(t)))
   {
-    print(p)
-    print(paste0("Vehicle Parse failed:",as.character(trtvNew)))
+    print(paste0("Vehicle Parse failed:",as.character(trtv)))
   }
-  else
+  return(t)
+}
+#####################################################################################################33
+#set the working directory
+(pathBase <- getwd())
+if (!is.null(pathBase)) setwd(pathBase)
+
+logFile <- paste0(pathBase,"/output/trtv-parse.log") 
+OutCsvFile <- NA
+# read the table of Treatment Vehicles that need to be parsed.  Each line is a copy of the TRTV parameer from ts.xpt in a SEND package
+trtv <- read.table(paste0(pathBase,"/trtv_test"),sep="|");
+#trtv <- read.table(paste0(pathBase,"/BioCelerate_TRTV.csv"),sep="|");
+#read the table of component names that are already sorted from longest text string to shortest text string.
+tokensTable <- read.table(paste0(pathBase,"/tokens.csv"),sep=",", header = TRUE,stringsAsFactors=FALSE);
+sink(file = logFile)
+
+tRow <- 1
+nSuccess <- 0
+while (tRow <= nrow(trtv))
+{
+  ##ww Pre-process the vehicle string
+  ## 1. Replace the unicode ± with +/-
+  ## 2. Replace to in the attribute string with ad DASH, e.g. "PH 3 to 5" to "PH 3 - 5"
+ 
+  trtvOrg = trtv[tRow, ]
+  t = ParseTRTV(trtvOrg, tokensTable)
+  if (!is.null(ncol(t)))
   {
-    print(t)
+    OutCsvFile <- paste0(pathBase,"/output/xv",tRow, ".csv")
+    write.csv(t,file=OutCsvFile,na="",row.names=FALSE)
     nSuccess <- nSuccess +1
   }
-  print("")
   tRow <-tRow+1
 }
 print(paste0("We eavluated ",nrow(trtv)," treatment vehicle descriptions and created XV tables for ",nSuccess," of them = ",100*nSuccess/nrow(trtv),"%"))
