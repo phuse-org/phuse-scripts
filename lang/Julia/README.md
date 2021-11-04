@@ -20,6 +20,7 @@ Name (GitHub Handle) eMail
 * Chris Hurley (hurleyc) churley@mmsholdings.com
 * Jeff Mills (tszanalytics) jeffrey.mills@uc.edu
 * Melvin Munsaka (MelvinSMunsaka) melvin.s.munsaka@gmail.com
+* Mary Srinivasan (marysrinivasan) mary.srinivasan@pfizer.com
 * Hanming Tu (geotiger) htu@frontagelab.com
 * Chris Wege (Xingewei) chris.wege@bayer.com
 * David Wei (Xingewei) david.wei@bayer.com
