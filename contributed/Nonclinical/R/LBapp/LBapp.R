@@ -4,9 +4,9 @@
 # Ideas for improvement:
 #  - Add subcategory tree (backlog--requires tree package)
 #  - Fix transformations on change from baseline (maybe not?)
-#  - Change z-score to be like the percent change (maybe not?)
+#  - Change z-score to set 0 value at control mean by sex and scale based on control by sex standard deviation - Vaishnavi
 #  - Add filter to individual plot by animal ID (backlog requires tree package)
-#  - Plotting multiple days with separation
+#  - Plotting multiple days with separation - Vaishnavi
 # https://stackoverflow.com/questions/28006281/ggplot-nested-x-axis-for-interaction-factor-variables-in-bar-plot
 # https://www.datacamp.com/community/tutorials/facets-ggplot-r
 # this is kind of tricky -- not sure what the desired solution is...
@@ -34,6 +34,10 @@ library(httr)
 library(tools)
 library(Hmisc)
 library(DT)
+library(gplots)
+
+# Get App Directory
+HOME <- getwd()
 
 # Functions
 convertMenuItem <- function(mi,tabName) {
@@ -270,23 +274,38 @@ signif_df <- function(df, digits) {
   (df)
 }
 
-# Source Functions
-source('https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/contributed/Nonclinical/R/Functions/Functions.R')
-# source('~/PhUSE/Repo/trunk/contributed/Nonclinical/R/Functions/Functions.R')
-source('https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/contributed/Nonclinical/R/Functions/groupSEND.R')
-# source('~/PhUSE/Repo/trunk/contributed/Nonclinical/R/Functions/groupSEND.R')
-
-# Get GitHub Password (if possible)
-if (file.exists('passwordGitHub.R')) {
-  source('passwordGitHub.R')
-  Authenticate <- TRUE
+# Check if app is running on local windows laptop or linux shiny server
+homePath <- getwd()
+if (substr(homePath,1,2)=='C:') {
+  Local <- T
 } else {
-  Authenticate <- FALSE
+  Local <- F
 }
 
-# Set Local GitHub Repo
-GitHubPath <- '~/PhUSE/Git/phuse-scripts/data/send'
+# Set this flag to download latest version of functions from PhUSE GitHub
+Update <- F
 
+# Source Functions
+if (Local == T) {
+  if (Update==T) {
+    download.file('https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/contributed/Nonclinical/R/Functions/Functions.R','Functions/Functions.R')
+    download.file('https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/contributed/Nonclinical/R/Functions/groupSEND.R','Functions/groupSEND.R')
+  }
+  
+  # Get GitHub Password (if possible)
+  if (file.exists('~/passwordGitHub.R')) {
+    source('~/passwordGitHub.R')
+    Authenticate <- TRUE
+  } else {
+    Authenticate <- FALSE
+  }
+}
+source('Functions/Functions.R')
+#source('Functions/groupSEND.R')
+source('https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/contributed/Nonclinical/R/Functions/groupSEND.R')
+# Set Local GitHub Repo
+# GitHubPath <- '~/PhUSE/Git/phuse-scripts/data/send'
+DatasetsPath <- 'Datasets'
 
 # Setup Plot Color Ramp
 my_color_palette <- colorRampPalette(c('green','red'),space = "Lab")
@@ -314,49 +333,44 @@ nSigFigs <- 3
 max_plots <- 100
 
 server <- function(input, output, session) {
+  #options(shiny.maxRequestSize=1000*1024^2)
   
   # Store Client Data Regarding Height and Width of Plot Containers
   cdata <- session$clientData
   
   output$dataSource <- renderUI({
-    if (dir.exists(GitHubPath)) {
-      selectInput('dataSource','Select Data Source:',c('GitHub','local'),selected='local')
+    if (Local == T) {
+      selectInput('dataSource','Select Data Source:',c('GitHub','Datasets'),selected='Datasets')
     } else {
-      selectInput('dataSource','Select Data Source:',c('GitHub'))
+      selectInput('dataSource','Select Data Source:',c('Datasets'))
     }
   })
   
   # Create Drop Down to Select Studies from PhUSE GitHub Repo
-  output$selectGitHubStudy <- renderUI({
+  output$selectStudy <- renderUI({
     req(input$dataSource)
-    if (input$dataSource=='GitHub') {
+    if (input$dataSource == 'GitHub') {
       if (Authenticate == TRUE) {
         Req <- GET(paste('https://api.github.com/repos/phuse-org/phuse-scripts/contents/data/send'),
-                   authenticate(userGitHub,readToken))
+                   authenticate(userGitHub,passwordGitHub))
       } else {
         Req <- GET(paste('https://api.github.com/repos/phuse-org/phuse-scripts/contents/data/send'))
       }
       contents <- content(Req,as='parsed')
       GitHubStudies <- NULL
-      count <- 1
       for (i in seq(length(contents))) {
-        if (Authenticate == TRUE) {
-          Req2 <- GET(contents[[i]]$url,
-                      authenticate(userGitHub,readToken))
-        } else {
-          Req2 <- GET(contents[[i]]$url)
-        }
-        contents2 <- content(Req2,as='parsed')
-        # Fix here and in other places to allow it load the data from Nimble (LB.xpt)
-        if (length(grep('lb.xpt',contents2))>0) {
-          GitHubStudies[count] <- unlist(strsplit(contents[[i]]$path,'/send/'))[2]
-          count <- count + 1
-        }
+        studies[i] <- strsplit(contents[[i]]$path,'/send/')[[1]][2]
       }
-    } else if (input$dataSource=='local') {
-      GitHubStudies <- list.dirs(GitHubPath,full.names = F,recursive = F)
+    } else if (input$dataSource == 'Datasets') {
+      #print(getwd())
+      if(grepl('Datasets', getwd(), fixed = TRUE)) {
+        #setwd(paste('..', .Platform$file.sep, '..', sep = ''))
+        setwd(HOME)
+      }        
+      #print(getwd())
+      studies <- list.dirs('Datasets',full.names=F,recursive=F)
     }
-    selectInput('selectGitHubStudy',label='Select Study from PhUSE GitHub:',choices =GitHubStudies,selected='PDS')
+    selectInput('selectStudy',label='Select Study:',choices = studies,selected='PDS')
   })
   
   # COMMENTED OUT FOR NOW unitl I allow local file upload
@@ -388,33 +402,47 @@ server <- function(input, output, session) {
   
   # Load Dataset
   loadData <- reactive({
-    req(input$selectGitHubStudy)
+    req(input$selectStudy)
     if (input$dataSource=='GitHub') {
-      values$path <- paste0('https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/data/send/',input$selectGitHubStudy)
-    } else if (input$dataSource=='local') {
-      values$path <- paste0(GitHubPath,'/',input$selectGitHubStudy)
+      values$path <- paste0('https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/data/send/',input$selectStudy)
+    } else if (input$dataSource=='Datasets') {
+      values$path <- paste0(HOME,'/Datasets/',input$selectStudy)
     }
     path <- values$path
     
     withProgress({
-      if (input$dataSource=='local') {
+      if (input$dataSource=='Datasets') {
+        print(path)
         setwd(path)
         if (length(list.files(pattern='*.xpt'))>0) {
-          Dataset <- load.xpt.files(showProgress=T)
+          Dataset <- load.xpt.files(domainsOfInterest = c('dm','ex','tx','pp','ta','se','ds','lb'),showProgress=T)
         } else if (length(list.files(pattern='*.csv'))>0) {
           Dataset <- load.csv.files(showProgress=T)
         } else {
           stop('No .xpt or .csv files to load!')
         }
       } else if (input$dataSource=='GitHub') {
-        StudyDir <- paste0('data/send/',input$selectGitHubStudy)
-        if (Authenticate==T) {
-          Dataset <- load.GitHub.xpt.files(studyDir=StudyDir,showProgress=T,domainsOfInterest = 'LB',
-                                           authenticate=TRUE,User=userGitHub,Password=readToken)
+        if (Local == T) {
+          StudyDir <- paste0('data/send/',input$selectStudy)
+          if (Authenticate==T) {
+            Dataset <- load.GitHub.xpt.files(studyDir=StudyDir,showProgress=T,
+                                             authenticate=TRUE,User=userGitHub,Password=passwordGitHub)
+          } else {
+            Dataset <- load.GitHub.xpt.files(studyDir=StudyDir,showProgress=T)
+          }
         } else {
-          Dataset <- load.GitHub.xpt.files(studyDir=StudyDir,showProgress=T,domainsOfInterest = 'LB')
+          StudyDir <- paste0('Datasets/',input$selectStudy)
+          setwd(StudyDir)
+          if (length(list.files(pattern='*.xpt'))>0) {
+            Dataset <- load.xpt.files(showProgress=T)
+          } else if (length(list.files(pattern='*.csv'))>0) {
+            Dataset <- load.csv.files(showProgress=T)
+          } else {
+            stop('No .xpt or .csv files to load!')
+          }
         }
       }
+      
       setProgress(value=1,message='Processing Data...')
       isolate({
         testCodes <- levels(Dataset$lb$LBTESTCD)
@@ -426,20 +454,47 @@ server <- function(input, output, session) {
         }
       })
       groupedData <- groupSEND(Dataset,'lb')
+      #print(groupedData)
       index <- which((groupedData$LBSTRESU!='')&(is.null(groupedData$LBSTRESU)==F))
       groupedData <- groupedData[index,]
       groupedData$CATTEST <- paste(substr(groupedData$LBCAT,1,4),groupedData$LBTESTCD,sep='_')
+      print(head(groupedData))
       for (subject in unique(groupedData$USUBJID)) {
         index <- which(groupedData$USUBJID==subject)
-        testTable <- table(groupedData$CATTEST[index])
-        maxTest <- length(unique(groupedData$VISITDY[index]))
+
+        testTable <- table(groupedData$LBTESTCD[index])
+        testTable1 <- table(groupedData$LBSPEC[index])
+        testTable2 <- table(groupedData$LBDTC[index])
+        maxTest <- unique(groupedData$LBSTRESC[index])
+        #lbstresTable <- unique(groupedData$LBSTRESC[index])
+        # print('lbstresTable')
+        # print(lbstresTable)
         overTestIndex <- which(testTable>maxTest)
         overTests <- names(testTable[overTestIndex])
-        for (test in overTests) {
-          testIndex <- which(groupedData$CATTEST==test)
-          groupedData <- groupedData[-testIndex,]
-        }
+      for (test in overTests) {
+        testIndex <- which(groupedData$LBTESTCD==test)
+        groupedData <- groupedData[testIndex,]
+       }
       }
+      
+       for (subject in unique(groupedData$USUBJID)) {
+         #print(head(groupedData))
+         # print(subject)
+         index <- which(groupedData$USUBJID==subject)
+         testTable <- table(groupedData$CATTEST[index])
+         maxTest <- length(unique(groupedData$VISITDY[index]))
+         # print(maxTest)
+         # print(index)
+         overTestIndex <- which(testTable>maxTest)
+         overTests <- names(testTable[overTestIndex])
+          #print(overTests)
+          for (test in overTests) {
+            testIndex <- which(groupedData$CATTEST==test)
+            groupedData <- groupedData[-testIndex,]
+          }
+        }
+
+      
       for (test in unique(groupedData$CATTEST)) {
         index <- which(groupedData$CATTEST==test)
         if ((length(which(is.na(groupedData$LBSTRESN[index])==T))>(length(index)*.5))|
@@ -458,18 +513,26 @@ server <- function(input, output, session) {
       }
       values$dayOrder <- as.character(sort(as.numeric(unique(groupedData$VISITDY))))
       doses <- paste0(' ',levels(factor(groupedData$Dose)))
+      DoseN <- NULL
+      for(i in seq(length(doses))){
+        DoseN[i] <- as.numeric(unlist(strsplit(doses[i],' '))[2])
+      }
+      doses <- doses[order(DoseN)]
       treatmentOrder <- NULL
       for (dose in doses) {
         treatmentOrder[length(treatmentOrder)+1] <- grep(dose,levels(factor(groupedData$TreatmentDose)),value=T)
       }
       values$treatmentOrder <- treatmentOrder
-    },message='Loading Data...')
-    return(groupedData)
+    },
+      message='Loading Data...')
+     return(groupedData)
   })
   
   # Display Test Categories
   output$testCategories <- renderUI({
     Data <- loadData()
+    #print("************load data *********")
+    #print(Data)
     testCategories <- sort(unique(Data$LBCAT))
     checkboxGroupInput('testCategories','Select Test Categories:',testCategories,selected=testCategories[1])
   })
@@ -571,7 +634,9 @@ server <- function(input, output, session) {
     Data$CATTEST[TESTCDindex] <- levels(Data$LBTESTCD[TESTCDindex])[Data$LBTESTCD[TESTCDindex]]
     testIndex <- union(CATTESTindex,TESTCDindex)
     Data <- Data[testIndex,]
+    #print(head(Data))
     Data <- dcast(Data,USUBJID+TreatmentDose+Sex+VISITDY~CATTEST,value.var='LBSTRESN')
+    #print(head(Data))
     colnames(Data)[1:4] <- c('ID','Treatment','Sex','Day')
     parameterCols <- colnames(Data)[5:ncol(Data)]
     if (input$changeFromBaseline==T) {
@@ -602,7 +667,9 @@ server <- function(input, output, session) {
     if (input$transformation == 'none') {
       return(transformedData)
     } else {
-      if ((input$transformation=='percentChange')&(input$changeFromBaseline==F)) {
+      if ((input$transformation %in% c('percentChange','zScore'))&(input$changeFromBaseline==F)) {
+        #print(input$transformation)
+        #print(input$selectControl)
         if (is.null(input$selectControl)) {
           index <- which(Data$Treatment==values$treatmentOrder[1])
         } else {
@@ -620,20 +687,16 @@ server <- function(input, output, session) {
             treatmentIndex <- which(baselineData$Treatment==treatment)
             Index <- intersect(sexIndex,treatmentIndex)
           } else {
-            if (input$transformation=='zScore') {
-              sex <- Data$Sex[i]
-              Index <- which(Data$Sex==sex)
-            } else {
-              sex <- Data$Sex[i]
-              sexIndex <- which(Data$Sex[index]==sex)
-              day <- Data$Day[i]
-              dayIndex <- which(Data$Day[index]==day)
-              Index <- index[intersect(sexIndex,dayIndex)]
-            }
+            sex <- Data$Sex[i]
+            sexIndex <- which(Data$Sex[index]==sex)
+            day <- Data$Day[i]
+            dayIndex <- which(Data$Day[index]==day)
+            Index <- index[intersect(sexIndex,dayIndex)]
           }
           if (input$transformation=='zScore') {
-            if (sd(Data[Index,col],na.rm=T) > 0) {
-              transformedData[i,col] <- (Data[i,col]-mean(Data[Index,col],na.rm=T))/sd(Data[Index,col],na.rm=T)
+            if ((sd(Data[Index,col],na.rm=T) > 0) & (!is.na(sd(Data[Index,col],na.rm=T)))) {
+              controlMean <- mean(Data[Index,col],na.rm=T)
+              transformedData[i,col] <- (Data[i,col]-controlMean)/sd(Data[Index,col],na.rm=T)
             } else {
               transformedData[i,col] <- NA
             }
@@ -661,7 +724,9 @@ server <- function(input, output, session) {
     DataLong$variable <- factor(DataLong$variable,levels=input$tests)
     if (input$sex != '') {
       DataLong <- DataLong[which(DataLong$Sex==input$sex),]
+      DataLong$Sex <- factor(DataLong$Sex,levels = input$sex)
     }
+
     if (input$filterBy=='Day') {
       if (length(input$day) != 1) {
         treatmentDay <- paste(DataLong$Treatment,DataLong$Day)
@@ -671,7 +736,40 @@ server <- function(input, output, session) {
             treatmentDayOrder <- c(treatmentDayOrder,paste(treatment,day))
           }
         }
-        DataLong$Treatment <- factor(treatmentDay,levels=treatmentDayOrder)
+         DataLong$Treatment <- factor(treatmentDay,levels=treatmentDayOrder)
+        treatmentLevels <- treatmentDayOrder
+        treatmentLevelsSplit <- strsplit(x = treatmentLevels,split = ' ')
+        treatmentTable <- table(unlist(lapply(lapply(treatmentLevelsSplit,head,-1),paste,collapse=' ')))
+        for (i in seq(length(input$tests))) {
+          for (j in seq(length(treatmentTable))) {
+            treatmentDay <- c(treatmentDay,paste(rep(' ',j),collapse=''))
+            newRow <- cbind(paste(rep(' ',j),collapse=''),levels(DataLong$ID)[1],levels(DataLong$Sex)[1],DataLong$Day[1],input$tests[i],NA)
+            colnames(newRow) <- colnames(DataLong)
+            if (j > 1) {
+              newRows <- rbind(newRows,newRow)
+            } else {
+              newRows <- newRow
+            }
+          }
+          DataLong <- rbind(DataLong,newRows)
+        }
+        DataLong$value <- as.numeric(DataLong$value)
+        print(treatmentTable)
+        treatmentTableLength <- length(treatmentTable)
+        for (i in seq(treatmentTableLength)) {
+          if (i == 1) {
+            newTreatmentLevels <- c(treatmentLevels[seq(treatmentTable[i])])
+            treatmentTableCount <- treatmentTable[i]
+          } else {
+            newTreatmentLevels <- c(newTreatmentLevels,paste(rep(' ',i),collapse=''),treatmentLevels[seq((treatmentTableCount+1),(treatmentTableCount+treatmentTable[i]))])
+            treatmentTableCount <- treatmentTableCount + treatmentTable[i]
+          }
+          print(newTreatmentLevels)
+        }
+        #DataLong$Treatment <- factor(treatmentDay,levels=c(treatmentLevels[seq(treatmentTable[1])],'',treatmentLevels[seq((treatmentTable[1]+1),(treatmentTable[1]+treatmentTable[2]))]))
+        print(newTreatmentLevels)
+        DataLong$Treatment <- factor(treatmentDay,levels=newTreatmentLevels)
+        print(levels(DataLong$Treatment))
       } else {
         variableOrder <- NULL
         for (i in seq(nrow(DataLong))) {
@@ -690,7 +788,37 @@ server <- function(input, output, session) {
             dayTreatmentOrder <- c(dayTreatmentOrder,paste(day,treatment))
           }
         }
-        DataLong$Day <- factor(dayTreatment,levels=dayTreatmentOrder)
+        # DataLong$Day <- factor(dayTreatment,levels=dayTreatmentOrder)
+        dayLevels <- dayTreatmentOrder
+        dayLevelsSplit <- strsplit(x = dayLevels,split = ' ')
+        dayTable <- table(unlist(lapply(dayLevelsSplit,`[[`,1)))
+        for (i in seq(length(input$tests))) {
+          for (j in seq(length(dayTable))) {
+            dayTreatment <- c(dayTreatment,paste(rep(' ',j),collapse=''))
+            newRow <- cbind(DataLong$Treatment[1],levels(DataLong$ID)[1],levels(DataLong$Sex)[1],paste(rep(' ',j),collapse=''),input$tests[i],NA)
+            colnames(newRow) <- colnames(DataLong)
+            if (j > 1) {
+              newRows <- rbind(newRows,newRow)
+            } else {
+              newRows <- newRow
+            }
+          }
+          DataLong <- rbind(DataLong,newRows)
+        }
+        DataLong$value <- as.numeric(DataLong$value)
+        dayTableLength <- length(dayTable)
+        for (i in seq(dayTableLength)) {
+          if (i == 1) {
+            newDayLevels <- c(dayLevels[seq(dayTable[i])])
+            dayTableCount <- dayTable[i]
+          } else {
+            newDayLevels <- c(newDayLevels,paste(rep(' ',i),collapse=''),dayLevels[seq((dayTableCount+1),(dayTableCount+dayTable[i]))])
+            dayTableCount <- dayTableCount + dayTable[i]
+          }
+        }
+        # DataLong$Day <- factor(dayTreatment,levels=c(dayLevels[seq(dayTable[1])],'',dayLevels[seq((dayTable[1]+1),(dayTable[1]+dayTable[2]))]))
+        DataLong$Day <- factor(dayTreatment,levels=newDayLevels)
+        DataLong$Treatment <- factor(DataLong$Treatment, levels = values$treatmentOrder)
       } else {
         variableOrder <- NULL
         for (i in seq(nrow(DataLong))) {
@@ -707,35 +835,36 @@ server <- function(input, output, session) {
   # Display Individual Animal Data Table
   output$individualTable <- DT::renderDataTable({
     if (!is.null(input$tests)) {
-      longData <- longData()
-      tmp <- NULL
-      if (input$filterBy=='Day') {
-        groupBy <- 'Treatment'
-        if (length(unique(longData$Day))!=1) {
-          for (i in seq(nrow(longData))) {
-            Tmp <- strsplit(as.character(longData[i,groupBy]),' ')[[1]]
-            tmp[i] <- paste(Tmp[-length(Tmp)],collapse=' ')
-          }
-        } else {
-          tmp <- longData[[groupBy]]
-        }
-        longData[[groupBy]] <- factor(tmp,levels=values$treatmentOrder)
-        longData[[groupBy]] <- as.factor(tmp)
-      } else {
-        groupBy <- 'Day'
-        for (i in seq(nrow(longData))) {
-          Tmp <- strsplit(as.character(longData[i,groupBy]),' ')[[1]]
-          tmp[i] <- Tmp[1]
-        }
-        longData[[groupBy]] <- as.factor(tmp)
-      }
-      Data <- dcast(longData,Treatment+ID+Sex+Day~variable)
-      IDindex <- which(colnames(Data)=='ID')
-      groupByIndex <- which(colnames(Data)==groupBy)
-      notIndex <- which((colnames(Data)!='ID')&(colnames(Data)!=groupBy))
-      index <- c(IDindex,groupByIndex,notIndex)
-      Data <- Data[,index]
-      Data <- Data[order(Data[[groupBy]]),]
+      # longData <- longData()
+      # tmp <- NULL
+      # if (input$filterBy=='Day') {
+      #   groupBy <- 'Treatment'
+      #   if (length(unique(longData$Day))!=1) {
+      #     for (i in seq(nrow(longData))) {
+      #       Tmp <- strsplit(as.character(longData[i,groupBy]),' ')[[1]]
+      #       tmp[i] <- paste(Tmp[-length(Tmp)],collapse=' ')
+      #     }
+      #   } else {
+      #     tmp <- longData[[groupBy]]
+      #   }
+      #   longData[[groupBy]] <- factor(tmp,levels=values$treatmentOrder)
+      #   longData[[groupBy]] <- as.factor(tmp)
+      # } else {
+      #   groupBy <- 'Day'
+      #   for (i in seq(nrow(longData))) {
+      #     Tmp <- strsplit(as.character(longData[i,groupBy]),' ')[[1]]
+      #     tmp[i] <- Tmp[1]
+      #   }
+      #   longData[[groupBy]] <- as.factor(tmp)
+      # }
+      # Data <- dcast(longData,Treatment+ID+Sex+Day~variable)
+      # IDindex <- which(colnames(Data)=='ID')
+      # groupByIndex <- which(colnames(Data)==groupBy)
+      # notIndex <- which((colnames(Data)!='ID')&(colnames(Data)!=groupBy))
+      # index <- c(IDindex,groupByIndex,notIndex)
+      # Data <- Data[,index]
+      # Data <- Data[order(Data[[groupBy]]),]
+      Data <- transformData()
       Data <- signif_df(Data,digits=nSigFigs)
       Data
     }
@@ -767,6 +896,7 @@ server <- function(input, output, session) {
         }
         longData[[groupBy]] <- as.factor(tmp)
       }
+      ############################
       meanData <- createMeansTable(longData,'value',c('variable','Treatment','Sex','Day'))
       colnames(meanData)[1] <- 'Test'
       groupByIndex <- which(colnames(meanData)==groupBy)
@@ -789,18 +919,71 @@ server <- function(input, output, session) {
       if (input$sex != '') {
         meanData <- createMeansTable(Data,'value',c('variable','Treatment','Sex','Day'))
       } else {
-        meanData <- createMeansTable(Data,'value',c('variable','Treatment','Day'))
+        Data$Sex <- 'M & F' 
+        meanData <- createMeansTable(Data,'value',c('variable','Treatment','Sex','Day'))
       }
       if (input$filterBy=='Treatment') {
         groupBy <- 'Day'
+        notGroupBy <- 'Treatment'
       } else {
         groupBy <- 'Treatment'
+        notGroupBy <- 'Day'
       }
-      N <- length(unique(Data[[groupBy]]))
+      
+      groups2display <- levels(meanData[[groupBy]])
+      for (group in groups2display) {
+        index <- which(groups2display==group)
+        if (group %ni% meanData[[groupBy]]) {
+          groups2display <- groups2display[-index]
+        }
+      }
+      splitGroup <- strsplit(groups2display,' ')
+      xLabels <- NULL
+      for (item in splitGroup) {
+        print(item)
+        if (length(item)>0) {
+          if (groupBy=='Day') {
+            xLabels <- c(xLabels,item[1])
+          } else {
+            xLabels <- c(xLabels,paste(item[-length(item)],collapse=' '))
+          }
+        } else {
+          xLabels <- c(xLabels,'')
+        }
+      }
+      print(xLabels)
+      uLabels <- unique(xLabels[grep('[[:alnum:]]',xLabels)])
+      for (u in uLabels) {
+        index <- which(xLabels==u)
+        if (length(index)>1) {
+          middlePoint <- floor(ceiling(length(index))/2)
+          xLabels[index] <- ''
+          if (groupBy=='Day') {
+            xLabels[index[middlePoint]] <- paste('Day:',u)
+          } else {
+            xLabels[index[middlePoint]] <- u
+          }
+        } else {
+          if (groupBy=='Day') {
+            xLabels[index] <- paste('Day:',u)
+          } else {
+            xLabels[index] <- u
+          }
+        }
+      }
+      print(xLabels)
+      
+      N <- length(unique(Data[[notGroupBy]]))
       my_color_ramp <- my_color_palette(N)
-      p <- ggplot(data=meanData,aes(x=variable,y=value_mean,fill=get(groupBy))) +
-        geom_bar(position=position_dodge(),colour='black',stat='identity',size=.3) + xlab('Test') + 
-        scale_fill_manual(name=groupBy,values=my_color_ramp) + theme(text = element_text(size=18))
+      p <- ggplot(data=meanData,aes(x=get(groupBy),y=value_mean,group=get(groupBy),fill=get(notGroupBy), colour= Sex)) +
+        geom_bar(position = position_dodge(), stat = 'identity') +
+        facet_grid(. ~ variable,scales = 'free') + xlab('Test') + guides(fill=guide_legend(notGroupBy)) +
+        scale_x_discrete(breaks=groups2display,labels=xLabels) +
+        scale_fill_manual(name=groupBy,values=my_color_ramp) + theme(text = element_text(size=18)) + 
+        scale_colour_manual(name='Sex', values='black')
+      if (input$filterBy=='Day') {
+        p <- p + theme(axis.text.x = element_text(angle = 90))
+      }
       if (input$barErrorbars!='none') {
         p <- p + geom_errorbar(aes(ymin=value_mean-get(paste('value',input$barErrorbars,sep='_')),
                                    ymax=value_mean+get(paste('value',input$barErrorbars,sep='_'))),
@@ -833,22 +1016,71 @@ server <- function(input, output, session) {
       if (input$sex == '') {
         meanData <- createMeansTable(Data,'value',c('variable','Treatment','Sex','Day'))
       } else {
-        meanData <- createMeansTable(Data,'value',c('variable','Treatment','Day'))
+        #Data$Sex <- 'M & F'
+        meanData <- createMeansTable(Data,'value',c('variable','Treatment','Sex','Day'))
       }
       if (input$filterBy=='Treatment') {
         groupBy <- 'Day'
+        notGroupBy <- 'Treatment'
       } else {
         groupBy <- 'Treatment'
+        notGroupBy <- 'Day'
       }
-      N <- length(unique(Data[[groupBy]]))
+      
+      groups2display <- levels(meanData[[groupBy]])
+      for (group in groups2display) {
+        index <- which(groups2display==group)
+        if (group %ni% meanData[[groupBy]]) {
+          groups2display <- groups2display[-index]
+        }
+      }
+      splitGroup <- strsplit(groups2display,' ')
+      xLabels <- NULL
+      for (item in splitGroup) {
+        print(item)
+        if (length(item)>0) {
+          if (groupBy=='Day') {
+            xLabels <- c(xLabels,item[1])
+          } else {
+            xLabels <- c(xLabels,paste(item[-length(item)],collapse=' '))
+          }
+        } else {
+          xLabels <- c(xLabels,'')
+        }
+      }
+      #print(xLabels)
+      uLabels <- unique(xLabels[grep('[[:alnum:]]',xLabels)])
+      for (u in uLabels) {
+        index <- which(xLabels==u)
+        if (length(index)>1) {
+          middlePoint <- floor(ceiling(length(index))/2)
+          xLabels[index] <- ''
+          if (groupBy=='Day') {
+            xLabels[index[middlePoint]] <- paste('Day:',u)
+          } else {
+            xLabels[index[middlePoint]] <- u
+          }
+        } else {
+          if (groupBy=='Day') {
+            xLabels[index] <- paste('Day:',u)
+          } else {
+            xLabels[index] <- u
+          }
+        }
+      }
+      #print(xLabels)
+      N <- length(unique(Data[[notGroupBy]]))
       my_color_ramp <- my_color_palette(N)
       if (input$sex == '') {
-        p <- ggplot(data=meanData,aes(x=variable,y=value_mean,colour=get(groupBy),group=get(groupBy),shape=Sex))
+        p <- ggplot(data=meanData,aes(x=get(groupBy),y=value_mean,group=get(groupBy),fill=get(notGroupBy),shape=Sex))
       } else {
-        p <- ggplot(data=meanData,aes(x=variable,y=value_mean,colour=get(groupBy),group=get(groupBy)))
+        p <- ggplot(data=meanData,aes(x=get(groupBy),y=value_mean,group=get(groupBy),fill=get(notGroupBy)))
       }
-      p <- p + geom_point(size=3,position=position_dodge(.9),aes(y=value_mean,colour=get(groupBy))) + xlab('Test') + 
+      p <- p + geom_point(size=3,position=position_dodge(.9),aes(y=value_mean,colour=get(notGroupBy), shape=Sex)) + 
+        facet_grid(. ~ variable,scales = 'free') + xlab('Test') + guides(fill=guide_legend(groupBy)) +
+        scale_x_discrete(breaks=groups2display,labels=xLabels) + 
         scale_colour_manual(name=groupBy,values=my_color_ramp) + theme(text = element_text(size=18))
+      
       if (input$pointErrorbars!='none') {
         p <- p + geom_errorbar(aes(ymin=value_mean-get(paste('value',input$pointErrorbars,sep='_')),
                                    ymax=value_mean+get(paste('value',input$pointErrorbars,sep='_'))),
@@ -948,7 +1180,7 @@ server <- function(input, output, session) {
           if (input$sex == '') {
             meanData <- createMeansTable(Data,test,c('Treatment','Sex','Day'))
           } else {
-            meanData <- createMeansTable(Data,test,c('Treatment','Day'))
+            meanData <- createMeansTable(Data,test,c('Treatment','Sex','Day'))
           }
           N <- length(unique(meanData$Treatment))
           my_color_ramp <- my_color_palette(N)
@@ -958,7 +1190,7 @@ server <- function(input, output, session) {
           if (input$sex == '') {
             p <- ggplot(data=meanData,aes(x=Day,y=get(paste(test,'mean',sep='_')),group=interaction(Treatment,Sex),colour=Treatment,shape=Sex))
           } else {
-            p <- ggplot(data=meanData,aes(x=Day,y=get(paste(test,'mean',sep='_')),group=Treatment,colour=Treatment))
+            p <- ggplot(data=meanData,aes(x=Day,y=get(paste(test,'mean',sep='_')),group=Treatment,colour=Treatment, shape=Sex))
           }
           p <- p + geom_point(size=3) + geom_line() + ggtitle(testNameUnit) + scale_colour_manual(name='Treatment',values=my_color_ramp) +
             theme(text = element_text(size=18)) + xlab('Day')
@@ -1035,7 +1267,7 @@ server <- function(input, output, session) {
     local({
       my_i <- i
       plotname <- paste("plot", my_i, sep="")
-
+      
       output[[plotname]] <- renderPlotly({
         if (!is.null(input$tests)) {
           Data <- transformData()
@@ -1056,12 +1288,12 @@ server <- function(input, output, session) {
           testUnit <- values$testDictionaryUnits[which(values$testDictionaryCodes==test)]
           testNameUnit <- paste0(testName,' (',testUnit,')')
           if (input$sex == '') {
-            p <- ggplot(data=Data,aes(x=Day,y=get(test),group=ID,colour=Treatment,shape=Sex,label=ID))
+            p <- ggplot(data=Data,aes(x=Day,y=get(paste(test,sep='_')),group=ID,colour=Treatment,shape=Sex,label=ID))
           } else {
-            p <- ggplot(data=Data,aes(x=Day,y=get(test),group=ID,colour=Treatment,label=ID))
+            p <- ggplot(data=Data,aes(x=Day,y=get(paste(test,sep='_')),group=ID,colour=Treatment,label=ID, shape=Sex))
           }
-          p <- p + geom_point(size=3)+geom_path() + ggtitle(testNameUnit) + scale_colour_manual(name=groupBy,values=my_color_ramp) +
-            theme(text = element_text(size=18)) + xlab('Day')
+          p <- p + geom_point(size=2)+geom_path() + ggtitle(testNameUnit) + scale_colour_manual(name=groupBy,values=my_color_ramp) +
+            theme(text = element_text(size=12)) + xlab('Day')
           if (input$transformation == 'percentChange') {
             p <- p + ylab('Percent Change from Control Mean (%)')
           } else if (input$transformation == 'zScore') {
@@ -1083,13 +1315,61 @@ server <- function(input, output, session) {
       Data <- longData()
       if (input$filterBy=='Treatment') {
         groupBy <- 'Day'
+        notGroupBy <- 'Treatment'
       } else {
         groupBy <- 'Treatment'
+        notGroupBy <- 'Day'
       }
-      N <- length(unique(Data[[groupBy]]))
+      
+      groups2display <- levels(Data[[groupBy]])
+      for (group in groups2display) {
+        index <- which(groups2display==group)
+        if (group %ni% Data[[groupBy]]) {
+          groups2display <- groups2display[-index]
+        }
+      }
+      splitGroup <- strsplit(groups2display,' ')
+      xLabels <- NULL
+      for (item in splitGroup) {
+        print(item)
+        if (length(item)>0) {
+          if (groupBy=='Day') {
+            xLabels <- c(xLabels,item[1])
+          } else {
+            xLabels <- c(xLabels,paste(item[-length(item)],collapse=' '))
+          }
+        } else {
+          xLabels <- c(xLabels,'')
+        }
+      }
+      #print(xLabels)
+      uLabels <- unique(xLabels[grep('[[:alnum:]]',xLabels)])
+      for (u in uLabels) {
+        index <- which(xLabels==u)
+        if (length(index)>1) {
+          middlePoint <- floor(ceiling(length(index))/2)
+          xLabels[index] <- ''
+          if (groupBy=='Day') {
+            xLabels[index[middlePoint]] <- paste('Day:',u)
+          } else {
+            xLabels[index[middlePoint]] <- u
+          }
+        } else {
+          if (groupBy=='Day') {
+            xLabels[index] <- paste('Day:',u)
+          } else {
+            xLabels[index] <- u
+          }
+        }
+      }
+      #print(xLabels)
+      N <- length(unique(Data[[notGroupBy]]))
       my_color_ramp <- my_color_palette(N)
-      p <- ggplot(data=Data,aes(x=variable,y=value,fill=get(groupBy))) +
-        geom_boxplot() + xlab('Test') + scale_fill_manual(name=groupBy,values=my_color_ramp) +
+      p <- ggplot(data=Data,aes(x=get(groupBy),y=value,group=get(groupBy),fill=get(notGroupBy),colour=Sex, sep= '_')) +
+        geom_boxplot() + scale_fill_manual(name=groupBy,values=my_color_ramp) +
+        facet_grid(. ~ variable,scales = 'free') + xlab('Test') + guides(fill=guide_legend(notGroupBy)) +
+        scale_x_discrete(breaks=groups2display,labels=xLabels) + 
+        scale_colour_manual(name='Sex', values='black')+
         theme(text = element_text(size=18))
       if (input$transformation == 'percentChange') {
         p <- p + ylab('Percent Change from Control Mean (%)')
@@ -1117,14 +1397,60 @@ server <- function(input, output, session) {
       Data <- longData()
       if (input$filterBy=='Treatment') {
         groupBy <- 'Day'
+        notGroupBy <- 'Treatment'
       } else {
         groupBy <- 'Treatment'
+        notGroupBy <- 'Day'
       }
-      N <- length(unique(Data[[groupBy]]))
+      
+      groups2display <- levels(Data[[groupBy]])
+      for (group in groups2display) {
+        index <- which(groups2display==group)
+        if (group %ni% Data[[groupBy]]) {
+          groups2display <- groups2display[-index]
+        }
+      }
+      splitGroup <- strsplit(groups2display,' ')
+      xLabels <- NULL
+      for (item in splitGroup) {
+        print(item)
+        if (length(item)>0) {
+          if (groupBy=='Day') {
+            xLabels <- c(xLabels,item[1])
+          } else {
+            xLabels <- c(xLabels,paste(item[-length(item)],collapse=' '))
+          }
+        } else {
+          xLabels <- c(xLabels,'')
+        }
+      }
+      #print(xLabels)
+      uLabels <- unique(xLabels[grep('[[:alnum:]]',xLabels)])
+      for (u in uLabels) {
+        index <- which(xLabels==u)
+        if (length(index)>1) {
+          middlePoint <- floor(ceiling(length(index))/2)
+          xLabels[index] <- ''
+          if (groupBy=='Day') {
+            xLabels[index[middlePoint]] <- paste('Day:',u)
+          } else {
+            xLabels[index[middlePoint]] <- u
+          }
+        } else {
+          if (groupBy=='Day') {
+            xLabels[index] <- paste('Day:',u)
+          } else {
+            xLabels[index] <- u
+          }
+        }
+      }
+      #print(xLabels)
+      N <- length(unique(Data[[notGroupBy]]))
       my_color_ramp <- my_color_palette(N)
-      p <- ggplot(data=Data,aes(x=variable,y=value,fill=get(groupBy),label=ID)) +
-        geom_boxplot(outlier.shape='') + xlab('Test') + scale_fill_manual(name=groupBy,values=my_color_ramp) +
-        geom_point(aes(fill=get(groupBy),shape=Sex),size=2.5,position=position_jitterdodge()) +
+      p <- ggplot(data=Data,aes(x=get(groupBy),y=value,group=get(groupBy),fill=get(notGroupBy),label=ID)) +
+        geom_boxplot(outlier.shape='') +facet_grid(. ~ variable,scales = 'free') + xlab('Test') + guides(fill=guide_legend(notGroupBy)) +
+        scale_x_discrete(breaks=groups2display,labels=xLabels)  + scale_fill_manual(name=groupBy,values=my_color_ramp) +
+        geom_point(aes(fill=get(notGroupBy),shape=Sex),size=2.5,position=position_jitterdodge()) +
         theme(text = element_text(size=18))
       if (input$transformation == 'percentChange') {
         p <- p + ylab('Percent Change from Control Mean (%)')
@@ -1156,8 +1482,12 @@ server <- function(input, output, session) {
       p
     }
   })
-  
-  output$scatterPlot <- renderPlotly({
+
+  output$heatMap <- renderPlot({
+
+  })
+    
+  output$scatterPlot <- renderPlot({
     if (!is.null(input$tests)) {
       longData <- longData()
       tmp <- NULL
@@ -1196,7 +1526,7 @@ server <- function(input, output, session) {
       }
       N <- length(values$treatmentOrder)
       my_color_ramp <- my_color_palette(N)
-      p <- ggpairs(Data,aes(colour=Treatment,shape=Sex,label=ID),columns=(1:length(input$tests)),legend=1,
+      p <- ggpairs(Data,aes(colour=Treatment,shape=Sex,label=ID),columns=(1:length(input$tests)), legend = 1,
                    lower=list(continuous = wrap('points',size=3)),upper='blank',diag='blank',switch='both')
       for(i in 1:p$nrow) {
         for(j in 1:p$ncol){
@@ -1205,15 +1535,18 @@ server <- function(input, output, session) {
         }
       }
       p <- gpairs_lower(p)
-      p <- ggplotly(p,height=as.numeric(unlist(strsplit(plotHeight,'px'))),width=as.numeric(unlist(strsplit(plotHeight,'px')))*1.25,tooltip='label')
-      p$elementId <- NULL
+      #p <- p + theme(legend.position = c(0.8,0.2))
+      #p <- ggplotly(p,height=as.numeric(unlist(strsplit(plotHeight,'px'))),width=as.numeric(unlist(strsplit(plotHeight,'px')))*1.5,tooltip='label')   %>% layout(margin=list(r=300), showlegend=TRUE, legend=list(x=100,y=0.5))
+      #p$elementId <- NULL
       p
     }
   })
   
-  output$PCA <- renderPlotly({
+  output$PCA <- renderPlot({
     req(input$tests)
     longData <- longData()
+    print(head(longData))
+    print(table(longData$Day))
     tmp <- NULL
     if (input$filterBy=='Treatment') {
       groupBy <- 'Day'
@@ -1235,7 +1568,9 @@ server <- function(input, output, session) {
       }
       longData[[groupBy]] <- as.factor(tmp)
     }
-    Data <- dcast(longData,Treatment+ID+Sex+Day~variable)
+    print(table(longData$Day))
+    Data <- dcast(longData,Treatment+ID+Sex+Day~variable,fun.aggregate = mean)
+    print(Data)
     if (groupBy=='Day') {
       Data$Treatment <- factor(Data$Treatment,levels=values$treatmentOrder)
     } else {
@@ -1244,6 +1579,7 @@ server <- function(input, output, session) {
     N <- length(values$treatmentOrder)
     my_color_ramp <- my_color_palette(N)
     pData <- Data[,input$tests]
+    print(head(pData))
     rowIndex <- NULL
     for (i in seq(nrow(pData))) {
       naFlag <- F
@@ -1256,26 +1592,31 @@ server <- function(input, output, session) {
         rowIndex <- c(rowIndex,i)
       }
     }
+    print(head(pData))
     pData <- pData[rowIndex,]
+    print(head(pData))
     pData.pca <- prcomp(pData,scale. = TRUE)
     Groups <- factor(Data$Treatment[rowIndex],levels=values$treatmentOrder)
     Shape <- Data$Sex[rowIndex]
     Label <- Data$ID[rowIndex]
+    
     p <- ggbiplot(pData.pca,obs.scale=1,var.scale=1,groups=Groups,groupName='Treatment',shape=Shape,label=Label,
                   color_ramp=my_color_ramp,ellipse=input$ellipse,ellipse.prob = input$ellipseConf/100,circle=F) +
-      theme(text=element_text(size=18))
-    p <- ggplotly(p,height=as.numeric(unlist(strsplit(plotHeight,'px'))),width=as.numeric(unlist(strsplit(plotHeight,'px')))*1.25+300,tooltip='label')
-    p$elementId <- NULL
-    p
+      theme(text=element_text(size=15))
+  
+    print(head(pData))
+    #p <- ggplotly(p,height=as.numeric(unlist(strsplit(plotHeight,'px'))),width=as.numeric(unlist(strsplit(plotHeight,'px')))*1.25+300,tooltip='label')
+    #p$elementId <- NULL
+    print(p)
   })
   
   observe({
     if (input$changeFromBaseline==T) {
       isolate(updateRadioButtons(session,'transformation',choiceNames=c('Percent Change from Baseline','Z-Score','None'),
-                         choiceValues=c('percentChange','zScore','none'),selected=input$transformation))
+                                 choiceValues=c('percentChange','zScore','none'),selected=input$transformation))
     } else if (input$changeFromBaseline==F) {
       isolate(updateRadioButtons(session,'transformation',choiceNames=c('Percent Change from Control','Z-Score','None'),
-                         choiceValues=c('percentChange','zScore','none'),selected=input$transformation))
+                                 choiceValues=c('percentChange','zScore','none'),selected=input$transformation))
     }
   })
   
@@ -1321,6 +1662,7 @@ ui <- dashboardPage(
                          ),'meanLinePlot'),
                          menuItem(text=tags$b('Line Graph',tags$br(),'(Individuals)'),tabName='linePlot',icon=icon('random')),
                          menuItem('Scatter Plots',tabName='scatterPlot',icon=icon('braille')),
+                         #menuItem('Heat Map',tabName='heatMap',icon=icon('th')),
                          convertMenuItem(menuItem('PCA',tabName='PCA',icon=icon('codepen'),
                                                   menuSubItem(icon=NULL,
                                                               checkboxInput('ellipse','Show Treatment Group Ellipses?',value=F)
@@ -1329,7 +1671,7 @@ ui <- dashboardPage(
                                                                    numericInput('ellipseConf','Percent Confidence:',min=0,max=100,value=95,step=5)
                                                   )
                          ),'PCA')
-                         
+                          
                 ),
                 menuItem('Tables',icon=icon('table'),startExpanded=T,
                          menuSubItem('Group Means',tabName='meanTable',icon=icon('th-list')),
@@ -1337,17 +1679,8 @@ ui <- dashboardPage(
                          )
                 ),
                 menuItem('Select Dataset',icon=icon('database'),startExpanded=T,
-                         # selectInput('dataSource','Select Data Source:',c('GitHub')),
                          uiOutput('dataSource'),
-                         # conditionalPanel(
-                           # condition = 'input.dataSource=="GitHub"',
-                           uiOutput('selectGitHubStudy'),
-                         # ),
-                         # selectInput('selectGitHubStudy',label='Select Study from PhUSE GitHub:',choices ='PDS',selected='PDS'),
-                         # conditionalPanel(
-                           # condition = 'input.dataSource=="local"',
-                           # actionButton('chooseBWfile','Choose a BW Domain File')
-                         # ),
+                         uiOutput('selectStudy'),
                          h5('Study Folder Location:'),
                          verbatimTextOutput('bwFilePath')
                 ),
@@ -1358,34 +1691,19 @@ ui <- dashboardPage(
                          actionButton('displayTests',label='Display All')
                 ),
                 menuItem('Filters',icon=icon('filter'),startExpanded=T,
-                         # selectInput('groupBy',label='Group by Treatment or Day?',choices=c('Treatment','Day'),selected='Day'),
                          radioButtons('filterBy',label='Sort by Treatment or Day?',choices=c('Treatment','Day'),selected='Treatment'),
-                         # conditionalPanel(
-                           # condition = 'input.filterBy == "Day"',
-                           withSpinner(uiOutput('day'),type=7,proxy.height='200px'),
-                         # ),
-                         # conditionalPanel(
-                           # condition = 'input.filterBy == "Treatment"',
-                           withSpinner(uiOutput('treatment'),type=7,proxy.height='200px'),
-                         # ),
+                         withSpinner(uiOutput('day'),type=7,proxy.height='200px'),
+                         withSpinner(uiOutput('treatment'),type=7,proxy.height='200px'),
                          radioButtons('sex',label='Select Sex:',choices=list(Male='M',Female='F',Both=''),selected=''),
-                         # uiOutput('selectSubjects'),
                          checkboxInput('changeFromBaseline','Calculate Change from Baseline?',value=F),
-                         # conditionalPanel(condition='input.changeFromBaseline==false',
-                                          radioButtons('transformation',label='Select Transformation:',selected='zScore',
-                                                       choiceNames=c('Percent Change from Control','Z-Score','None'),
-                                                       choiceValues=c('percentChange','zScore','none')),
-                         # ),
-                         # conditionalPanel(condition='input.changeFromBaseline==true',
-                         #                  radioButtons('transformation',label='Select Transformation:',selected='zScore',
-                         #                               choiceNames=c('Percent Change from Baseline','Z-Score','None'),
-                         #                               choiceValues=c('percentChange','zScore','none'))
-                         # ),
-                         conditionalPanel(condition='input.changeFromBaseline==false & input.transformation=="percentChange"',
+                         radioButtons('transformation',label='Select Transformation:',selected='zScore',
+                                      choiceNames=c('Percent Change from Control','Z-Score','None'),
+                                      choiceValues=c('percentChange','zScore','none')),
+                         conditionalPanel(condition='input.changeFromBaseline==false & (input.transformation=="percentChange" || input.transformation=="zScore" )',
                                           uiOutput('selectControl')
                          )
                 ),
-                menuItem('Source Code',icon=icon('code'),href='https://github.com/phuse-org/phuse-scripts/blob/master/contributed/Nonclinical/R/LBapp/LBapp.R'),
+                menuItem('Source Code',icon=icon('code'),href='http://10.192.49.11:8083/root/ClinPathApp/blob/master/app.R'),
                 menuItem('White Paper',icon=icon('file-alt'),href='https://www.lexjansen.com/phuse-us/2019/dv/DV03.pdf')
     )
   ),
@@ -1393,8 +1711,8 @@ ui <- dashboardPage(
   dashboardBody(
     
     tags$script(HTML("$('body').addClass('sidebar-mini');")),
+    # treeview not working properly
     tags$script(HTML("$('body').addClass('treeview');")),
-    
     tabItems(
       tabItem(tabName='individualTable',
               h3('Individual Subject Data Table:'),
@@ -1404,6 +1722,7 @@ ui <- dashboardPage(
               h3('Group Means Data Table:'),
               withSpinner(DT::dataTableOutput('meanTable'),type=1)
       ),
+      
       tabItem(tabName='barPlot',
               h3('Bar Graph:'),
               withSpinner(plotOutput('barPlot',height=plotHeight),type=1)
@@ -1423,7 +1742,7 @@ ui <- dashboardPage(
               #   # condition='(input.filterBy=="Day" & input.day.length>1) | (input.filterBy=="Treatment" & input.treatment.length>1)',#=="All Treatments")',
               #   condition='values.day.length!=1',
               #   h3('Line Plots of Group Means:'),
-                uiOutput('meanPlots')
+              uiOutput('meanPlots')
               # )
       ),
       tabItem(tabName='linePlot',
@@ -1437,11 +1756,11 @@ ui <- dashboardPage(
               #   # condition='(input.filterBy=="Day" & input.day=="All Days") | (input.filterBy=="Treatment" &input.treatment=="All Treatments")',
               #   condition="(typeof input.day !== 'undefined' && input.day.length!=1)",
               #   h3('Line Plots of Individual Subjects:'),
-                uiOutput('plots')
+              uiOutput('plots')
               # ),
               # conditionalPanel(
-                # condition="(typeof input.day === 'undefined')",
-                # h3('Select Filter by Day to Initialize Plot!')
+              # condition="(typeof input.day === 'undefined')",
+              # h3('Select Filter by Day to Initialize Plot!')
               # )
       ),
       tabItem(tabName='boxPlot',
@@ -1455,16 +1774,16 @@ ui <- dashboardPage(
       ),
       tabItem(tabName='scatterPlot',
               h3('Scatter Plots:'),
-              withSpinner(plotlyOutput('scatterPlot',height=plotHeight),type=1)
+              withSpinner(plotOutput('scatterPlot',height=plotHeight),type=1)
       ),
+     
       tabItem(tabName='PCA',
               h3('Principal Component Analysis:'),
-              withSpinner(plotlyOutput('PCA'),type=1)
-      )
+              withSpinner(plotOutput('PCA'),type=1)
     )
-  )
+  )))
   
-)
+
 
 # Run Shiny App
 shinyApp(ui = ui, server = server)
