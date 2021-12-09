@@ -4,19 +4,16 @@
 # Ideas for improvement:
 #  - Add subcategory tree (backlog--requires tree package)
 #  - Fix transformations on change from baseline (maybe not?)
-#  - Change z-score to set 0 value at control mean by sex and scale based on control by sex standard deviation - Vaishnavi
 #  - Add filter to individual plot by animal ID (backlog requires tree package)
-#  - Plotting multiple days with separation - Vaishnavi
-# https://stackoverflow.com/questions/28006281/ggplot-nested-x-axis-for-interaction-factor-variables-in-bar-plot
-# https://www.datacamp.com/community/tutorials/facets-ggplot-r
-# this is kind of tricky -- not sure what the desired solution is...
-
-#  - Two-way hiearchical clustering
+#  - Two-way hierarchical clustering
 #  - Handle Time-Points within Days
 
+# Recent Improvements Made:
+# Plotting Multiple Days and Centering Z-score at Zero (Vaishnavi Methuku)
+
 # Bugs to fix:
-# Error in Line Graph views when no tests selected or when tests removed (done)
 # PCA not always displaying data points
+# Reloading datasets after visiting another dataset sometimes causes errors
 
 # Load Libraries
 library(shiny)
@@ -282,16 +279,17 @@ if (substr(homePath,1,2)=='C:') {
   Local <- F
 }
 
-# Set this flag to download latest version of functions from PhUSE GitHub
-Update <- F
 
 # Source Functions
 if (Local == T) {
-  if (Update==T) {
-    download.file('https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/contributed/Nonclinical/R/Functions/Functions.R','Functions/Functions.R')
-    download.file('https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/contributed/Nonclinical/R/Functions/groupSEND.R','Functions/groupSEND.R')
-  }
-  
+    source("../phuse-scripts/contributed/Nonclinical/R/Functions/Functions.R")
+    source("../phuse-scripts/contributed/Nonclinical/R/Functions/groupSEND.R")
+    } else { 
+    source("Functions/Functions.R")
+    source("Functions/groupSEND.R")
+    }
+
+
   # Get GitHub Password (if possible)
   if (file.exists('~/passwordGitHub.R')) {
     source('~/passwordGitHub.R')
@@ -299,12 +297,10 @@ if (Local == T) {
   } else {
     Authenticate <- FALSE
   }
-}
-source('Functions/Functions.R')
-#source('Functions/groupSEND.R')
-source('https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/contributed/Nonclinical/R/Functions/groupSEND.R')
+
+
 # Set Local GitHub Repo
-# GitHubPath <- '~/PhUSE/Git/phuse-scripts/data/send'
+GitHubPath <- '~/PhUSE/Git/phuse-scripts/data/send'
 DatasetsPath <- 'Datasets'
 
 # Setup Plot Color Ramp
@@ -359,7 +355,7 @@ server <- function(input, output, session) {
       contents <- content(Req,as='parsed')
       GitHubStudies <- NULL
       for (i in seq(length(contents))) {
-        studies[i] <- strsplit(contents[[i]]$path,'/send/')[[1]][2]
+        GitHubStudies[i] <- strsplit(contents[[i]]$path,'/send/')[[1]][2]
       }
     } else if (input$dataSource == 'Datasets') {
       #print(getwd())
@@ -368,9 +364,9 @@ server <- function(input, output, session) {
         setwd(HOME)
       }        
       #print(getwd())
-      studies <- list.dirs('Datasets',full.names=F,recursive=F)
+      GitHubStudies <- list.dirs('Datasets',full.names=F,recursive=F)
     }
-    selectInput('selectStudy',label='Select Study:',choices = studies,selected='PDS')
+    selectInput('selectStudy',label='Select Study:',choices = GitHubStudies,selected='PDS')
   })
   
   # COMMENTED OUT FOR NOW unitl I allow local file upload
