@@ -279,17 +279,16 @@ if (substr(homePath,1,2)=='C:') {
   Local <- F
 }
 
+# Set this flag to download latest version of functions from PhUSE GitHub
+Update <- F
 
 # Source Functions
 if (Local == T) {
-    source("../phuse-scripts/contributed/Nonclinical/R/Functions/Functions.R")
-    source("../phuse-scripts/contributed/Nonclinical/R/Functions/groupSEND.R")
-    } else { 
-    source("Functions/Functions.R")
-    source("Functions/groupSEND.R")
-    }
-
-
+  if (Update==T) {
+    download.file('https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/contributed/Nonclinical/R/Functions/Functions.R','Functions/Functions.R')
+    download.file('https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/contributed/Nonclinical/R/Functions/groupSEND.R','Functions/groupSEND.R')
+  }
+  
   # Get GitHub Password (if possible)
   if (file.exists('~/passwordGitHub.R')) {
     source('~/passwordGitHub.R')
@@ -297,7 +296,9 @@ if (Local == T) {
   } else {
     Authenticate <- FALSE
   }
-
+}
+source('https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/contributed/Nonclinical/R/Functions/Functions.R')
+source('https://raw.githubusercontent.com/phuse-org/phuse-scripts/master/contributed/Nonclinical/R/Functions/groupSEND.R')
 
 # Set Local GitHub Repo
 GitHubPath <- '~/PhUSE/Git/phuse-scripts/data/send'
@@ -336,9 +337,9 @@ server <- function(input, output, session) {
   
   output$dataSource <- renderUI({
     if (Local == T) {
-      selectInput('dataSource','Select Data Source:',c('GitHub','Datasets'),selected='Datasets')
-    } else {
-      selectInput('dataSource','Select Data Source:',c('Datasets'))
+      selectInput('dataSource','Select Data Source:', c('GitHub'))
+    # } else {
+    #   selectInput('dataSource','Select Data Source:',c('Datasets'))
     }
   })
   
